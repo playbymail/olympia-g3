@@ -2,7 +2,7 @@
 ############################################################################
 #
 # Resolve the repo root from this script's location so the repo is relocatable.
-OLYMPIA_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+OLYMPIA_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 # CMakePresets emits binaries to build/<presetName> (default preset: debug).
 OLYMPIA_PRESET="${OLYMPIA_PRESET:-debug}"
 OLYMPIA_BIN="${OLYMPIA_ROOT}/build/${OLYMPIA_PRESET}"
@@ -29,7 +29,7 @@ OLYMPIA_COMMAND=mapgen
   echo "error: invalid OLYMPIA_FIXTURES"
   exit 2
 }
-OLYMPIA_INPUTS="${OLYMPIA_FIXTURES}/${OLYMPIA_ENGINE}/${OLYMPIA_COMMAND}/fixtures"
+OLYMPIA_INPUTS="${OLYMPIA_FIXTURES}/${OLYMPIA_COMMAND}/fixtures"
 [ -d "${OLYMPIA_INPUTS}" ] || {
   echo "OLYMPIA_FIXTURES   == '${OLYMPIA_OLYMPIA_FIXTURES}'"
   echo "OLYMPIA_ENGINE     == '${OLYMPIA_ENGINE}'"
@@ -43,7 +43,7 @@ OLYMPIA_INPUTS="${OLYMPIA_FIXTURES}/${OLYMPIA_ENGINE}/${OLYMPIA_COMMAND}/fixture
   echo "error: invalid OLYMPIA_RUN"
   exit 2
 }
-OLYMPIA_OUTPUTS="${OLYMPIA_RUN}/${OLYMPIA_ENGINE}/${OLYMPIA_COMMAND}"
+OLYMPIA_OUTPUTS="${OLYMPIA_RUN}/${OLYMPIA_COMMAND}"
 [ -d "${OLYMPIA_OUTPUTS}" ] || {
   echo "OLYMPIA_RUN        == '${OLYMPIA_RUN}'"
   echo "OLYMPIA_ENGINE     == '${OLYMPIA_ENGINE}'"
@@ -72,13 +72,13 @@ ls -l Cities Land Map Regions randseed
 
 ############################################################################
 #
-echo " info: running ${OLYMPIA_ENGINE}-${OLYMPIA_COMMAND} in $( pwd )"
+echo " info: running ${OLYMPIA_COMMAND}-${OLYMPIA_ENGINE} in $( pwd )"
 
 # run the program
 #   inputs: Cities, Land, Map, Regions, randseed
 #  outputs: gate, loc, road
-"${OLYMPIA_BIN}/${OLYMPIA_ENGINE}-${OLYMPIA_COMMAND}" || {
-  echo "error: ${OLYMPIA_ENGINE}-${OLYMPIA_COMMAND} failed"
+"${OLYMPIA_BIN}/${OLYMPIA_COMMAND}-${OLYMPIA_ENGINE}" || {
+  echo "error: ${OLYMPIA_COMMAND}-${OLYMPIA_ENGINE} failed"
   exit 2
 }
 

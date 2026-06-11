@@ -11,10 +11,10 @@ effort is underway to make it compile cleanly on 64-bit systems.
 
 ## Targets
 
-- `g3-olympia` — the main game engine
-- `g3-mapgen` — the map generator (inputs `Map`/`Land`/`Cities`/`Regions`,
+- `olympia-g3` — the main game engine
+- `mapgen-g3` — the map generator (inputs `Map`/`Land`/`Cities`/`Regions`,
   outputs `gate`/`loc`/`road`)
-- `g3-island` — the island generator
+- `island-g3` — the island generator
 
 ## Building
 
@@ -23,11 +23,11 @@ Requires CMake (>= 4.1), Ninja, and a Clang or GCC toolchain.
 ```bash
 cmake --preset debug
 cmake --build --preset debug
-# Binaries: build/debug/{g3-olympia,g3-mapgen,g3-island}
+# Binaries: build/debug/{olympia-g3,mapgen-g3,island-g3}
 ```
 
 Presets (see `CMakePresets.json`): `debug` (default), `release`, `asan-ubsan`
-(AddressSanitizer + UndefinedBehaviorSanitizer for `g3-olympia`).
+(AddressSanitizer + UndefinedBehaviorSanitizer for `olympia-g3`).
 
 Without presets:
 
@@ -48,11 +48,11 @@ cmake --build .
 Build first (default `debug` preset), then:
 
 ```bash
-# mapgen: generates gate/loc/road and can be compared to tests/g3/mapgen/golden
-./run/g3/mapgen/mapgen.sh
+# mapgen: generates gate/loc/road and can be compared to tests/mapgen/golden
+./run/mapgen/mapgen.sh
 
 # olympia: extracts fixtures and runs the engine
-./run/g3-olympia.sh
+./run/olympia-g3.sh
 ```
 
 The scripts auto-detect the repo root and look for binaries at
@@ -60,10 +60,10 @@ The scripts auto-detect the repo root and look for binaries at
 
 ## Layout
 
-- `g3/olympia/` — the G3 engine sources and headers
-- `g3/mapgen/` — the map and island generators
+- `olympia/` — the G3 engine sources and headers
+- `mapgen/` — the map and island generators
 - `lib/` — shared support code (entity lists, tiles, roads, allocation, …)
-- `tests/g3/` — golden-test fixtures and golden files
+- `tests/` — golden-test fixtures and golden files
 - `run/` — run/test driver scripts and scratch run directories
 
 ## License

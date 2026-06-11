@@ -204,31 +204,31 @@ endif ()
 # ------------------------------------------------------------------------------
 # G3 island
 # ------------------------------------------------------------------------------
-add_executable(g3-island)
-target_sources(g3-island PRIVATE
-    g3/mapgen/island.c g3/mapgen/rnd.c
+add_executable(island-g3)
+target_sources(island-g3 PRIVATE
+    mapgen/island.c mapgen/rnd.c
 )
-target_include_directories(g3-island PRIVATE g3/island/ g3/mapgen/)
-target_compile_options(g3-island PRIVATE ${LEGACY_C_FLAGS} -Og -g)
+target_include_directories(island-g3 PRIVATE island/ mapgen/)
+target_compile_options(island-g3 PRIVATE ${LEGACY_C_FLAGS} -Og -g)
 
 # ------------------------------------------------------------------------------
 # G3 mapgen
 # ------------------------------------------------------------------------------
-add_executable(g3-mapgen)
-target_sources(g3-mapgen PRIVATE
-    g3/mapgen/mapgen.c g3/mapgen/rnd.c g3/mapgen/z.c
+add_executable(mapgen-g3)
+target_sources(mapgen-g3 PRIVATE
+    mapgen/mapgen.c mapgen/rnd.c mapgen/z.c
     lib/ilist.c lib/roads.c lib/tiles.c
 )
-target_sources(g3-mapgen PRIVATE
+target_sources(mapgen-g3 PRIVATE
     FILE_SET HEADERS
     BASE_DIRS
-        g3/mapgen lib
+        mapgen lib
     FILES
-        g3/mapgen/z.h
+        mapgen/z.h
         lib/lists.h
 )
-target_include_directories(g3-mapgen PRIVATE g3/mapgen/ lib/)
-target_compile_options(g3-mapgen PRIVATE
+target_include_directories(mapgen-g3 PRIVATE mapgen/ lib/)
+target_compile_options(mapgen-g3 PRIVATE
     ${LEGACY_C_FLAGS} -Og -g
     -Wint-conversion -Werror=int-conversion
     -Wint-to-pointer-cast -Werror=int-to-pointer-cast
@@ -239,41 +239,41 @@ target_compile_options(g3-mapgen PRIVATE
 # ------------------------------------------------------------------------------
 # G3 olympia (main game engine)
 # ------------------------------------------------------------------------------
-add_executable(g3-olympia)
-target_sources(g3-olympia PRIVATE
-    g3/olympia/add.c g3/olympia/adv.c g3/olympia/alchem.c g3/olympia/art.c
-    g3/olympia/basic.c g3/olympia/beast.c g3/olympia/build.c
-    g3/olympia/buy.c g3/olympia/c1.c g3/olympia/c2.c g3/olympia/check.c
-    g3/olympia/cloud.c g3/olympia/code.c g3/olympia/combat.c
-    g3/olympia/day.c g3/olympia/dir.c g3/olympia/display.c g3/olympia/eat.c
-    g3/olympia/faery.c g3/olympia/garr.c g3/olympia/gate.c
-    g3/olympia/glob.c g3/olympia/gm.c g3/olympia/hades.c
-    g3/olympia/immed.c g3/olympia/input.c g3/olympia/io.c
-    g3/olympia/loc.c g3/olympia/lore.c g3/olympia/main.c g3/olympia/make.c
-    g3/olympia/move.c g3/olympia/necro.c g3/olympia/npc.c
-    g3/olympia/order.c g3/olympia/perm.c g3/olympia/produce.c
-    g3/olympia/pw.c g3/olympia/quest.c g3/olympia/relig.c
-    g3/olympia/report.c g3/olympia/rnd.c g3/olympia/savage.c
-    g3/olympia/scry.c g3/olympia/seed.c g3/olympia/sout.c
-    g3/olympia/stack.c g3/olympia/stealth.c g3/olympia/storm.c
-    g3/olympia/summary.c g3/olympia/swear.c g3/olympia/tunnel.c
-    g3/olympia/u.c g3/olympia/use.c g3/olympia/z.c
+add_executable(olympia-g3)
+target_sources(olympia-g3 PRIVATE
+    olympia/add.c olympia/adv.c olympia/alchem.c olympia/art.c
+    olympia/basic.c olympia/beast.c olympia/build.c
+    olympia/buy.c olympia/c1.c olympia/c2.c olympia/check.c
+    olympia/cloud.c olympia/code.c olympia/combat.c
+    olympia/day.c olympia/dir.c olympia/display.c olympia/eat.c
+    olympia/faery.c olympia/garr.c olympia/gate.c
+    olympia/glob.c olympia/gm.c olympia/hades.c
+    olympia/immed.c olympia/input.c olympia/io.c
+    olympia/loc.c olympia/lore.c olympia/main.c olympia/make.c
+    olympia/move.c olympia/necro.c olympia/npc.c
+    olympia/order.c olympia/perm.c olympia/produce.c
+    olympia/pw.c olympia/quest.c olympia/relig.c
+    olympia/report.c olympia/rnd.c olympia/savage.c
+    olympia/scry.c olympia/seed.c olympia/sout.c
+    olympia/stack.c olympia/stealth.c olympia/storm.c
+    olympia/summary.c olympia/swear.c olympia/tunnel.c
+    olympia/u.c olympia/use.c olympia/z.c
 
     lib/accept_ents.c lib/admits.c lib/cstrings.c lib/exit_views.c lib/fights.c lib/flag_ents.c lib/item_ents.c
     lib/ilist.c lib/plist.c
     lib/orders.c lib/req_ents.c lib/roads.c lib/skill_ents.c lib/tiles.c lib/trades.c lib/wait_args.c
     lib/checked_alloc.c
 )
-target_sources(g3-olympia PRIVATE
+target_sources(olympia-g3 PRIVATE
     FILE_SET HEADERS
     BASE_DIRS
-        g3/olympia lib
+        olympia lib
     FILES
-        g3/olympia/legacy.h
+        olympia/legacy.h
         lib/checked_alloc.h lib/lists.h
 )
-target_include_directories(g3-olympia PRIVATE g3/olympia/ lib/)
-target_compile_options(g3-olympia PRIVATE
+target_include_directories(olympia-g3 PRIVATE olympia/ lib/)
+target_compile_options(olympia-g3 PRIVATE
     ${LEGACY_C_FLAGS} -Og -g
     # Phase 1 - list triage - only pointer-cast errors
     -Wint-to-pointer-cast -Werror=int-to-pointer-cast
@@ -281,4 +281,4 @@ target_compile_options(g3-olympia PRIVATE
 )
 
 # Optional ASan/UBSan via the asan-ubsan preset (OLYMPIA_SANITIZE=ON).
-olympia_enable_sanitizers(g3-olympia)
+olympia_enable_sanitizers(olympia-g3)

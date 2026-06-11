@@ -1,9 +1,9 @@
 /* BUGFIX (modernization): use varargs and forward declarations */
 #include "legacy.h"
 /* BUGFIX (modernization): update lists to use 64-bit pointers */
-#include "../../lib/lists.h"
+#include "../lib/lists.h"
 /* BUGFIX (modernization): use an updated malloc/realloc/free */
-#include "../../lib/checked_alloc.h"
+#include "../lib/checked_alloc.h"
 
 typedef		unsigned char	uchar;
 typedef		signed char	schar;
