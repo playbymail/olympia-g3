@@ -1,0 +1,21 @@
+*~
+*.exe
+*.gz
+*.swp
+*.tar
+*.tgz
+.DS_Store
+.archives/
+.claude/
+.code/
+.idea/
+.vscode/
+
+# build files
+cmake-build-debug/
+build/
+build-baseline/
+build32/
+
+# keep golden-test fixtures (overrides *.tgz above)
+!tests/**/*.tgz
