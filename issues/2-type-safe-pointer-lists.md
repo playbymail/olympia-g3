@@ -1,8 +1,11 @@
 # Issue 2 — Type-safe pointer lists (retire the generic `plist`)
 
 **Status:** open — in progress. **`exit_views_list`, `trades_list`,
-`orders_list`, `admits_list`, `item_ents_list`, and `skill_ents_list`
-migrated**; the remaining plist field (`order_list.l`) remains.
+`orders_list`, `admits_list`, `item_ents_list`, `skill_ents_list`, and
+`order_list.l → cstrings_list` migrated** — all five `oly.h` entity
+pointer-list fields from the table below (plus `exit_views` and the inner
+order-text list) are now typed. A handful of **other** plist lists remain (see
+*Remaining plist users* at the end); the `plist` typedef cannot be deleted yet.
 **Type:** modernization (64-bit list-triage, follow-on to issue 1).
 **Motivation:** make the entire class of bug behind issue 1 a **compile error**
 instead of a runtime segfault.
@@ -86,6 +89,33 @@ instead of a runtime segfault.
 > left untouched: the unrelated `req_ents` local `l` in `use.c`'s
 > requirement-scan helpers (`plist_len(l)` at ~366–460), which is a different
 > list, not skills.
+
+> **Progress — `order_list.l` → `cstrings_list` (✅ done).** The inner
+> order-text list `struct order_list.l` (`oly.h:543`, `char **l` — a list of
+> saved order strings), distinct from the `orders` field migrated earlier. All
+> nine plist ops live in `order.c`: `top_order`/`pop_order`/`queue_order`/
+> `prepend_order`'s `plist_len`/`plist_delete`/`plist_append`/`plist_prepend` on
+> `p->l`, the `plist_len(p->orders[i]->l)` save-scan, and the two
+> `plist_len(l->l)` sites in the order display — all → `cstrings_*` (casts
+> dropped). `str_save()` returns `char *`, which `cstrings_append`/`_prepend`
+> accept. 10 line changes, 2 files, **0 new warnings**, golden gate
+> **byte-identical** (`YES`), mapgen `YES`. Carefully left untouched: the many
+> unrelated `char **l` locals elsewhere (`c2.c`, `eat.c`, `display.c`, …) that
+> are *not* `order_list.l`; passing a `cstrings_list` to a function still
+> declared `f(char **l)` is type-compatible, so no lockstep change is forced.
+> After: `grep "plist_.*->l" olympia/order.c` is empty.
+
+> **Remaining plist users (future work, out of this issue's table).** With all
+> five table fields + `exit_views` + `order_list.l` migrated, `grep -rn "(plist)"
+> olympia/*.c` finds **one** read-form cast (`combat.c:804`,
+> `plist_lookup((plist) l_a, …)` on a local); the write-form `(plist *)` cast
+> survives on lists **not** in this issue's scope: `p->accept`
+> (→ `accept_ents_list`), a `flags` local (→ `flag_ents_list`), `c->wait_parse`
+> / `c->parse` (→ `wait_args_list`), and assorted transient local `l` plists
+> (`combat.c`, `u.c`, `use.c` req-scans, `input.c`, `c1.c`/`c2.c`, `eat.c`).
+> ~93 `plist_` ops remain across 8 files. Retiring those (then deleting the
+> `plist` typedef + `lib/plist.c`) is the natural next step beyond this issue's
+> five-field table.
 
 ## Problem
 

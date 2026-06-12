@@ -66,7 +66,7 @@ top_order(int pl, int who)
 
 	p = rp_order_head(pl, who);
 
-	if (p && plist_len(p->l) > 0)
+	if (p && cstrings_len(p->l) > 0)
 		return p->l[0];
 	
 	return NULL;
@@ -128,12 +128,12 @@ pop_order(int pl, int who)
 	p = rp_order_head(pl, who);
 
 	assert(p != NULL);
-	assert(plist_len(p->l) > 0);
+	assert(cstrings_len(p->l) > 0);
 
 #if 1
 	my_free(p->l[0]);
 #endif
-	plist_delete((plist *) &p->l, 0);
+	cstrings_delete(&p->l, 0);
 }
 
 
@@ -164,10 +164,10 @@ queue_order(int pl, int who, char *s)
 
 	p = p_order_head(pl, who);
 
-	if (plist_len(p->l) >= 250)
+	if (cstrings_len(p->l) >= 250)
 		return;
 
-	plist_append((plist *) &p->l, str_save(s));
+	cstrings_append(&p->l, str_save(s));
 }
 
 
@@ -177,7 +177,7 @@ prepend_order(int pl, int who, char *s)
 	struct order_list *p;
 
 	p = p_order_head(pl, who);
-	plist_prepend((plist *) &p->l, str_save(s));
+	cstrings_prepend(&p->l, str_save(s));
 }
 
 
@@ -229,7 +229,7 @@ save_player_orders(int pl)
 		    kind(p->orders[i]->unit) == T_deadchar)
 			continue;
 
-		for (j = 0; j < plist_len(p->orders[i]->l); j++)
+		for (j = 0; j < cstrings_len(p->orders[i]->l); j++)
 		{
 			if (fp == NULL)
 			{
@@ -423,9 +423,9 @@ orders_template_sup(int who, int num, int pl)
 
 	l = rp_order_head(pl, num);
 
-	if (l != NULL && plist_len(l->l) > 0)
+	if (l != NULL && cstrings_len(l->l) > 0)
 	{
-		for (i = 0; i < plist_len(l->l); i++)
+		for (i = 0; i < cstrings_len(l->l); i++)
 		{
 			out(who, "%s", l->l[i]);
 		}

@@ -540,7 +540,7 @@ struct entity_player {
 
 struct order_list {
 	int unit;			/* unit orders are for */
-	char **l;			/* ilist of orders for unit */
+	cstrings_list l;			/* ilist of orders for unit */
 };
 
 struct accept_ent {
