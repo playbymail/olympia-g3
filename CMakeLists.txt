@@ -209,7 +209,12 @@ target_sources(island-g3 PRIVATE
     mapgen/island.c mapgen/rnd.c
 )
 target_include_directories(island-g3 PRIVATE island/ mapgen/)
-target_compile_options(island-g3 PRIVATE ${LEGACY_C_FLAGS} -Og -g)
+target_compile_options(island-g3 PRIVATE ${LEGACY_C_FLAGS} -Og -g
+    # Phase 4 - prototypes & declarations
+    -Wmissing-prototypes -Werror=missing-prototypes
+    -Wstrict-prototypes -Werror=strict-prototypes
+    -Wimplicit-function-declaration -Werror=implicit-function-declaration
+)
 
 # ------------------------------------------------------------------------------
 # G3 mapgen

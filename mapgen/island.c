@@ -24,6 +24,15 @@
 #include <getopt.h>
 #include <stdlib.h>
 
+/*
+ *  rnd.c (MD5 RNG) functions used here.  island.c is a standalone program that
+ *  does not include z.h/oly.h, so declare the few RNG entry points it calls
+ *  (Phase 4: gives them real prototypes instead of implicit declarations).
+ */
+extern int rnd(int low, int high);
+extern void load_seed(char *fnam);
+extern void save_seed(char *fnam);
+
 #define MAX_MAP			120
 #define LINE_MAX		200
 #define DISTANCE_CAP		9
@@ -49,7 +58,7 @@ terrain terrains[] =
 	{ 's',  1,  3, 10, 0 }
 };
 
-void make_shelf(
+static void make_shelf(
 	char map[][MAX_MAP],
 	int y,
 	int x,
@@ -74,7 +83,7 @@ void make_shelf(
 	return;
 }
 
-void extend_distance(
+static void extend_distance(
 	char distance[][MAX_MAP],
 	int y,
 	int x,
@@ -105,7 +114,7 @@ void extend_distance(
 	return;
 }
 
-int gcd(int a, int b)
+static int gcd(int a, int b)
 {
 	int temp;
 
@@ -119,7 +128,7 @@ int gcd(int a, int b)
 	return a;
 }
 
-int lcm(int a, int b)
+static int lcm(int a, int b)
 {
 	return a * b / gcd(a, b);
 }
