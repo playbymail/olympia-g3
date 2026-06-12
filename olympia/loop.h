@@ -291,12 +291,12 @@
   struct item_ent **ll_l = NULL; \
     assert(valid_box(who)); \
     ll_l = (struct item_ent **) plist_copy((plist) bx[who]->items); \
-	for (ll_i = 0; ll_i < ilist_len(ll_l); ll_i++) \
+	for (ll_i = 0; ll_i < plist_len((plist) ll_l); ll_i++) \
 	    if (valid_box(ll_l[ll_i]->item) && ll_l[ll_i]->qty > 0) { \
 		    ll_copy = *ll_l[ll_i]; \
 		    e = &ll_copy;
 
-#define	next_inv   } assert(ll_check == 11); ilist_reclaim(&ll_l); }
+#define	next_inv   } assert(ll_check == 11); plist_reclaim((plist *) &ll_l); }
 
 
 
@@ -307,11 +307,11 @@
     assert(valid_box(who)); \
     if (rp_char(who)) \
        ll_l = (struct skill_ent **) plist_copy((plist) rp_char(who)->skills); \
-       for (ll_i = 0; ll_i < ilist_len(ll_l); ll_i++) { \
+       for (ll_i = 0; ll_i < plist_len((plist) ll_l); ll_i++) { \
 	     e = ll_l[ll_i];
 
 #define	next_char_skill \
-		} assert(ll_check == 15); ilist_reclaim(&ll_l); }
+		} assert(ll_check == 15); plist_reclaim((plist *) &ll_l); }
 
 
 
@@ -322,12 +322,12 @@
     assert(valid_box(who)); \
     if (rp_char(who)) \
        ll_l = (struct skill_ent **) plist_copy((plist) rp_char(who)->skills); \
-       for (ll_i = 0; ll_i < ilist_len(ll_l); ll_i++) \
+       for (ll_i = 0; ll_i < plist_len((plist) ll_l); ll_i++) \
           if (ll_l[ll_i]->know == SKILL_know) { \
 		e = ll_l[ll_i];
 
 #define	next_char_skill_known \
-		} assert(ll_check == 16); ilist_reclaim(&ll_l); }
+		} assert(ll_check == 16); plist_reclaim((plist *) &ll_l); }
 
 
 #define	loop_trade(who, e) \
@@ -336,11 +336,11 @@
   struct trade **ll_l = NULL; \
     assert(valid_box(who)); \
     ll_l = (struct trade **) plist_copy((plist) bx[who]->trades); \
-	for (ll_i = 0; ll_i < ilist_len(ll_l); ll_i++) \
+	for (ll_i = 0; ll_i < plist_len((plist) ll_l); ll_i++) \
 	    if (valid_box(ll_l[ll_i]->item) && ll_l[ll_i]->qty > 0) { \
 		    e = ll_l[ll_i];
 
-#define	next_trade  } assert(ll_check == 19); ilist_reclaim(&ll_l); }
+#define	next_trade  } assert(ll_check == 19); plist_reclaim((plist *) &ll_l); }
 
 
 #define	loop_prov_dest(where, i) \

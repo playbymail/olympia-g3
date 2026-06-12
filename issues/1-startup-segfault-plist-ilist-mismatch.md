@@ -1,8 +1,16 @@
 # Issue 1 — `olympia-g3` segfaults at startup in `post_production` (all modes)
 
-**Status:** open — **root cause confirmed** (a `plist` queried with the `ilist`
-length accessor in 4 `loop.h` macros). Fix is a bounded `loop.h` change; this is
-Phase 1 list-triage work, *not* Phase 4. See "Root cause (CONFIRMED)" below.
+**Status:** `location_trades()` crash **FIXED** — the four `loop.h` macros now
+use the matching `plist` accessors (`plist_len` / `plist_reclaim`). The engine
+clears `location_trades()` and advances. **Remaining:** INIT still crashes
+further on at `compute_dist()` (SIGSEGV / exit 139) — a separate, open follow-up
+of the same 64-bit list-triage class (likely another `loop_*` accessor mismatch,
+e.g. `loop_inv`). Not yet investigated; this issue stays open for that.
+
+**Original status (for history):** open — **root cause confirmed** (a `plist`
+queried with the `ilist` length accessor in 4 `loop.h` macros). Fix is a bounded
+`loop.h` change; this is Phase 1 list-triage work, *not* Phase 4. See "Root cause
+(CONFIRMED)" below.
 **Severity:** blocker for **olympia** golden files. The engine can't finish
 loading/initializing the DB, so it can't run a turn (`-r -S`) to produce the
 saved-DB golden, and the playbook "Step 0" baseline can't be captured. See the
@@ -141,15 +149,17 @@ Only the loop macros that copy a **pointer**-list (`plist`) but query it with th
 `loop_units`, `loop_loc_teach`, `loop_all_here`, …) use genuine `ilist_copy`
 lists and are **correct**.
 
-| macro | pointer-list copied | `loop.h` |
-|---|---|---|
-| `loop_inv` | `bx[who]->items` (`struct item_ent **`) | 287 / 293 |
-| `loop_char_skill` | `rp_char(who)->skills` (`struct skill_ent **`) | 303 / 309 |
-| `loop_char_skill_known` | `rp_char(who)->skills` | 318 / 324 |
-| `loop_trade` | `bx[who]->trades` (`struct trade **`) | 333 / 338 |
+| macro | pointer-list copied | `loop.h` | fixed? |
+|---|---|---|---|
+| `loop_inv` | `bx[who]->items` (`struct item_ent **`) | 287 / 293 | ✅ |
+| `loop_char_skill` | `rp_char(who)->skills` (`struct skill_ent **`) | 303 / 309 | ✅ |
+| `loop_char_skill_known` | `rp_char(who)->skills` | 318 / 324 | ✅ |
+| `loop_trade` | `bx[who]->trades` (`struct trade **`) | 333 / 338 | ✅ |
 
+All four converted to `plist_len((plist) ll_l)` / `plist_reclaim((plist *) &ll_l)`.
 The follow-on `compute_dist()` crash is almost certainly one of the other three
-(likely `loop_inv`).
+(likely `loop_inv`) — but it is **not** in these four macros (they are fixed), so
+it is a *different* site. Left as the open "remaining" follow-up above.
 
 ## Reclassification — this is Phase 1 (list triage), not Phase 4
 
