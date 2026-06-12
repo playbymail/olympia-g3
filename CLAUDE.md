@@ -48,26 +48,24 @@ produce **byte-identical** engine output.
 ```bash
 ./run/mapgen/mapgen.sh                     # generate gate/loc/road
 ./run/olympia-g3.sh                        # extract fixtures, run a turn, save DB
+./tests/olympia/golden_check.sh            # gate: byte-for-byte check of the saved DB
 ```
 
 Scripts auto-detect the repo root and look for binaries at
 `build/<preset>/<target>` (override with `OLYMPIA_PRESET=release ...`).
 
-> **No olympia golden gate exists yet.** Unlike G1/G2, this repo has **no**
-> `tests/olympia/golden_check.sh` and no committed olympia golden snapshot —
-> `tests/olympia/` holds only `fixtures/lib.tgz`. Establishing that gate is the
-> **first task** of the modernization runway (see playbook "Step 0"): copy G2's
-> `tests/olympia/golden_check.sh`, adapt the engine name and any flaky-file
-> handling, then run it `--update` once on the **pristine, unmodified** tree to
-> capture the baseline and commit that golden *before* any modernization edit.
-> `tests/mapgen/golden` is a **stale 32-bit baseline** (diverges from 64-bit
-> output even on a clean tree) — it is *not* the gate.
->
-> **The gate cannot be captured yet:** `olympia-g3` currently **segfaults** in
-> `-i` immediate mode at `location_trades()` (a pre-existing crash on the
-> untouched tree — see Phase 3.5 below). Fix that crash first. Until then,
-> `mapgen-g3` output (`gate`/`loc`/`road`) is the only reliable byte-for-byte
-> check, and is what Phase 3.5 was verified against.
+> **The olympia golden gate now exists.** `tests/olympia/golden_check.sh`
+> (adapted from G2) gates the post-turn DB in `run/olympia/lib` as a sorted
+> sha256 **manifest** (`tests/olympia/golden/manifest.sha256`, 206 files). Run
+> `./run/olympia-g3.sh` (a full `-r -S` turn) first, then `golden_check.sh`
+> (prints `YES`); re-baseline with `--update`. The baseline was captured *after*
+> the issue-1 list-triage fixes — the engine could not complete a turn before
+> them — so it reflects the corrected tree; every modernization edit (starting
+> with the `exit_views_list` migration, [[issue 2]]) must keep it byte-identical.
+> Unlike G2, G3 output is **deterministic across clean rebuilds** (verified), so
+> the gate has **no flaky-file holdout** (no G2-style `fact/100` `st -32`
+> flicker). `tests/mapgen/golden` remains a **stale 32-bit baseline** — *not* the
+> gate; the mapgen check is `tests/mapgen/regress/secret-sea-route/check.sh`.
 
 ## Layout
 
@@ -115,12 +113,16 @@ the table literally:
 The dangerous 32→64-bit hazards are only *partly* fenced off: `olympia-g3` — the
 biggest target — still enforces **only Phase 1** (its `target_compile_options`
 comment literally says *"Phase 1 - list triage - only pointer-cast errors"*),
-and `island-g3` enforces nothing. So before Phase 4, three pieces of runway
-remain: **(a)** fix the pre-existing `olympia-g3` segfault in `-i` mode (see
-Phase 3.5) so a turn can complete; **(b)** then establish the olympia golden gate
-(Test section above); and **(c)** bring `olympia-g3` (and ideally `island-g3`) up
-to Phase 2/3 parity by flipping `incompatible-pointer-types` and `int-conversion`
-to `-Werror` and fixing the fallout, keeping golden green at each step.
+and `island-g3` enforces nothing. So before Phase 4, the runway was three
+pieces, the first two now **done**: **(a)** ✅ the pre-existing `olympia-g3`
+startup segfault is fixed — a full `-r -S` turn now completes (the `plist`/`ilist`
+list-triage in [[issue 1]]); **(b)** ✅ the olympia golden gate is established and
+green (`tests/olympia/golden_check.sh`, Test section above); and **(c)** ⬜ bring
+`olympia-g3` (and ideally `island-g3`) up to Phase 2/3 parity by flipping
+`incompatible-pointer-types` and `int-conversion` to `-Werror` and fixing the
+fallout, keeping golden green at each step. A related hardening track is
+[[issue 2]] (retire the generic `plist` for element-typed lists, starting with
+`exit_views_list`), which makes the issue-1 bug class a compile error.
 
 > **The sister G1 and G2 repos are done through Phase 4.** `../olympia-g1` and
 > `../olympia-g2` have both completed Phase 3.5 and Phase 4 — all three Phase-4
@@ -163,15 +165,15 @@ ever needed.
 Verified: clean build of all three targets succeeds; **mapgen output
 (`gate`/`loc`/`road`) is byte-identical** before vs after the deletion.
 
-> **Pre-existing blocker found (not caused by this change).** `olympia-g3`
-> **segfaults** in `-i` immediate mode at `location_trades()` during
-> `post_production()`, on a freshly extracted fixture DB — and it does so
-> **identically on the pristine (pre-Phase-3.5) tree**, so the dead-file removal
-> did not introduce it. This is why the olympia golden gate could not be captured
-> here yet (Test section / playbook Step 0): the engine can't complete a turn.
-> Fixing this crash is prerequisite runway for the gate and for Phase 4 — it is
-> the most likely a 64-bit pointer hazard (consistent with `olympia-g3` enforcing
-> only Phase 1). Chase it next, ideally under the `asan-ubsan` preset.
+> **Pre-existing blocker — now FIXED.** `olympia-g3` used to **segfault** at
+> `location_trades()` during `post_production()` on a freshly extracted fixture
+> DB (identically on the pristine pre-Phase-3.5 tree, so the dead-file removal did
+> not introduce it). It was a 64-bit pointer hazard exactly as suspected — a
+> `plist` queried with `ilist` accessors — in three waves (`loop.h` macros, the
+> `exit_view **` cluster, an inventory `qsort`). See
+> [[issue 1]](issues/1-startup-segfault-plist-ilist-mismatch.md). The engine now
+> completes a full `-r -S` turn, and the olympia golden gate has been captured
+> (Test section / playbook Step 0).
 
 ### Phase 4 — Prototypes & declarations ⬜ todo
 
