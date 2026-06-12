@@ -223,15 +223,25 @@ typed `_test()` entry points can optionally be wired into a unit check.
 > `_test()`-entry-point unit check lands, these two are the first dead APIs it
 > would exercise.)
 
-> **Caveat — separate latent-bug class, *not* a "retire plist" item.** A few
-> sites call `plist_len()` on a list that is **already a correctly-typed
-> `ilist`** (4-byte elements): `use.c:366` (`p->may_use`, `ilist`), and
-> `input.c:446/449/753` + `sort_load_queue(ilist l)` over `load_q[]`
-> (`static ilist load_q[]`). On 64-bit these read the wrong header word — the
-> same issue-1 defect, in the other direction. They want `ilist_len`, not a
-> typed-list retype. Golden-neutral on this fixture, but worth fixing when the
-> `combat.c`/`input.c` sweeps land. Left untouched here to keep each commit's
-> blast radius to one list type.
+> **Resolved — the `plist_len`-on-`ilist` stragglers (✅ fixed, golden
+> re-baselined).** Five sites called `plist_len()` on a correctly-typed `ilist`
+> (4-byte elements): `use.c:366` (`p->may_use`), `u.c:916` (`p->bound_storms`),
+> and `input.c:446/449/753` + `sort_load_queue(ilist l)` over `static ilist
+> load_q[]`. On 64-bit `plist_len` reads `l - 16` bytes (a `void **` base − 2)
+> instead of the `ilist`'s real header at `l - 8`, so it returned the **wrong
+> length** — the same issue-1 defect, reversed. `may_use`/`bound_storms` are
+> empty in this fixture (`plist_len` == `ilist_len` == 0, golden-neutral), but
+> **`load_q` is not**: instrumentation showed `plist_len(load_q[pri])` returning
+> **0** where the real length was **25/40**, so `min_pri_ready()`'s inner scan
+> never ran and the function was effectively **disabled** (always returned 99).
+> Fixing all five to `ilist_len` re-enables command-priority scheduling: more
+> queued commands now execute in-turn (e.g. `orders/204`, `orders/205` are
+> consumed instead of carried over), changing engine output. This is a
+> **deliberate behavior change**, so the olympia golden manifest was
+> **re-baselined** in the same commit (206 → 204 files) — the only non-byte-
+> identical step in this issue, authorized because it removes plist's last
+> callers and is a genuine bug fix, not a retype. It clears the way to delete
+> the `plist` typedef.
 
 ## Problem
 

@@ -443,10 +443,10 @@ sort_load_queue(ilist l)
 {
 	int i;
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < ilist_len(l); i++)
 		bx[l[i]]->temp = exec_precedence(l[i]);
 
-	qsort(l, plist_len(l), sizeof(*l), exec_comp);
+	qsort(l, ilist_len(l), sizeof(*l), exec_comp);
 }
 
 
@@ -750,7 +750,7 @@ min_pri_ready()
 
 	for (pri = 0; pri < MAX_PRI; pri++)
 	{
-		for (i = 0; i < plist_len(load_q[pri]); i++)
+		for (i = 0; i < ilist_len(load_q[pri]); i++)
 		{
 			c = rp_command(load_q[pri][i]);
 

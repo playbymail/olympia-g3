@@ -363,7 +363,7 @@ correct_use_item(struct command *c)
 
 	p = rp_item_magic(item);
 
-	if (p == NULL || plist_len(p->may_use) < 1)
+	if (p == NULL || ilist_len(p->may_use) < 1)
 		return item;
 
 	c->a = p->may_use[0];

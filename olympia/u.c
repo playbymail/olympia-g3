@@ -913,7 +913,7 @@ sink_ship(int ship)
 	p = rp_subloc(ship);
 	if (p)
 	{
-		for (i = 0; i < plist_len(p->bound_storms); i++)
+		for (i = 0; i < ilist_len(p->bound_storms); i++)
 		{
 			storm = p->bound_storms[i];
 			if (kind(storm) == T_storm)
