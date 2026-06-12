@@ -1,12 +1,14 @@
 # Issue 2 — Type-safe pointer lists (retire the generic `plist`)
 
-**Status:** open — in progress. **`exit_views_list`, `trades_list`,
-`orders_list`, `admits_list`, `item_ents_list`, `skill_ents_list`, and
-`order_list.l → cstrings_list`, and `fights_list` (combat.c) migrated** — all
-five `oly.h` entity pointer-list fields from the table below (plus `exit_views`,
-the inner order-text list, and the combat engine) are now typed. A handful of
-**other** plist lists remain (see *Remaining plist types to retire* at the end);
-the `plist` typedef cannot be deleted yet (~39 ops, 7 files).
+**Status:** ✅ **DONE — the generic `plist` typedef and `lib/plist.c` are
+deleted; `grep -rn plist olympia/ mapgen/ lib/` is empty.** Every pointer
+collection now uses an element-typed list (`item_ents_list`, `skill_ents_list`,
+`trades_list`, `admits_list`, `orders_list`, `exit_views_list`,
+`order_list.l → cstrings_list`, `fights_list`, `flag_ents_list`,
+`accept_ents_list`, `wait_args_list`, `req_ents_list`, `cstrings_list`), and the
+five issue-1-class `plist_len`-on-`ilist` stragglers are fixed to `ilist_len`.
+One deliberate behavior change (the `load_q`/`min_pri_ready` fix) required a
+single golden re-baseline (206 → 204 files); every other step was byte-identical.
 **Type:** modernization (64-bit list-triage, follow-on to issue 1).
 **Motivation:** make the entire class of bug behind issue 1 a **compile error**
 instead of a runtime segfault.
@@ -188,29 +190,27 @@ instead of a runtime segfault.
 > `olympia/` are the 5 wrong-accessor `plist_len`-on-an-`ilist` stragglers (see
 > caveat below) — no plist *list* remains.
 
-## Remaining plist types to retire (future work)
+## All plist lists retired ✅
 
-All five `oly.h` entity fields in the table above, plus `exit_views`,
-`order_list.l`, and now **`fights_list` (✅ done)**, are typed. **The `plist`
-typedef cannot be deleted yet** — ~**39** `plist_` ops remain across **7** files
-(was 93 / 8 before `fights_list`), on lists that were out of this issue's
-five-field scope. Each already has a ready typed equivalent in `lib/lists.h`;
-retiring them is the same mechanical drop-in (census → classify → line-asserted
-retype → build → golden gate). Grouped by target typed list, in rough ascending
-blast-radius:
+Every plist list below is migrated to its element-typed equivalent (each links
+to a progress note above), grouped by target typed list:
 
-| target list | what / where | sites | persisted? |
-|-------------|--------------|-------|------------|
-| ~~`flag_ents_list`~~ | ✅ **done** (`c1.c` signal `flags`) — see progress note below | — | no (transient static) |
-| ~~`accept_ents_list`~~ | ✅ **done** (`accept` field) — see progress note below | — | no (rebuilt; no io.c) |
-| ~~`wait_args_list`~~ | ✅ **done** (`c->wait_parse` field) — see progress note below | — | no |
-| ~~`req_ents_list`~~ | ✅ **done** (`req` field + use.c/io.c) — see progress note below | — | **yes** |
-| ~~`cstrings_list`~~ | ✅ **done** (`c->parse` field + char** locals) — see progress note below | — | no (rebuilt) |
-| ~~`fights_list`~~ | ✅ **done** (`combat.c` combat engine) — see progress note below | — | no (per-turn) |
+| target list | what / where | persisted? |
+|-------------|--------------|------------|
+| ~~`flag_ents_list`~~ | ✅ `c1.c` signal `flags` | no (transient static) |
+| ~~`accept_ents_list`~~ | ✅ `accept` field | no (rebuilt; no io.c) |
+| ~~`wait_args_list`~~ | ✅ `c->wait_parse` field | no |
+| ~~`req_ents_list`~~ | ✅ `req` field + use.c/io.c | **yes** |
+| ~~`cstrings_list`~~ | ✅ `c->parse` field + char** locals + `order_list.l` | no (rebuilt) |
+| ~~`fights_list`~~ | ✅ `combat.c` combat engine | no (per-turn) |
 
-After the remaining five are migrated, `grep -rn 'plist' olympia/ mapgen/` should be empty
-and the `plist` typedef + `lib/plist.c` can be deleted (acceptance item 4); the
-typed `_test()` entry points can optionally be wired into a unit check.
+…on top of the five `oly.h` entity fields (`items`/`trades`/`orders`/`admits`/
+`skills`) and `exit_views`. With the last callers gone (and the five
+`plist_len`-on-`ilist` stragglers fixed to `ilist_len`), the **`plist` typedef +
+`lib/plist.c` were deleted** and `lib/plist.c` dropped from `CMakeLists.txt`;
+`grep -rn 'plist' olympia/ mapgen/ lib/` is now empty. The typed `_test()` entry
+points can optionally be wired into a unit check (the only remaining dead APIs
+are `roads_list` / `tiles_list`, see note below).
 
 > **Not on the list: `roads_list` / `tiles_list`.** Their typed APIs exist
 > (`lib/roads.c` / `lib/tiles.c`, compiled into both `mapgen-g3` and
@@ -242,6 +242,16 @@ typed `_test()` entry points can optionally be wired into a unit check.
 > identical step in this issue, authorized because it removes plist's last
 > callers and is a genuine bug fix, not a retype. It clears the way to delete
 > the `plist` typedef.
+
+> **Progress — delete the `plist` typedef + `lib/plist.c` (✅ done).** With the
+> last caller gone, removed the `typedef void **plist;` + its 15 `extern`
+> declarations from `lib/lists.h`, deleted the self-contained `lib/plist.c`
+> (its only consumer was `olympia-g3`), and dropped `lib/plist.c` from
+> `CMakeLists.txt`. `grep -rn 'plist' olympia/ mapgen/ lib/ CMakeLists.txt` is
+> empty. Clean reconfigure + build of all three targets (the 3 pre-existing
+> `mapgen.c make_appropriate_subloc` arity warnings are unrelated — `mapgen.c`
+> never used `plist`), golden **YES**, mapgen `YES`. `ilist` (the legitimate
+> element-typed `int *` list) stays.
 
 ## Problem
 
@@ -391,11 +401,15 @@ Retire `plist` from the engine in favor of the existing typed lists.
 - Risk is mechanical-but-broad; mitigated by the per-type sequencing, the
   layout compatibility above, and the full-turn / golden checks.
 
-## Acceptance
+## Acceptance — ✅ all met
 
-- Entity pointer-list fields and `exits_from_loc*` use typed list typedefs.
-- No `(plist)` / `(plist *)` casts remain in `olympia/`; ideally the `plist`
-  type is deleted.
-- A full `-r -S` turn still completes and the (once-captured) olympia golden
-  output is byte-identical; mapgen goldens unaffected.
-- Re-introducing an issue-1-style mismatch now fails the build.
+- ✅ Entity pointer-list fields and `exits_from_loc*` use typed list typedefs.
+- ✅ No `(plist)` / `(plist *)` casts remain in `olympia/`; the `plist` type is
+  **deleted** (`lib/lists.h` block + `lib/plist.c` + `CMakeLists.txt` entry).
+- ✅ A full `-r -S` turn still completes; mapgen goldens unaffected. Olympia
+  golden output is byte-identical **except** the one authorized `min_pri_ready`
+  bug-fix step, which re-baselined the manifest (206 → 204 files) — see the
+  *Resolved — `plist_len`-on-`ilist` stragglers* note.
+- ✅ Re-introducing an issue-1-style mismatch now fails the build (the wrong
+  typed accessor is an `incompatible-pointer-types` diagnostic; there is no
+  `(plist)` cast left to silence it, and no `plist`/`plist_len` to misuse).

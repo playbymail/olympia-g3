@@ -260,7 +260,7 @@ target_sources(olympia-g3 PRIVATE
     olympia/u.c olympia/use.c olympia/z.c
 
     lib/accept_ents.c lib/admits.c lib/cstrings.c lib/exit_views.c lib/fights.c lib/flag_ents.c lib/item_ents.c
-    lib/ilist.c lib/plist.c
+    lib/ilist.c
     lib/orders.c lib/req_ents.c lib/roads.c lib/skill_ents.c lib/tiles.c lib/trades.c lib/wait_args.c
     lib/checked_alloc.c
 )

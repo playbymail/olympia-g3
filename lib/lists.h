@@ -147,23 +147,6 @@ extern void orders_scramble(orders_list l);
 extern void orders_shuffle(orders_list l);
 extern void orders_test(void);
 
-// 'plist' reallocing array definitions
-typedef void **plist;
-extern void plist_append(plist *l, void *n);
-extern void plist_clear(plist *l);
-extern plist plist_copy(plist l);
-extern void plist_delete(plist *l, int i);
-extern int plist_len(plist l);
-extern int plist_lookup(plist l, void *n);
-extern void plist_insert(plist *l, int pos, void *n);
-extern void plist_prepend(plist *l, void *n);
-extern void plist_reclaim(plist *l);
-extern void plist_rem_value(plist *l, void *n);
-extern void plist_rem_value_uniq(plist *l, void *n);
-extern void plist_scramble(plist l);
-extern void plist_shuffle(plist l);
-extern void plist_test(void);
-
 // 'req_ents_list' reallocing array definitions
 typedef struct req_ent **req_ents_list;
 extern void req_ents_append(req_ents_list *l, struct req_ent *n);
