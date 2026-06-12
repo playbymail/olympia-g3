@@ -1085,7 +1085,7 @@ struct flag_ent {
 	char *flag;
 };
 
-static struct flag_ent **flags = NULL;
+static flag_ents_list flags = NULL;
 
 
 static int
@@ -1093,7 +1093,7 @@ flag_raised(int who, char *flag)
 {
 	int i;
 
-	for (i = 0; i < ilist_len(flags); i++)
+	for (i = 0; i < flag_ents_len(flags); i++)
 	{
 		if (who != 0 &&
 		    player(flags[i]->who) != who &&
@@ -1132,7 +1132,7 @@ int v_flag(struct command *c)
 	new->who = c->who;
 	new->flag = str_save(flag);
 
-	plist_append((plist *) &flags, new);
+	flag_ents_append(&flags, new);
 
 	return TRUE;
 }

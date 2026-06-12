@@ -127,6 +127,17 @@ instead of a runtime segfault.
 > scan) would change combat output, so it is deferred as a separate behavior
 > change, out of scope for a golden-identical retype.
 
+> **Progress — `flag_ents_list` (✅ done).** The `c1.c` signal-flag list
+> (`static struct flag_ent **flags`, `c1.c:1088` — `struct flag_ent` is
+> file-local, transient, not persisted) → `flag_ents_list`. Three sites:
+> the decl, `v_flag`'s `plist_append((plist *) &flags, …)` → `flag_ents_append`,
+> and **a latent same-class bug fixed by the retype** — `flag_raised` iterated
+> `ilist_len(flags)` on the **plist** (`c1.c:1096`), reading the wrong header
+> word; → `flag_ents_len`. Golden-neutral here (this fixture raises no `flag`
+> signals, so `flags == NULL` and both accessors return 0), now correct for any
+> turn that does. 3 line changes, 1 file, **0 new warnings**, golden **YES**,
+> mapgen `YES`.
+
 ## Remaining plist types to retire (future work)
 
 All five `oly.h` entity fields in the table above, plus `exit_views`,
@@ -140,7 +151,7 @@ blast-radius:
 
 | target list | what / where | sites | persisted? |
 |-------------|--------------|-------|------------|
-| `flag_ents_list` | `c1.c`'s `static struct flag_ent **flags` (`c1.c:1088`) — `plist_append`/`plist_len` at `c1.c:1135`,… | ~2 | no (transient static) |
+| ~~`flag_ents_list`~~ | ✅ **done** (`c1.c` signal `flags`) — see progress note below | — | no (transient static) |
 | `accept_ents_list` | the `accept` field (`oly.h:605`, `struct accept_ent **`) — `c1.c:414` (`plist_append`), `c1.c:430` (`plist_len`) | ~2 | check (field-level) |
 | `wait_args_list` | the `c->wait_parse` field (`oly.h:868`, `struct wait_arg **`, "not saved") — `c1.c:1177/1183/1195/1216/1301/1306/1309` | ~7 | no |
 | `req_ents_list` | `use.c`'s requirement-scan locals `struct req_ent **l` (`use.c:379/427`, `plist_len` at `388/395/413/438/445/460`) **and** the save/load pair `req_list_print`/`req_list_scan` (`io.c:666/700`, by-ref `struct req_ent ***l`) | ~10 | **yes** |
