@@ -147,6 +147,17 @@ instead of a runtime segfault.
 > `accept` order each turn), so zero serialization risk. 3 line changes, 2
 > files, **0 new warnings**, golden **YES**, mapgen `YES`.
 
+> **Progress — `wait_args_list` (✅ done).** The `c->wait_parse` field
+> (`oly.h:868`, `struct wait_arg **`, flagged "not saved") → `wait_args_list`,
+> all eight ops confined to `c1.c`'s `wait`-order machinery
+> (`clear_wait_parse` / `parse_wait_args` / the eval loop): `plist_len` (×5) →
+> `wait_args_len`, `plist_clear((plist *) &c->wait_parse)` → `wait_args_clear`,
+> `plist_append((plist *) &c->wait_parse, …)` → `wait_args_append`. **Not
+> persisted** (transient parse state). Left untouched: the empty-paren
+> `extern char *parse_wait_args();` / `clear_wait_parse();` forward decls in
+> `eat.c` — K&R prototype cleanup, a Phase-4 concern, not plist ops. 8 line
+> changes, 2 files, **0 new warnings**, golden **YES**, mapgen `YES`.
+
 ## Remaining plist types to retire (future work)
 
 All five `oly.h` entity fields in the table above, plus `exit_views`,
@@ -162,7 +173,7 @@ blast-radius:
 |-------------|--------------|-------|------------|
 | ~~`flag_ents_list`~~ | ✅ **done** (`c1.c` signal `flags`) — see progress note below | — | no (transient static) |
 | ~~`accept_ents_list`~~ | ✅ **done** (`accept` field) — see progress note below | — | no (rebuilt; no io.c) |
-| `wait_args_list` | the `c->wait_parse` field (`oly.h:868`, `struct wait_arg **`, "not saved") — `c1.c:1177/1183/1195/1216/1301/1306/1309` | ~7 | no |
+| ~~`wait_args_list`~~ | ✅ **done** (`c->wait_parse` field) — see progress note below | — | no |
 | `req_ents_list` | `use.c`'s requirement-scan locals `struct req_ent **l` (`use.c:379/427`, `plist_len` at `388/395/413/438/445/460`) **and** the save/load pair `req_list_print`/`req_list_scan` (`io.c:666/700`, by-ref `struct req_ent ***l`) | ~10 | **yes** |
 | `cstrings_list` | the `c->parse` field (`oly.h:857`, `char **`; `numargs` already calls `cstrings_len`) built by `parse_line()` (`input.c:33/84`) and used at `input.c:231/271/291/299`; plus local order-text `char **l` in `c2.c` (`155/166/201/218/300/305/473/515`) and `eat.c` (`931/935`) | ~16 | no (rebuilt) |
 | ~~`fights_list`~~ | ✅ **done** (`combat.c` combat engine) — see progress note below | — | no (per-turn) |

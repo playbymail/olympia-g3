@@ -1174,13 +1174,13 @@ clear_wait_parse(struct command *c)
 {
 	int i;
 
-	for (i = 0; i < plist_len(c->wait_parse); i++)
+	for (i = 0; i < wait_args_len(c->wait_parse); i++)
 	{
 		my_free(c->wait_parse[i]);
 		c->wait_parse[i] = NULL;
 	}
 
-	plist_clear((plist *) &c->wait_parse);
+	wait_args_clear(&c->wait_parse);
 }
 
 
@@ -1192,7 +1192,7 @@ parse_wait_args(struct command *c)
 	char *tag_s;
 	struct wait_arg *new;
 
-	assert(plist_len(c->wait_parse) == 0);
+	assert(wait_args_len(c->wait_parse) == 0);
 
 	i = 1;
 	while (i <= numargs(c))
@@ -1213,7 +1213,7 @@ parse_wait_args(struct command *c)
 			return sout("Unknown condition '%s'.", tag_s);
 
 		new = my_malloc(sizeof(*new));
-		plist_append((plist *) &c->wait_parse, new);
+		wait_args_append(&c->wait_parse, new);
 
 		new->tag = tag;
 		new->a1 = 0;
@@ -1298,15 +1298,15 @@ check_wait_conditions(struct command *c)
 	if (is_ship_either(where_ship))
 		where_ship = subloc(where_ship);
 
-	if (plist_len(c->wait_parse) < 1)
+	if (wait_args_len(c->wait_parse) < 1)
 	{
 		if (ret = parse_wait_args(c))
 			return ret;
 
-		assert(plist_len(c->wait_parse) > 0);
+		assert(wait_args_len(c->wait_parse) > 0);
 	}
 
-	for (i = 0; i < plist_len(c->wait_parse); i++)
+	for (i = 0; i < wait_args_len(c->wait_parse); i++)
 	{
 		p = c->wait_parse[i];
 

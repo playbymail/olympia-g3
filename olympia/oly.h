@@ -865,7 +865,7 @@ struct command {
 
 	schar fuzzy;		/* command matched fuzzy -- not saved */
 	schar second_wait;	/* delay resulting from auto attacks -- ns */
-	struct wait_arg **wait_parse;	/* not saved */
+	wait_args_list wait_parse;	/* not saved */
 	schar debug;		/* debugging check -- not saved */
 };
 
