@@ -2107,7 +2107,7 @@ write_player(int pl)
 
 
 static void
-write_chars()
+write_chars(void)
 {
 	int i;
 
@@ -2120,7 +2120,7 @@ write_chars()
 
 
 static void
-write_leftovers()
+write_leftovers(void)
 {
 	FILE *fp;
 	int i;
@@ -2177,7 +2177,7 @@ read_boxes(char *fnam)
 
 
 static void
-read_chars()
+read_chars(void)
 {
 	DIR *d;
 	struct dirent *e;
@@ -2208,7 +2208,7 @@ read_chars()
 
 
 static int
-fast_scan()
+fast_scan(void)
 {
 	char *path;
 	char *s, *p, *q;
@@ -2320,7 +2320,7 @@ scan_boxes(char *fnam)
 
 
 static void
-scan_chars()
+scan_chars(void)
 {
 	DIR *d;
 	struct dirent *e;
@@ -2358,7 +2358,7 @@ scan_chars()
  */
 
 static void
-scan_all_boxes()
+scan_all_boxes(void)
 {
 
 	stage("fast_scan failed, scan_all_boxes()");
@@ -2377,7 +2377,7 @@ scan_all_boxes()
 
 
 static void
-read_all_boxes()
+read_all_boxes(void)
 {
 
 	read_boxes("loc");
@@ -2394,7 +2394,7 @@ read_all_boxes()
 
 
 static void
-write_all_boxes()
+write_all_boxes(void)
 {
 	int i;
 
@@ -2423,7 +2423,7 @@ write_all_boxes()
 
 
 static void
-write_master()
+write_master(void)
 {
 	FILE *fp;
 	char *fnam;
@@ -2496,7 +2496,7 @@ write_master()
 
 
 static void
-load_system()
+load_system(void)
 {
 	FILE *fp;
 	char *s;
@@ -2648,7 +2648,7 @@ load_system()
 
 
 static void
-save_system()
+save_system(void)
 {
 	FILE *fp;
 	char *fname;
@@ -2702,7 +2702,7 @@ save_system()
 
 
 static void
-delete_deadchars()
+delete_deadchars(void)
 {
 	int i;
 
@@ -2721,7 +2721,7 @@ delete_deadchars()
 
 
 void
-load_db() 
+load_db(void) 
 {
 	char *pw;
 
@@ -2826,7 +2826,7 @@ combat combatpassword
 
 
 void
-cleanup_posts()
+cleanup_posts(void)
 {
 	int i;
 
@@ -2845,7 +2845,7 @@ void make_dir(char *dir) {
 }
 
 void
-save_logdir()
+save_logdir(void)
 {
 	int ret;
 	char *s, *t;
@@ -2886,7 +2886,7 @@ save_logdir()
 
 
 void
-save_db()
+save_db(void)
 {
 
 	stage("save_db()");

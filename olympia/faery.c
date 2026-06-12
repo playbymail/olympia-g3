@@ -13,7 +13,7 @@ int faery_player = 0;
 
 
 void
-create_faery()
+create_faery(void)
 {
 	int r, c, hills, total, sz, space, base, clear;
 	int map[SZ][SZ];
@@ -379,7 +379,7 @@ v_use_faery_stone(struct command *c)
 
 
 static void
-create_elven_hunt()
+create_elven_hunt(void)
 {
 	int new;
 	struct loc_info *p;
@@ -455,7 +455,7 @@ auto_faery_sup(int who)
 
 
 void
-auto_faery()
+auto_faery(void)
 {
 	int i;
 	int n_faery = 0;

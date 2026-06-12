@@ -11,7 +11,7 @@ int nowhere_loc = 0;
 
 
 void
-create_nowhere()
+create_nowhere(void)
 {
 
 	nowhere_region = new_ent(T_loc, sub_region);
@@ -46,7 +46,7 @@ create_a_relic(int n, char *name, int use, int weight)
 
 
 void
-create_relics()
+create_relics(void)
 {
 	create_a_relic(RELIC_THRONE, "Imperial Throne", 0, 500);
 	create_a_relic(RELIC_CROWN, "Crown of Prosperity", 0, 10);
@@ -63,7 +63,7 @@ create_relics()
 
 
 int
-random_unassigned_relic()
+random_unassigned_relic(void)
 {
 	struct item_ent *e;
 	int sum = 0;

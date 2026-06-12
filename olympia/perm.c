@@ -139,9 +139,7 @@ v_admit(struct command *c)
 
 
 static int
-admit_comp(a, b)
-admits_list a;
-admits_list b;
+admit_comp(admits_list a, admits_list b)
 {
 
 	return (*a)->targ - (*b)->targ;
@@ -277,9 +275,7 @@ set_att(int who, int targ, int disp)
 
 
 int
-is_hostile(who, targ)
-int who;
-int targ;
+is_hostile(int who, int targ)
 {
 	struct att_ent *p;
 
@@ -320,9 +316,7 @@ int targ;
 
 
 int
-is_defend(who, targ)
-int who;
-int targ;
+is_defend(int who, int targ)
 {
 	struct att_ent *p;
 	int pl;

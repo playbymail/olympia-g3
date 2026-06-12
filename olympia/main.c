@@ -28,7 +28,7 @@ int time_self = FALSE;		/* print timing info */
 int save_flag = FALSE;
 int win_flag = FALSE;
 
-int call_init_routines()
+int call_init_routines(void)
 {
 
 	init_lower();
@@ -413,7 +413,7 @@ send_rep(int pl, int turn)
 }
 
 
-int mail_reports()
+int mail_reports(void)
 {
 	int pl;
 
@@ -427,8 +427,7 @@ int mail_reports()
 }
 
 int
-v_remail(c)
-struct command *c;
+v_remail(struct command *c)
 {
 	mail_reports();
 	setup_html_all();
@@ -471,8 +470,7 @@ void setup_html_dir(int pl)
 }
 
 void
-set_html_pass(pl)
-int pl;
+set_html_pass(int pl)
 {
 	char buf[LEN];
 	struct entity_player *p;
@@ -532,8 +530,7 @@ random randompassword
 
 }
 
-int output_html_rep(pl)
-int pl;
+int output_html_rep(int pl)
 {
 	char fnam[LEN];
 	char fnam2[LEN];
@@ -549,7 +546,7 @@ int pl;
 	system(fnam2);
 }
 
-int copy_public_turns()
+int copy_public_turns(void)
 {
 	char fnam[LEN];
 	char fnam2[LEN];
@@ -597,7 +594,7 @@ setup_html_all(void)
 }
 
 void
-extract_startlocs()
+extract_startlocs(void)
 {
 	int city;
 	int sequence = 0;

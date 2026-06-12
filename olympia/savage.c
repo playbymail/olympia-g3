@@ -346,7 +346,7 @@ auto_savage(int who)
  */
 
 void
-init_savage_attacks()
+init_savage_attacks(void)
 {
 	int fort;
 	exit_views_list l;

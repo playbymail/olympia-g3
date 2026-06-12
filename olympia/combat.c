@@ -2405,7 +2405,7 @@ fail_defeat_check(int a, fights_list l_b)
 static ilist second_wait_list = NULL;
 
 void
-clear_second_waits()
+clear_second_waits(void)
 {
 	int i;
 
@@ -2963,7 +2963,7 @@ check_auto_attack_sup(int who)
 
 
 void
-check_all_auto_attacks()
+check_all_auto_attacks(void)
 {
 	int i;
 	struct command *c;

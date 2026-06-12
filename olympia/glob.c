@@ -457,7 +457,7 @@ char *month_names[] = {
 
 
 void
-glob_init()
+glob_init(void)
 {
 	int i;
 

@@ -65,9 +65,7 @@ clear_all_trades(int who)
 
 
 static int
-seller_comp(a, b)
-trades_list a;
-trades_list b;
+seller_comp(trades_list a, trades_list b)
 {
 
 	if ((*a)->cost == (*b)->cost)
@@ -389,7 +387,7 @@ match_trades(int who)
 
 
 void
-match_all_trades()
+match_all_trades(void)
 {
 	int where;
 	trades_list sellers;
@@ -418,7 +416,7 @@ ilist trades_to_check = NULL;
 
 
 void
-check_validated_trades()
+check_validated_trades(void)
 {
 	int i;
 
@@ -1062,7 +1060,7 @@ trade_suffuse_ring(int where)
 
 
 void
-location_trades()
+location_trades(void)
 {
 	int where;
 

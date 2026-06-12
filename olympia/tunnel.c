@@ -11,7 +11,7 @@ int under_region = 0;
 #define	SUB_SZ	10		/* SZ x SZ is size of Subworld */
 
 static void
-create_subworld()
+create_subworld(void)
 {
 	int r, c, clear, base;
 	int map[SUB_SZ+1][SUB_SZ+1];
@@ -125,7 +125,7 @@ create_subworld()
 
 
 int
-random_subworld_loc()
+random_subworld_loc(void)
 {
 	ilist l = NULL;
 	int i, s, has_city;
@@ -202,7 +202,7 @@ fill_dir_exits(int where)
 }
 
 static int
-new_tunnel()
+new_tunnel(void)
 {
 	int n;
 
@@ -528,7 +528,7 @@ create_tunnel_set(int city, int subworld_link)
 
 
 void
-create_tunnels()
+create_tunnels(void)
 {
 	int city;
 	int sum = 0;

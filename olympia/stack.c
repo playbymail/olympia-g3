@@ -343,7 +343,7 @@ prisoner_movement_escape_check(int who)
 
 
 void
-weekly_prisoner_escape_check()
+weekly_prisoner_escape_check(void)
 {
 	int i;
 	int who;

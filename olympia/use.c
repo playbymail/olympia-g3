@@ -1166,9 +1166,7 @@ skill_school(int sk)
  */
 
 static int
-rep_skill_comp(a, b)
-skill_ents_list a;
-skill_ents_list b;
+rep_skill_comp(skill_ents_list a, skill_ents_list b)
 {
 	int pa;		/* parent skill of a */
 	int pb;		/* parent skill of b */
@@ -1198,9 +1196,7 @@ skill_ents_list b;
 
 
 static int
-flat_skill_comp(a, b)
-skill_ents_list a;
-skill_ents_list b;
+flat_skill_comp(skill_ents_list a, skill_ents_list b)
 {
 
 	return (*a)->skill - (*b)->skill;

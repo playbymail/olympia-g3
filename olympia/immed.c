@@ -6,7 +6,7 @@
 
 
 void
-immediate_commands()
+immediate_commands(void)
 {
 	struct command *c;
 	char buf[LEN];
@@ -535,7 +535,7 @@ v_fix2(struct command *c)
 
 
 void
-fix_gates()
+fix_gates(void)
 {
 	int where;
 	exit_views_list l;

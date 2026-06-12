@@ -194,7 +194,7 @@ print_box_usage_sup(int low, int high, char *s)
 }
 
 void
-print_box_usage()
+print_box_usage(void)
 {
 
 	fprintf(stderr, "entity space usage:\n");

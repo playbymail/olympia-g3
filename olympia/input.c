@@ -429,9 +429,7 @@ exec_precedence(int who)
 
 
 static int
-exec_comp(a, b)
-int *a;
-int *b;
+exec_comp(int *a, int *b)
 {
 
 	return bx[*a]->temp - bx[*b]->temp;
@@ -723,7 +721,7 @@ init_load_sup(int who)
 
 
 void
-initial_command_load()
+initial_command_load(void)
 {
 	int i;
 
@@ -742,7 +740,7 @@ initial_command_load()
 
 
 int
-min_pri_ready()
+min_pri_ready(void)
 {
 	int pri;
 	int i;
@@ -772,7 +770,7 @@ min_pri_ready()
 
 
 void
-init_wait_list()
+init_wait_list(void)
 {
 	int i;
 	struct command *c;
@@ -789,7 +787,7 @@ init_wait_list()
 
 
 void
-check_all_waits()
+check_all_waits(void)
 {
 	int i;
 	struct command *c;
@@ -810,7 +808,7 @@ static int auto_attack_flag;
 
 
 void
-start_phase()
+start_phase(void)
 {
 	int i, j;
 	int pri;
@@ -867,7 +865,7 @@ start_phase()
 
 
 static void
-evening_phase()
+evening_phase(void)
 {
 	int i, j;
 	struct command *c;
@@ -928,7 +926,7 @@ evening_phase()
  */
 
 static void
-daily_command_loop()
+daily_command_loop(void)
 {
 
 	auto_attack_flag = TRUE;
@@ -939,7 +937,7 @@ daily_command_loop()
 
 
 static void
-process_player_orders()
+process_player_orders(void)
 {
 	int pl;
 	struct command *c;
@@ -1000,7 +998,7 @@ interrupt_order(int who)
 
 
 static void
-process_interrupted_units()
+process_interrupted_units(void)
 {
 	int who;
 	struct command *who_c;
@@ -1032,7 +1030,7 @@ process_interrupted_units()
 int month_done = FALSE;
 
 void
-process_orders()
+process_orders(void)
 {
 
 	stage("process_orders()");

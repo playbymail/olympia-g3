@@ -1184,7 +1184,7 @@ move_token(int item, int from, int to)
 
 
 void
-check_token_units()
+check_token_units(void)
 {
 	int item;
 	int owner, pl;

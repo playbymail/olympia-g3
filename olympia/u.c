@@ -2314,7 +2314,7 @@ rest_name(struct command *c, int a)
 
 
 int
-nprovinces()
+nprovinces(void)
 {
 	static int nprov = 0;
 	int i;

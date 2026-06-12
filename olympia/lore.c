@@ -246,9 +246,7 @@ queue_lore(int who, int num, int anyway)
 
 
 static int
-lore_comp(a, b)
-int *a;
-int *b;
+lore_comp(int *a, int *b)
 {
 
 	return *a - *b;
@@ -256,7 +254,7 @@ int *b;
 
 
 void
-show_lore_sheets()
+show_lore_sheets(void)
 {
 	int pl;
 	struct entity_player *p;
@@ -370,7 +368,7 @@ gm_show_all_skills(int pl)
 
 
 void
-scan_char_skill_lore()
+scan_char_skill_lore(void)
 {
 	int who;
 	struct skill_ent *e;
@@ -388,7 +386,7 @@ scan_char_skill_lore()
 
 
 void
-scan_char_item_lore()
+scan_char_item_lore(void)
 {
 	int who;
 	struct item_ent *e;

@@ -118,7 +118,7 @@ mine_production(int where)
 
 
 void
-location_production()
+location_production(void)
 {
     int where;
     int i;
@@ -521,7 +521,7 @@ static ilist collectors = NULL;
 
 
 void
-init_collect_list()
+init_collect_list(void)
 {
 	int i;
 	struct command *c;
@@ -696,7 +696,7 @@ d_generic_harvest(struct command *c, struct harvest *t)
 
 
 static char *
-mage_menial_how()
+mage_menial_how(void)
 {
 
 	switch (rnd(1,9))

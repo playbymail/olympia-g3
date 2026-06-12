@@ -57,7 +57,7 @@ region_col(int where)
 
 
 void
-determine_map_edges()
+determine_map_edges(void)
 {
 	int i;
 	int row, col;
@@ -287,8 +287,7 @@ is_port_city(int where)
 
 
 int
-province_has_port_city(where)
-int where;
+province_has_port_city(int where)
 {
 	int i;
 	int ret = 0;
@@ -310,7 +309,7 @@ int where;
 
 
 static int
-summer_uldim_open_now()
+summer_uldim_open_now(void)
 {
 	extern int month_done;
 
