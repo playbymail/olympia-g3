@@ -107,22 +107,26 @@ the table literally:
 | 2 | `incompatible-pointer-types` | ✅ enforced on `mapgen-g3`; ⬜ **not** on `olympia-g3` / `island-g3` |
 | 3 | `int-conversion` | ✅ enforced on `mapgen-g3`; ⬜ **not** on `olympia-g3` / `island-g3` |
 | 3.5 | **Remove dead/unused source files** | ✅ done |
-| 4 | `strict-prototypes`, `missing-prototypes`, `implicit-function-declaration` | ⬜ todo |
+| 4 | `strict-prototypes`, `missing-prototypes`, `implicit-function-declaration` | ✅ enforced on **all three** targets; all classes 0 |
 | 5 | `missing-declarations` + sanitizers in CI | ⬜ wired (asan preset), not enforced |
 
-The dangerous 32→64-bit hazards are only *partly* fenced off: `olympia-g3` — the
-biggest target — still enforces **only Phase 1** (its `target_compile_options`
-comment literally says *"Phase 1 - list triage - only pointer-cast errors"*),
-and `island-g3` enforces nothing. So before Phase 4, the runway was three
-pieces, the first two now **done**: **(a)** ✅ the pre-existing `olympia-g3`
-startup segfault is fixed — a full `-r -S` turn now completes (the `plist`/`ilist`
-list-triage in GitHub issue #1); **(b)** ✅ the olympia golden gate is established and
-green (`tests/olympia/golden_check.sh`, Test section above); and **(c)** ⬜ bring
-`olympia-g3` (and ideally `island-g3`) up to Phase 2/3 parity by flipping
-`incompatible-pointer-types` and `int-conversion` to `-Werror` and fixing the
-fallout, keeping golden green at each step. A related hardening track is
-GitHub issue #2 (retire the generic `plist` for element-typed lists, starting with
-`exit_views_list`), which makes the issue-1 bug class a compile error.
+The dangerous 32→64-bit hazards are now *largely* fenced off: **Phase 4 is done
+on all three targets** (`strict-prototypes` / `missing-prototypes` /
+`implicit-function-declaration` are `-Werror` and measure 0; the shared
+`-Wno-implicit-function-declaration` / `-Wno-deprecated-non-prototype`
+suppressions are deleted from `LEGACY_C_FLAGS`). `olympia-g3` still enforces
+**only Phase 1** for the *pointer* classes (its `target_compile_options` comment
+still says *"Phase 1 - list triage - only pointer-cast errors"*) — Phase 4 added
+the three prototype classes alongside it. So the remaining runway is: **(a)** ✅
+the pre-existing `olympia-g3` startup segfault is fixed — a full `-r -S` turn
+completes (the `plist`/`ilist` list-triage in GitHub issue #1); **(b)** ✅ the
+olympia golden gate is established and green (`tests/olympia/golden_check.sh`,
+Test section above); and **(c)** ⬜ bring `olympia-g3` (and ideally `island-g3`)
+up to Phase 2/3 parity by flipping `incompatible-pointer-types` and
+`int-conversion` to `-Werror` and fixing the fallout, keeping golden green at
+each step. A related hardening track is GitHub issue #2 (retire the generic
+`plist` for element-typed lists, starting with `exit_views_list`), which makes
+the issue-1 bug class a compile error.
 
 > **The sister G1 and G2 repos are done through Phase 4.** `../olympia-g1` and
 > `../olympia-g2` have both completed Phase 3.5 and Phase 4 — all three Phase-4
@@ -176,13 +180,50 @@ Verified: clean build of all three targets succeeds; **mapgen output
 > completes a full `-r -S` turn, and the olympia golden gate has been captured
 > (Test section / playbook Step 0).
 
-### Phase 4 — Prototypes & declarations ⬜ todo
+### Phase 4 — Prototypes & declarations ✅ done
 
-Goal: make `strict-prototypes`, `missing-prototypes`, and
-`implicit-function-declaration` `-Werror` on all targets, with all three classes
-at 0 and golden output unchanged. The full method, order of operations, probe
-recipe, and every trap is in `doc/modernization-prototypes-playbook.md`. The
-high-level shape (from G1/G2):
+`strict-prototypes`, `missing-prototypes`, and `implicit-function-declaration`
+are now `-Werror` on **all three** targets (olympia-g3, mapgen-g3, island-g3),
+all three classes measure **0**, and golden output is **byte-identical**. The
+dead `-Wno-implicit-function-declaration` / `-Wno-deprecated-non-prototype`
+suppressions are deleted from `LEGACY_C_FLAGS` (and the mirrored scaffolding).
+
+What it took (62 K&R defs → ANSI [38 mapgen / 24 olympia], 245 empty-paren
+`name()` → `name(void)`, `olympia/proto.h` [657 protos] + `mapgen/proto.h` [74]):
+
+- **G3-specific vs G1/G2:** G3's `rnd.c` **already includes `z.h`** (so the G2
+  "rnd.c includes neither z.h nor oly.h" trap was pre-handled) — only its
+  cross-file API (`MD5`/`load_seed`/`save_seed`/`md5_int`) needed declaring in
+  `z.h`, with `byteSwap` made `static`. G3's `z.h` has **no `bzero`/`bcopy`
+  macros** (only `abs` + char-class), a smaller libc-collision surface; the real
+  libc headers (`stdio`/`string`/`stdlib`/`fcntl`) went at the top of
+  `olympia/z.h` + `mapgen/z.h` above those macros. `olympia/tunnel.c`'s
+  `print_map` uses file-private `SZ`/`MAX_LEVELS` macros → kept a local prototype
+  (can't live in `proto.h`). `queue(int,char*,long a1..a9)` was still the G2
+  poor-man's-varargs → made `(...)`/`vsprintf` with its `proto.h` prototype in
+  the same step (arm64). `island-g3` (island.c is standalone, includes neither
+  z.h nor oly.h): its 4 local helpers made `static`, 3 rnd entry points declared
+  inline. No qsort comparator mismatches surfaced (G3's are already canonical).
+- Latent bugs fixed as real bugs: `make_appropriate_subloc(row,col,0)` dead 3rd
+  arg (×5, mapgen.c); `queue` varargs; `eat.c`'s bogus `extern char
+  *clear_wait_parse()` for a `void` function; orphan decls `fetch_inside_name`,
+  `dir_assert` (olympia decl; defined only in mapgen), `wrap_done`.
+- **Gotcha for re-runs:** generate `proto.h` from a **clean** full build log, not
+  an incremental one — ninja only re-emits warnings for recompiled TUs, so an
+  incremental log silently omits most missing-prototype functions.
+
+> **Golden gate caveat surfaced during Phase 4:** `run/olympia/lib/times_0` (the
+> "Olympia Times" newsletter) embeds the wall-clock **date**, so the committed
+> `manifest.sha256` only matches on the day it was captured — on any other day
+> `golden_check.sh` reports a lone `times_0` diff on an *otherwise byte-identical*
+> tree. Phase 4 was verified against a **same-session** pre-edit baseline (date
+> held constant) for a true byte-for-byte check including `times_0`. The
+> committed manifest was left untouched. If you want the gate date-robust, add
+> `times_0` to `FLAKY_FILES` in `golden_check.sh` with **no** `.reference` (the
+> loop then excludes it entirely) — a separate decision from Phase 4.
+
+The full method, order of operations, probe recipe, and every trap is in
+`doc/modernization-prototypes-playbook.md`. The high-level shape (from G1/G2):
 
 - Convert all K&R definitions to ANSI (`kr2ansi.py`; probe with
   `-Wdeprecated-non-prototype`, **not** `-Wold-style-definition`) and the

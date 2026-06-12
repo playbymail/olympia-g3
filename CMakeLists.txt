@@ -13,11 +13,9 @@ function(legacy_build_flags tgt)
         -Wno-compare-distinct-pointer-types
         -Wno-dangling-else
         -Wno-deprecated-declarations
-        -Wno-deprecated-non-prototype
         -Wno-extra-tokens
         -Wno-format
         -Wno-format-security
-        -Wno-implicit-function-declaration
         -Wno-incompatible-library-redeclaration
         -Wno-incompatible-pointer-types
         -Wno-int-conversion
@@ -138,11 +136,9 @@ set(LEGACY_C_FLAGS
         -Wno-compare-distinct-pointer-types
         -Wno-dangling-else
         -Wno-deprecated-declarations
-        -Wno-deprecated-non-prototype
         -Wno-extra-tokens
         -Wno-format
         -Wno-format-security
-        -Wno-implicit-function-declaration
         -Wno-incompatible-library-redeclaration
         -Wno-incompatible-pointer-types
         -Wno-int-conversion
@@ -287,6 +283,10 @@ target_compile_options(olympia-g3 PRIVATE
     # Phase 1 - list triage - only pointer-cast errors
     -Wint-to-pointer-cast -Werror=int-to-pointer-cast
     -Wpointer-to-int-cast -Werror=pointer-to-int-cast
+    # Phase 4 - prototypes & declarations
+    -Wmissing-prototypes -Werror=missing-prototypes
+    -Wstrict-prototypes -Werror=strict-prototypes
+    -Wimplicit-function-declaration -Werror=implicit-function-declaration
 )
 
 # Optional ASan/UBSan via the asan-ubsan preset (OLYMPIA_SANITIZE=ON).
