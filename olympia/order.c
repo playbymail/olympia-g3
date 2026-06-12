@@ -196,11 +196,14 @@ queue_stop(int pl, int who)
  *  Loose, convenient interface for queue_order()
  */
 
-int queue(int who, char *s, long a1, long a2, long a3, long a4, long a5, long a6, long a7, long a8, long a9)
+int queue(int who, char *s, ...)
 {
 	char buf[LEN];
+	va_list ap;
 
-	sprintf(buf, s, a1, a2, a3, a4, a5, a6, a7, a8, a9);
+	va_start(ap, s);
+	vsprintf(buf, s, ap);
+	va_end(ap);
 	queue_order(player(who), who, buf);
 }
 

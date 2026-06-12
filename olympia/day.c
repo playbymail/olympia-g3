@@ -1827,7 +1827,6 @@ daily_events(void)
 	if (ilist_len(weather_days) == 0)
 	{
 		int i;
-		extern int int_comp();
 
 		for (i = 1; i <= MONTH_DAYS; i++)
 			ilist_append(&weather_days, i);

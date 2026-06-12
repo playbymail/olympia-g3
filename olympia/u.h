@@ -88,7 +88,7 @@ extern void kill_stack_ocean(int who);
 extern void hack_unique_item(int item, int owner);
 extern int loc_hidden(int n);
 extern char *rest_name(struct command *c, int a);
-extern int nprovinces();
+extern int nprovinces(void);
 extern int has_use_key(int who, int key);
 extern int stack_has_use_key(int who, int key);
 extern int my_prisoner(int who, int pris);

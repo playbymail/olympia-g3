@@ -92,7 +92,6 @@ set_lord(int who, int new_lord, int k, int lev)
 {
 	int old_pl;
 	int new_pl;
-	extern int int_comp();
 	int flag = FALSE;
 	int prev_lord;
 

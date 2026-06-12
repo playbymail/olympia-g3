@@ -53,7 +53,7 @@ void xMD5Transform(word32 buf[4], word32 const in[16]);
  * Shuffle the bytes into little-endian order within words, as per the
  * MD5 spec.  Note: this code works regardless of the byte order.
  */
-void
+static void
 byteSwap(word32 *buf, unsigned words)
 {
 	byte *p = (byte *)buf;

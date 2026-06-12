@@ -1,3 +1,15 @@
+/*
+ *  Real libc prototypes (Phase 4 modernization).  Included first, above the
+ *  engine's abs()/char-class shadow macros below, so the system declarations
+ *  are seen before the macros redefine those names — otherwise the macros
+ *  rewrite the system headers.  Gives 64-bit-correct prototypes for the libc
+ *  functions the engine calls implicitly (str*, atoi, system, open, ...).
+ */
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <fcntl.h>
+
 /* BUGFIX (modernization): use varargs and forward declarations */
 #include "legacy.h"
 /* BUGFIX (modernization): update lists to use 64-bit pointers */
@@ -48,8 +60,21 @@ extern void asfail(char *file, int line, char *cond);
 
 
 extern int readfile(char *path);
-extern char *readlin();
-extern char *readlin_ew();
+extern char *readlin(void);
+extern char *readlin_ew(void);
 extern char *eat_leading_trailing_whitespace(char *s);
+
+/* z.c functions that don't reach oly.h's generated proto.h */
+extern void closefile(char *path);
+extern void copy_fp(FILE *a, FILE *b);
+extern void init_lower(void);
+extern void lcase(char *s);
+extern void test_random(void);
+
+/* rnd.c (MD5 RNG) functions; rnd.c includes z.h, not oly.h */
+extern void MD5(void *dest, void *orig, int len);
+extern void load_seed(char *fnam);
+extern void save_seed(char *fnam);
+extern int md5_int(int a, int b, int c, int d);
 
 extern int int_comp(void * a, void * b);

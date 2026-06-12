@@ -1,5 +1,6 @@
 #include	<stdio.h>
 #include	"z.h"
+#include	"oly.h"
 
 char *read_pw(char *type)
 {

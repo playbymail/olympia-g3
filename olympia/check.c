@@ -83,7 +83,6 @@ check_swear(void)
     int i;
     int j;
     int over;
-    extern int int_comp();
 
     loop_char(i)
     {

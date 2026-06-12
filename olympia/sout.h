@@ -42,22 +42,21 @@
 #define	EAT_PLAYERS	25	/* Player list */
 
 
-extern void initialize_buffer();
+extern void initialize_buffer(void);
 extern char *comma_append(char *s, char *t);
 
 extern ilist out_vector;
 
 extern void wrap_set(int who);
-extern void wrap_done();
 
 extern void vector_char_here(int where);
 extern void vector_add(int who);
 extern void vector_stack(int who, int clear);
-extern void vector_clear();
+extern void vector_clear(void);
 extern void lines(int who, char *s);
 extern void match_lines(int who, char *s);
 extern void restore_output_vector(ilist t);
-extern ilist save_output_vector();
+extern ilist save_output_vector(void);
 
 extern int out_path;			/* alternate sout directive */
 extern int out_alt_who;			/* used if path == MASTER */

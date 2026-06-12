@@ -19,8 +19,7 @@ struct exit_view {
 
 extern void list_exits(int who, int where);
 extern exit_views_list exits_from_loc(int who, int where);
-extern void determine_map_edges();
-extern void dir_assert();
+extern void determine_map_edges(void);
 extern int exit_distance(int, int);
 extern void find_hidden_exit(int who, exit_views_list l, int which);
 extern int count_hidden_exits(exit_views_list l);

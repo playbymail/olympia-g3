@@ -165,6 +165,13 @@ random_subworld_loc(void)
 #define		SZ		7	/* 5 x 5 */
 #define		MAX_LEVELS	25
 
+/*
+ *  print_map is a dead debug helper whose signature uses the file-private
+ *  SZ/MAX_LEVELS macros, so it cannot live in proto.h.  Declare it locally
+ *  (kept non-static to avoid an unused-function warning) to satisfy
+ *  -Wmissing-prototypes at its definition below.
+ */
+void print_map(int map[SZ+2][SZ+2][MAX_LEVELS], int l);
 
 
 static int tun_total_locs;

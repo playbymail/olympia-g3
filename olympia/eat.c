@@ -166,7 +166,6 @@ static char *
 crack_address_sup(char *s)
 {
 	char *t;
-	extern char *strchr();
 
 	if (t = strchr(s, '<'))
 	{
@@ -201,7 +200,6 @@ local_kludge(char *s)
 {
 	int l = strlen(s);
 	char *t;
-	extern char *strchr();
 
 	if (l < 17)
 		return s;
@@ -875,8 +873,6 @@ do_eat_command(struct command *c, FILE *fp)
 
 	if (c->cmd == cmd_wait)
 	{
-		extern char *parse_wait_args();
-		extern char *clear_wait_parse();
 		char *s;
 
 		s = parse_wait_args(c);

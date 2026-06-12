@@ -9,10 +9,10 @@
 #define		RANK_king	80
 
 extern int top_ruler(int n);
-extern void garrison_gold();
+extern void garrison_gold(void);
 extern char *rank_s(int who);
-extern void touch_garrison_locs();
-extern void determine_noble_ranks();
+extern void touch_garrison_locs(void);
+extern void determine_noble_ranks(void);
 extern int may_rule_here(int who, int where);
 extern ilist players_who_rule_here(int where);
 extern int garrison_notices(int garr, int target);

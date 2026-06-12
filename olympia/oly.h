@@ -1277,3 +1277,16 @@ extern char * char_rep_location(int who);
 #define		RELIC_CROWN		402
 #define		RELIC_BTA_SKULL		403
 
+
+/*
+ *  Generated ANSI prototypes for every cross-file (non-static) function.
+ *  Included last, after all type definitions above, so the prototypes can
+ *  reference the engine structs/typedefs.  stdio.h supplies FILE and stdarg.h
+ *  supplies va_list, both used by a few of the prototypes.  (Functions in z.c
+ *  and rnd.c are declared in z.h instead, since those files don't include
+ *  oly.h.)
+ */
+#include <stdio.h>
+#include <stdarg.h>
+#include "proto.h"
+

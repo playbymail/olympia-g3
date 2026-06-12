@@ -318,7 +318,6 @@ int
 check_allow(struct command *c, char *allow)
 {
 	int t;
-	extern char *strchr();
 
 	if (allow == NULL)
 		return TRUE;

@@ -200,10 +200,7 @@ int num_islands = 0;
 
 struct tile *map[MAX_ROW][MAX_COL];
 
-struct tile *adjacent_tile_terr();
-struct tile *adjacent_tile_water();
-struct tile *adjacent_tile_sup();
-char *fetch_inside_name();
+#include	"proto.h"	/* generated cross-file prototypes (Phase 4) */
 
 #define		MAX_SUBLOC	20000
 
@@ -211,8 +208,6 @@ struct tile *subloc[MAX_SUBLOC];
 int top_subloc = 0;
 
 void random_province(int *row, int *col, int terr);
-void set_province_clumps();
-void set_regions();
 
 FILE *loc_fp;
 FILE *gate_fp;
