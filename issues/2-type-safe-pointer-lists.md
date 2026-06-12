@@ -2,10 +2,11 @@
 
 **Status:** open — in progress. **`exit_views_list`, `trades_list`,
 `orders_list`, `admits_list`, `item_ents_list`, `skill_ents_list`, and
-`order_list.l → cstrings_list` migrated** — all five `oly.h` entity
-pointer-list fields from the table below (plus `exit_views` and the inner
-order-text list) are now typed. A handful of **other** plist lists remain (see
-*Remaining plist users* at the end); the `plist` typedef cannot be deleted yet.
+`order_list.l → cstrings_list`, and `fights_list` (combat.c) migrated** — all
+five `oly.h` entity pointer-list fields from the table below (plus `exit_views`,
+the inner order-text list, and the combat engine) are now typed. A handful of
+**other** plist lists remain (see *Remaining plist types to retire* at the end);
+the `plist` typedef cannot be deleted yet (~39 ops, 7 files).
 **Type:** modernization (64-bit list-triage, follow-on to issue 1).
 **Motivation:** make the entire class of bug behind issue 1 a **compile error**
 instead of a runtime segfault.
@@ -105,15 +106,37 @@ instead of a runtime segfault.
 > declared `f(char **l)` is type-compatible, so no lockstep change is forced.
 > After: `grep "plist_.*->l" olympia/order.c` is empty.
 
+> **Progress — `fights_list` (✅ done).** The first list migrated *beyond* the
+> issue's five-field table — the entire `combat.c` combat engine. All fight
+> lists are **transient locals** (`l` / `l_a` / `l_b` / `enemy`, plus the
+> `struct fight ***l` by-ref builders `add_to_fight_list`/`add_fighters`/
+> `add_fight_stack`/`look_for_allies`/`reclaim_fight_list`), so **no `oly.h`
+> field and no save/load** is touched. 75 `struct fight **` type sites →
+> `fights_list` (the `***l` by-ref forms → `fights_list *l`), 51
+> `plist_len` → `fights_len`, and the lone `plist_append`/`plist_reclaim`/
+> `plist_lookup` → `fights_*`. ~80 line changes, 1 file, **0 new warnings**,
+> golden gate **byte-identical** (`YES` — a turn exercises combat heavily),
+> mapgen `YES`. This removed the **last `(plist)` read-form cast** in the engine
+> (`combat.c:804`) and dropped the remaining plist-op count 93 → 39.
+> **Latent bug documented, not fixed:** `construct_guard_fight_list`'s
+> `plist_lookup((plist) l_a, i)` (now `fights_lookup(l_a, i)`) looks up an **int
+> box-id `i`** in a list of `struct fight *` — comparing pointers against a
+> small int, so it effectively always returns `-1` (the "already stacked with
+> the pillagers?" guard never fires). The retype preserves this exact behavior
+> (same implicit int→pointer conversion); fixing it (a `->unit == i` membership
+> scan) would change combat output, so it is deferred as a separate behavior
+> change, out of scope for a golden-identical retype.
+
 ## Remaining plist types to retire (future work)
 
-All five `oly.h` entity fields in the table above, plus `exit_views` and
-`order_list.l`, are now typed. **The `plist` typedef cannot be deleted yet** —
-~**93** `plist_` ops remain across **8** files, on lists that were out of this
-issue's five-field scope. Each already has a ready typed equivalent in
-`lib/lists.h`; retiring them is the same mechanical drop-in (census → classify →
-line-asserted retype → build → golden gate). Grouped by target typed list, in
-rough ascending blast-radius:
+All five `oly.h` entity fields in the table above, plus `exit_views`,
+`order_list.l`, and now **`fights_list` (✅ done)**, are typed. **The `plist`
+typedef cannot be deleted yet** — ~**39** `plist_` ops remain across **7** files
+(was 93 / 8 before `fights_list`), on lists that were out of this issue's
+five-field scope. Each already has a ready typed equivalent in `lib/lists.h`;
+retiring them is the same mechanical drop-in (census → classify → line-asserted
+retype → build → golden gate). Grouped by target typed list, in rough ascending
+blast-radius:
 
 | target list | what / where | sites | persisted? |
 |-------------|--------------|-------|------------|
@@ -122,9 +145,9 @@ rough ascending blast-radius:
 | `wait_args_list` | the `c->wait_parse` field (`oly.h:868`, `struct wait_arg **`, "not saved") — `c1.c:1177/1183/1195/1216/1301/1306/1309` | ~7 | no |
 | `req_ents_list` | `use.c`'s requirement-scan locals `struct req_ent **l` (`use.c:379/427`, `plist_len` at `388/395/413/438/445/460`) **and** the save/load pair `req_list_print`/`req_list_scan` (`io.c:666/700`, by-ref `struct req_ent ***l`) | ~10 | **yes** |
 | `cstrings_list` | the `c->parse` field (`oly.h:857`, `char **`; `numargs` already calls `cstrings_len`) built by `parse_line()` (`input.c:33/84`) and used at `input.c:231/271/291/299`; plus local order-text `char **l` in `c2.c` (`155/166/201/218/300/305/473/515`) and `eat.c` (`931/935`) | ~16 | no (rebuilt) |
-| `fights_list` | `combat.c`'s combat engine — locals `l` / `l_a` / `l_b` (`struct fight **`) and the `struct fight ***l` builders (`add_to_fight_list`/`add_fighters`/`add_fight_stack`, …); ~60 `plist_len`/`plist_append`/`plist_reclaim`/`plist_lookup` ops, incl. the lone read-form `(plist)` cast at `combat.c:804` | ~56 | no (per-turn) |
+| ~~`fights_list`~~ | ✅ **done** (`combat.c` combat engine) — see progress note below | — | no (per-turn) |
 
-After all six are migrated, `grep -rn 'plist' olympia/ mapgen/` should be empty
+After the remaining five are migrated, `grep -rn 'plist' olympia/ mapgen/` should be empty
 and the `plist` typedef + `lib/plist.c` can be deleted (acceptance item 4); the
 typed `_test()` entry points can optionally be wired into a unit check.
 
