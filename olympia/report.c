@@ -278,7 +278,7 @@ show_char_inventory(int who, int num)
 
 	if (plist_len(bx[num]->items) > 0)
 	{
-		qsort(bx[num]->items, ilist_len(bx[num]->items),
+		qsort(bx[num]->items, plist_len(bx[num]->items),
 					sizeof(*bx[num]->items), inv_item_comp);
 	}
 
@@ -729,7 +729,7 @@ show_unclaimed(int who, int num)
 
 	if (plist_len(bx[num]->items) > 0)
 	{
-		qsort(bx[num]->items, ilist_len(bx[num]->items),
+		qsort(bx[num]->items, plist_len(bx[num]->items),
 					sizeof(*bx[num]->items), inv_item_comp);
 	}
 
