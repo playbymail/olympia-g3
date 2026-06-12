@@ -60,14 +60,14 @@ clear_all_trades(int who)
 	}
 	next_trade;
 
-	plist_clear((plist *) &bx[who]->trades);
+	trades_clear(&bx[who]->trades);
 }
 
 
 static int
 seller_comp(a, b)
-struct trade **a;
-struct trade **b;
+trades_list a;
+trades_list b;
 {
 
 	if ((*a)->cost == (*b)->cost)
@@ -77,15 +77,15 @@ struct trade **b;
 }
 
 
-static struct trade **
+static trades_list
 seller_list(int where, int except)
 {
-	static struct trade **l = NULL;
+	static trades_list l = NULL;
 	int i;
 	struct trade *t;
 	int count = 0;
 
-	plist_clear((plist *) &l);
+	trades_clear(&l);
 
 	loop_char_here(where, i)
 	{
@@ -100,20 +100,20 @@ seller_list(int where, int except)
 			if (t->kind == SELL)
 			{
 				t->sort = count++;
-				plist_append((plist *) &l, t);
+				trades_append(&l, t);
 			}
 		}
 		next_trade;
 	}
 	next_char_here;
 
-	if (plist_len(l) > 0)
-		qsort(l, (unsigned) plist_len(l), sizeof(*l), seller_comp);
+	if (trades_len(l) > 0)
+		qsort(l, (unsigned) trades_len(l), sizeof(*l), seller_comp);
 
 	loop_trade(where, t)
 	{
 		if (t->kind == SELL)
-			plist_append((plist *) &l, t);
+			trades_append(&l, t);
 	}
 	next_trade;
 
@@ -121,14 +121,14 @@ seller_list(int where, int except)
 }
 
 
-static struct trade **
+static trades_list
 buyer_list(int where, int except)
 {
-	static struct trade **l = NULL;
+	static trades_list l = NULL;
 	int i;
 	struct trade *t;
 
-	plist_clear((plist *) &l);
+	trades_clear(&l);
 
 	loop_char_here(where, i)
 	{
@@ -141,7 +141,7 @@ buyer_list(int where, int except)
 		loop_trade(i, t)
 		{
 			if (t->kind == BUY)
-				plist_append((plist *) &l, t);
+				trades_append(&l, t);
 		}
 		next_trade;
 	}
@@ -150,7 +150,7 @@ buyer_list(int where, int except)
 	loop_trade(where, t)
 	{
 		if (t->kind == BUY)
-			plist_append((plist *) &l, t);
+			trades_append(&l, t);
 	}
 	next_trade;
 
@@ -326,11 +326,11 @@ attempt_trade(struct trade *buyer, struct trade *seller)
 
 
 static void
-scan_trades(struct trade *t, struct trade **l)
+scan_trades(struct trade *t, trades_list l)
 {
 	int i;
 
-	for (i = 0; i < plist_len(l) && t->qty > 0; i++)
+	for (i = 0; i < trades_len(l) && t->qty > 0; i++)
 	{
 		if (l[i]->item != t->item)
 			continue;
@@ -353,8 +353,8 @@ match_trades(int who)
 	int where = subloc(who);
 	int first_buy = TRUE;
 	int first_sell = TRUE;
-	struct trade **sellers;
-	struct trade **buyers;
+	trades_list sellers;
+	trades_list buyers;
 
 	if (!market_here(who))
 		return;
@@ -392,8 +392,8 @@ void
 match_all_trades()
 {
 	int where;
-	struct trade **sellers;
-	struct trade **buyers;
+	trades_list sellers;
+	trades_list buyers;
 	int i;
 
 	loop_loc(where)
@@ -404,10 +404,10 @@ match_all_trades()
 		sellers = seller_list(where, 0);
 		buyers = buyer_list(where, 0);
 
-		if (plist_len(buyers) <= 0 || plist_len(sellers) <= 0)
+		if (trades_len(buyers) <= 0 || trades_len(sellers) <= 0)
 			continue;
 
-		for (i = 0; i < plist_len(buyers); i++)
+		for (i = 0; i < trades_len(buyers); i++)
 			scan_trades(buyers[i], sellers);
 	}
 	next_loc;
@@ -548,7 +548,7 @@ new_trade(int who, int kind, int item)
 		ret->kind = kind;
 		ret->item = item;
 
-		plist_append((plist *) &bx[who]->trades, ret);
+		trades_append(&bx[who]->trades, ret);
 	}
 
 	return ret;
@@ -709,12 +709,12 @@ v_sell(struct command *c)
 
 
 static int
-list_market_items(int who, struct trade **l, int first)
+list_market_items(int who, trades_list l, int first)
 {
 	int i;
 	int qty;
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < trades_len(l); i++)
 	{
 		if (l[i]->cloak >= 2)
 			continue;
@@ -754,7 +754,7 @@ list_market_items(int who, struct trade **l, int first)
 void
 market_report(int who, int where)
 {
-	struct trade **l;
+	trades_list l;
 	int first = TRUE;
 
 	out(who, "");
@@ -786,14 +786,14 @@ market_report(int who, int where)
 
 	l = buyer_list(where, 0);
 
-	if (plist_len(l) > 0)
+	if (trades_len(l) > 0)
 	{
 		first = list_market_items(who, l, first);
 	}
 
 	l = seller_list(where, 0);
 
-	if (plist_len(l) > 0)
+	if (trades_len(l) > 0)
 	{
 		first = list_market_items(who, l, first);
 	}
@@ -943,7 +943,7 @@ expire_trades(int where)
 	struct trade *t;
 	struct item_ent *e;
 
-	for (i = 0; i < plist_len(bx[where]->trades); i++)
+	for (i = 0; i < trades_len(bx[where]->trades); i++)
 	{
 		t = bx[where]->trades[i];
 
@@ -969,7 +969,7 @@ expire_trades(int where)
 				next_char;
 			}
 			if (done) {
-				plist_delete((plist *) &bx[where]->trades, i);
+				trades_delete(&bx[where]->trades, i);
 				i--;
 			}
 		}

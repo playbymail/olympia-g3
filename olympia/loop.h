@@ -333,14 +333,14 @@
 #define	loop_trade(who, e) \
 { int ll_i; \
   int ll_check = 19; \
-  struct trade **ll_l = NULL; \
+  trades_list ll_l = NULL; \
     assert(valid_box(who)); \
-    ll_l = (struct trade **) plist_copy((plist) bx[who]->trades); \
-	for (ll_i = 0; ll_i < plist_len((plist) ll_l); ll_i++) \
+    ll_l = trades_copy(bx[who]->trades); \
+	for (ll_i = 0; ll_i < trades_len(ll_l); ll_i++) \
 	    if (valid_box(ll_l[ll_i]->item) && ll_l[ll_i]->qty > 0) { \
 		    e = ll_l[ll_i];
 
-#define	next_trade  } assert(ll_check == 19); plist_reclaim((plist *) &ll_l); }
+#define	next_trade  } assert(ll_check == 19); trades_reclaim(&ll_l); }
 
 
 #define	loop_prov_dest(where, i) \

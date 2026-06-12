@@ -1,8 +1,7 @@
 # Issue 2 — Type-safe pointer lists (retire the generic `plist`)
 
-**Status:** open — in progress. **`exit_views_list` migration done** (the
-proposed first step); the other plist fields (`items`, `trades`, `skills`,
-`orders`, `admits`) remain.
+**Status:** open — in progress. **`exit_views_list` and `trades_list` migrated**;
+the remaining plist fields (`items`, `skills`, `orders`, `admits`) remain.
 **Type:** modernization (64-bit list-triage, follow-on to issue 1).
 **Motivation:** make the entire class of bug behind issue 1 a **compile error**
 instead of a runtime segfault.
@@ -19,6 +18,20 @@ instead of a runtime segfault.
 > `ilist_len(exit_views_list)` now produces an `incompatible-pointer-types`
 > *warning* (previously the `(plist)` cast silenced it entirely); it becomes a
 > hard error once `olympia-g3` reaches Phase 2 `-Werror=incompatible-pointer-types`.
+
+> **Progress — `trades_list` (✅ done).** The first **persisted** field migrated
+> (`bx[]->trades`, `oly.h:488` → `trades_list`). Covers `buy.c` (the market
+> engine: `seller_list`/`buyer_list`/`scan_trades`/`list_market_items`, the
+> `seller_comp` qsort, append/clear/delete on `->trades`), the **save/load**
+> path in `io.c` (`trade_list_print` / `trade_list_scan`), and the `loop_trade`
+> macro in `loop.h` (`trades_copy`/`trades_len`/`trades_reclaim`). 41 line
+> changes, 5 files, **0 new warnings**, golden gate **byte-identical** (`YES`,
+> and this run exercises `-S` save → on-disk `fact/*` files), mapgen `YES`.
+> Crucially distinct from the look-alike `ilist trades_to_check` (a genuine
+> `int` list of box-ids), which was left untouched. Also fixed a latent
+> same-class bug surfaced by the retype: `immed.c`'s clear-city-trades used
+> `ilist_clear(&bx[i]->trades)` on the plist → now `trades_clear` (not on the
+> turn path, so golden-neutral, but now correct).
 
 ## Problem
 

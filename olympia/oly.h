@@ -485,7 +485,7 @@ struct box {
 
 	struct command		*cmd;
 	struct item_ent		**items;	/* ilist of items held */
-	struct trade		**trades;	/* pending buys/sells */
+	trades_list		trades;	/* pending buys/sells */
 
 	int temp;			/* scratch space */
 	int output_order;		/* for report ordering -- not saved */

@@ -388,7 +388,7 @@ v_ct(struct command *c)
 	{
 		if (subkind(i) == sub_city)
 		{
-			ilist_clear(&bx[i]->trades);
+			trades_clear(&bx[i]->trades);
 		}
 	}
 	next_loc;

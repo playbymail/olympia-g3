@@ -579,12 +579,12 @@ item_list_scan(char *s, struct item_ent ***l, int box_num)
 
 
 static void
-trade_list_print(FILE *fp, char *header, struct trade **l)
+trade_list_print(FILE *fp, char *header, trades_list l)
 {
 	int i;
 	int count = 0;
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < trades_len(l); i++)
 		if (valid_box(l[i]->item))
 		{
 /*
@@ -620,7 +620,7 @@ trade_list_print(FILE *fp, char *header, struct trade **l)
 
 
 static void
-trade_list_scan(char *s, struct trade ***l, int box_num)
+trade_list_scan(char *s, trades_list *l, int box_num)
 {
 	struct trade *new;
 
@@ -640,7 +640,7 @@ trade_list_scan(char *s, struct trade ***l, int box_num)
 		new->who = box_num;
 
 		if (valid_box(new->item))
-			plist_append((plist *) l, new);
+			trades_append(l, new);
 		else
 		{
 			fprintf(stderr, "trade_list_scan(%d): bad item %d\n",
