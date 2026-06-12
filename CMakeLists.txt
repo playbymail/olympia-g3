@@ -234,6 +234,10 @@ target_compile_options(mapgen-g3 PRIVATE
     -Wint-to-pointer-cast -Werror=int-to-pointer-cast
     -Wpointer-to-int-cast -Werror=pointer-to-int-cast
     -Wincompatible-pointer-types -Werror=incompatible-pointer-types
+    # Phase 4 - prototypes & declarations
+    -Wmissing-prototypes -Werror=missing-prototypes
+    -Wstrict-prototypes -Werror=strict-prototypes
+    -Wimplicit-function-declaration -Werror=implicit-function-declaration
 )
 
 # ------------------------------------------------------------------------------
