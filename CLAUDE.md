@@ -61,7 +61,7 @@ Scripts auto-detect the repo root and look for binaries at
 > (prints `YES`); re-baseline with `--update`. The baseline was captured *after*
 > the issue-1 list-triage fixes — the engine could not complete a turn before
 > them — so it reflects the corrected tree; every modernization edit (starting
-> with the `exit_views_list` migration, [[issue 2]]) must keep it byte-identical.
+> with the `exit_views_list` migration, GitHub issue #2) must keep it byte-identical.
 > Unlike G2, G3 output is **deterministic across clean rebuilds** (verified), so
 > the gate has **no flaky-file holdout** (no G2-style `fact/100` `st -32`
 > flicker). `tests/mapgen/golden` remains a **stale 32-bit baseline** — *not* the
@@ -116,12 +116,12 @@ comment literally says *"Phase 1 - list triage - only pointer-cast errors"*),
 and `island-g3` enforces nothing. So before Phase 4, the runway was three
 pieces, the first two now **done**: **(a)** ✅ the pre-existing `olympia-g3`
 startup segfault is fixed — a full `-r -S` turn now completes (the `plist`/`ilist`
-list-triage in [[issue 1]]); **(b)** ✅ the olympia golden gate is established and
+list-triage in GitHub issue #1); **(b)** ✅ the olympia golden gate is established and
 green (`tests/olympia/golden_check.sh`, Test section above); and **(c)** ⬜ bring
 `olympia-g3` (and ideally `island-g3`) up to Phase 2/3 parity by flipping
 `incompatible-pointer-types` and `int-conversion` to `-Werror` and fixing the
 fallout, keeping golden green at each step. A related hardening track is
-[[issue 2]] (retire the generic `plist` for element-typed lists, starting with
+GitHub issue #2 (retire the generic `plist` for element-typed lists, starting with
 `exit_views_list`), which makes the issue-1 bug class a compile error.
 
 > **The sister G1 and G2 repos are done through Phase 4.** `../olympia-g1` and
@@ -171,7 +171,8 @@ Verified: clean build of all three targets succeeds; **mapgen output
 > not introduce it). It was a 64-bit pointer hazard exactly as suspected — a
 > `plist` queried with `ilist` accessors — in three waves (`loop.h` macros, the
 > `exit_view **` cluster, an inventory `qsort`). See
-> [[issue 1]](issues/1-startup-segfault-plist-ilist-mismatch.md). The engine now
+> GitHub issue #1 (closed; the archived design doc is attached as a comment there).
+> The engine now
 > completes a full `-r -S` turn, and the olympia golden gate has been captured
 > (Test section / playbook Step 0).
 
