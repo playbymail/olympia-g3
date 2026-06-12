@@ -325,7 +325,7 @@ summer_uldim_open_now()
 
 
 static void
-add_province_exit(int who, int where, int dest, int dir, struct exit_view ***l)
+add_province_exit(int who, int where, int dest, int dir, exit_views_list *l)
 {
 	struct exit_view *v;
 	int n;
@@ -464,12 +464,12 @@ add_province_exit(int who, int where, int dest, int dir, struct exit_view ***l)
 		v->magic_barrier = TRUE;
 	}
 
-	plist_append((plist *) l, v);
+	exit_views_append(l, v);
 }
 
 
 static void
-extra_routes(int who, int where, struct exit_view ***l)
+extra_routes(int who, int where, exit_views_list *l)
 {
 	int i;
 	int dest;
@@ -514,7 +514,7 @@ extra_routes(int who, int where, struct exit_view ***l)
 			    subkind(dest) == sub_ocean)
 				v->water = TRUE;
 
-			plist_append((plist *) l, v);
+			exit_views_append(l, v);
 		}
 	}
 	next_here;
@@ -529,7 +529,7 @@ extra_routes(int who, int where, struct exit_view ***l)
  */
 
 static void
-province_exits(int who, int where, struct exit_view ***l)
+province_exits(int who, int where, exit_views_list *l)
 {
 	int dir;
 	int n;
@@ -544,7 +544,7 @@ province_exits(int who, int where, struct exit_view ***l)
 
 
 static void
-province_sub_exits(int who, int where, struct exit_view ***l)
+province_sub_exits(int who, int where, exit_views_list *l)
 {
 	int i;
 	struct entity_subloc *p;
@@ -572,7 +572,7 @@ province_sub_exits(int who, int where, struct exit_view ***l)
 
 
 static void
-subloc_exits(int who, int where, struct exit_view ***l)
+subloc_exits(int who, int where, exit_views_list *l)
 {
 	int dir;
 	int n;
@@ -620,7 +620,7 @@ subloc_exits(int who, int where, struct exit_view ***l)
  */
 
 static void
-ship_exits(int who, int ship, struct exit_view ***l)
+ship_exits(int who, int ship, exit_views_list *l)
 {
 	int i;
 	int outer_loc;
@@ -657,7 +657,7 @@ ship_exits(int who, int ship, struct exit_view ***l)
 
 
 static void
-building_exits(int who, int where, struct exit_view ***l)
+building_exits(int who, int where, exit_views_list *l)
 {
 	int i;
 
@@ -675,16 +675,16 @@ building_exits(int who, int where, struct exit_view ***l)
 }
 
 
-struct exit_view **
+exit_views_list
 exits_from_loc(int who, int where)
 {
-	static struct exit_view **l = NULL;
+	static exit_views_list l = NULL;
 	int i;
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < exit_views_len(l); i++)
 		my_free(l[i]);
 
-	plist_clear((plist *) &l);
+	exit_views_clear(&l);
 
 	switch (loc_depth(where))
 	{
@@ -716,19 +716,19 @@ exits_from_loc(int who, int where)
 }
 
 
-struct exit_view **
+exit_views_list
 exits_from_loc_nsew(int who, int where)
 {
-	static struct exit_view **l = NULL;
+	static exit_views_list l = NULL;
 	int i;
 
 	if (loc_depth(where) != LOC_province)
 		return NULL;
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < exit_views_len(l); i++)
 		my_free(l[i]);
 
-	plist_clear((plist *) &l);
+	exit_views_clear(&l);
 
 	province_exits(who, where, &l);
 
@@ -736,28 +736,28 @@ exits_from_loc_nsew(int who, int where)
 }
 
 
-struct exit_view **
+exit_views_list
 exits_from_loc_nsew_select(int who, int where, int land, int rand)
 {
-	struct exit_view **l;
-	static struct exit_view **ret = NULL;
+	exit_views_list l;
+	static exit_views_list ret = NULL;
 	int i;
 
 	if (loc_depth(where) != LOC_province)
 		return NULL;
 
-	plist_clear((plist *) &ret);
+	exit_views_clear(&ret);
 	l = exits_from_loc_nsew(who, where);
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < exit_views_len(l); i++)
 	{
 		if (((land&LAND) && !l[i]->water) ||
 		    ((land&WATER) && l[i]->water))
-			plist_append((plist *) &ret, l[i]);
+			exit_views_append(&ret, l[i]);
 	}
 
 	if (rand)
-		plist_scramble((plist) ret);
+		exit_views_scramble(ret);
 
 	return ret;
 }
@@ -774,13 +774,13 @@ exits_from_loc_nsew_select(int who, int where, int land, int rand)
 int
 has_ocean_access(int where)
 {
-	struct exit_view **l;
+	exit_views_list l;
 	int i;
 	int ret = 0;
 
 	l = exits_from_loc(0, where);
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < exit_views_len(l); i++)
 		if (l[i]->water)
 		{
 			if (l[i]->impassable)
@@ -933,7 +933,7 @@ list_road_sup(int who, int where, struct exit_view *v, char *first)
 void
 list_exits(int who, int where)
 {
-	struct exit_view **l;
+	exit_views_list l;
 	int i;
 	char first[LEN];
 
@@ -945,12 +945,12 @@ list_exits(int who, int where)
 
 	sprintf(first, "Routes leaving %s: ", just_name(where));
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < exit_views_len(l); i++)
 		if (l[i]->road == 0 &&
 		   (l[i]->direction != DIR_IN || see_all(who) == 2))
 			list_exits_sup(who, where, l[i], first);
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < exit_views_len(l); i++)
 		if (l[i]->road)
 			list_road_sup(who, where, l[i], first);
 
@@ -996,7 +996,7 @@ list_sailable_routes(int who, int ship)
 {
 	char first[LEN];
 	int outer_loc;
-	struct exit_view **l;
+	exit_views_list l;
 	int i;
 
 	if (!is_ship_either(ship))
@@ -1007,7 +1007,7 @@ list_sailable_routes(int who, int ship)
 
 	sprintf(first, "Ocean routes:");
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < exit_views_len(l); i++)
 		if (l[i]->direction > 0 &&
 		   (l[i]->direction != DIR_IN || see_all(who) == 2) &&
 		    l[i]->water)
@@ -1015,7 +1015,7 @@ list_sailable_routes(int who, int ship)
 			list_exits_sup(who, outer_loc, l[i], first);
 		}
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < exit_views_len(l); i++)
 		if (l[i]->road && l[i]->water)
 		{
 			list_road_sup(who, outer_loc, l[i], first);
@@ -1033,12 +1033,12 @@ list_sailable_routes(int who, int ship)
 
 
 int
-count_hidden_exits(struct exit_view **l)
+count_hidden_exits(exit_views_list l)
 {
 	int sum = 0;
 	int i;
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < exit_views_len(l); i++)
 		if (l[i]->hidden)
 			sum++;
 
@@ -1047,11 +1047,11 @@ count_hidden_exits(struct exit_view **l)
 
 
 int
-hidden_count_to_index(int which, struct exit_view **l)
+hidden_count_to_index(int which, exit_views_list l)
 {
 	int i;
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < exit_views_len(l); i++)
 	{
 		if (l[i]->hidden)
 			which--;
@@ -1068,7 +1068,7 @@ hidden_count_to_index(int which, struct exit_view **l)
 
 
 void
-find_hidden_exit(int who, struct exit_view **l, int which)
+find_hidden_exit(int who, exit_views_list l, int which)
 {
 	int where = subloc(who);
 
@@ -1076,7 +1076,7 @@ find_hidden_exit(int who, struct exit_view **l, int which)
 		where = subloc(where);
 
 	assert(valid_box(who));
-	assert(which < plist_len(l));
+	assert(which < exit_views_len(l));
 	assert(l[which]->hidden);
 
 	if (l[which]->road)

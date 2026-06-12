@@ -27,11 +27,11 @@ controlled_humans_here(int where)
 
 
 struct exit_view *
-get_exit_dir(struct exit_view **l, int dir)
+get_exit_dir(exit_views_list l, int dir)
 {
 	int i;
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < exit_views_len(l); i++)
 		if (l[i]->direction == dir)	/* && l[i]->hidden == FALSE? */
 			return l[i];
 
@@ -43,11 +43,11 @@ struct exit_view *
 choose_npc_direction(int who, int where, int dir)
 {
 	struct exit_view *e;
-	struct exit_view **l;
+	exit_views_list l;
 
 	l = exits_from_loc_nsew_select(who, where, LAND, RAND);
 
-	if (plist_len(l) == 0)
+	if (exit_views_len(l) == 0)
 		return NULL;
 
 /*

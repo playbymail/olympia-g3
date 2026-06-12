@@ -91,7 +91,7 @@ int
 d_explore(struct command *c)
 {
 	int hidden_exits;
-	struct exit_view **l;
+	exit_views_list l;
 	int where = subloc(c->who);
 	int i;
 	int r;

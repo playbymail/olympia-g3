@@ -1,9 +1,24 @@
 # Issue 2 — Type-safe pointer lists (retire the generic `plist`)
 
-**Status:** open — feature / hardening proposal.
+**Status:** open — in progress. **`exit_views_list` migration done** (the
+proposed first step); the other plist fields (`items`, `trades`, `skills`,
+`orders`, `admits`) remain.
 **Type:** modernization (64-bit list-triage, follow-on to issue 1).
 **Motivation:** make the entire class of bug behind issue 1 a **compile error**
 instead of a runtime segfault.
+
+> **Progress — `exit_views_list` (✅ done).** All `struct exit_view **`
+> producers/consumers now use the typed API: `dir.c`'s `exits_from_loc*` and
+> their seven `***l` helpers, plus the ~14 consumer sites across `seed/day/
+> beast/garr/immed/move/npc/savage/storm/c1`. `plist_append/clear/len/scramble`
+> with `(plist)` casts → `exit_views_append/clear/len/scramble` (casts gone);
+> `dir.h` signatures updated in lockstep. 76 line changes, 12 files, **0 new
+> warnings**, golden gate **byte-identical** (`YES`), mapgen regress `YES`. No
+> `oly.h` field changed (exit_view lists are all transient), so zero save/load
+> risk — exactly as scoped. Note: with the casts removed, a reintroduced
+> `ilist_len(exit_views_list)` now produces an `incompatible-pointer-types`
+> *warning* (previously the `(plist)` cast silenced it entirely); it becomes a
+> hard error once `olympia-g3` reaches Phase 2 `-Werror=incompatible-pointer-types`.
 
 ## Problem
 

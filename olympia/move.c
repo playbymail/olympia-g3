@@ -140,13 +140,13 @@ arrival_message(int who, struct exit_view *v)
 static void
 discover_road(int who, int where, struct exit_view *v)
 {
-	struct exit_view **l;
+	exit_views_list l;
 	int i;
 	int j;
 
 	l = exits_from_loc(who, v->destination);
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < exit_views_len(l); i++)
 		if (l[i]->road && l[i]->destination == where)
 		{
 			set_known(who, l[i]->road);
@@ -165,7 +165,7 @@ discover_road(int who, int where, struct exit_view *v)
 struct exit_view *
 parse_exit_dir(struct command *c, int where, char *zero_arg)
 {
-	struct exit_view **l;
+	exit_views_list l;
 	int i;
 	int dir;
 
@@ -189,7 +189,7 @@ parse_exit_dir(struct command *c, int where, char *zero_arg)
 			struct exit_view *ret = NULL;
 			struct exit_view *impass_ret = NULL;
 
-			for (i = 0; i < plist_len(l); i++)
+			for (i = 0; i < exit_views_len(l); i++)
 				if (l[i]->destination == c->a &&
 				   (l[i]->hidden == FALSE || see_all(c->who)))
 				{
@@ -226,7 +226,7 @@ parse_exit_dir(struct command *c, int where, char *zero_arg)
 		return NULL;
 	}
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < exit_views_len(l); i++)
 		if (l[i]->direction == dir &&
 		   (l[i]->hidden == FALSE || see_all(c->who)))
 		{

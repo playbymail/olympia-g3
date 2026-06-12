@@ -531,7 +531,7 @@ static struct exit_view *
 parse_storm_dir(struct command *c, int storm)
 {
 	int where = subloc(storm);
-	struct exit_view **l;
+	exit_views_list l;
 	int i;
 	int dir;
 
@@ -549,7 +549,7 @@ parse_storm_dir(struct command *c, int storm)
 		{
 			struct exit_view *ret = NULL;
 
-			for (i = 0; i < plist_len(l); i++)
+			for (i = 0; i < exit_views_len(l); i++)
 				if (l[i]->destination == c->a)
 				{
 					ret = l[i];
@@ -584,7 +584,7 @@ parse_storm_dir(struct command *c, int storm)
 		return FALSE;
 	}
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < exit_views_len(l); i++)
 		if (l[i]->direction == dir &&
 				loc_depth(l[i]->destination) == LOC_province)
 			return l[i];

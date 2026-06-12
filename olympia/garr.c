@@ -251,7 +251,7 @@ new_province_garrison(int where, int castle, int item, int qty)
 static int
 garrison_allowed_here(int who, int where, int castle)
 {
-	struct exit_view **l;
+	exit_views_list l;
 	int i;
 	int here;
 	int garr;
@@ -269,7 +269,7 @@ garrison_allowed_here(int who, int where, int castle)
 
 	l = exits_from_loc_nsew(who, where);
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < exit_views_len(l); i++)
 	{
 		garr = garrison_here(l[i]->destination);
 

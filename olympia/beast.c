@@ -33,13 +33,13 @@ v_bird_spy(struct command *c)
 
 	if (province(targ) != province(c->who))
 	{
-		struct exit_view **l;
+		exit_views_list l;
 		int i;
 		int okay = FALSE;
 
 		l = exits_from_loc(c->who, province(c->who));
 
-		for (i = 0; i < plist_len(l); i++)
+		for (i = 0; i < exit_views_len(l); i++)
 			if (l[i]->destination == targ)
 				okay = TRUE;
 

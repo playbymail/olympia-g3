@@ -18,14 +18,14 @@ struct exit_view {
 };
 
 extern void list_exits(int who, int where);
-extern struct exit_view **exits_from_loc(int who, int where);
+extern exit_views_list exits_from_loc(int who, int where);
 extern void determine_map_edges();
 extern void dir_assert();
 extern int exit_distance(int, int);
-extern void find_hidden_exit(int who, struct exit_view **l, int which);
-extern int count_hidden_exits(struct exit_view **l);
+extern void find_hidden_exit(int who, exit_views_list l, int which);
+extern int count_hidden_exits(exit_views_list l);
 extern void list_sailable_routes(int who, int ship);
-extern int hidden_count_to_index(int which, struct exit_view **l);
+extern int hidden_count_to_index(int which, exit_views_list l);
 extern int has_ocean_access(int where);
 extern int location_direction(int where, int dir);
 
@@ -43,5 +43,5 @@ extern struct exit_view *
 #define	LAND	1
 #define	WATER	2
 
-extern struct exit_view **exits_from_loc_nsew(int, int);
-extern struct exit_view **exits_from_loc_nsew_select(int, int, int, int);
+extern exit_views_list exits_from_loc_nsew(int, int);
+extern exit_views_list exits_from_loc_nsew_select(int, int, int, int);

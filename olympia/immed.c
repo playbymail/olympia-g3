@@ -538,7 +538,7 @@ void
 fix_gates()
 {
 	int where;
-	struct exit_view **l;
+	exit_views_list l;
 	int set_one;
 	int i;
 	int dest;
@@ -558,7 +558,7 @@ fix_gates()
 
 		l = exits_from_loc_nsew(0, where);
 
-		for (i = 0; i < plist_len(l); i++)
+		for (i = 0; i < exit_views_len(l); i++)
 		{
 			if (loc_depth(l[i]->destination) != LOC_province)
 				continue;
@@ -587,7 +587,7 @@ fix_gates()
 
 		l = exits_from_loc_nsew(0, where);
 
-		for (i = 0; i < plist_len(l); i++)
+		for (i = 0; i < exit_views_len(l); i++)
 		{
 		    dest = l[i]->destination;
 

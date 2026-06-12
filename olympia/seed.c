@@ -55,7 +55,7 @@ prop_city_near_list(int city)
 	int n;
 	int dest;
 	int where;
-	struct exit_view **l;
+	exit_views_list l;
 
 	clear_temps(T_loc);
 
@@ -73,7 +73,7 @@ prop_city_near_list(int city)
 
 			l = exits_from_loc_nsew(0, where);
 
-			for (i = 0; i < plist_len(l); i++)
+			for (i = 0; i < exit_views_len(l); i++)
 			{
 				dest = l[i]->destination;
 
@@ -207,7 +207,7 @@ void
 compute_dist_gate()
 {
 	int where;
-	struct exit_view **l;
+	exit_views_list l;
 	int set_one;
 	int i;
 	int dest;
@@ -222,7 +222,7 @@ compute_dist_gate()
 
 		l = exits_from_loc_nsew(0, where);
 
-		for (i = 0; i < plist_len(l); i++)
+		for (i = 0; i < exit_views_len(l); i++)
 		{
 			if (loc_depth(l[i]->destination) != LOC_province)
 				continue;
@@ -248,7 +248,7 @@ compute_dist_gate()
 
 			l = exits_from_loc_nsew(0, where);
 
-			for (i = 0; i < plist_len(l); i++)
+			for (i = 0; i < exit_views_len(l); i++)
 			{
 				dest = l[i]->destination;
 

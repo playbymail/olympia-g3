@@ -17,7 +17,7 @@
 static int
 near_rocky_coast(int where)
 {
-	struct exit_view **l;
+	exit_views_list l;
 	int i;
 	int ret = 3;
 
@@ -26,7 +26,7 @@ near_rocky_coast(int where)
 
 	l = exits_from_loc_nsew(0, where);
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < exit_views_len(l); i++)
 		if (subkind(l[i]->destination) != sub_ocean)
 		{
 			if (subkind(l[i]->destination == sub_mountain))
