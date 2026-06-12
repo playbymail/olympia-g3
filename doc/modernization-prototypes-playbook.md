@@ -200,7 +200,7 @@ char *name;
 Conversion rule that's provably behaviour-neutral: **rewrite only the
 parameter list on the name line, delete the K&R declaration lines, leave the
 return type byte-for-byte untouched.** (A script that does exactly this is in
-`run/scratch/kr2ansi.py`.) Process bottom-to-top so line numbers stay valid.
+`doc/phase4-tools/kr2ansi.py`.) Process bottom-to-top so line numbers stay valid.
 
 Cases to handle: pointer params (`int *row`), multi-var lines
 (`int row, col;`), pointer-to-struct (`struct tile *from`), typedef'd list
@@ -228,7 +228,7 @@ The high-leverage move. Two approaches, in order of robustness:
   `missing-prototypes` you get `file:line:name`. Read the definition: params
   are on the name line (single line in this code base), return type is the
   name-line prefix or the immediately-preceding line, else implicit `int`.
-  Emit `extern <ret> <name>(<params>);`. See `run/scratch/gen_proto3.py`.
+  Emit `extern <ret> <name>(<params>);`. See `doc/phase4-tools/gen_proto3.py`.
 - **universal-ctags** (`--_xformat="%N %{typeref} %{signature}"`) works but its
   `typeref` is unreliable for implicit-int functions (it grabs a neighbouring
   type) and emits `struct:tag` colon syntax. Use it only as a cross-check.
@@ -237,6 +237,29 @@ The high-leverage move. Two approaches, in order of robustness:
 prototype (`missing-prototypes` gone), and every caller that includes the
 master header sees it (`implicit-function-declaration` gone for internal
 calls). What remains implicit is *only libc*.
+
+> **Generate proto.h from a CLEAN full build log, never an incremental one.**
+> This cost the most time on G3. Ninja only re-emits warnings for the TUs it
+> *recompiles*; a warning log captured from an incremental build silently omits
+> the `missing-prototypes` lines for every already-up-to-date file. On G3 the
+> first proto.h came out **235 functions short** (e.g. all of `loc.c` —
+> `building_owner`, `all_stack`, … — were simply absent), and the gap only
+> showed up later as a wall of `implicit-function-declaration` / `int-conversion`
+> at call sites. Always `rm -rf` the probe build dir (or `git archive HEAD | tar
+> -x` into a fresh tree) before capturing the log you feed to `gen_proto3.py`.
+>
+> **And capture that complete log from the *pre-proto.h* tree** (the K&R/empty-
+> paren commit), where the old empty-paren forward decls still exist. If you try
+> to get a "complete" log *after* you've already wired proto.h and deleted the
+> old decls, two things fight you: proto.h *suppresses* the very
+> `missing-prototypes` lines you want, and temporarily ripping proto.h back out
+> re-exposes the deleted decls as `conflicting types` / `int-conversion` **hard
+> errors** (these are fatal regardless of `-Wno-error=…`, so they truncate the
+> per-TU log). Clean recipe: `git archive <kr-void-commit> | tar -x -C /tmp/pristine`,
+> strip the `-Wno-{deprecated-non-prototype,implicit-function-declaration}` lines,
+> clean-build, and run `gen_proto3.py` *from that tree* so its line numbers match
+> the log. (If you've since converted `queue` to variadic, re-fix it in the
+> regenerated header — the pristine tree still has the K&R `a1..a9` form.)
 
 ### Gotchas (all hit on G1)
 
@@ -253,14 +276,26 @@ calls). What remains implicit is *only libc*.
   `struct foo *`". **Fix: forward-declare those tags at the top of the
   prototype header** (`struct foo;`) so the prototypes bind to the real
   file-scope tag. Find them with: structs defined in `.c` files. (G1: build_ent,
-  harvest, make, wield, fight, cookie_monster_tbl.)
+  harvest, make, wield, fight, cookie_monster_tbl. G3: build_ent, fight, harvest,
+  make, wield.) **Don't trust a one-line `struct foo {` regex to enumerate them**
+  — the legacy style often puts the brace on the next line (`struct harvest\n{`),
+  so `build_ent`/`harvest` slipped past a naive grep on G3 and only surfaced as
+  `conflicting types`. The reliable enumeration *is* the compiler: build, read
+  each `conflicting types for 'X'` whose note points at your prototype, and add
+  `struct <that tag>;`. Also: a stray generated `proto_new.h` left in the source
+  tree will pollute "is this struct declared in a header?" greps — keep scratch
+  copies out of `olympia/`/`mapgen/`.
 
 - **Type visibility / include placement.** The prototype header references
   engine structs, list typedefs, `FILE`, etc. Include it at the **end of the
   master header** (`oly.h`), after all type definitions, and make sure
-  `FILE` is available (add `#include <stdio.h>`). The header will look broken
-  to an IDE/LSP analyzing it in isolation — that's expected; it only compiles
-  in context.
+  `FILE` is available (add `#include <stdio.h>`; G3 also needed `#include
+  <stdarg.h>` because a prototype — `vout` — takes `va_list`). The header will
+  look broken to an IDE/LSP analyzing it in isolation — that's expected; it only
+  compiles in context. In particular, **ignore clangd's "`'new'` is a keyword"
+  error** on prototypes like `build_structure(..., int new)`: `new` is a valid C
+  identifier (clangd flags it as if it were C++); the real C build accepts it,
+  since the definitions already use `int new`.
 
 - **The one file that doesn't include the master header.** G1's `z.c` (the
   low-level util/RNG layer) deliberately doesn't include `oly.h`, so it never
@@ -419,12 +454,30 @@ g2/g3/tag, and **fix them as real bugs, don't paper over them**:
 ## Flag ordering (CMakeLists)
 
 The legacy `-Wno-*` suppressions and the new positive flags live in the same
-`target_compile_options`. Clang applies left-to-right, last-wins. To turn a
-class into an error you must *remove* its `-Wno-` line, not merely append the
-positive flag after it. When you flip to `-Werror`, delete:
-`-Wno-implicit-function-declaration` and `-Wno-deprecated-non-prototype`
-(the latter because converting all K&R/empty-paren defs makes it 0, and
-keeping it would re-mask any regression).
+`target_compile_options`. Clang applies left-to-right, last-wins. When you flip
+to `-Werror`, delete: `-Wno-implicit-function-declaration` and
+`-Wno-deprecated-non-prototype` (the latter because converting all
+K&R/empty-paren defs makes it 0, and keeping it would re-mask any regression).
+
+**But mind where each flag lives — `-Wno-` in a shared `${LEGACY_C_FLAGS}`
+variable vs. a per-target `-Werror=` is the lever for a *staged, per-target*
+flip** (G3 has three targets — `olympia-g3`, `mapgen-g3`, `island-g3`; TAG
+likely does too). Each `target_compile_options(... ${LEGACY_C_FLAGS} … )`
+expands the shared suppressions *first*, so a per-target
+`-Werror=strict-prototypes …` appended *after* `${LEGACY_C_FLAGS}` wins for that
+target by last-wins — **you do not have to touch the shared variable to flip one
+target.** That's what lets you flip `mapgen-g3`, verify golden + commit, then
+`island-g3`, then `olympia-g3`, one commit each. Only at the **last** target do
+you delete the two `-Wno-` lines from the shared `${LEGACY_C_FLAGS}` (and any
+mirrored scaffolding) — and not before, because once
+`-Wno-implicit-function-declaration` is gone, implicit calls are a **hard error
+by default under C11** for *every* consumer of that variable, so any target you
+haven't cleaned yet (e.g. `island-g3`'s `island.c`, which on G3 still had
+implicit `rnd`/`load_seed`/`save_seed`) would break the build. (Contrast the
+*probe* in `## Measurement / probe recipe`: there the positive flag rides in
+`CMAKE_C_FLAGS`, which target options override, so you *must* strip the `-Wno-`
+line. Same last-wins rule, opposite conclusion, because the flags are in
+different scopes.)
 
 ---
 
@@ -449,6 +502,33 @@ own `golden_check.sh` — copy this one and adjust, per "Step 0" above.)
 
 Note: `tests/mapgen/golden` is a **stale 32-bit baseline** and diverges from
 64-bit output even on a clean tree — it is *not* the gate.
+
+> **The golden output embeds the wall-clock date — pin it before you trust the
+> gate (hit on G3, expect it on TAG).** The engine writes an "Olympia Times"
+> newsletter (`run/olympia/lib/times_0`) whose masthead is stamped with
+> `localtime()` (`times_masthead()` in `c2.c`). So a manifest captured on one day
+> shows a lone `times_0` diff on every *other* day — on an otherwise
+> byte-identical tree. This silently makes "Step 0 — validate the baseline" fail
+> for a reason that has nothing to do with your change, and it's easy to
+> misread as a regression. Two responses, both used on G3:
+> - **During the work**, verify against a **same-session pre-edit baseline**, not
+>   the committed manifest: snapshot `find … | xargs sha256` of `run/olympia/lib`
+>   on the untouched tree at the start, and diff each later run against *that*
+>   (the date is constant within a session, so `times_0` matches too → a true
+>   byte-for-byte check, date included). Confirm the snapshot equals the
+>   committed manifest on every file *except* `times_0` so you know the tree is
+>   otherwise pristine.
+> - **For the committed gate**, pin the date so it's deterministic on any day.
+>   G3 added a testing flag `test-use-const-report-date` (a global set by a
+>   long-form arg that `main()` pulls out of `argv` *before* `getopt()` — which
+>   only does single-char options — then compacts `argv`); when set,
+>   `times_masthead()` emits a fixed `January 1, 2000`. `run/olympia-g3.sh`
+>   passes it on the turn run and the manifest was re-baselined with it. This
+>   beats holding `times_0` out via `FLAKY_FILES` — the newsletter stays fully
+>   covered by the byte gate. TAG almost certainly has the same newsletter; do
+>   this in **Step 0**, before capturing the baseline, so the gate is born
+>   date-independent. (Sweep for other `time()`/`localtime()`/`getpid()` sources
+>   in golden output the same way — any of them re-introduces non-determinism.)
 
 > **Known non-determinism in G2 (read before trusting the gate).** The engine
 > has a pre-existing build-to-build non-determinism: `run/olympia/lib/fact/100`
@@ -498,6 +578,48 @@ traps that did **not** appear in G1 and are worth carrying to g3/tag:
   prototype placed after the macro defs. Generally: file-local non-static funcs
   → `static`; only the genuinely cross-file ones belong in `proto.h`.
 
+## G3 results & engine-specific traps (done)
+
+G3's Phase 4 is complete: 62 K&R defs (38 mapgen / 24 olympia), 245 empty-paren
+`name()` defs, `olympia/proto.h` (657 protos) + `mapgen/proto.h` (74). **Three
+targets**, all `-Werror` with all three classes 0, golden byte-identical. G3
+sits closer to G2 than G1; what differed from G2:
+
+- **`rnd.c` already `#include`s `z.h`** — the G2 "second RNG TU includes neither
+  header" trap was pre-handled in G3, so it only needed its cross-file API
+  (`MD5`/`load_seed`/`save_seed`/`md5_int`) declared in `z.h` and `byteSwap` made
+  `static`. **Check this first on TAG** rather than assuming the G2 state.
+- **`z.h` has no `bzero`/`bcopy` macros** — only `abs` plus char-class macros
+  (`isalpha`/`isdigit`/`tolower`/`toupper`). Smaller libc-collision surface than
+  G1/G2: the real headers added at the top of `z.h` were `stdio`/`string`/
+  `stdlib`/`fcntl`, and nothing dragged in a colliding declaration. (We did *not*
+  include `<ctype.h>` — the engine's own char-class macros stand in for it; pull
+  it in and it *will* collide, so don't unless something needs it, and then put
+  it above the macros.)
+- **A third target, `island-g3`** (`mapgen/island.c` + `mapgen/rnd.c`).
+  `island.c` is a standalone program that includes neither `z.h` nor `oly.h`:
+  its four file-local helpers (`make_shelf`/`extend_distance`/`gcd`/`lcm`) became
+  `static`, and the three RNG entry points it calls (`rnd`/`load_seed`/
+  `save_seed`) got a small inline `extern` block. It had been enforcing *no*
+  `-Werror` at all; Phase 4 was added to it like the others. TAG: enumerate
+  *all* targets up front — a quiet third executable is easy to miss.
+- **`queue` was still the G2 poor-man's-varargs** (`queue(int,char*,long
+  a1..a9)`); converted to `(...)`/`vsprintf` with its `proto.h` prototype in the
+  same step (arm64). `out`/`wout`/etc. were *already* variadic in G3 with real
+  `(...)` decls in `legacy.h`/`sout.h`, so only `queue` needed it — check each
+  candidate rather than converting blindly.
+- **`tunnel.c`'s `print_map`** uses file-private `SZ`/`MAX_LEVELS` exactly as in
+  G2 — kept non-static with a local prototype after the macro defs.
+- **Latent bugs:** `make_appropriate_subloc(row,col,0)` called with a dead 3rd
+  arg ×5 in `mapgen.c` (same class as G2); `eat.c`'s bogus `extern char
+  *clear_wait_parse()` for a `void` function; orphans `fetch_inside_name`,
+  `dir_assert` (olympia decl; defined only in mapgen), `wrap_done`. **No qsort
+  comparator mismatches** surfaced — G3's are already canonical, so `fix_comp.py`
+  wasn't needed (still re-grep `qsort(` after the libc headers to be sure).
+- **No `fact/100`-style flicker on G3** — its golden is deterministic across
+  clean rebuilds (the only non-determinism was the `times_0` *date*, fixed via
+  the flag above). Don't assume TAG is the same; re-learn its flicker in Step 0.
+
 ## Reusable tooling
 
 Working scripts from the G1 pass are preserved in `doc/phase4-tools/`:
@@ -510,3 +632,23 @@ Working scripts from the G1 pass are preserved in `doc/phase4-tools/`:
 They have G1-specific paths and file lists baked in (e.g. `fix_comp.py`'s
 comparator table) but are small and self-documenting; adapt them for
 g2/g3/tag. The general method matters more than the exact scripts.
+
+**Drive `kr2ansi.py` from a script, not a shell loop.** Its CLI is `kr2ansi.py
+<file> <line> [<line> …]`. On G3, feeding it via an `awk | while read file
+lines; do … $lines …` pipeline word-split wrong and **half-converted the tree**
+(single-def files succeeded, multi-def files errored mid-edit, leaving a dirty
+working tree — `git checkout -- .` and redo). Group the `file:line` sites in
+Python and call the tool once per file:
+
+```python
+import subprocess, collections
+sites = collections.defaultdict(list)
+for ln in open('/tmp/krdef.txt'):           # 'olympia/foo.c:123' lines
+    f, l = ln.strip().rsplit(':', 1); sites[f].append(l)
+for f, lns in sites.items():
+    subprocess.run(['python3','doc/phase4-tools/kr2ansi.py', f, *lns])
+```
+
+`fix_void_defs.py` already takes a sites *file* and self-filters to real
+definitions (next line is `{`), so feed it every line that ends in `name()` —
+it ignores the non-defs.
