@@ -98,7 +98,7 @@ v_use_drum(struct command *c)
 
 	l = exits_from_loc_nsew_select(c->who, province(where), LAND, RAND);
 
-	for (i = 0; i < ilist_len(l); i++)
+	for (i = 0; i < plist_len(l); i++)
 	{
 		struct exit_view *v = l[i];
 		int dir = v->direction;
@@ -379,13 +379,13 @@ init_savage_attacks()
 
 		l = exits_from_loc_nsew_select(0, where, LAND, RAND);
 
-		if (ilist_len(l) == 0)
+		if (plist_len(l) == 0)
 		{
 			fprintf(stderr, "init_savage_attacks: no exits?\n");
 			continue;		/* probably shouldn't happen */
 		}
 
-		for (i = 0; i < ilist_len(l); i++)
+		for (i = 0; i < plist_len(l); i++)
 			if (call_savage(l[i]->destination, where, fort, 2))
 				break;
 	}

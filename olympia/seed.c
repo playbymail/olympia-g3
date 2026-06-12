@@ -73,7 +73,7 @@ prop_city_near_list(int city)
 
 			l = exits_from_loc_nsew(0, where);
 
-			for (i = 0; i < ilist_len(l); i++)
+			for (i = 0; i < plist_len(l); i++)
 			{
 				dest = l[i]->destination;
 
@@ -222,7 +222,7 @@ compute_dist_gate()
 
 		l = exits_from_loc_nsew(0, where);
 
-		for (i = 0; i < ilist_len(l); i++)
+		for (i = 0; i < plist_len(l); i++)
 		{
 			if (loc_depth(l[i]->destination) != LOC_province)
 				continue;
@@ -248,7 +248,7 @@ compute_dist_gate()
 
 			l = exits_from_loc_nsew(0, where);
 
-			for (i = 0; i < ilist_len(l); i++)
+			for (i = 0; i < plist_len(l); i++)
 			{
 				dest = l[i]->destination;
 

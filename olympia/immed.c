@@ -558,7 +558,7 @@ fix_gates()
 
 		l = exits_from_loc_nsew(0, where);
 
-		for (i = 0; i < ilist_len(l); i++)
+		for (i = 0; i < plist_len(l); i++)
 		{
 			if (loc_depth(l[i]->destination) != LOC_province)
 				continue;
@@ -587,7 +587,7 @@ fix_gates()
 
 		l = exits_from_loc_nsew(0, where);
 
-		for (i = 0; i < ilist_len(l); i++)
+		for (i = 0; i < plist_len(l); i++)
 		{
 		    dest = l[i]->destination;
 

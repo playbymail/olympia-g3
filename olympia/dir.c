@@ -728,7 +728,7 @@ exits_from_loc_nsew(int who, int where)
 	for (i = 0; i < plist_len(l); i++)
 		my_free(l[i]);
 
-	ilist_clear(&l);
+	plist_clear((plist *) &l);
 
 	province_exits(who, where, &l);
 
@@ -746,7 +746,7 @@ exits_from_loc_nsew_select(int who, int where, int land, int rand)
 	if (loc_depth(where) != LOC_province)
 		return NULL;
 
-	ilist_clear(&ret);
+	plist_clear((plist *) &ret);
 	l = exits_from_loc_nsew(who, where);
 
 	for (i = 0; i < plist_len(l); i++)

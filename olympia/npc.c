@@ -31,7 +31,7 @@ get_exit_dir(struct exit_view **l, int dir)
 {
 	int i;
 
-	for (i = 0; i < ilist_len(l); i++)
+	for (i = 0; i < plist_len(l); i++)
 		if (l[i]->direction == dir)	/* && l[i]->hidden == FALSE? */
 			return l[i];
 
@@ -47,7 +47,7 @@ choose_npc_direction(int who, int where, int dir)
 
 	l = exits_from_loc_nsew_select(who, where, LAND, RAND);
 
-	if (ilist_len(l) == 0)
+	if (plist_len(l) == 0)
 		return NULL;
 
 /*

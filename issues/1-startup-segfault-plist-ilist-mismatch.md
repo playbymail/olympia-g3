@@ -1,11 +1,25 @@
 # Issue 1 — `olympia-g3` segfaults at startup in `post_production` (all modes)
 
-**Status:** `location_trades()` crash **FIXED** — the four `loop.h` macros now
-use the matching `plist` accessors (`plist_len` / `plist_reclaim`). The engine
-clears `location_trades()` and advances. **Remaining:** INIT still crashes
-further on at `compute_dist()` (SIGSEGV / exit 139) — a separate, open follow-up
-of the same 64-bit list-triage class (likely another `loop_*` accessor mismatch,
-e.g. `loop_inv`). Not yet investigated; this issue stays open for that.
+**Status:** **RESOLVED** — the engine now completes the entire INIT sequence,
+enters immediate mode, and exits cleanly (exit 0). Two waves of the same 64-bit
+`plist`-queried-as-`ilist` bug were fixed:
+
+1. **`location_trades()`** — the four `loop.h` macros now use the matching
+   `plist` accessors (`plist_len` / `plist_reclaim`). (commit `4d57c14`.)
+2. **`compute_dist()` and the rest of INIT** — the **`exit_view **` plist cluster**:
+   `exits_from_loc_nsew` / `exits_from_loc_nsew_select` cleared their static
+   `plist` with `ilist_clear` (vs the sibling `exits_from_loc`'s correct
+   `plist_clear`), and **18 callers** iterated the returned `plist` with
+   `ilist_len(l)`. Fixed: `dir.c` `ilist_clear → plist_clear` (×2) plus
+   `ilist_len(l) → plist_len(l)` at every `exit_view` consumer (seed.c, day.c,
+   beast.c, garr.c, immed.c, move.c, npc.c, savage.c, storm.c). Genuine `ilist`
+   `l` variables in those files (`static ilist l = ilist_copy(...)` in move.c,
+   storm.c, garr.c) were left untouched. See "Wave 2" below.
+
+INIT now reaches `compute_dist()` → `seed_city_near_lists()` → `seed_cookies()`
+and on into immediate mode with no crash (mapgen `secret-sea-route` regress still
+prints `YES`). The olympia golden gate (playbook Step 0) is no longer blocked by
+a startup crash.
 
 **Original status (for history):** open — **root cause confirmed** (a `plist`
 queried with the `ilist` length accessor in 4 `loop.h` macros). Fix is a bounded
@@ -192,3 +206,36 @@ rm -rf lib && tar zxf ../../tests/olympia/fixtures/lib.tgz && rm -f lib/master
 lldb -b -o run -o bt -- ../../build/debug/olympia-g3 -l ./lib -i </dev/null
 # frame #0: find_trade(who=56761, kind=1, item=93) at buy.c:500, address=0x4
 ```
+
+## Wave 2 — the `exit_view **` plist cluster (`compute_dist()` and beyond)
+
+After Wave 1 cleared `location_trades()`, INIT advanced and crashed at
+`compute_dist_gate` (`seed.c:227`, `EXC_BAD_ACCESS address=0x4`), dereferencing
+`l[i]->destination` where the loop bound was `ilist_len(l)` (seed.c:225) and `l`
+is the `struct exit_view **` returned by `exits_from_loc_nsew()`. Same class:
+`exit_view **` is a **plist** (built via `plist_append((plist *) l, v)` in
+`add_province_exit`), but it was iterated with the `ilist` length accessor, which
+reads the plist's *capacity* field instead of its length → over-iteration into a
+NULL tail slot.
+
+Two defects, both fixed:
+
+- **Producer (`dir.c`).** `exits_from_loc_nsew` (`dir.c:731`) and
+  `exits_from_loc_nsew_select` (`dir.c:749`) cleared their `static` plist with
+  `ilist_clear(&l)` / `ilist_clear(&ret)` — corrupting the header on the 2nd+
+  reuse. The sibling `exits_from_loc` already used `plist_clear((plist *) &l)`
+  correctly. Changed both to `plist_clear((plist *) &...)`.
+- **Consumers (18 sites).** Every caller that iterates the returned list changed
+  `ilist_len(l) → plist_len(l)`: `seed.c` (76, 225, 251), `beast.c` (42),
+  `day.c` (29), `garr.c` (272), `immed.c` (561, 590), `move.c` (149, 192, 229),
+  `npc.c` (34 `get_exit_dir`, 50), `savage.c` (101, 382, 388), `storm.c`
+  (552, 587). The `c1.c` path was already correct (`count_hidden_exits`,
+  `hidden_count_to_index`, `find_hidden_exit` in `dir.c` use `plist_len`).
+
+**Deliberately untouched** (genuine `ilist`, not `exit_view`):
+`static ilist l = ilist_copy(...)` in `move.c` (852), `storm.c` (1430), and
+`garr.c` (171, 857), with their `ilist_clear` / `ilist_len(l)` left as-is.
+
+Verified: clean build; `olympia-g3 -l ./lib -i </dev/null` completes all INIT
+stages, enters immediate mode, and exits 0; mapgen `secret-sea-route` regress =
+`YES`.

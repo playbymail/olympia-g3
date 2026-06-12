@@ -26,7 +26,7 @@ near_rocky_coast(int where)
 
 	l = exits_from_loc_nsew(0, where);
 
-	for (i = 0; i < ilist_len(l); i++)
+	for (i = 0; i < plist_len(l); i++)
 		if (subkind(l[i]->destination) != sub_ocean)
 		{
 			if (subkind(l[i]->destination == sub_mountain))

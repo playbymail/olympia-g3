@@ -269,7 +269,7 @@ garrison_allowed_here(int who, int where, int castle)
 
 	l = exits_from_loc_nsew(who, where);
 
-	for (i = 0; i < ilist_len(l); i++)
+	for (i = 0; i < plist_len(l); i++)
 	{
 		garr = garrison_here(l[i]->destination);
 
