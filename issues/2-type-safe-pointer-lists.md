@@ -138,6 +138,15 @@ instead of a runtime segfault.
 > turn that does. 3 line changes, 1 file, **0 new warnings**, golden **YES**,
 > mapgen `YES`.
 
+> **Progress — `accept_ents_list` (✅ done).** The per-char `accept` field
+> (`oly.h:605`, `struct accept_ent **` — "what we can be given") →
+> `accept_ents_list`. Only two ops, both in `c1.c`: `v_accept`'s
+> `plist_append((plist *) &p->accept, …)` → `accept_ents_append`, and
+> `will_accept_sup`'s `plist_len(p->accept)` scan → `accept_ents_len`. **Not
+> persisted** — grep confirms no `accept` save/load in `io.c` (rebuilt from the
+> `accept` order each turn), so zero serialization risk. 3 line changes, 2
+> files, **0 new warnings**, golden **YES**, mapgen `YES`.
+
 ## Remaining plist types to retire (future work)
 
 All five `oly.h` entity fields in the table above, plus `exit_views`,
@@ -152,7 +161,7 @@ blast-radius:
 | target list | what / where | sites | persisted? |
 |-------------|--------------|-------|------------|
 | ~~`flag_ents_list`~~ | ✅ **done** (`c1.c` signal `flags`) — see progress note below | — | no (transient static) |
-| `accept_ents_list` | the `accept` field (`oly.h:605`, `struct accept_ent **`) — `c1.c:414` (`plist_append`), `c1.c:430` (`plist_len`) | ~2 | check (field-level) |
+| ~~`accept_ents_list`~~ | ✅ **done** (`accept` field) — see progress note below | — | no (rebuilt; no io.c) |
 | `wait_args_list` | the `c->wait_parse` field (`oly.h:868`, `struct wait_arg **`, "not saved") — `c1.c:1177/1183/1195/1216/1301/1306/1309` | ~7 | no |
 | `req_ents_list` | `use.c`'s requirement-scan locals `struct req_ent **l` (`use.c:379/427`, `plist_len` at `388/395/413/438/445/460`) **and** the save/load pair `req_list_print`/`req_list_scan` (`io.c:666/700`, by-ref `struct req_ent ***l`) | ~10 | **yes** |
 | `cstrings_list` | the `c->parse` field (`oly.h:857`, `char **`; `numargs` already calls `cstrings_len`) built by `parse_line()` (`input.c:33/84`) and used at `input.c:231/271/291/299`; plus local order-text `char **l` in `c2.c` (`155/166/201/218/300/305/473/515`) and `eat.c` (`931/935`) | ~16 | no (rebuilt) |

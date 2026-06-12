@@ -602,7 +602,7 @@ struct entity_char {
 	schar fresh_hire;		/* don't erode loyalty */
 	schar new_lord;			/* got a new lord this turn */
 	schar studied;			/* num days we studied */
-	struct accept_ent **accept;	/* what we can be given */
+	accept_ents_list accept;	/* what we can be given */
 };
 
 struct char_magic {

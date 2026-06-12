@@ -411,7 +411,7 @@ v_accept(struct command *c)
 	new->from_who = from_who;
 	new->qty = qty;
 
-	plist_append((plist *) &p->accept, new);
+	accept_ents_append(&p->accept, new);
 
 	return TRUE;
 }
@@ -427,7 +427,7 @@ will_accept_sup(int who, int item, int from, int qty)
 
 	if (p)
 	{
-		for (i = 0; i < plist_len(p->accept); i++)
+		for (i = 0; i < accept_ents_len(p->accept); i++)
 		{
 			int item_match = (p->accept[i]->item == item ||
 					  p->accept[i]->item == 0);
