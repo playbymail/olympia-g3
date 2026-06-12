@@ -158,6 +158,22 @@ instead of a runtime segfault.
 > `eat.c` — K&R prototype cleanup, a Phase-4 concern, not plist ops. 8 line
 > changes, 2 files, **0 new warnings**, golden **YES**, mapgen `YES`.
 
+> **Progress — `req_ents_list` (✅ done).** A **persisted** list — the
+> per-skill `req` field (`oly.h:771`, `struct req_ent **req`, "items required
+> for use or cast"; the earlier census table missed this field decl, listing
+> only its consumers). The use.c locals are the field itself: `meets_requirements`
+> / `consume_requirements` each take `l = p->req` (`p = rp_skill(skill)`),
+> `struct req_ent **l` → `req_ents_list l`, `plist_len(l)` (×6) → `req_ents_len`.
+> The **save/load** path in `io.c` — `req_list_print` / `req_list_scan` (called
+> on `p->req` at `io.c:1590/1633`), by-ref param `struct req_ent ***l` →
+> `req_ents_list *l`, `plist_append` → `req_ents_append`. 13 line changes, 3
+> files, **0 new warnings**, golden gate **byte-identical** (`YES`, exercises
+> `-S` save of the `rq` lines), mapgen `YES`. Carefully **left untouched**:
+> `use.c:366`'s `plist_len(p->may_use)` — `may_use` is a genuine `ilist`
+> (`oly.h:739`), so that is the separate wrong-accessor latent bug (it wants
+> `ilist_len`), tracked in the caveat below and to be fixed in the final
+> typedef-deletion step, not retyped to a list.
+
 ## Remaining plist types to retire (future work)
 
 All five `oly.h` entity fields in the table above, plus `exit_views`,
@@ -174,7 +190,7 @@ blast-radius:
 | ~~`flag_ents_list`~~ | ✅ **done** (`c1.c` signal `flags`) — see progress note below | — | no (transient static) |
 | ~~`accept_ents_list`~~ | ✅ **done** (`accept` field) — see progress note below | — | no (rebuilt; no io.c) |
 | ~~`wait_args_list`~~ | ✅ **done** (`c->wait_parse` field) — see progress note below | — | no |
-| `req_ents_list` | `use.c`'s requirement-scan locals `struct req_ent **l` (`use.c:379/427`, `plist_len` at `388/395/413/438/445/460`) **and** the save/load pair `req_list_print`/`req_list_scan` (`io.c:666/700`, by-ref `struct req_ent ***l`) | ~10 | **yes** |
+| ~~`req_ents_list`~~ | ✅ **done** (`req` field + use.c/io.c) — see progress note below | — | **yes** |
 | `cstrings_list` | the `c->parse` field (`oly.h:857`, `char **`; `numargs` already calls `cstrings_len`) built by `parse_line()` (`input.c:33/84`) and used at `input.c:231/271/291/299`; plus local order-text `char **l` in `c2.c` (`155/166/201/218/300/305/473/515`) and `eat.c` (`931/935`) | ~16 | no (rebuilt) |
 | ~~`fights_list`~~ | ✅ **done** (`combat.c` combat engine) — see progress note below | — | no (per-turn) |
 

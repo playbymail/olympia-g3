@@ -376,7 +376,7 @@ meets_requirements(int who, int skill)
 {
 	int i;
 	struct entity_skill *p;
-	struct req_ent **l;
+	req_ents_list l;
 
 	p = rp_skill(skill);
 	if (p == NULL)
@@ -385,14 +385,14 @@ meets_requirements(int who, int skill)
 	l = p->req;
 
 	i = 0;
-	while (i < plist_len(l))
+	while (i < req_ents_len(l))
 	{
 		while (has_item(who, l[i]->item) < l[i]->qty &&
 		       l[i]->consume == REQ_OR)
 		{
 			i++;
 
-			if (i >= plist_len(l))
+			if (i >= req_ents_len(l))
 			{
 				fprintf(stderr, "skill = %d\n", skill);
 				assert(FALSE);
@@ -410,7 +410,7 @@ meets_requirements(int who, int skill)
 			return FALSE;
 		}
 
-		while (l[i]->consume == REQ_OR && i < plist_len(l))
+		while (l[i]->consume == REQ_OR && i < req_ents_len(l))
 			i++;
 		i++;
 	}
@@ -424,7 +424,7 @@ consume_requirements(int who, int skill)
 {
 	int i;
 	struct entity_skill *p;
-	struct req_ent **l;
+	req_ents_list l;
 	int ret;
 	int item, qty;
 
@@ -435,14 +435,14 @@ consume_requirements(int who, int skill)
 	l = p->req;
 
 	i = 0;
-	while (i < plist_len(l))
+	while (i < req_ents_len(l))
 	{
 		while (has_item(who, l[i]->item) < l[i]->qty &&
 		       l[i]->consume == REQ_OR)
 		{
 			i++;
 
-			if (i >= plist_len(l))
+			if (i >= req_ents_len(l))
 			{
 				fprintf(stderr, "req list ends with REQ_OR, "
 						"skill = %d\n", skill);
@@ -457,7 +457,7 @@ consume_requirements(int who, int skill)
 		item = l[i]->item;
 		qty = l[i]->qty;
 
-		while (l[i]->consume == REQ_OR && i < plist_len(l))
+		while (l[i]->consume == REQ_OR && i < req_ents_len(l))
 			i++;
 
 		if (l[i]->consume == REQ_YES)

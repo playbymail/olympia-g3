@@ -658,12 +658,12 @@ trade_list_scan(char *s, trades_list *l, int box_num)
 
 
 static void
-req_list_print(FILE *fp, char *header, struct req_ent **l)
+req_list_print(FILE *fp, char *header, req_ents_list l)
 {
 	int i;
 	int count = 0;
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < req_ents_len(l); i++)
 		if (valid_box(l[i]->item))
 		{
 			count++;
@@ -685,7 +685,7 @@ req_list_print(FILE *fp, char *header, struct req_ent **l)
 
 
 static void
-req_list_scan(char *s, struct req_ent ***l, int box_num)
+req_list_scan(char *s, req_ents_list *l, int box_num)
 {
 	struct req_ent *new;
 	int consume;
@@ -697,7 +697,7 @@ req_list_scan(char *s, struct req_ent ***l, int box_num)
 		new->consume = consume;
 
 		if (valid_box(new->item))
-			plist_append((plist *) l, new);
+			req_ents_append(l, new);
 		else
 		{
 			fprintf(stderr, "req_list_scan(%d): bad item %d\n",

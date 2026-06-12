@@ -768,7 +768,7 @@ struct entity_skill {
 	ilist offered;		/* skills learnable after this one */
 	ilist research;		/* skills researable with this one */
 
-	struct req_ent **req;	/* ilist of items required for use or cast */
+	req_ents_list req;	/* ilist of items required for use or cast */
 	int produced;		/* simple production skill result */
 
 	int no_exp;		/* this skill not rated for experience */
