@@ -18,8 +18,13 @@ enters immediate mode, and exits cleanly (exit 0). Two waves of the same 64-bit
 
 INIT now reaches `compute_dist()` → `seed_city_near_lists()` → `seed_cookies()`
 and on into immediate mode with no crash (mapgen `secret-sea-route` regress still
-prints `YES`). The olympia golden gate (playbook Step 0) is no longer blocked by
-a startup crash.
+prints `YES`). A full `-r -S` turn also runs to completion and saves the DB. The
+olympia golden gate (playbook Step 0) is no longer blocked by a startup crash.
+
+> **Prevention follow-up:** all three waves were the same `plist`/`ilist` mixing
+> the compiler couldn't catch (everything is cast through `void **`). Making that
+> class a *build error* is tracked as
+> [issue 2 — type-safe pointer lists](2-type-safe-pointer-lists.md).
 
 **Original status (for history):** open — **root cause confirmed** (a `plist`
 queried with the `ilist` length accessor in 4 `loop.h` macros). Fix is a bounded
