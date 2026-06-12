@@ -928,11 +928,11 @@ do_eat_command(struct command *c, FILE *fp)
 				if (i_strcmp(t, "end") == 0)
 					break;
 
-				plist_append((plist *) &l, str_save(s));
+				cstrings_append(&l, str_save(s));
 			}
 			else
 			{
-				plist_append((plist *) &l, str_save(s));
+				cstrings_append(&l, str_save(s));
 
 				if (--count <= 0)
 					break;

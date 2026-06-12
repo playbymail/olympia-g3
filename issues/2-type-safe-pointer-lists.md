@@ -174,6 +174,20 @@ instead of a runtime segfault.
 > `ilist_len`), tracked in the caveat below and to be fixed in the final
 > typedef-deletion step, not retyped to a list.
 
+> **Progress — `cstrings_list` (✅ done).** The last plist *list* — the
+> `c->parse` parsed-argument field (`oly.h:857`, `char **`; `numargs` already
+> called `cstrings_len`) retyped to `cstrings_list`, and every `plist_` op on a
+> `char **` string list converted: `input.c` (`parse_line`'s `plist_clear`/
+> `plist_append`, and `plist_len(c->parse)` ×3 + `plist_delete` on `c->parse`),
+> `c2.c`'s order-text helpers (`plist_len` ×6, `plist_append` ×2), `eat.c`'s
+> `show_post` (`plist_append` ×2). Since `cstrings_list` *is* `char **`, the
+> type-identical `char **` parameter/return signatures (`parse_line`,
+> `show_post`, `text_list_free`, …) were left as-is — no lockstep change forced,
+> exactly as for `order_list.l`. 17 line changes, 4 files, **0 new warnings**,
+> golden **YES**, mapgen `YES`. After this, the **only** `plist_` calls left in
+> `olympia/` are the 5 wrong-accessor `plist_len`-on-an-`ilist` stragglers (see
+> caveat below) — no plist *list* remains.
+
 ## Remaining plist types to retire (future work)
 
 All five `oly.h` entity fields in the table above, plus `exit_views`,
@@ -191,7 +205,7 @@ blast-radius:
 | ~~`accept_ents_list`~~ | ✅ **done** (`accept` field) — see progress note below | — | no (rebuilt; no io.c) |
 | ~~`wait_args_list`~~ | ✅ **done** (`c->wait_parse` field) — see progress note below | — | no |
 | ~~`req_ents_list`~~ | ✅ **done** (`req` field + use.c/io.c) — see progress note below | — | **yes** |
-| `cstrings_list` | the `c->parse` field (`oly.h:857`, `char **`; `numargs` already calls `cstrings_len`) built by `parse_line()` (`input.c:33/84`) and used at `input.c:231/271/291/299`; plus local order-text `char **l` in `c2.c` (`155/166/201/218/300/305/473/515`) and `eat.c` (`931/935`) | ~16 | no (rebuilt) |
+| ~~`cstrings_list`~~ | ✅ **done** (`c->parse` field + char** locals) — see progress note below | — | no (rebuilt) |
 | ~~`fights_list`~~ | ✅ **done** (`combat.c` combat engine) — see progress note below | — | no (per-turn) |
 
 After the remaining five are migrated, `grep -rn 'plist' olympia/ mapgen/` should be empty

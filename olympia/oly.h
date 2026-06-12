@@ -854,7 +854,7 @@ struct command {
 
 	char *line;		/* original command line */
 	char *parsed_line;	/* cut-up line, pointed to by parse */
-	char **parse;		/* ilist of parsed arguments */
+	cstrings_list parse;		/* ilist of parsed arguments */
 
 	schar state;		/* STATE_LOAD, STATE_RUN, STATE_ERROR, STATE_DONE */
 	schar status;		/* success or failure */

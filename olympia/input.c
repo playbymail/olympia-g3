@@ -30,7 +30,7 @@ parse_line(char **l, char *s)
 	char *p;
 	char *prev;
 
-	plist_clear((plist *) &l);
+	cstrings_clear(&l);
 
 	while (*s)
 	{
@@ -81,7 +81,7 @@ parse_line(char **l, char *s)
 			p--;
 		}
 
-		plist_append((plist *) &l, prev);	    /* note cast! */
+		cstrings_append(&l, prev);	    /* note cast! */
 	}
 
 	return l;
@@ -228,7 +228,7 @@ oly_parse_cmd(struct command *c, char *s)
 
 	c->parse = parse_line(c->parse, c->parsed_line);
 
-	if (plist_len(c->parse) > 0)
+	if (cstrings_len(c->parse) > 0)
 	{
 		int i;
 
@@ -268,7 +268,7 @@ oly_parse(struct command *c, char *s)
 	if (!oly_parse_cmd(c, s))
 		return FALSE;
 
-	switch (min(plist_len(c->parse), 9))
+	switch (min(cstrings_len(c->parse), 9))
 	{
 	case 9: c->h = parse_arg(c->who, c->parse[8]);
 	case 8: c->g = parse_arg(c->who, c->parse[7]);
@@ -288,7 +288,7 @@ void
 cmd_shift(struct command *c)
 {
 
-	if (plist_len(c->parse) > 1)
+	if (cstrings_len(c->parse) > 1)
 	{
 /*
  *  Deleted argument need not be freed, since it's just a
@@ -296,7 +296,7 @@ cmd_shift(struct command *c)
  *  itself.
  */
 
-		plist_delete((plist *) &c->parse, 1);
+		cstrings_delete(&c->parse, 1);
 	}
 
 	c->a = c->b;
