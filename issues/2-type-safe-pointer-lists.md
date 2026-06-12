@@ -128,6 +128,17 @@ After all six are migrated, `grep -rn 'plist' olympia/ mapgen/` should be empty
 and the `plist` typedef + `lib/plist.c` can be deleted (acceptance item 4); the
 typed `_test()` entry points can optionally be wired into a unit check.
 
+> **Not on the list: `roads_list` / `tiles_list`.** Their typed APIs exist
+> (`lib/roads.c` / `lib/tiles.c`, compiled into both `mapgen-g3` and
+> `olympia-g3`), but they are **dead code** — `struct road` / `struct tile` are
+> not even defined in `olympia/`, and grep finds **zero** call sites and **zero**
+> `plist` ops touching a road/tile list anywhere in the engine. Nothing holds
+> road/tile data in a `plist` under another name, so there is nothing to retire.
+> The "equivalent typed lists exist for … `roads`, `tiles`, …" sentence above
+> only enumerates the *available* APIs, not lists in active use. (If the
+> `_test()`-entry-point unit check lands, these two are the first dead APIs it
+> would exercise.)
+
 > **Caveat — separate latent-bug class, *not* a "retire plist" item.** A few
 > sites call `plist_len()` on a list that is **already a correctly-typed
 > `ilist`** (4-byte elements): `use.c:366` (`p->may_use`, `ilist`), and
