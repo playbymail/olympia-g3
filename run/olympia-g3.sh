@@ -146,7 +146,9 @@ echo " info: command thinks that it ran successfully"
 touch .olympia.before
 rm -rf lib-before lib-after
 cp -a lib lib-before
-"${OLYMPIA_BIN}/${OLYMPIA_COMMAND}-${OLYMPIA_ENGINE}" -r -l ./lib -S </dev/null || {
+# test-use-const-report-date: fix the Olympia Times masthead date so the golden
+# manifest is deterministic across days (otherwise times_0 embeds today's date).
+"${OLYMPIA_BIN}/${OLYMPIA_COMMAND}-${OLYMPIA_ENGINE}" -r -l ./lib -S test-use-const-report-date </dev/null || {
   echo "error: ${OLYMPIA_COMMAND}-${OLYMPIA_ENGINE} failed"
   exit 2
 }

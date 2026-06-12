@@ -28,6 +28,13 @@ int time_self = FALSE;		/* print timing info */
 int save_flag = FALSE;
 int win_flag = FALSE;
 
+/*
+ *  Testing flag: when set (via the "test-use-const-report-date" command-line
+ *  argument), the Olympia Times masthead uses a fixed date instead of the
+ *  wall-clock date, so golden output is deterministic across days.
+ */
+int test_use_const_report_date = FALSE;
+
 int call_init_routines(void)
 {
 
@@ -650,6 +657,22 @@ main(int argc, char **argv)
 	setbuf(stderr, NULL);
 
 	call_init_routines();
+
+	/*
+	 *  Pull the long-form testing flag "test-use-const-report-date" out of
+	 *  argv before getopt() (which only handles single-char options) sees it,
+	 *  compacting argv so the remaining options parse normally.
+	 */
+	{
+		int ai, aj = 1;
+		for (ai = 1; ai < argc; ai++) {
+			if (strcmp(argv[ai], "test-use-const-report-date") == 0)
+				test_use_const_report_date = TRUE;
+			else
+				argv[aj++] = argv[ai];
+		}
+		argc = aj;
+	}
 
 	while ((c = getopt(argc, argv, "waeEfirl:pR?sStMTAh")) != EOF) {
 		switch (c) {

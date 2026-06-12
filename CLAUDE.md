@@ -212,15 +212,17 @@ What it took (62 K&R defs → ANSI [38 mapgen / 24 olympia], 245 empty-paren
   an incremental one — ninja only re-emits warnings for recompiled TUs, so an
   incremental log silently omits most missing-prototype functions.
 
-> **Golden gate caveat surfaced during Phase 4:** `run/olympia/lib/times_0` (the
-> "Olympia Times" newsletter) embeds the wall-clock **date**, so the committed
-> `manifest.sha256` only matches on the day it was captured — on any other day
-> `golden_check.sh` reports a lone `times_0` diff on an *otherwise byte-identical*
-> tree. Phase 4 was verified against a **same-session** pre-edit baseline (date
-> held constant) for a true byte-for-byte check including `times_0`. The
-> committed manifest was left untouched. If you want the gate date-robust, add
-> `times_0` to `FLAKY_FILES` in `golden_check.sh` with **no** `.reference` (the
-> loop then excludes it entirely) — a separate decision from Phase 4.
+> **Golden gate date-determinism (surfaced + fixed during Phase 4):**
+> `run/olympia/lib/times_0` (the "Olympia Times" newsletter) embeds the
+> wall-clock **date**, so the committed `manifest.sha256` used to only match on
+> the day it was captured. Fixed by a testing flag: passing
+> **`test-use-const-report-date`** on the engine command line sets the
+> `test_use_const_report_date` global (main.c), and `times_masthead()` (c2.c)
+> then emits a fixed `January 1, 2000` instead of the wall-clock date.
+> `run/olympia-g3.sh` passes the flag on the turn run, and the committed manifest
+> was re-baselined with it, so `golden_check.sh` is now date-independent and
+> prints `YES` on any day. (The flag affects *only* the newsletter date; all
+> other output is byte-identical with or without it.)
 
 The full method, order of operations, probe recipe, and every trap is in
 `doc/modernization-prototypes-playbook.md`. The high-level shape (from G1/G2):

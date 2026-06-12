@@ -398,10 +398,18 @@ times_masthead(void)
 		exit(1);
 	}
 
-	time(&l);
-	tm = localtime(&l);
-	sprintf(date, "%s %d, %d",
-		months[tm->tm_mon], tm->tm_mday, tm->tm_year + 1900);
+	if (test_use_const_report_date)
+	{
+		/* fixed date for deterministic golden output (see main.c) */
+		strcpy(date, "January 1, 2000");
+	}
+	else
+	{
+		time(&l);
+		tm = localtime(&l);
+		sprintf(date, "%s %d, %d",
+			months[tm->tm_mon], tm->tm_mday, tm->tm_year + 1900);
+	}
 
 	loop_player(i)
 	{
