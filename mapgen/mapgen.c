@@ -1135,7 +1135,7 @@ int col;
 	for (i = 1; !(p && p->terrain != terr_land && p->terrain != terr_ocean) && i < MAX_DIR; i++)
 		p = adjacent_tile_sup(row, col, dir_vector[i]);
 
-	return (i < MAX_DIR) ? p : NULL;
+	return (p && p->terrain != terr_land && p->terrain != terr_ocean) ? p : NULL;
 }
 
 
