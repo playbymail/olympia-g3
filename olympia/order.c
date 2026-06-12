@@ -27,14 +27,14 @@ p_order_head(int pl, int who)
 
 	p = p_player(pl);
 
-	for (i = 0; i < plist_len(p->orders); i++)
+	for (i = 0; i < orders_len(p->orders); i++)
 		if (p->orders[i]->unit == who)
 			return p->orders[i];
 
 	new = my_malloc(sizeof(*new));
 	new->unit = who;
 
-	plist_append((plist *) &p->orders, new);
+	orders_append(&p->orders, new);
 
 	return new;
 }
@@ -51,7 +51,7 @@ rp_order_head(int pl, int who)
 	if (p == NULL)
 		return NULL;
 
-	for (i = 0; i < plist_len(p->orders); i++)
+	for (i = 0; i < orders_len(p->orders); i++)
 		if (p->orders[i]->unit == who)
 			return p->orders[i];
 
@@ -223,7 +223,7 @@ save_player_orders(int pl)
 	if (p == NULL)
 		return;
 
-	for (i = 0; i < plist_len(p->orders); i++)
+	for (i = 0; i < orders_len(p->orders); i++)
 	{
 		if (!valid_box(p->orders[i]->unit) ||
 		    kind(p->orders[i]->unit) == T_deadchar)
@@ -450,7 +450,7 @@ orders_other(int who, int pl)
 	if (p == NULL)
 		return;
 
-	for (i = 0; i < plist_len(p->orders); i++)
+	for (i = 0; i < orders_len(p->orders); i++)
 	{
 		if (pl == p->orders[i]->unit ||
 		    !valid_box(p->orders[i]->unit) ||

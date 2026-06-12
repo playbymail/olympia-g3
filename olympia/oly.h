@@ -502,7 +502,7 @@ struct entity_player {
 	char *password;
 	int first_turn;			/* which turn was their first? */
 	int last_order_turn;	/* last turn orders were submitted */
-	struct order_list **orders;	/* ilist of orders for units in */
+	orders_list orders;	/* ilist of orders for units in */
 								/* this faction */
 	sparse known;			/* visited, lore seen, encountered */
 

@@ -1,7 +1,8 @@
 # Issue 2 — Type-safe pointer lists (retire the generic `plist`)
 
-**Status:** open — in progress. **`exit_views_list` and `trades_list` migrated**;
-the remaining plist fields (`items`, `skills`, `orders`, `admits`) remain.
+**Status:** open — in progress. **`exit_views_list`, `trades_list`, and
+`orders_list` migrated**; the remaining plist fields (`items`, `skills`,
+`admits`) remain.
 **Type:** modernization (64-bit list-triage, follow-on to issue 1).
 **Motivation:** make the entire class of bug behind issue 1 a **compile error**
 instead of a runtime segfault.
@@ -32,6 +33,16 @@ instead of a runtime segfault.
 > same-class bug surfaced by the retype: `immed.c`'s clear-city-trades used
 > `ilist_clear(&bx[i]->trades)` on the plist → now `trades_clear` (not on the
 > turn path, so golden-neutral, but now correct).
+
+> **Progress — `orders_list` (✅ done).** The per-player `orders` field
+> (`oly.h:505` → `orders_list`), confined to `order.c` (`plist_len(p->orders)` →
+> `orders_len`, the `plist_append((plist *) &p->orders, …)` → `orders_append`).
+> 6 line changes, 2 files, **0 new warnings**, golden **YES**, mapgen `YES`.
+> Care point: `struct order_list` has its *own* inner list member `l`
+> (`p->orders[i]->l`) — a distinct plist left untouched here (the substring
+> `plist_len(p->orders)` doesn't match `plist_len(p->orders[i]->l)`, so the field
+> ops are cleanly separable). Orders are rebuilt from the text spool, not
+> serialized as a plist, so `io.c` needed no change.
 
 ## Problem
 
