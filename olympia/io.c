@@ -288,7 +288,7 @@ admit_print(FILE *fp, struct entity_player *p)
 {
 	int i;
 
-	for (i = 0; i < ilist_len(p->admits); i++)
+	for (i = 0; i < admits_len(p->admits); i++)
 		admit_print_sup(fp, p->admits[i]);
 }
 
@@ -346,7 +346,7 @@ admit_scan(char *s, int box_num, struct entity_player *pp)
 		return;
 	}
 
-	plist_append((plist *) &(pp->admits), p);
+	admits_append(&(pp->admits), p);
 }
 
 

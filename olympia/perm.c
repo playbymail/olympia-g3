@@ -16,7 +16,7 @@ rp_admit(int pl, int targ)
 	assert(kind(pl) == T_player);
 	p = p_player(pl);
 
-	for (i = 0; i < plist_len(p->admits); i++)
+	for (i = 0; i < admits_len(p->admits); i++)
 		if (p->admits[i]->targ == targ)
 			return p->admits[i];
 
@@ -34,14 +34,14 @@ p_admit(int pl, int targ)
 	assert(kind(pl) == T_player);
 	p = p_player(pl);
 
-	for (i = 0; i < plist_len(p->admits); i++)
+	for (i = 0; i < admits_len(p->admits); i++)
 		if (p->admits[i]->targ == targ)
 			return p->admits[i];
 
 	new = my_malloc(sizeof(*new));
 	new->targ = targ;
 
-	plist_append((plist *) &p->admits, new);
+	admits_append(&p->admits, new);
 
 	return new;
 }
@@ -140,8 +140,8 @@ v_admit(struct command *c)
 
 static int
 admit_comp(a, b)
-struct admit **a;
-struct admit **b;
+admits_list a;
+admits_list b;
 {
 
 	return (*a)->targ - (*b)->targ;
@@ -198,10 +198,10 @@ print_admit(int pl)
 
 	p = p_player(pl);
 
-	if (plist_len(p->admits) > 0)
-	    qsort(p->admits, plist_len(p->admits), sizeof(*p->admits), admit_comp);
+	if (admits_len(p->admits) > 0)
+	    qsort(p->admits, admits_len(p->admits), sizeof(*p->admits), admit_comp);
 
-	for (i = 0; i < plist_len(p->admits); i++)
+	for (i = 0; i < admits_len(p->admits); i++)
 	{
 		if (valid_box(p->admits[i]->targ))
 		{

@@ -507,7 +507,7 @@ struct entity_player {
 	sparse known;			/* visited, lore seen, encountered */
 
 	ilist units;			/* what units are in our faction? */
-	struct admit **admits;	/* admit permissions list */
+	admits_list admits;	/* admit permissions list */
 	ilist unformed;			/* nobles as yet unformed */
 
 	int split_lines;		/* split mail at this many lines */

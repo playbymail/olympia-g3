@@ -1,8 +1,8 @@
 # Issue 2 — Type-safe pointer lists (retire the generic `plist`)
 
-**Status:** open — in progress. **`exit_views_list`, `trades_list`, and
-`orders_list` migrated**; the remaining plist fields (`items`, `skills`,
-`admits`) remain.
+**Status:** open — in progress. **`exit_views_list`, `trades_list`,
+`orders_list`, and `admits_list` migrated**; the remaining plist fields
+(`items`, `skills`) remain.
 **Type:** modernization (64-bit list-triage, follow-on to issue 1).
 **Motivation:** make the entire class of bug behind issue 1 a **compile error**
 instead of a runtime segfault.
@@ -43,6 +43,19 @@ instead of a runtime segfault.
 > `plist_len(p->orders)` doesn't match `plist_len(p->orders[i]->l)`, so the field
 > ops are cleanly separable). Orders are rebuilt from the text spool, not
 > serialized as a plist, so `io.c` needed no change.
+
+> **Progress — `admits_list` (✅ done).** The per-player `admits` field
+> (`oly.h:510` → `admits_list`): `perm.c` (the admit-permission engine —
+> `admits_len`, `admits_append`, the `admit_comp` qsort comparator) and the
+> **save/load** path in `io.c` (`admit_print` / `admit_scan`). 11 line changes,
+> 3 files, **0 new warnings**, golden **YES**, mapgen `YES`. Notable: the retype
+> exposed *another* latent same-class bug — `admit_print` (the **save** loop)
+> used `ilist_len(p->admits)` on the plist, which would over-read into NULL tail
+> slots and `admit_print_sup` would deref `->targ` → crash. It is golden-neutral
+> here only because this fixture has **zero** admits (`p->admits == NULL`,
+> verified: no ` am ` lines in fixture or saved DB), so the loop never ran; the
+> fix makes it correct for any DB that does carry admits. The inner
+> `struct admit.l` (a genuine `ilist` of box-ids) was left untouched.
 
 ## Problem
 
