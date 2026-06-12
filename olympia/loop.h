@@ -303,31 +303,31 @@
 #define	loop_char_skill(who, e) \
 { int ll_i; \
   int ll_check = 15; \
-  struct skill_ent **ll_l = NULL; \
+  skill_ents_list ll_l = NULL; \
     assert(valid_box(who)); \
     if (rp_char(who)) \
-       ll_l = (struct skill_ent **) plist_copy((plist) rp_char(who)->skills); \
-       for (ll_i = 0; ll_i < plist_len((plist) ll_l); ll_i++) { \
+       ll_l = skill_ents_copy(rp_char(who)->skills); \
+       for (ll_i = 0; ll_i < skill_ents_len(ll_l); ll_i++) { \
 	     e = ll_l[ll_i];
 
 #define	next_char_skill \
-		} assert(ll_check == 15); plist_reclaim((plist *) &ll_l); }
+		} assert(ll_check == 15); skill_ents_reclaim(&ll_l); }
 
 
 
 #define	loop_char_skill_known(who, e) \
 { int ll_i; \
   int ll_check = 16; \
-  struct skill_ent **ll_l = NULL; \
+  skill_ents_list ll_l = NULL; \
     assert(valid_box(who)); \
     if (rp_char(who)) \
-       ll_l = (struct skill_ent **) plist_copy((plist) rp_char(who)->skills); \
-       for (ll_i = 0; ll_i < plist_len((plist) ll_l); ll_i++) \
+       ll_l = skill_ents_copy(rp_char(who)->skills); \
+       for (ll_i = 0; ll_i < skill_ents_len(ll_l); ll_i++) \
           if (ll_l[ll_i]->know == SKILL_know) { \
 		e = ll_l[ll_i];
 
 #define	next_char_skill_known \
-		} assert(ll_check == 16); plist_reclaim((plist *) &ll_l); }
+		} assert(ll_check == 16); skill_ents_reclaim(&ll_l); }
 
 
 #define	loop_trade(who, e) \

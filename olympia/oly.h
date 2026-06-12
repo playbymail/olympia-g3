@@ -572,7 +572,7 @@ struct entity_char {
 
 	olytime death_time;		/* when was character killed */
 
-	struct skill_ent **skills;	/* ilist of skills known by char */
+	skill_ents_list skills;	/* ilist of skills known by char */
 
 	int moving;			/* daystamp of beginning of movement */
 	int unit_lord;			/* who is our owner? */

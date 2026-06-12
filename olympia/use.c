@@ -974,7 +974,7 @@ rp_skill_ent(int who, int skill)
 	if (p == NULL)
 		return NULL;
 
-	for (i = 0; i < plist_len(p->skills); i++)
+	for (i = 0; i < skill_ents_len(p->skills); i++)
 		if (p->skills[i]->skill == skill)
 			return p->skills[i];
 
@@ -991,14 +991,14 @@ p_skill_ent(int who, int skill)
 
 	p = p_char(who);
 
-	for (i = 0; i < plist_len(p->skills); i++)
+	for (i = 0; i < skill_ents_len(p->skills); i++)
 		if (p->skills[i]->skill == skill)
 			return p->skills[i];
 
 	new = my_malloc(sizeof(*new));
 	new->skill = skill;
 
-	plist_append((plist *) &p->skills, new);
+	skill_ents_append(&p->skills, new);
 
 	return new;
 }
@@ -1020,7 +1020,7 @@ forget_skill(int who, int skill)
 	if (t == NULL)
 		return FALSE;
 
-	plist_rem_value((plist *) &p->skills, t);
+	skill_ents_rem_value(&p->skills, t);
 
 	if (magic_skill(skill))
 	{
@@ -1167,8 +1167,8 @@ skill_school(int sk)
 
 static int
 rep_skill_comp(a, b)
-struct skill_ent **a;
-struct skill_ent **b;
+skill_ents_list a;
+skill_ents_list b;
 {
 	int pa;		/* parent skill of a */
 	int pb;		/* parent skill of b */
@@ -1199,8 +1199,8 @@ struct skill_ent **b;
 
 static int
 flat_skill_comp(a, b)
-struct skill_ent **a;
-struct skill_ent **b;
+skill_ents_list a;
+skill_ents_list b;
 {
 
 	return (*a)->skill - (*b)->skill;
@@ -1246,7 +1246,7 @@ void
 list_skills(int who, int num)
 {
 	int i;
-	struct skill_ent **l;
+	skill_ents_list l;
 	int flag = TRUE;
 
 	assert(valid_box(num));
@@ -1258,13 +1258,13 @@ list_skills(int who, int num)
 	if (rp_char(num) == NULL)
 		goto list_skills_end;
 
-	if (plist_len(rp_char(num)->skills) < 1)
+	if (skill_ents_len(rp_char(num)->skills) < 1)
 		goto list_skills_end;
 
-	l = (struct skill_ent **) plist_copy((plist) rp_char(num)->skills);
-	qsort(l, plist_len(l), sizeof(*l), rep_skill_comp);
+	l = skill_ents_copy(rp_char(num)->skills);
+	qsort(l, skill_ents_len(l), sizeof(*l), rep_skill_comp);
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < skill_ents_len(l); i++)
 	{
 		if (l[i]->know != SKILL_know)
 			continue;
@@ -1293,7 +1293,7 @@ list_skills(int who, int num)
 		}
 	}
 
-	plist_reclaim((plist *) &l);
+	skill_ents_reclaim(&l);
 
 list_skills_end:
 
@@ -1335,7 +1335,7 @@ void
 list_partial_skills(int who, int num)
 {
 	int i;
-	struct skill_ent **l;
+	skill_ents_list l;
 	int flag = TRUE;
 
 	assert(valid_box(num));
@@ -1343,13 +1343,13 @@ list_partial_skills(int who, int num)
 	if (rp_char(num) == NULL)
 		return;
 
-	if (plist_len(rp_char(num)->skills) < 1)
+	if (skill_ents_len(rp_char(num)->skills) < 1)
 		return;
 
-	l = (struct skill_ent **) plist_copy((plist) rp_char(num)->skills);
-	qsort(l, plist_len(l), sizeof(*l), flat_skill_comp);
+	l = skill_ents_copy(rp_char(num)->skills);
+	qsort(l, skill_ents_len(l), sizeof(*l), flat_skill_comp);
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < skill_ents_len(l); i++)
 	{
 		if (l[i]->know == SKILL_know)
 			continue;
@@ -1372,7 +1372,7 @@ list_partial_skills(int who, int num)
 		indent -= 3;
 	}
 
-	plist_reclaim((plist *) &l);
+	skill_ents_reclaim(&l);
 }
 
 

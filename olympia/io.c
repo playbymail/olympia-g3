@@ -459,12 +459,12 @@ known_scan(char *s, sparse *kn, int box_num)
 
 
 static void
-skill_list_print(FILE *fp, char *header, struct skill_ent **l)
+skill_list_print(FILE *fp, char *header, skill_ents_list l)
 {
 	int i;
 	int count = 0;
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < skill_ents_len(l); i++)
 		if (valid_box(l[i]->skill))
 		{
 			count++;
@@ -487,7 +487,7 @@ skill_list_print(FILE *fp, char *header, struct skill_ent **l)
 
 
 static void
-skill_list_scan(char *s, struct skill_ent ***l, int box_num)
+skill_list_scan(char *s, skill_ents_list *l, int box_num)
 {
 	struct skill_ent *new;
 	int dummy;
@@ -507,7 +507,7 @@ skill_list_scan(char *s, struct skill_ent ***l, int box_num)
 		new->experience = experience;
 
 		if (valid_box(new->skill))
-			plist_append((plist *) l, new);
+			skill_ents_append(l, new);
 		else
 		{
 			fprintf(stderr, "skill_list_scan(%d): bad skill %d\n",

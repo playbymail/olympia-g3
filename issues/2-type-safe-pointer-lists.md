@@ -1,8 +1,8 @@
 # Issue 2 — Type-safe pointer lists (retire the generic `plist`)
 
 **Status:** open — in progress. **`exit_views_list`, `trades_list`,
-`orders_list`, `admits_list`, and `item_ents_list` migrated**; the remaining
-plist fields (`skills`, and `order_list.l`) remain.
+`orders_list`, `admits_list`, `item_ents_list`, and `skill_ents_list`
+migrated**; the remaining plist field (`order_list.l`) remains.
 **Type:** modernization (64-bit list-triage, follow-on to issue 1).
 **Motivation:** make the entire class of bug behind issue 1 a **compile error**
 instead of a runtime segfault.
@@ -69,6 +69,23 @@ instead of a runtime segfault.
 > **byte-identical** (`YES`, exercises `-S` save → on-disk `fact/*` files),
 > mapgen `YES`. This is the field whose `qsort`-count and `ilist_len` mismatches
 > were issue-1 waves 1 and 3 — now correct-by-type.
+
+> **Progress — `skill_ents_list` (✅ done).** The per-char `skills` field
+> (`oly.h:575` → `skill_ents_list`), a **persisted** list. Covers `loop.h`'s
+> **two** macros (`loop_char_skill`/`loop_char_skill_known`, both copying
+> `rp_char(who)->skills` → `skill_ents_copy`/`skill_ents_len`/
+> `skill_ents_reclaim`), `use.c` (the heavy file: both `rep_skill_comp` /
+> `flat_skill_comp` qsort comparator param pairs, `has_skill`/`p_skill_ent`'s
+> `plist_len(p->skills)` scans, `add_skill`'s `plist_append`, a
+> `plist_rem_value` on `->skills`, and the two `list_skills`/
+> `list_partial_skills` local-copy lists with their `plist_copy`/`plist_len`/
+> `plist_reclaim` ops), and the **save/load** path in `io.c`
+> (`skill_list_print` / `skill_list_scan`, by-ref param `struct skill_ent ***l`
+> → `skill_ents_list *l`). 32 line changes, 4 files, **0 new warnings**, golden
+> gate **byte-identical** (`YES`, exercises `-S` save), mapgen `YES`. Carefully
+> left untouched: the unrelated `req_ents` local `l` in `use.c`'s
+> requirement-scan helpers (`plist_len(l)` at ~366–460), which is a different
+> list, not skills.
 
 ## Problem
 
