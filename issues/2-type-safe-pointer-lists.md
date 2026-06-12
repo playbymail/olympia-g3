@@ -105,17 +105,38 @@ instead of a runtime segfault.
 > declared `f(char **l)` is type-compatible, so no lockstep change is forced.
 > After: `grep "plist_.*->l" olympia/order.c` is empty.
 
-> **Remaining plist users (future work, out of this issue's table).** With all
-> five table fields + `exit_views` + `order_list.l` migrated, `grep -rn "(plist)"
-> olympia/*.c` finds **one** read-form cast (`combat.c:804`,
-> `plist_lookup((plist) l_a, …)` on a local); the write-form `(plist *)` cast
-> survives on lists **not** in this issue's scope: `p->accept`
-> (→ `accept_ents_list`), a `flags` local (→ `flag_ents_list`), `c->wait_parse`
-> / `c->parse` (→ `wait_args_list`), and assorted transient local `l` plists
-> (`combat.c`, `u.c`, `use.c` req-scans, `input.c`, `c1.c`/`c2.c`, `eat.c`).
-> ~93 `plist_` ops remain across 8 files. Retiring those (then deleting the
-> `plist` typedef + `lib/plist.c`) is the natural next step beyond this issue's
-> five-field table.
+## Remaining plist types to retire (future work)
+
+All five `oly.h` entity fields in the table above, plus `exit_views` and
+`order_list.l`, are now typed. **The `plist` typedef cannot be deleted yet** —
+~**93** `plist_` ops remain across **8** files, on lists that were out of this
+issue's five-field scope. Each already has a ready typed equivalent in
+`lib/lists.h`; retiring them is the same mechanical drop-in (census → classify →
+line-asserted retype → build → golden gate). Grouped by target typed list, in
+rough ascending blast-radius:
+
+| target list | what / where | sites | persisted? |
+|-------------|--------------|-------|------------|
+| `flag_ents_list` | `c1.c`'s `static struct flag_ent **flags` (`c1.c:1088`) — `plist_append`/`plist_len` at `c1.c:1135`,… | ~2 | no (transient static) |
+| `accept_ents_list` | the `accept` field (`oly.h:605`, `struct accept_ent **`) — `c1.c:414` (`plist_append`), `c1.c:430` (`plist_len`) | ~2 | check (field-level) |
+| `wait_args_list` | the `c->wait_parse` field (`oly.h:868`, `struct wait_arg **`, "not saved") — `c1.c:1177/1183/1195/1216/1301/1306/1309` | ~7 | no |
+| `req_ents_list` | `use.c`'s requirement-scan locals `struct req_ent **l` (`use.c:379/427`, `plist_len` at `388/395/413/438/445/460`) **and** the save/load pair `req_list_print`/`req_list_scan` (`io.c:666/700`, by-ref `struct req_ent ***l`) | ~10 | **yes** |
+| `cstrings_list` | the `c->parse` field (`oly.h:857`, `char **`; `numargs` already calls `cstrings_len`) built by `parse_line()` (`input.c:33/84`) and used at `input.c:231/271/291/299`; plus local order-text `char **l` in `c2.c` (`155/166/201/218/300/305/473/515`) and `eat.c` (`931/935`) | ~16 | no (rebuilt) |
+| `fights_list` | `combat.c`'s combat engine — locals `l` / `l_a` / `l_b` (`struct fight **`) and the `struct fight ***l` builders (`add_to_fight_list`/`add_fighters`/`add_fight_stack`, …); ~60 `plist_len`/`plist_append`/`plist_reclaim`/`plist_lookup` ops, incl. the lone read-form `(plist)` cast at `combat.c:804` | ~56 | no (per-turn) |
+
+After all six are migrated, `grep -rn 'plist' olympia/ mapgen/` should be empty
+and the `plist` typedef + `lib/plist.c` can be deleted (acceptance item 4); the
+typed `_test()` entry points can optionally be wired into a unit check.
+
+> **Caveat — separate latent-bug class, *not* a "retire plist" item.** A few
+> sites call `plist_len()` on a list that is **already a correctly-typed
+> `ilist`** (4-byte elements): `use.c:366` (`p->may_use`, `ilist`), and
+> `input.c:446/449/753` + `sort_load_queue(ilist l)` over `load_q[]`
+> (`static ilist load_q[]`). On 64-bit these read the wrong header word — the
+> same issue-1 defect, in the other direction. They want `ilist_len`, not a
+> typed-list retype. Golden-neutral on this fixture, but worth fixing when the
+> `combat.c`/`input.c` sweeps land. Left untouched here to keep each commit's
+> blast radius to one list type.
 
 ## Problem
 
@@ -217,18 +238,20 @@ Retire `plist` from the engine in favor of the existing typed lists.
 
 1. **Type the entity fields.** Change the raw `struct X **` declarations to the
    typed typedefs so assignments are checked at the source. The five
-   pointer-list fields on the core entities (`olympia/oly.h`):
+   pointer-list fields on the core entities (`olympia/oly.h`) — **all done**:
 
-   | field | now | becomes |
-   |-------|-----|---------|
-   | `items` (`oly.h:487`) | `struct item_ent **` | `item_ents_list` |
-   | `trades` (`oly.h:488`) | `struct trade **` | `trades_list` |
-   | `orders` (`oly.h:505`) | `struct order_list **` | `orders_list` |
-   | `admits` (`oly.h:510`) | `struct admit **` | `admits_list` |
-   | `skills` (`oly.h:575`) | `struct skill_ent **` | `skill_ents_list` |
+   | field | was | becomes | status |
+   |-------|-----|---------|--------|
+   | `items` (`oly.h:487`) | `struct item_ent **` | `item_ents_list` | ✅ `9309ee0` |
+   | `trades` (`oly.h:488`) | `struct trade **` | `trades_list` | ✅ `925ac54` |
+   | `orders` (`oly.h:505`) | `struct order_list **` | `orders_list` | ✅ `2b31593` |
+   | `admits` (`oly.h:510`) | `struct admit **` | `admits_list` | ✅ `12cee80` |
+   | `skills` (`oly.h:575`) | `struct skill_ent **` | `skill_ents_list` | ✅ `155586d` |
 
    …plus the `exit_view **` producers/returns in `dir.c`
-   (`exits_from_loc*`) → `exit_views_list`.
+   (`exits_from_loc*`) → `exit_views_list` (✅ `df39ab9`), and the inner
+   order-text list `struct order_list.l` (`char **`, `oly.h:543`) →
+   `cstrings_list` (✅ `977ef0b`).
 
 2. **Replace generic calls with typed calls, dropping the casts.** At each of the
    ~196 sites, `plist_copy((plist) bx[who]->items)` → `item_ents_copy(bx[who]->items)`,
