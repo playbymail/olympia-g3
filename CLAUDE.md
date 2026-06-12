@@ -62,6 +62,12 @@ Scripts auto-detect the repo root and look for binaries at
 > capture the baseline and commit that golden *before* any modernization edit.
 > `tests/mapgen/golden` is a **stale 32-bit baseline** (diverges from 64-bit
 > output even on a clean tree) — it is *not* the gate.
+>
+> **The gate cannot be captured yet:** `olympia-g3` currently **segfaults** in
+> `-i` immediate mode at `location_trades()` (a pre-existing crash on the
+> untouched tree — see Phase 3.5 below). Fix that crash first. Until then,
+> `mapgen-g3` output (`gate`/`loc`/`road`) is the only reliable byte-for-byte
+> check, and is what Phase 3.5 was verified against.
 
 ## Layout
 
@@ -102,18 +108,19 @@ the table literally:
 | 1 | `int-to-pointer-cast`, `pointer-to-int-cast` | ✅ enforced on `olympia-g3` + `mapgen-g3`; ⬜ **not** on `island-g3` |
 | 2 | `incompatible-pointer-types` | ✅ enforced on `mapgen-g3`; ⬜ **not** on `olympia-g3` / `island-g3` |
 | 3 | `int-conversion` | ✅ enforced on `mapgen-g3`; ⬜ **not** on `olympia-g3` / `island-g3` |
-| 3.5 | **Remove dead/unused source files** | ⬜ todo |
+| 3.5 | **Remove dead/unused source files** | ✅ done |
 | 4 | `strict-prototypes`, `missing-prototypes`, `implicit-function-declaration` | ⬜ todo |
 | 5 | `missing-declarations` + sanitizers in CI | ⬜ wired (asan preset), not enforced |
 
 The dangerous 32→64-bit hazards are only *partly* fenced off: `olympia-g3` — the
 biggest target — still enforces **only Phase 1** (its `target_compile_options`
 comment literally says *"Phase 1 - list triage - only pointer-cast errors"*),
-and `island-g3` enforces nothing. So before Phase 4, two pieces of runway
-remain: **(a)** establish the olympia golden gate (Test section above), and
-**(b)** bring `olympia-g3` (and ideally `island-g3`) up to Phase 2/3 parity by
-flipping `incompatible-pointer-types` and `int-conversion` to `-Werror` and
-fixing the fallout, keeping golden green at each step.
+and `island-g3` enforces nothing. So before Phase 4, three pieces of runway
+remain: **(a)** fix the pre-existing `olympia-g3` segfault in `-i` mode (see
+Phase 3.5) so a turn can complete; **(b)** then establish the olympia golden gate
+(Test section above); and **(c)** bring `olympia-g3` (and ideally `island-g3`) up
+to Phase 2/3 parity by flipping `incompatible-pointer-types` and `int-conversion`
+to `-Werror` and fixing the fallout, keeping golden green at each step.
 
 > **The sister G1 and G2 repos are done through Phase 4.** `../olympia-g1` and
 > `../olympia-g2` have both completed Phase 3.5 and Phase 4 — all three Phase-4
@@ -132,27 +139,39 @@ fixing the fallout, keeping golden green at each step.
 > (54 in the map generator); G2 had 65. Expect a comparable population here, and
 > probe with the correct flag. See `doc/modernization-prototypes-playbook.md`.
 
-### Phase 3.5 — Remove dead/unused source files ⬜ todo
+### Phase 3.5 — Remove dead/unused source files ✅ done
 
-Find `lib/*.c` files that are in **no** `target_sources` block (never compiled
-or linked into any target — verify by grepping `CMakeLists.txt` for each
-basename), delete them, and prune the now-dangling declarations from
-`lib/lists.h`. **The dead-file set is not the same across engines — grep each
-basename yourself; don't copy G1's or G2's list.**
+Deleted three `lib/*.c` modules that are in **no** `target_sources` block (never
+compiled or linked into any target — verified by grepping `CMakeLists.txt` for
+each basename, tree-wide across `olympia/`, `mapgen/`, `lib/`):
 
-For G3, a first pass of the build membership shows:
+- `lib/effects.c`, `lib/entity_builds.c` — list modules referenced only by
+  declarations in `lib/lists.h`; their list types (`effects_list`,
+  `entity_builds_list`, `struct effect`, `struct entity_build`) had no use
+  anywhere in the compiled tree. The matching declaration blocks were pruned
+  from `lib/lists.h`.
+- `lib/ring_buffer.c` (+`.h`) — self-contained; its only export `ring_printf`
+  is called nowhere. (The `ring_buffer` symbols in `olympia/sout.c` are an
+  unrelated local `static char *` array.)
 
-- **Candidates to delete (verify):** `lib/effects.c`, `lib/entity_builds.c`,
-  `lib/ring_buffer.c` (+`.h`) — present on disk but not in any
-  `target_sources`. (Same dead set G2 found; confirm before deleting.)
-- **Live in G3 (keep):** `lib/accept_ents.c` and `lib/checked_alloc.c` (+`.h`)
-  are in `olympia-g3`'s sources (as in G2, unlike G1 which removed them).
-- **`lib/plist.c` is already wired in G3** — it's a member of `olympia-g3`'s
-  `target_sources` (line ~263), unlike G1/G2 where it was retained-but-unwired.
-  Keep it.
+This is the **same dead set as G2.** Kept (live in G3, in `olympia-g3`'s
+sources): `lib/accept_ents.c`, `lib/checked_alloc.c` (+`.h`). **`lib/plist.c` is
+already wired** into `olympia-g3`'s `target_sources` in G3 (unlike G1/G2, where
+it was retained-but-unwired) — kept. Recover any deleted file from git history if
+ever needed.
 
-Verify byte-identical golden output after a clean build before moving on (which
-requires the olympia gate to exist first — see Test section).
+Verified: clean build of all three targets succeeds; **mapgen output
+(`gate`/`loc`/`road`) is byte-identical** before vs after the deletion.
+
+> **Pre-existing blocker found (not caused by this change).** `olympia-g3`
+> **segfaults** in `-i` immediate mode at `location_trades()` during
+> `post_production()`, on a freshly extracted fixture DB — and it does so
+> **identically on the pristine (pre-Phase-3.5) tree**, so the dead-file removal
+> did not introduce it. This is why the olympia golden gate could not be captured
+> here yet (Test section / playbook Step 0): the engine can't complete a turn.
+> Fixing this crash is prerequisite runway for the gate and for Phase 4 — it is
+> the most likely a 64-bit pointer hazard (consistent with `olympia-g3` enforcing
+> only Phase 1). Chase it next, ideally under the `asan-ubsan` preset.
 
 ### Phase 4 — Prototypes & declarations ⬜ todo
 
