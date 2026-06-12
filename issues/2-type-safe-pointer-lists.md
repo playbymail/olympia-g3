@@ -1,8 +1,8 @@
 # Issue 2 — Type-safe pointer lists (retire the generic `plist`)
 
 **Status:** open — in progress. **`exit_views_list`, `trades_list`,
-`orders_list`, and `admits_list` migrated**; the remaining plist fields
-(`items`, `skills`) remain.
+`orders_list`, `admits_list`, and `item_ents_list` migrated**; the remaining
+plist fields (`skills`, and `order_list.l`) remain.
 **Type:** modernization (64-bit list-triage, follow-on to issue 1).
 **Motivation:** make the entire class of bug behind issue 1 a **compile error**
 instead of a runtime segfault.
@@ -56,6 +56,19 @@ instead of a runtime segfault.
 > verified: no ` am ` lines in fixture or saved DB), so the loop never ran; the
 > fix makes it correct for any DB that does carry admits. The inner
 > `struct admit.l` (a genuine `ilist` of box-ids) was left untouched.
+
+> **Progress — `item_ents_list` (✅ done).** The per-entity `items` field
+> (`oly.h:487` → `item_ents_list`), a **persisted** inventory list. Covers the
+> `loop_inv`/`next_inv` macro in `loop.h` (`item_ents_copy`/`item_ents_len`/
+> `item_ents_reclaim`), `report.c` (the `inv_item_comp` qsort comparator params
+> + the four `plist_len(bx[num]->items)` qsort-count sites in the two inventory
+> views), `u.c` (three `plist_len(bx[who]->items)` scans + the `add_item`
+> `plist_append`), and the **save/load** path in `io.c` (`item_list_print` /
+> `item_list_scan`, whose by-ref param `struct item_ent ***l` → `item_ents_list
+> *l`). 19 line changes, 5 files, **0 new warnings**, golden gate
+> **byte-identical** (`YES`, exercises `-S` save → on-disk `fact/*` files),
+> mapgen `YES`. This is the field whose `qsort`-count and `ilist_len` mismatches
+> were issue-1 waves 1 and 3 — now correct-by-type.
 
 ## Problem
 

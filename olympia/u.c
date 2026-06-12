@@ -504,7 +504,7 @@ sub_item(int who, int item, int qty)
 	assert(valid_box(item));
 	assert(qty >= 0);
 
-	for (i = 0; i < plist_len(bx[who]->items); i++)
+	for (i = 0; i < item_ents_len(bx[who]->items); i++)
 		if (bx[who]->items[i]->item == item)
 	{
 			if (bx[who]->items[i]->qty < qty)
@@ -1691,7 +1691,7 @@ has_item(int who, int item)
 #endif
 	assert(valid_box(item));
 
-	for (i = 0; i < plist_len(bx[who]->items); i++)
+	for (i = 0; i < item_ents_len(bx[who]->items); i++)
 		if (bx[who]->items[i]->item == item)
 			return bx[who]->items[i]->qty;
 
@@ -1721,7 +1721,7 @@ add_item(int who, int item, int qty)
 		}
 	}
 
-	for (i = 0; i < plist_len(bx[who]->items); i++)
+	for (i = 0; i < item_ents_len(bx[who]->items); i++)
 		if (bx[who]->items[i]->item == item)
 		{
 			old = bx[who]->items[i]->qty;
@@ -1736,7 +1736,7 @@ add_item(int who, int item, int qty)
 	new->item = item;
 	new->qty = qty;
 
-	plist_append((plist *) &bx[who]->items, new);
+	item_ents_append(&bx[who]->items, new);
 
 	investigate_possible_trade(who, item, 0);
 }

@@ -484,7 +484,7 @@ struct box {
 	struct att_ent		*x_disp;
 
 	struct command		*cmd;
-	struct item_ent		**items;	/* ilist of items held */
+	item_ents_list		items;	/* ilist of items held */
 	trades_list		trades;	/* pending buys/sells */
 
 	int temp;			/* scratch space */

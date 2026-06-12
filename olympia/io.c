@@ -525,12 +525,12 @@ skill_list_scan(char *s, struct skill_ent ***l, int box_num)
 
 
 static void
-item_list_print(FILE *fp, char *header, struct item_ent **l)
+item_list_print(FILE *fp, char *header, item_ents_list l)
 {
 	int i;
 	int count = 0;
 
-	for (i = 0; i < plist_len(l); i++)
+	for (i = 0; i < item_ents_len(l); i++)
 		if (valid_box(l[i]->item) && l[i]->qty > 0)
 		{
 			count++;
@@ -551,7 +551,7 @@ item_list_print(FILE *fp, char *header, struct item_ent **l)
 
 
 static void
-item_list_scan(char *s, struct item_ent ***l, int box_num)
+item_list_scan(char *s, item_ents_list *l, int box_num)
 {
 	struct item_ent *new;
 
@@ -561,7 +561,7 @@ item_list_scan(char *s, struct item_ent ***l, int box_num)
 		sscanf(s, "%d %d", &new->item, &new->qty);
 
 		if (valid_box(new->item))
-			plist_append((plist *) l, new);
+			item_ents_append(l, new);
 		else
 		{
 			fprintf(stderr, "item_list_scan(%d): bad item %d\n",

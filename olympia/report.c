@@ -212,8 +212,8 @@ show_item_skills(int who, int num)
 
 static int
 inv_item_comp(a, b)
-struct item_ent **a;
-struct item_ent **b;
+item_ents_list a;
+item_ents_list b;
 {
 
 	return (*a)->item - (*b)->item;
@@ -276,9 +276,9 @@ show_char_inventory(int who, int num)
 	int count = 0;
 	int total_weight = 0;
 
-	if (plist_len(bx[num]->items) > 0)
+	if (item_ents_len(bx[num]->items) > 0)
 	{
-		qsort(bx[num]->items, plist_len(bx[num]->items),
+		qsort(bx[num]->items, item_ents_len(bx[num]->items),
 					sizeof(*bx[num]->items), inv_item_comp);
 	}
 
@@ -727,9 +727,9 @@ show_unclaimed(int who, int num)
 	struct item_ent *e;
 	int weight;
 
-	if (plist_len(bx[num]->items) > 0)
+	if (item_ents_len(bx[num]->items) > 0)
 	{
-		qsort(bx[num]->items, plist_len(bx[num]->items),
+		qsort(bx[num]->items, item_ents_len(bx[num]->items),
 					sizeof(*bx[num]->items), inv_item_comp);
 	}
 

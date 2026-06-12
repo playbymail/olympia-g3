@@ -288,15 +288,15 @@
 { int ll_i; \
   int ll_check = 11; \
   struct item_ent ll_copy; \
-  struct item_ent **ll_l = NULL; \
+  item_ents_list ll_l = NULL; \
     assert(valid_box(who)); \
-    ll_l = (struct item_ent **) plist_copy((plist) bx[who]->items); \
-	for (ll_i = 0; ll_i < plist_len((plist) ll_l); ll_i++) \
+    ll_l = item_ents_copy(bx[who]->items); \
+	for (ll_i = 0; ll_i < item_ents_len(ll_l); ll_i++) \
 	    if (valid_box(ll_l[ll_i]->item) && ll_l[ll_i]->qty > 0) { \
 		    ll_copy = *ll_l[ll_i]; \
 		    e = &ll_copy;
 
-#define	next_inv   } assert(ll_check == 11); plist_reclaim((plist *) &ll_l); }
+#define	next_inv   } assert(ll_check == 11); item_ents_reclaim(&ll_l); }
 
 
 
