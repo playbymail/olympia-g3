@@ -93,6 +93,14 @@ Scripts auto-detect the repo root and look for binaries at
   **The `-Werror=` set differs per target** (see status table). The
   `phase_N_build_flags()` / `legacy_build_flags()` functions and
   `LEGACY_C_FLAGS_STRICT` are roadmap scaffolding — defined, not yet called.
+- **C11 standard** is set both project-wide (`CMAKE_C_STANDARD 11` /
+  `…_REQUIRED ON` / `CMAKE_C_EXTENSIONS OFF`, lines 4–6) *and* declared
+  explicitly per target via `target_compile_features(<tgt> PRIVATE c_std_11)`
+  on all three executables (issue #6, merged in #8). The per-target call is
+  documentation/intent only — inert because the global standard already forces
+  `-std=c11`; it guards against divergence if new targets are added. Mirrors the
+  same change in siblings `../olympia-g1` / `../olympia-g2`. Not part of the
+  64-bit modernization effort.
 
 ## Modernization status
 
