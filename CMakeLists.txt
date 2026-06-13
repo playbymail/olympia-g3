@@ -205,6 +205,9 @@ target_sources(island-g3 PRIVATE
     mapgen/island.c mapgen/rnd.c
 )
 target_include_directories(island-g3 PRIVATE island/ mapgen/)
+# Declare the C11 requirement at the target level (the project-level
+# CMAKE_C_STANDARD above stays as the default for any future targets).
+target_compile_features(island-g3 PRIVATE c_std_11)
 target_compile_options(island-g3 PRIVATE ${LEGACY_C_FLAGS} -Og -g
     # Phase 4 - prototypes & declarations
     -Wmissing-prototypes -Werror=missing-prototypes
@@ -229,6 +232,7 @@ target_sources(mapgen-g3 PRIVATE
         lib/lists.h
 )
 target_include_directories(mapgen-g3 PRIVATE mapgen/ lib/)
+target_compile_features(mapgen-g3 PRIVATE c_std_11)
 target_compile_options(mapgen-g3 PRIVATE
     ${LEGACY_C_FLAGS} -Og -g
     -Wint-conversion -Werror=int-conversion
@@ -278,6 +282,7 @@ target_sources(olympia-g3 PRIVATE
         lib/checked_alloc.h lib/lists.h
 )
 target_include_directories(olympia-g3 PRIVATE olympia/ lib/)
+target_compile_features(olympia-g3 PRIVATE c_std_11)
 target_compile_options(olympia-g3 PRIVATE
     ${LEGACY_C_FLAGS} -Og -g
     # Phase 1 - list triage - only pointer-cast errors
