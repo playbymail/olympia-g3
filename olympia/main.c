@@ -35,7 +35,7 @@ int win_flag = FALSE;
  */
 int test_use_const_report_date = FALSE;
 
-int call_init_routines(void)
+void call_init_routines(void)
 {
 
 	init_lower();
@@ -188,7 +188,7 @@ void write_player_list(void)
 }
 
 
-int write_forward_sup(int who_for, int target, FILE *fp)
+void write_forward_sup(int who_for, int target, FILE *fp)
 {
 	int pl;
 	char *s;
@@ -247,7 +247,7 @@ void write_forwards(void)
 }
 
 
-int write_faction_sup(int who_for, int target, FILE *fp)
+void write_faction_sup(int who_for, int target, FILE *fp)
 {
 	int pl;
 	char *s;
@@ -420,7 +420,7 @@ send_rep(int pl, int turn)
 }
 
 
-int mail_reports(void)
+void mail_reports(void)
 {
 	int pl;
 
@@ -537,7 +537,7 @@ random randompassword
 
 }
 
-int output_html_rep(int pl)
+void output_html_rep(int pl)
 {
 	char fnam[LEN];
 	char fnam2[LEN];
@@ -553,7 +553,7 @@ int output_html_rep(int pl)
 	system(fnam2);
 }
 
-int copy_public_turns(void)
+void copy_public_turns(void)
 {
 	char fnam[LEN];
 	char fnam2[LEN];
