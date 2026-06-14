@@ -100,12 +100,12 @@ v_listcmds(struct command *c)
 
 		if (i % 5 == 0)
 		{
-			out(c->who, buf);
+			out(c->who, "%s", buf);
 			*buf = '\0';
 		}
 	}
 	if (*buf != '\0')
-		out(c->who, buf);
+		out(c->who, "%s", buf);
 	indent -= 4;
 
 	return TRUE;

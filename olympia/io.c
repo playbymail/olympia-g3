@@ -2840,7 +2840,7 @@ cleanup_posts(void)
 
 void make_dir(char *dir) {
 	if (win_flag) {
-		mkdir(sout(dir), 0755);
+		mkdir(sout("%s", dir), 0755);
 	}
 }
 

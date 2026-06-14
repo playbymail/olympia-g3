@@ -570,7 +570,7 @@ void copy_public_turns(void)
 			sprintf(fnam, "%s\\html\\%s\\index.html", libdir, box_code_less(pl));
 			sprintf(fnam2, "public\\%s.html", box_code_less(pl));
 			sprintf(cmd, "copy %s %s", fnam, fnam2);
-			printf(cmd);
+			printf("%s", cmd);
 			system(cmd);
 		} else {
 			sprintf(fnam, "%s/html/%s/index.html", libdir, box_code_less(pl));
