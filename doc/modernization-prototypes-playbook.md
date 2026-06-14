@@ -7,10 +7,12 @@ errors on a legacy Olympia C engine:
 - `-Werror=missing-prototypes`
 - `-Werror=implicit-function-declaration`
 
-This was worked out doing G1. **G2, G3, and TAG share the same ancestry and
-the same hazards** — read this before repeating the exercise. The goal each
-time: clean `-Werror` for those three flags with **byte-identical golden
-output** (no behaviour change).
+This was worked out doing G1, then repeated on G2 and G3 — **all three are now
+done** (see "G3 results & engine-specific traps" below, and the sibling repos'
+`BUILD_HISTORY.md`). **TAG shares the same ancestry and the same hazards** and is
+the remaining engine — read this before repeating the exercise. The goal each
+time: clean `-Werror` for those three flags with **byte-identical golden output**
+(no behaviour change).
 
 ### Step 0 — validate the golden baseline *before* you touch anything
 
@@ -22,8 +24,9 @@ already red (or never generated) when you started. Before the first edit:
    `cmake --build --preset debug && ./run/mapgen/mapgen.sh && ./run/olympia-<engine>.sh`
 2. Run the golden gate and confirm it prints `YES`:
    `./tests/olympia/golden_check.sh`
-3. If there is **no** `golden_check.sh` yet for this engine (g3/tag will not have
-   one), create it first — copy g2's `tests/olympia/golden_check.sh` as the
+3. If there is **no** `golden_check.sh` yet for this engine (TAG will not have
+   one; G1/G2/G3 already do), create it first — copy g2's
+   `tests/olympia/golden_check.sh` as the
    baseline and adapt `OLYMPIA_ENGINE` and any per-engine flaky-file handling —
    then run `./tests/olympia/golden_check.sh --update` once on the **pristine,
    unmodified** tree to capture the baseline, and commit that golden separately
@@ -38,13 +41,14 @@ Only once the gate is green on the untouched tree should you begin Phase 3.5/4.
 
 ### Look at the finished G1 first
 
-G1 is **done** through Phase 4 — all three classes are `-Werror` and measure 0.
-Before starting g2/g3/tag, read the completed work as a worked example. As of
-this writing the changes are **not pushed**, so read them from the local
-checkout:
+G1, G2, and G3 are all **done** through Phase 4 (and well past it) — all three
+classes are `-Werror` and measure 0 on each. Before starting TAG, read the
+completed work as a worked example from the sibling checkouts:
 
 ```
 /Users/wraith/Software/playbymail/olympia-g1
+/Users/wraith/Software/playbymail/olympia-g2
+/Users/wraith/Software/playbymail/olympia-g3
 ```
 
 Specifically worth a look:
