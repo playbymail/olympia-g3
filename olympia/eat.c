@@ -806,7 +806,7 @@ show_post(char **l, int cmd)
 
 	out_alt_who = OUT_SHOW_POSTS;
 
-	for (i = 0; i < ilist_len(l); i++)
+	for (i = 0; i < cstrings_len(l); i++)
 	{
 		if (strncmp(l[i], "=-=-", 4) == 0)
 			out(eat_pl, "> %s", l[i]);

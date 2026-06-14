@@ -469,7 +469,7 @@ orders_other(int who, int pl)
 				rp_order_head(pl, p->orders[i]->unit);
 
 			if ((c == NULL || c->state == STATE_DONE) &&
-			    (l == NULL || ilist_len(l->l) == 0))
+			    (l == NULL || cstrings_len(l->l) == 0))
 				continue;
 		}
 

@@ -907,7 +907,7 @@ show_loc_posts(int who, int where, int show_full_loc)
 			continue;
 
 		if (rp_misc(post) == NULL ||
-		    ilist_len(rp_misc(post)->post_txt) < 1)
+		    cstrings_len(rp_misc(post)->post_txt) < 1)
 		{
 			assert(FALSE);	/* what happened to the post? */
 			continue;
@@ -937,12 +937,12 @@ show_loc_posts(int who, int where, int show_full_loc)
 
 		first = TRUE;
 
-		for (i = 0; i < ilist_len(l); i++)
+		for (i = 0; i < cstrings_len(l); i++)
 		{
 			wout(who, "%s%s%s",
 					first ? "\"" : "",
 					l[i],
-					i+1 == ilist_len(l) ? "\"" : "");
+					i+1 == cstrings_len(l) ? "\"" : "");
 
 			if (first)
 			{
