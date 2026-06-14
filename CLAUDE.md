@@ -140,7 +140,7 @@ extended past Phase 5 there); this table is the on-disk summary.
 | 3.5 | **Remove dead/unused source files** | ✅ done | — |
 | 4 | `strict-prototypes`, `missing-prototypes`, `implicit-function-declaration` | ✅ enforced on **all three** targets; all classes 0 | — |
 | 5 | `missing-declarations` + wire ASan/UBSan across all three targets | ✅ enforced on **all three** targets (0 hits); sanitizers wired + golden gate green on all three; bug #3 fixed | #13 ✅ (+ bug #3 ✅) |
-| 6 | `shorten-64-to-32` (Clang) + `sizeof-pointer-memaccess` | ⬜ not started | #14 |
+| 6 | `shorten-64-to-32` (Clang) + `sizeof-pointer-memaccess` | ✅ enforced on **all three** targets (0 hits); MD5 `sizeof(ctx)` bug fixed | #14 ✅ |
 | 7 | `sign-conversion` | ⬜ not started | #15 |
 | 8 | `return-type` + return-mismatch | ⬜ not started | #16 |
 | 9 | format-string / vararg checking | ⬜ not started | #7 |
@@ -188,11 +188,14 @@ memory-safety defects it surfaced were fixed in the same pass: bug #3 (the
 `times_masthead` turn-0 underflow, below) and a mapgen guard-allocator
 misalignment (`my_malloc` placed its trailing guard int at a non-int-aligned
 offset for odd request sizes — UBSan misaligned store; fixed by the same
-int-alignment rounding `my_realloc` already did). **Next up: GitHub issue #14
-(Phase 6)** — `shorten-64-to-32` (Clang-guarded) + `sizeof-pointer-memaccess`.
-From here on the asan-ubsan gate (`OLYMPIA_PRESET=asan-ubsan
-./tests/olympia/golden_check.sh` = YES, zero diagnostics) is part of every
-later phase.
+int-alignment rounding `my_realloc` already did). **GitHub issue #14 (Phase 6)
+is also done:** `-Werror=shorten-64-to-32` (Clang-guarded) and
+`-Werror=sizeof-pointer-memaccess` (portable) are locked on all three targets, 16
+LP64 width-truncation sites and the MD5 `sizeof(ctx)` wipe bug are fixed
+representation-preservingly, and both golden gates stay byte-identical. **Next
+up: GitHub issue #15 (Phase 7)** — `sign-conversion`. From here on the asan-ubsan
+gate (`OLYMPIA_PRESET=asan-ubsan ./tests/olympia/golden_check.sh` = YES, zero
+diagnostics) is part of every later phase.
 
 > **The sister G1 and G2 repos are done through Phase 4.** `../olympia-g1` and
 > `../olympia-g2` have both completed Phase 3.5 and Phase 4 — all three Phase-4
@@ -377,6 +380,53 @@ no analogue here — G3 output was already verified deterministic). The `gm.c`
 divide-by-zero G1 hit did **not** surface: the full golden flow runs clean under
 UBSan, confirming `lib/checked_alloc.c` (G2 lineage) avoids G1's guard-allocator
 alignment bug, as expected.
+
+### Phase 6 — `shorten-64-to-32` + `sizeof-pointer-memaccess` (GitHub issue #14) ✅ done
+
+The **first real width phase** (Phases 1-5 guarded *pointer/int* hazards and
+declarations; this one surfaces *width* truncation). Both classes are now
+`-Werror` on **all three** targets via `olympia_compile_flags()` — the shorten
+flag Clang-guarded (`if (CMAKE_C_COMPILER_ID MATCHES "Clang")`, the **first**
+Clang guard inside the compile-flags helper, distinct from the one in
+`olympia_enable_sanitizers()`; `-Wshorten-64-to-32` is a Clang-only spelling, GCC
+folds it into `-Wconversion` which is not enabled — it MUST stay guarded or GCC
+builds break), `sizeof-pointer-memaccess` portable. The
+`-Wno-sizeof-pointer-memaccess` suppression was dropped. All Phase 6 changes are
+representation-preserving → golden byte-identical on both the debug and
+asan-ubsan gates.
+
+**The `sizeof-pointer-memaccess` bug (2 sites).** In `MD5Final` the defensive
+post-digest wipe was `memset(ctx, '\0', sizeof(ctx))` where `ctx` is
+`struct xMD5Context *` — `sizeof(ctx)` is the *pointer* size (8 on LP64, was 4 on
+ILP32), so it zeroed only 8 bytes instead of `sizeof(*ctx)`. Fixed to
+`sizeof(*ctx)` in **both** `olympia/rnd.c` and `mapgen/rnd.c` (G3's MD5 RNG, G2
+lineage). Golden-safe: the digest is `memcpy`'d out *before* the wipe, so the
+produced MD5 — and the RNG built on it — is unchanged (verified byte-identical).
+
+**16 `-Wshorten-64-to-32` sites** (10 olympia + 4 mapgen/z.c + 1 island + 1 add),
+all representation-preserving:
+
+- `olympia/z.c` + `mapgen/z.c` `readlin` path: `nread` retyped `int`→`ssize_t`
+  (its source is `read()`), clearing both `nread = read(...)` sites in each;
+  downstream indexing/compares are unaffected.
+- `mapgen/z.c` `str_save`: `(unsigned)` cast on `strlen(s) + 1` feeding mapgen's
+  `my_malloc(unsigned size)`. (olympia's `my_malloc` is `checked_alloc` with a
+  `size_t` arg, so its `str_save` was never flagged — divergence from mapgen.)
+- `olympia/code.c` `letter_val`: `return (int)(p-let)` — index into a fixed short
+  string.
+- `strlen()`→`int` name/line/word lengths, provably `<2^31`: documented `(int)`
+  casts in `z.c`/`mapgen/z.c` `fuzzy_strcmp`, `c2.c` `line_length_check`,
+  `check.c` `check_loc_name_lengths`, `eat.c` `do_eat_command`, `report.c`
+  `strip_leading_stupid_word`, plus `mapgen/island.c` map-row length and
+  `olympia/add.c` password-symbol-set length.
+
+**G3-specific vs G2:** `add.c` (the sbaillie randomly-generated-password feature)
+and `island.c` are extra sites with no G2 precedent — the third target,
+`island-g3`, contributed its own site, so don't trust sibling counts. **No
+`md5_int` change was needed** (G2 required `return (int) buf[0]`): G3's `word32`
+is `uint32_t` (the `unsigned long` typedef is commented out in `rnd.c`), so
+`buf[0]`→`int` is a 32→32 conversion, never flagged. Probe (`-Wshorten-64-to-32`)
+reports 0; all three targets build clean as errors.
 
 ### Known bugs deferred past the 64-bit effort
 
