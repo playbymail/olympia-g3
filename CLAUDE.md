@@ -25,8 +25,8 @@ cmake --build --preset debug
 ```
 
 Presets (`CMakePresets.json`): `debug` (default), `release`, `asan-ubsan`.
-The `asan-ubsan` preset sets `OLYMPIA_SANITIZE=ON` with address+undefined (on
-`olympia-g3`).
+The `asan-ubsan` preset sets `OLYMPIA_SANITIZE=ON` with address+undefined on
+**all three** targets (issue #13).
 
 There are **three** targets (one more than G1/G2): `olympia-g3` (engine),
 `mapgen-g3` (map generator), and `island-g3` (island generator —
@@ -53,6 +53,18 @@ produce **byte-identical** engine output.
 
 Scripts auto-detect the repo root and look for binaries at
 `build/<preset>/<target>` (override with `OLYMPIA_PRESET=release ...`).
+
+Since Phase 5 (issue #13) there is a **second standing gate**: the same flow
+under ASan/UBSan must run clean. Build the `asan-ubsan` preset and re-run the
+flow with `OLYMPIA_PRESET=asan-ubsan` — the golden check must still print `YES`
+and produce **zero** ASan/UBSan diagnostics:
+
+```bash
+cmake --preset asan-ubsan && cmake --build --preset asan-ubsan
+OLYMPIA_PRESET=asan-ubsan ./run/mapgen/mapgen.sh
+OLYMPIA_PRESET=asan-ubsan ./run/olympia-g3.sh
+OLYMPIA_PRESET=asan-ubsan ./tests/olympia/golden_check.sh   # YES, zero diagnostics
+```
 
 > **The olympia golden gate now exists.** `tests/olympia/golden_check.sh`
 > (adapted from G2) gates the post-turn DB in `run/olympia/lib` as a sorted
@@ -99,7 +111,8 @@ Scripts auto-detect the repo root and look for binaries at
   **not** the helper (the old hardcoded `-Og -g` was clobbering the preset). The
   dead scaffolding (`legacy_build_flags()`, `phase_1..5_build_flags()`,
   `LEGACY_C_FLAGS`, `LEGACY_C_FLAGS_STRICT`) was deleted in #12;
-  `olympia_enable_sanitizers(olympia-g3)` is kept (Phase 5 / issue #13).
+  `olympia_enable_sanitizers()` is now called on **all three** targets
+  (Phase 5 / issue #13).
 - **C11 standard** is set both project-wide (`CMAKE_C_STANDARD 11` /
   `…_REQUIRED ON` / `CMAKE_C_EXTENSIONS OFF`, lines 4–6) *and* declared
   explicitly per target via `target_compile_features(<tgt> PRIVATE c_std_11)`
@@ -126,7 +139,7 @@ extended past Phase 5 there); this table is the on-disk summary.
 | 3 | `int-conversion` | ✅ enforced on **all three** targets; all classes 0 | #11 (Phase A) ✅ |
 | 3.5 | **Remove dead/unused source files** | ✅ done | — |
 | 4 | `strict-prototypes`, `missing-prototypes`, `implicit-function-declaration` | ✅ enforced on **all three** targets; all classes 0 | — |
-| 5 | `missing-declarations` + wire ASan/UBSan across all three targets | ⬜ wired (asan preset), not enforced | #13 (+ bug #3) |
+| 5 | `missing-declarations` + wire ASan/UBSan across all three targets | ✅ enforced on **all three** targets (0 hits); sanitizers wired + golden gate green on all three; bug #3 fixed | #13 ✅ (+ bug #3 ✅) |
 | 6 | `shorten-64-to-32` (Clang) + `sizeof-pointer-memaccess` | ⬜ not started | #14 |
 | 7 | `sign-conversion` | ⬜ not started | #15 |
 | 8 | `return-type` + return-mismatch | ⬜ not started | #16 |
@@ -166,10 +179,20 @@ the generic `plist` for element-typed lists, starting with `exit_views_list`),
 which made the issue-1 bug class a compile error — is **done and closed**.
 **GitHub issue #12 (Step B) is also done:** the per-target flags were
 consolidated into one `olympia_compile_flags()` helper and the dead scaffolding
-dropped. **Next up: GitHub issue #13 (Phase 5)** — enable
-`-Werror=missing-declarations` and wire ASan/UBSan across all three targets
-(fix the malformed `OLYMPIA_SANITIZERS` cache-default line + bug #3 in the same
-pass).
+dropped. **GitHub issue #13 (Phase 5) is also done:**
+`-Werror=missing-declarations` is locked on all three targets (0 hits — Phase 4
+already covered the class on clang), ASan/UBSan are wired on all three (the
+malformed `OLYMPIA_SANITIZERS` cache-default line is fixed), and the
+**asan-ubsan golden gate runs green end-to-end for the first time**. Two
+memory-safety defects it surfaced were fixed in the same pass: bug #3 (the
+`times_masthead` turn-0 underflow, below) and a mapgen guard-allocator
+misalignment (`my_malloc` placed its trailing guard int at a non-int-aligned
+offset for odd request sizes — UBSan misaligned store; fixed by the same
+int-alignment rounding `my_realloc` already did). **Next up: GitHub issue #14
+(Phase 6)** — `shorten-64-to-32` (Clang-guarded) + `sizeof-pointer-memaccess`.
+From here on the asan-ubsan gate (`OLYMPIA_PRESET=asan-ubsan
+./tests/olympia/golden_check.sh` = YES, zero diagnostics) is part of every
+later phase.
 
 > **The sister G1 and G2 repos are done through Phase 4.** `../olympia-g1` and
 > `../olympia-g2` have both completed Phase 3.5 and Phase 4 — all three Phase-4
@@ -310,18 +333,50 @@ than G1):**
   such functions `static`, or keep a local prototype after the macro defs.
   G3 has its own `olympia/tunnel.c` — expect similar.
 
-### Phase 5 — Lock down (GitHub issue #13)
+### Phase 5 — Lock down (GitHub issue #13) ✅ done
 
-Enable `-Werror=missing-declarations` and wire the `asan-ubsan` preset into CI
-so sanitizers run against the golden flow across all three targets. **Watch for
-a build-to-build non-determinism** like G2's `st -32` flicker in `fact/100`; if
-one appears here, G2 proved it is *not* a missing-prototype bug — chase it with
-the sanitizer run (uninitialized read / UB is the leading suspect).
+`-Wmissing-declarations -Werror=missing-declarations` is locked in
+`olympia_compile_flags()` on **all three** targets. **0 hits** — Phase 4's
+prototype work already drove the function-declaration class to zero on clang
+(re-inventoried from a clean full build with `-- -k 0`); the flag is a
+cross-compiler guard (a distinct class from the prototype set on GCC) and the
+LP64 lockdown (a function with no prior declaration is `extern int foo()`, so a
+caller of a pointer-returning function reads 4 of 8 bytes). Pure flag flip; no
+source fixes needed for the class. Mirrors G1/G2 Phase 5.
 
-**Pick up bug #3 while working #13:** `times_masthead` reads `month_names[-1]`
-(turn-0 underflow; ASan global-buffer-overflow at `c2.c:422`). It is exactly the
-kind of finding the Phase-5 sanitizer wiring is meant to surface, so fix it in
-the same pass.
+**Sanitizers wired on all three targets.** `olympia_enable_sanitizers()` is now
+called on `olympia-g3`, `mapgen-g3`, and `island-g3`, and the malformed
+`OLYMPIA_SANITIZERS` cache-default line was fixed (it was
+`set(... "" CACHE STRING "<doc>" address,undefined)`; the stray trailing token
+broke CMake's `CACHE` recognition and leaked `CACHE STRING ... address,undefined`
+literals onto the compiler command line, so the `asan-ubsan` preset failed to
+build with `no such file or directory: 'CACHE'`). Corrected to the one-line
+form. The **asan-ubsan golden gate now runs green end-to-end for the first
+time** (`OLYMPIA_PRESET=asan-ubsan ./tests/olympia/golden_check.sh` = `YES`,
+zero ASan/UBSan diagnostics) — part of every later phase from here on.
+
+Two memory-safety defects the sanitizers surfaced were fixed in the same pass,
+both byte-identical golden:
+
+- **Bug #3 (`times_masthead`):** `month_names[oly_month(sysclock)]` underflowed
+  to `month_names[-1]` at turn 0 (`oly_month` is `((turn-1) % NUM_MONTHS)`; the
+  fixture's `system` file has no `sysclock` line, so turn is 0). ASan
+  global-buffer-overflow at `c2.c:422`, fires during the **`-i`** phase only
+  (the `-r -S` turn has turn ≥ 1). Fixed by clamping turn 0 to month 0 with a
+  bounds assert; turn ≥ 1 (and so the post-turn golden snapshot) is unchanged.
+  **Closed.**
+- **mapgen guard-allocator misalignment:** `mapgen/z.c` `my_malloc` wrote its
+  trailing `0xBABEFACE` guard int at offset `client + 2*sizeof(int)` without
+  rounding the client size to int alignment (unlike `my_realloc`, which already
+  did) — UBSan misaligned store at `z.c:63` for odd request sizes. Fixed by
+  applying the same int-alignment rounding in `my_malloc`; the guard is internal
+  metadata, never emitted, so `gate`/`loc`/`road` are byte-identical.
+
+No build-to-build non-determinism appeared (G2's `st -32` `fact/100` flicker has
+no analogue here — G3 output was already verified deterministic). The `gm.c`
+divide-by-zero G1 hit did **not** surface: the full golden flow runs clean under
+UBSan, confirming `lib/checked_alloc.c` (G2 lineage) avoids G1's guard-allocator
+alignment bug, as expected.
 
 ### Known bugs deferred past the 64-bit effort
 
