@@ -30,9 +30,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 # =============================================================================
 
 option(OLYMPIA_SANITIZE "Enable sanitizer instrumentation" OFF)
-set(OLYMPIA_SANITIZERS "" CACHE STRING "Comma-separated sanitizers, e.g. address,undefined"
-    address,undefined
-)
+set(OLYMPIA_SANITIZERS "address,undefined" CACHE STRING "Comma-separated sanitizers, e.g. address,undefined")
 
 # All shared engine warning flags, applied identically to every target.
 function(olympia_compile_flags tgt)
@@ -157,6 +155,9 @@ target_include_directories(island-g3 PRIVATE island/ mapgen/)
 target_compile_features(island-g3 PRIVATE c_std_11)
 olympia_compile_flags(island-g3)
 
+# Optional ASan/UBSan via the asan-ubsan preset (OLYMPIA_SANITIZE=ON).
+olympia_enable_sanitizers(island-g3)
+
 # ------------------------------------------------------------------------------
 # G3 mapgen
 # ------------------------------------------------------------------------------
@@ -178,6 +179,9 @@ target_include_directories(mapgen-g3 PRIVATE mapgen/ lib/)
 # CMAKE_C_STANDARD above stays as the default for any future targets).
 target_compile_features(mapgen-g3 PRIVATE c_std_11)
 olympia_compile_flags(mapgen-g3)
+
+# Optional ASan/UBSan via the asan-ubsan preset (OLYMPIA_SANITIZE=ON).
+olympia_enable_sanitizers(mapgen-g3)
 
 # ------------------------------------------------------------------------------
 # G3 olympia (main game engine)
