@@ -93,12 +93,12 @@ xMD5Update(struct xMD5Context *ctx, byte const *buf, int len)
 	/* Update byte count */
 
 	t = ctx->bytes[0];
-	if ((ctx->bytes[0] = t + len) < t)
+	if ((ctx->bytes[0] = t + (word32)len) < t)	/* len >= 0 */
 		ctx->bytes[1]++;	/* Carry from low to high */
 
 	t = 64 - (t & 0x3f);	/* Space available in ctx->in (at least 1) */
 	if ((unsigned)t > len) {
-		memcpy((byte *)ctx->in + 64 - (unsigned)t, buf, len);
+		memcpy((byte *)ctx->in + 64 - (unsigned)t, buf, (size_t)len);	/* len >= 0 */
 		return;
 	}
 	/* First chunk is an odd size */
@@ -118,7 +118,7 @@ xMD5Update(struct xMD5Context *ctx, byte const *buf, int len)
 	}
 
 	/* Handle any remaining bytes of data. */
-	memcpy(ctx->in, buf, len);
+	memcpy(ctx->in, buf, (size_t)len);	/* len in [0,63] here */
 }
 
 /*
@@ -138,13 +138,13 @@ xMD5Final(byte digest[16], struct xMD5Context *ctx)
 	count = 56 - 1 - count;
 
 	if (count < 0) {	/* Padding forces an extra block */
-		memset(p, '\0', count+8);
+		memset(p, '\0', (size_t)(count+8));	/* count+8 >= 0 */
 		byteSwap(ctx->in, 16);
 		xMD5Transform(ctx->buf, ctx->in);
 		p = (byte *)ctx->in;
 		count = 56;
 	}
-	memset(p, '\0', count+8);
+	memset(p, '\0', (size_t)(count+8));	/* count+8 >= 0 */
 	byteSwap(ctx->in, 14);
 
 	/* Append length in bits and transform */
@@ -300,20 +300,20 @@ void save_seed(char *fnam)
 
 int rnd(int low, int high)
 {
-	unsigned int range = high - low;
+	unsigned int range = (unsigned int)(high - low);	/* high >= low */
 	unsigned int mask = 0;
 	unsigned int num;
 	int r;
 
-	for (r = range; r; r >>= 1)
-		mask |= r;
+	for (r = (int)range; r; r >>= 1)
+		mask |= (unsigned int)r;
 
 	do {
 		MD5(digest, digest, sizeof(digest));
 		num = digest[0] & mask;
 	} while (num > range);
 
-	return num + low;
+	return (int)(num + (unsigned int)low);	/* modular, matches implicit */
 }
 
 int md5_int(int a, int b, int c, int d)
@@ -327,6 +327,6 @@ int md5_int(int a, int b, int c, int d)
 
 	MD5(buf, buf, sizeof(buf));
 
-	return buf[0];
+	return (int) buf[0];	/* word32 -> int, modular */
 }
 
