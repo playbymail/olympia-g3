@@ -23,7 +23,7 @@ output_order_comp(const void *av, const void *bv)
 void
 sort_for_output(ilist l)
 {
-	qsort(l, ilist_len(l), sizeof(int), output_order_comp);
+	qsort(l, (size_t)ilist_len(l), sizeof(int), output_order_comp);
 }
 
 
@@ -278,7 +278,7 @@ show_char_inventory(int who, int num)
 
 	if (item_ents_len(bx[num]->items) > 0)
 	{
-		qsort(bx[num]->items, item_ents_len(bx[num]->items),
+		qsort(bx[num]->items, (size_t)item_ents_len(bx[num]->items),
 					sizeof(*bx[num]->items), inv_item_comp);
 	}
 
@@ -729,7 +729,7 @@ show_unclaimed(int who, int num)
 
 	if (item_ents_len(bx[num]->items) > 0)
 	{
-		qsort(bx[num]->items, item_ents_len(bx[num]->items),
+		qsort(bx[num]->items, (size_t)item_ents_len(bx[num]->items),
 					sizeof(*bx[num]->items), inv_item_comp);
 	}
 

@@ -94,7 +94,7 @@ check_swear(void)
 		ilist_append(&p_player(over)->units, i);
 
 		qsort(p_player(over)->units,
-				ilist_len(p_player(over)->units),
+				(size_t)ilist_len(p_player(over)->units),
 				sizeof(int),
 				int_comp);
 	    }

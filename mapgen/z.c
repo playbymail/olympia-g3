@@ -61,9 +61,9 @@ void *my_malloc(unsigned size)
 
 	memset(p, '\0', size);
 
-	*((int *) p) = size;
-	*((int *) (p+sizeof(int))) = 0xDEADBEEF;
-	*((int *) (p + size)) = 0xBABEFACE;
+	*((int *) p) = (int)size;			/* size header slot, value fits */
+	*((int *) (p+sizeof(int))) = (int)0xDEADBEEF;	/* guard, internal metadata */
+	*((int *) (p + size)) = (int)0xBABEFACE;	/* guard, internal metadata */
 
 	return p + sizeof(int)*2;
 }
@@ -88,9 +88,9 @@ void *my_realloc(void *ptr, unsigned size)
 
 	p = realloc(p, size + sizeof(int));
 
-	*((int *)p) = size;
-	*((int *) (p+sizeof(int))) = 0xDEADBEEF;
-	*((int *) (p + size)) = 0xBABEFACE;
+	*((int *)p) = (int)size;			/* size header slot, value fits */
+	*((int *) (p+sizeof(int))) = (int)0xDEADBEEF;	/* guard, internal metadata */
+	*((int *) (p + size)) = (int)0xBABEFACE;	/* guard, internal metadata */
 
 	if (p == NULL)
 	{

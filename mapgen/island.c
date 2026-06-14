@@ -248,7 +248,7 @@ int main(int argc, char *argv[])
 			while (rnd(0, 99))
 				target_size++;
 	}
-	island = malloc((target_size + 1) * sizeof(*island));
+	island = malloc((size_t)(target_size + 1) * sizeof(*island));
 	if (!island) {
 		fprintf(stderr, "Unable to allocate memory for island data!\n");
 		exit(1);

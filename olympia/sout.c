@@ -33,7 +33,7 @@ int init_spaces(void)
 	int i;
 
 	spaces_len = 150;
-	spaces = my_malloc(spaces_len+1);
+	spaces = my_malloc((size_t)spaces_len+1);
 
 	for (i = 0; i <	spaces_len; i++)
 		spaces[i] = ' ';

@@ -389,7 +389,7 @@ seed_city_skill(int where)
 	}
 
 	if (ilist_len(p->teaches) > 0)
-		qsort(p->teaches, ilist_len(p->teaches), sizeof(int), int_comp);
+		qsort(p->teaches, (size_t)ilist_len(p->teaches), sizeof(int), int_comp);
 }
 
 
