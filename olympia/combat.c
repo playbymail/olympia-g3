@@ -801,7 +801,16 @@ construct_guard_fight_list(int target, int attacker, fights_list l_a)
 		if (player(i) == player(attacker))
 			continue;
 
-		if (fights_lookup(l_a, i) >= 0)
+/*
+ *  GitHub issue #4 (deferred past the 64-bit effort): this passes the
+ *  box-id 'i' where fights_lookup() wants a 'struct fight *', so the
+ *  lookup compares fight pointers against a bogus pointer and is always
+ *  -1 (the guard is never skipped).  The explicit (long) cast preserves
+ *  that exact (buggy) behavior byte-for-byte while silencing
+ *  -Wint-conversion; fixing the defect changes golden output and must be
+ *  a deliberate re-baseline, not part of Phase A.
+ */
+		if (fights_lookup(l_a, (struct fight *)(long)i) >= 0)
 			continue;
 
 		add_fight_stack(&l, i, FALSE, TRUE);
