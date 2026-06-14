@@ -45,6 +45,9 @@ void *my_malloc(unsigned size)
 {
 	char *p;
 
+	size += sizeof(int)-1;		/* integer alignment */
+	size -= size % sizeof(int);	/* keep the trailing guard int aligned */
+
 	size += sizeof(int)*2;
 	p = malloc(size + sizeof(int));
 
