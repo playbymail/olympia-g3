@@ -419,7 +419,21 @@ times_masthead(void)
 	next_player;
 
 	sprintf(turn_s, "turn %d, %d player%s", sysclock.turn, nplayers, nplayers == 1 ? "" : "s");
-	sprintf(issue_s, "%s year %d", month_names[oly_month(sysclock)], oly_year(sysclock) + 1);
+
+	/*
+	 *  oly_month() is ((turn-1) % NUM_MONTHS); at turn 0 (a fixture with no
+	 *  sysclock line) it underflows to -1, so month_names[oly_month(...)]
+	 *  read one slot before the array (bug #3 -- ASan global-buffer-overflow).
+	 *  Clamp turn 0 to month 0; turn >= 1 is unaffected, so golden output is
+	 *  byte-identical.
+	 */
+	{
+		int month = oly_month(sysclock);
+		if (month < 0)
+			month = 0;
+		assert(month >= 0 && month < NUM_MONTHS);
+		sprintf(issue_s, "%s year %d", month_names[month], oly_year(sysclock) + 1);
+	}
 
 	fprintf(fp, "From: %s\n", from_host);
 	fprintf(fp, "Subject: %s - The Olympia Times - Issue %d\n", game_title, sysclock.turn);
