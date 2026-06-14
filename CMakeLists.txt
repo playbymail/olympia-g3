@@ -292,6 +292,8 @@ target_compile_options(olympia-g3 PRIVATE
     # Phase 1 - list triage - only pointer-cast errors
     -Wint-to-pointer-cast -Werror=int-to-pointer-cast
     -Wpointer-to-int-cast -Werror=pointer-to-int-cast
+    # Phase 2 - incompatible pointer types
+    -Wincompatible-pointer-types -Werror=incompatible-pointer-types
     # Phase 4 - prototypes & declarations
     -Wmissing-prototypes -Werror=missing-prototypes
     -Wstrict-prototypes -Werror=strict-prototypes
