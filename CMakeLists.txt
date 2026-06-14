@@ -5,10 +5,40 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
-function(legacy_build_flags tgt)
-    # Flags to hide legacy code warnings.
-    # We'll need to roll some of these back when we're updating the code to run as 64-bit.
+# =============================================================================
+# Compiler-flag conventions (read before "tidying up" this file)
+# =============================================================================
+# The 32->64-bit modernization is in progress; classes triaged to ZERO and
+# locked as errors live in olympia_compile_flags() below. See CLAUDE.md
+# "Modernization status" for the per-phase history and what remains.
+#
+# 1. Enforced classes are written as an explicit pair, one class per line:
+#        -Wfoo -Werror=foo
+#    The bare -Wfoo is technically redundant (-Werror=foo already enables it),
+#    but the pair is deliberate: it records that the class was driven to zero
+#    and locked. Do NOT collapse these to bare -Werror=foo -- the redundancy is
+#    a record of completed work, not clutter.
+#
+# 2. -Wno-foo suppressions are legacy idioms this codebase still relies on and
+#    that are NOT being chased down yet (a later phase will turn each into an
+#    enforced pair, then drop the matching -Wno- line).
+#
+# Both sets, plus optional sanitizers, are applied identically to every target
+# via olympia_compile_flags() / olympia_enable_sanitizers(). There is one flag
+# set for the whole project -- keep it that way. Optimization/debug (-O/-g) is
+# owned by CMAKE_BUILD_TYPE / the presets, NOT this file.
+# =============================================================================
+
+option(OLYMPIA_SANITIZE "Enable sanitizer instrumentation" OFF)
+set(OLYMPIA_SANITIZERS "" CACHE STRING "Comma-separated sanitizers, e.g. address,undefined"
+    address,undefined
+)
+
+# All shared engine warning flags, applied identically to every target.
+function(olympia_compile_flags tgt)
     target_compile_options(${tgt} PRIVATE
+        # --- Suppressions: legacy idioms left as-is (each becomes an enforced
+        #     pair in a later phase, then this line is dropped) ---
         -Wno-comment
         -Wno-compare-distinct-pointer-types
         -Wno-dangling-else
@@ -17,78 +47,30 @@ function(legacy_build_flags tgt)
         -Wno-format
         -Wno-format-security
         -Wno-incompatible-library-redeclaration
-        -Wno-incompatible-pointer-types
-        -Wno-int-conversion
-        -Wno-int-to-pointer-cast
         -Wno-logical-not-parentheses
         -Wno-macro-redefined
         -Wno-multichar
         -Wno-non-literal-null-conversion
         -Wno-parentheses
-        -Wno-pointer-to-int-cast
         -Wno-return-mismatch
         -Wno-return-type
         -Wno-sizeof-pointer-memaccess
         -Wno-tautological-constant-out-of-range-compare
-    )
-endfunction()
 
-function(phase_1_build_flags tgt)
-    # i/pointer lists triage - only pointer-cast errors.
-    target_compile_options(${tgt} PRIVATE
+        # --- Modernization classes triaged to 0 and locked (CLAUDE.md) ---
+        # Phase 1 - pointer-cast errors
         -Wint-to-pointer-cast -Werror=int-to-pointer-cast
         -Wpointer-to-int-cast -Werror=pointer-to-int-cast
-    )
-endfunction()
-
-function(phase_2_build_flags tgt)
-    # incompatible pointer types
-    target_compile_options(${tgt} PRIVATE
+        # Phase 2 - incompatible pointer types
         -Wincompatible-pointer-types -Werror=incompatible-pointer-types
-    )
-endfunction()
-
-function(phase_3_build_flags tgt)
-    # integer conversions
-    target_compile_options(${tgt} PRIVATE
+        # Phase 3 - integer conversions
         -Wint-conversion -Werror=int-conversion
-    )
-endfunction()
-
-function(phase_4_build_flags tgt)
-    # forward declarations; start turning on errors
-    target_compile_options(${tgt} PRIVATE
+        # Phase 4 - prototypes & declarations
         -Wmissing-prototypes -Werror=missing-prototypes
         -Wstrict-prototypes -Werror=strict-prototypes
         -Wimplicit-function-declaration -Werror=implicit-function-declaration
     )
 endfunction()
-
-function(phase_5_build_flags tgt)
-    # C11's enabled, sanitizers enabled
-    target_compile_options(${tgt} PRIVATE
-        -Wmissing-declarations -Werror=missing-declarations
-        # string literal to char* is a classic legacy footgun
-        #-Wwrite-strings #-Werror=write-strings
-        -fno-common
-        -fno-omit-frame-pointer
-        -fno-optimize-sibling-calls
-        -fsanitize=address,undefined
-        -fno-sanitize-recover=all
-    )
-    target_link_options(${tgt} PRIVATE
-        -fno-common
-        -fno-omit-frame-pointer
-        -fno-optimize-sibling-calls
-        -fsanitize=address,undefined
-        -fno-sanitize-recover=all
-    )
-endfunction()
-
-option(OLYMPIA_SANITIZE "Enable sanitizer instrumentation" OFF)
-set(OLYMPIA_SANITIZERS "" CACHE STRING "Comma-separated sanitizers, e.g. address,undefined"
-    address,undefined
-)
 
 function(olympia_enable_sanitizers tgt)
     if(NOT OLYMPIA_SANITIZE)
@@ -129,47 +111,6 @@ function(olympia_enable_sanitizers tgt)
     endif()
 endfunction()
 
-# Engine-specific flags to hide legacy code warnings. We'll need to roll
-# some of these back when we're updating the code to run as 64-bit.
-set(LEGACY_C_FLAGS
-        -Wno-comment
-        -Wno-compare-distinct-pointer-types
-        -Wno-dangling-else
-        -Wno-deprecated-declarations
-        -Wno-extra-tokens
-        -Wno-format
-        -Wno-format-security
-        -Wno-incompatible-library-redeclaration
-        -Wno-incompatible-pointer-types
-        -Wno-int-conversion
-        -Wno-int-to-pointer-cast
-        -Wno-logical-not-parentheses
-        -Wno-macro-redefined
-        -Wno-multichar
-        -Wno-non-literal-null-conversion
-        -Wno-parentheses
-        -Wno-pointer-to-int-cast
-        -Wno-return-mismatch
-        -Wno-return-type
-        -Wno-sizeof-pointer-memaccess
-        -Wno-tautological-constant-out-of-range-compare
-)
-
-# Create a stricter set of compiler flags to catch
-set(LEGACY_C_FLAGS_STRICT
-        ${LEGACY_C_FLAGS}
-)
-
-# Remove suppressions that hide 64-bit hazards
-list(REMOVE_ITEM LEGACY_C_FLAGS_STRICT
-        -Wno-int-conversion
-        -Wno-int-to-pointer-cast
-        -Wno-pointer-to-int-cast
-        -Wno-implicit-function-declaration
-        -Wno-return-mismatch
-        -Wno-return-type
-)
-
 # ------------------------------------------------------------------------------
 # 32-bit build support
 # ------------------------------------------------------------------------------
@@ -208,19 +149,7 @@ target_include_directories(island-g3 PRIVATE island/ mapgen/)
 # Declare the C11 requirement at the target level (the project-level
 # CMAKE_C_STANDARD above stays as the default for any future targets).
 target_compile_features(island-g3 PRIVATE c_std_11)
-target_compile_options(island-g3 PRIVATE ${LEGACY_C_FLAGS} -Og -g
-    # Phase 1 - pointer-cast errors
-    -Wint-to-pointer-cast -Werror=int-to-pointer-cast
-    -Wpointer-to-int-cast -Werror=pointer-to-int-cast
-    # Phase 2 - incompatible pointer types
-    -Wincompatible-pointer-types -Werror=incompatible-pointer-types
-    # Phase 3 - integer conversions
-    -Wint-conversion -Werror=int-conversion
-    # Phase 4 - prototypes & declarations
-    -Wmissing-prototypes -Werror=missing-prototypes
-    -Wstrict-prototypes -Werror=strict-prototypes
-    -Wimplicit-function-declaration -Werror=implicit-function-declaration
-)
+olympia_compile_flags(island-g3)
 
 # ------------------------------------------------------------------------------
 # G3 mapgen
@@ -242,17 +171,7 @@ target_include_directories(mapgen-g3 PRIVATE mapgen/ lib/)
 # Declare the C11 requirement at the target level (the project-level
 # CMAKE_C_STANDARD above stays as the default for any future targets).
 target_compile_features(mapgen-g3 PRIVATE c_std_11)
-target_compile_options(mapgen-g3 PRIVATE
-    ${LEGACY_C_FLAGS} -Og -g
-    -Wint-conversion -Werror=int-conversion
-    -Wint-to-pointer-cast -Werror=int-to-pointer-cast
-    -Wpointer-to-int-cast -Werror=pointer-to-int-cast
-    -Wincompatible-pointer-types -Werror=incompatible-pointer-types
-    # Phase 4 - prototypes & declarations
-    -Wmissing-prototypes -Werror=missing-prototypes
-    -Wstrict-prototypes -Werror=strict-prototypes
-    -Wimplicit-function-declaration -Werror=implicit-function-declaration
-)
+olympia_compile_flags(mapgen-g3)
 
 # ------------------------------------------------------------------------------
 # G3 olympia (main game engine)
@@ -294,20 +213,7 @@ target_include_directories(olympia-g3 PRIVATE olympia/ lib/)
 # Declare the C11 requirement at the target level (the project-level
 # CMAKE_C_STANDARD above stays as the default for any future targets).
 target_compile_features(olympia-g3 PRIVATE c_std_11)
-target_compile_options(olympia-g3 PRIVATE
-    ${LEGACY_C_FLAGS} -Og -g
-    # Phase 1 - pointer-cast errors
-    -Wint-to-pointer-cast -Werror=int-to-pointer-cast
-    -Wpointer-to-int-cast -Werror=pointer-to-int-cast
-    # Phase 2 - incompatible pointer types
-    -Wincompatible-pointer-types -Werror=incompatible-pointer-types
-    # Phase 3 - integer conversions
-    -Wint-conversion -Werror=int-conversion
-    # Phase 4 - prototypes & declarations
-    -Wmissing-prototypes -Werror=missing-prototypes
-    -Wstrict-prototypes -Werror=strict-prototypes
-    -Wimplicit-function-declaration -Werror=implicit-function-declaration
-)
+olympia_compile_flags(olympia-g3)
 
 # Optional ASan/UBSan via the asan-ubsan preset (OLYMPIA_SANITIZE=ON).
 olympia_enable_sanitizers(olympia-g3)
