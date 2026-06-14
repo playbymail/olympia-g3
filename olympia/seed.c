@@ -298,10 +298,12 @@ compute_dist(void)
 
 
 int
-int_comp(void *a, void *b)
+int_comp(const void *av, const void *bv)
 {
+	int *a = (int *) av;
+	int *b = (int *) bv;
 
-	return *(int *)a - *(int *)b;
+	return *a - *b;
 }
 
 

@@ -8,8 +8,10 @@
 
 
 static int
-output_order_comp(int *a, int *b)
+output_order_comp(const void *av, const void *bv)
 {
+	int *a = (int *) av;
+	int *b = (int *) bv;
 
 	if (bx[*a]->output_order != bx[*b]->output_order)
 		return bx[*a]->output_order - bx[*b]->output_order;
@@ -209,8 +211,10 @@ show_item_skills(int who, int num)
 
 
 static int
-inv_item_comp(item_ents_list a, item_ents_list b)
+inv_item_comp(const void *av, const void *bv)
 {
+	item_ents_list a = (item_ents_list) av;
+	item_ents_list b = (item_ents_list) bv;
 
 	return (*a)->item - (*b)->item;
 }

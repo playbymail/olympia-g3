@@ -428,8 +428,10 @@ exec_precedence(int who)
 
 
 static int
-exec_comp(int *a, int *b)
+exec_comp(const void *av, const void *bv)
 {
+	int *a = (int *) av;
+	int *b = (int *) bv;
 
 	return bx[*a]->temp - bx[*b]->temp;
 }

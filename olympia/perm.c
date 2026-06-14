@@ -139,8 +139,10 @@ v_admit(struct command *c)
 
 
 static int
-admit_comp(admits_list a, admits_list b)
+admit_comp(const void *av, const void *bv)
 {
+	admits_list a = (admits_list) av;
+	admits_list b = (admits_list) bv;
 
 	return (*a)->targ - (*b)->targ;
 }

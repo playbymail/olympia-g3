@@ -65,8 +65,10 @@ clear_all_trades(int who)
 
 
 static int
-seller_comp(trades_list a, trades_list b)
+seller_comp(const void *av, const void *bv)
 {
+	trades_list a = (trades_list) av;
+	trades_list b = (trades_list) bv;
 
 	if ((*a)->cost == (*b)->cost)
 		return (*a)->sort - (*b)->sort;

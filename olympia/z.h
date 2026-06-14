@@ -77,4 +77,4 @@ extern void load_seed(char *fnam);
 extern void save_seed(char *fnam);
 extern int md5_int(int a, int b, int c, int d);
 
-extern int int_comp(void * a, void * b);
+extern int int_comp(const void *av, const void *bv);
