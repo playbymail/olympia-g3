@@ -29,9 +29,9 @@ extern char lower_array[];
 
 #define	toupper(c)	(((c) >= 'a' && (c) <= 'z') ? ((c) - 'a' + 'A') : (c))
 
-extern void *my_malloc(unsigned size);
-extern void *my_realloc(void *ptr, unsigned size);
-extern void my_free(void *ptr);
+extern void *my_malloc(size_t size);
+extern void *my_realloc(void *ptr, size_t size);
+extern void my_free(const void *ptr);
 extern char *str_save(char *);
 
 extern char *getlin(FILE *);

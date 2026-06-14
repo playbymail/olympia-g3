@@ -104,6 +104,17 @@
 //     assert(tail == CANARY_TAIL);
 // }
 
+// Why these stay thin wrappers instead of inlining calloc/free at the call
+// sites: they are the engine's single allocation seam. Every allocation in
+// olympia-g3 (and, via lib/ilist.c, mapgen-g3) routes through my_malloc/
+// my_realloc/my_free, so the canary/guard allocator above can be flipped back
+// on in ONE file to chase heap corruption, double-frees, or leaks — and
+// allocation counters (main.c's malloc_size/realloc_size) hang off the same
+// seam. The boxing/guard bookkeeping was retired (#19) because ASan/UBSan now
+// cover it with zero overhead, but the wrappers themselves are deliberately
+// kept: inlining ~55 calloc/free call sites would destroy the seam, leave
+// mixed conventions (lib/ilist.c and str_save/getlin still call the wrappers),
+// and buy nothing at runtime. Keep allocations going through here.
 void *my_malloc(size_t size) {
     return calloc(1, size);
 }

@@ -18,104 +18,35 @@ int realloc_size = 0;
 
 
 /*
- *  malloc safety checks:
+ *  Thin stdlib-forwarding allocator wrappers.
  *
- *      Space for three extra ints is is allocated beyond what the client
- *      asks for.  The size of the malloc'd region is stored at the
- *      beginning, followed by a magic number (0xDEADBEEF), then a magic
- *	number is placed at the end of the region (0xBABEFACE).  realloc's
- *      and free's check the integrity of these markers.  This protects
- *      against overruns, makes sure that non-malloc'd memory isn't freed,
- *      and that memory isn't freed twice.
+ *  These used to be a hand-rolled "boxing" allocator that over-allocated by
+ *  three ints to store the region size plus 0xDEADBEEF/0xBABEFACE guard
+ *  markers, asserting their integrity on realloc/free to catch overruns,
+ *  double-frees, and frees of non-malloc'd pointers.  AddressSanitizer and
+ *  UndefinedBehaviorSanitizer (wired onto mapgen-g3 in #13) now detect those
+ *  far more thoroughly and with zero per-allocation overhead, so the boxing
+ *  is gone — matching the engine's lib/checked_alloc.c.
  *
- *	-------------------------------------
- *	0-3	malloced size + 2*sizeof(int)
- *	4-7	0xDEADBEEF
- *	...	client memory
- *	n	0xBABEFACE
- *	-------------------------------------
- *
- *  Any assertion failures in this file indicate that the caller
- *  to the respective function has done something bad, either by
- *  overrunning a region returned from malloc/realloc, or by calling
- *  free with a pointer that wasn't obtained from malloc or free.
+ *  my_malloc uses calloc so callers keep zero-initialized memory.
  */
 
-void *my_malloc(unsigned size)
+void *my_malloc(size_t size)
 {
-	char *p;
-
-	size += sizeof(int)-1;		/* integer alignment */
-	size -= size % sizeof(int);	/* keep the trailing guard int aligned */
-
-	size += sizeof(int)*2;
-	p = malloc(size + sizeof(int));
-
-	if (p == NULL)
-	{
-		fprintf(stderr, "my_malloc: out of memory (can't malloc "
-				"%d bytes)\n", size);
-		assert(0);
-		exit(1);
-	}
-
-	memset(p, '\0', size);
-
-	*((int *) p) = (int)size;			/* size header slot, value fits */
-	*((int *) (p+sizeof(int))) = (int)0xDEADBEEF;	/* guard, internal metadata */
-	*((int *) (p + size)) = (int)0xBABEFACE;	/* guard, internal metadata */
-
-	return p + sizeof(int)*2;
+	return calloc(1, size);
 }
 
 
-void *my_realloc(void *ptr, unsigned size)
+void *my_realloc(void *ptr, size_t size)
 {
-	char *p = ptr;
-  
-	if (p == NULL)
-		return my_malloc(size);
-
-	p -= sizeof(int)*2;
-
-	assert(*((int *) (p+sizeof(int))) == 0xDEADBEEF);
-	assert(*((int *) (p + *(int *) p)) == 0xBABEFACE);
-
-	size += sizeof(int)-1;		/* integer alignment */
-	size -= size % sizeof(int);
-
-	size += sizeof(int)*2;
-
-	p = realloc(p, size + sizeof(int));
-
-	*((int *)p) = (int)size;			/* size header slot, value fits */
-	*((int *) (p+sizeof(int))) = (int)0xDEADBEEF;	/* guard, internal metadata */
-	*((int *) (p + size)) = (int)0xBABEFACE;	/* guard, internal metadata */
-
-	if (p == NULL)
-	{
-		fprintf(stderr, "my_realloc: out of memory (can't realloc "
-				"%d bytes)\n", size);
-		assert(0);
-		exit(1);
-	}
-
-	return p + sizeof(int)*2;
+	return realloc(ptr, size);
 }
 
 
-void my_free(void *ptr)
+void my_free(const void *ptr)
 {
-	char *p = ptr;
-  
-	p -= sizeof(int)*2;
-
-	assert(*((int *) (p+sizeof(int))) == 0xDEADBEEF);
-	assert(*((int *) (p + *(int *) p)) == 0xBABEFACE);
-	*((int *) (p + *(int *) p)) = 0;
-	*((int *) p) = 0;
-
-	free(p);
+	if (ptr)
+		free((void *) ptr);
 }
 
 
@@ -124,7 +55,7 @@ str_save(char *s)
 {
 	char *p;
 
-	p = my_malloc((unsigned) (strlen(s) + 1));	/* string len fits 32 bits */
+	p = my_malloc(strlen(s) + 1);
 	strcpy(p, s);
 
 	return p;
