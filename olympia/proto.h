@@ -474,7 +474,8 @@ extern void npc_move(int who);
 extern void queue_npc_orders(void);
 
 /* olympia/order.c */
-extern void queue(int who, char *s, ...);
+extern void queue(int who, char *s, ...)
+    __attribute__((format(printf, 2, 3)));
 extern void flush_unit_orders(int pl, int who);
 extern void list_order_templates(void);
 extern void load_orders(void);
