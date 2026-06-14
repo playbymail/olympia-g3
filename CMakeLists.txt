@@ -116,9 +116,19 @@ function(olympia_compile_flags tgt)
     # -Wconversion, which is not enabled here); it MUST sit behind this guard or
     # GCC builds break. It isolates the long/size_t/ssize_t-into-int/short
     # truncations that diverge between ILP32 and LP64; the class measures 0.
+    #
+    # Phase 10 (#17) - implicit-int-conversion is likewise Clang-only (GCC folds
+    # it into the broader -Wconversion, which is not enabled here), so it shares
+    # this guard with -Wshorten-64-to-32. This is a code-quality / tech-debt
+    # class (int->short/char narrowing into narrow entity-struct fields), NOT a
+    # 64-bit hazard: arch-independent, identical on ILP32 and LP64. Driven to
+    # zero with explicit (short)/(schar)/(char) casts (the on-negation sub-form
+    # too); representation-preserving, so golden output is byte-identical. This
+    # is the LAST warning phase of the ladder.
     if (CMAKE_C_COMPILER_ID MATCHES "Clang")
         target_compile_options(${tgt} PRIVATE
             -Wshorten-64-to-32 -Werror=shorten-64-to-32
+            -Wimplicit-int-conversion -Werror=implicit-int-conversion
         )
     endif()
 endfunction()
