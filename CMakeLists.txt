@@ -69,6 +69,12 @@ function(olympia_compile_flags tgt)
         -Wmissing-prototypes -Werror=missing-prototypes
         -Wstrict-prototypes -Werror=strict-prototypes
         -Wimplicit-function-declaration -Werror=implicit-function-declaration
+        # Phase 5 - missing-declarations (lockdown gate before the width phases)
+        # A function with no prior declaration is treated as extern int foo(); if
+        # it really returns a pointer the caller reads 4 of 8 bytes on LP64. 0
+        # hits on clang (Phase 4's prototype work already covered it); the flag is
+        # a cross-compiler guard (distinct class on GCC).
+        -Wmissing-declarations -Werror=missing-declarations
     )
 endfunction()
 
