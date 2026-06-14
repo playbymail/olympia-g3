@@ -52,7 +52,8 @@ function(olympia_compile_flags tgt)
         -Wno-parentheses
         -Wno-return-mismatch
         -Wno-return-type
-        -Wno-sizeof-pointer-memaccess
+        # sizeof-pointer-memaccess is now enforced below (Phase 6 / issue #14) —
+        # the MD5 memset(ctx, sizeof(ctx)) bug is fixed, so the -Wno- is dropped.
         -Wno-tautological-constant-out-of-range-compare
 
         # --- Modernization classes triaged to 0 and locked (CLAUDE.md) ---
@@ -73,7 +74,23 @@ function(olympia_compile_flags tgt)
         # hits on clang (Phase 4's prototype work already covered it); the flag is
         # a cross-compiler guard (distinct class on GCC).
         -Wmissing-declarations -Werror=missing-declarations
+        # Phase 6 (#14) - 64-bit width hazards, portable half
+        # A sizeof(ptr) where sizeof(*ptr) is meant grows 4->8 bytes on LP64
+        # (a real corruption risk). The MD5 memset(ctx, sizeof(ctx)) bug is
+        # fixed; the class measures 0.
+        -Wsizeof-pointer-memaccess -Werror=sizeof-pointer-memaccess
     )
+
+    # Phase 6 (#14) - 64-bit width hazards, Clang-only half.
+    # -Wshorten-64-to-32 is a Clang-only diagnostic spelling (GCC folds it into
+    # -Wconversion, which is not enabled here); it MUST sit behind this guard or
+    # GCC builds break. It isolates the long/size_t/ssize_t-into-int/short
+    # truncations that diverge between ILP32 and LP64; the class measures 0.
+    if (CMAKE_C_COMPILER_ID MATCHES "Clang")
+        target_compile_options(${tgt} PRIVATE
+            -Wshorten-64-to-32 -Werror=shorten-64-to-32
+        )
+    endif()
 endfunction()
 
 function(olympia_enable_sanitizers tgt)
