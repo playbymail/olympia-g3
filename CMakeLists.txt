@@ -209,6 +209,13 @@ target_include_directories(island-g3 PRIVATE island/ mapgen/)
 # CMAKE_C_STANDARD above stays as the default for any future targets).
 target_compile_features(island-g3 PRIVATE c_std_11)
 target_compile_options(island-g3 PRIVATE ${LEGACY_C_FLAGS} -Og -g
+    # Phase 1 - pointer-cast errors
+    -Wint-to-pointer-cast -Werror=int-to-pointer-cast
+    -Wpointer-to-int-cast -Werror=pointer-to-int-cast
+    # Phase 2 - incompatible pointer types
+    -Wincompatible-pointer-types -Werror=incompatible-pointer-types
+    # Phase 3 - integer conversions
+    -Wint-conversion -Werror=int-conversion
     # Phase 4 - prototypes & declarations
     -Wmissing-prototypes -Werror=missing-prototypes
     -Wstrict-prototypes -Werror=strict-prototypes
