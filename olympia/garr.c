@@ -386,7 +386,6 @@ int
 v_pledge(struct command *c)
 {
 	int target = c->a;
-	int n = 0;
 
 	if (target == c->who)
 	{
@@ -424,7 +423,7 @@ v_pledge(struct command *c)
 
 	out(c->who, "Lands are now pledged to %s.", box_name(target));
 
-	out(target, "%s pledges to us.", box_name(c->who), add_s(n));
+	out(target, "%s pledges to us.", box_name(c->who));
 
 	p_magic(c->who)->pledge = target;
 	pledge_backlinks = FALSE;

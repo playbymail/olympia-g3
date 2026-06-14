@@ -443,7 +443,7 @@ times_masthead(void)
 	fprintf(fp, "   | The Olympia Times %50s |\n", issue_s);
 	fprintf(fp, "   | %-68s |\n", date);
 	fprintf(fp, "   |                                                                      |\n");
-	fprintf(fp, "   | %s %*s |\n", turn_s, 67 - strlen(turn_s), from_host);
+	fprintf(fp, "   | %s %*s |\n", turn_s, (int)(67 - strlen(turn_s)), from_host);
 	fprintf(fp, "   +----------------------------------------------------------------------+\n\n");
 	fprintf(fp, "     Questions, comments, to play: %s\n\n", game_url);
 	fprintf(fp, "                             Olympia PBEM\n\n");

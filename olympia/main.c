@@ -653,7 +653,7 @@ main(int argc, char **argv)
 		//exit(1);
 	}
 
-	printf("\tsizeof(struct box) = %d\n", sizeof (struct box));
+	printf("\tsizeof(struct box) = %zu\n", sizeof (struct box));
 	setbuf(stderr, NULL);
 
 	call_init_routines();

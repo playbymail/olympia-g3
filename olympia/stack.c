@@ -201,7 +201,7 @@ leave_stack(int who)
 
 	vector_char_here(who);
 	wout(VECT, "%s unstacks from %s.",
-			box_name(who), box_name(leader), just_name(who));
+			box_name(who), box_name(leader));
 
 	unstack(who);
 }
@@ -396,8 +396,7 @@ drop_stack(int who, int to_drop)
 		vector_char_here(to_drop);
 		wout(VECT, "%s dropped %s from the stack.",
 				box_name(who),
-				box_name(to_drop),
-				just_name(to_drop));
+				box_name(to_drop));
 	}
 
 	unstack(to_drop);
