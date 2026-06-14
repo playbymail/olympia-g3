@@ -143,7 +143,7 @@ extended past Phase 5 there); this table is the on-disk summary.
 | 6 | `shorten-64-to-32` (Clang) + `sizeof-pointer-memaccess` | ✅ enforced on **all three** targets (0 hits); MD5 `sizeof(ctx)` bug fixed | #14 ✅ |
 | 7 | `sign-conversion` | ✅ enforced on **all three** targets (0 hits); MD5 RNG + qsort-nmemb + guard-slot casts | #15 ✅ |
 | 8 | `return-type` + return-mismatch | ✅ enforced on **all three** targets (0 hits); 60 sites: 45 mapgen + 6 main.c + 9 engine singles | #16 ✅ |
-| 9 | format-string / vararg checking | ⬜ not started | #7 |
+| 9 | format-string / vararg checking (`-Wformat`) | ✅ enforced on **all three** targets (0 non-security hits); queue attr + 9 vararg fixes; 6 non-literal sites deferred | #7 ✅ |
 | 10 | `implicit-int-conversion` (Clang, code-quality) | ⬜ not started | #17 |
 
 > One build-cleanup step and a docs step close out epic #10 *after* the warning
@@ -201,8 +201,15 @@ byte-identical. **GitHub issue #16 (Phase 8) is also done:**
 Clang — *not* behind the Clang guard) are locked on all three targets, 60
 fall-off-the-end sites are made golden-neutral (45 mapgen + 6 main.c + 9 engine
 singles; 54 void-conversions plus 6 terminal returns), and both golden gates
-stay byte-identical with zero sanitizer diagnostics. **Next up: GitHub issue #7 (Phase 9)** —
-format-string / vararg checking. From here on the asan-ubsan gate
+stay byte-identical with zero sanitizer diagnostics. **GitHub issue #7 (Phase 9)
+is also done:** `-Werror=format` (portable, GCC + Clang) is locked on all three
+targets, `queue()` gained its missing `format(printf,2,3)` attribute, 9
+format/vararg defects (3 memory-unsafe, 1 dropped-output, 5 output-neutral) are
+fixed, the non-security format class measures 0, and both golden gates stay
+byte-identical (the 6 deferred non-literal `-Wformat-security` sites are kept
+suppressed for a later hardening pass). **Next up: GitHub issue #17 (Phase 10)** —
+`implicit-int-conversion` (Clang-guarded, code-quality), the last warning phase
+before Step C (#18, `BUILD_HISTORY.md`). From here on the asan-ubsan gate
 (`OLYMPIA_PRESET=asan-ubsan ./tests/olympia/golden_check.sh` = YES, zero
 diagnostics) is part of every later phase.
 
@@ -541,6 +548,67 @@ source, so sibling counts were not trusted (re-inventoried).
 Probe reports 0 on **both** presets; all three targets build clean with the new
 `-Werror` flags; debug and asan-ubsan golden gates both `YES` (byte-identical)
 and asan/ubsan clean.
+
+### Phase 9 — format-string / vararg checking (`-Wformat`, GitHub issue #7) ✅ done
+
+`-Wformat -Werror=format` is locked in the **portable** section of
+`olympia_compile_flags()` (GCC + Clang — *not* behind the Clang guard that holds
+Phase 6's `-Wshorten-64-to-32`; G1/G2 kept this class portable and macOS clang
+accepts it). The `-Wno-format` / `-Wno-format-security` suppressions had hidden
+the whole class engine-wide even though the printf-like wrappers carry
+`__attribute__((format))`. The worst subclass, `-Wformat-insufficient-args` (a
+bare `%s` with no data argument), is **memory-unsafe** — it dereferences a
+garbage pointer, 8 bytes on LP64. The non-security format class measures **0**
+across all three targets under **both** presets; both golden gates stay
+byte-identical (no re-baseline needed — see below).
+
+**Step 1 — make checking possible.** `olympia/queue` (the variadic `vsprintf`
+wrapper in `order.c`) was **missing** its format attribute on the `proto.h`
+declaration (exactly TAG/G2's bug); the other wrappers (`html`, `out`, `sout`,
+`wiout`, `wout`) carry it in `olympia/legacy.h`. Added
+`__attribute__((format(printf, 2, 3)))` to queue's `proto.h` decl first so its
+call sites get checked. **G3-specific:** every `queue(who, "...")` call site
+passes a string *literal* and scans clean — so unlike TAG/G2 the attribute
+surfaced **no** new fixes, but it locks the call sites against future drift.
+
+**Inventory: 15 unique sites** (identical under debug and asan-ubsan; all in
+`olympia/` — `mapgen-g3` / `island-g3` use libc `fprintf` directly and scanned
+**0**, so don't trust the sibling counts). Probe by sed-dropping the two
+`-Wno-format*` lines (they override `CMAKE_C_FLAGS`) and adding `-Wformat
+-Wno-error=format*` to a throwaway build. Three groups, mirroring G2's commit
+structure (`edb9898` / `504955b` / `f9951d4`):
+
+- **9 fixed** (committed in 2 source commits, all golden-neutral for the turn-1
+  fixture → gate stayed `YES` with **no re-baseline**, since the changed paths
+  don't fire):
+  - **Output-neutral (5):** `c2.c:446` `times_masthead` `%*s` field width
+    `67 - strlen(turn_s)` (a `size_t`) cast to `(int)` — the LP64-correct,
+    representation-preserving fix; `garr.c:427` vestigial `add_s(n)` extra arg
+    removed (+ dropped the unused `int n`); `main.c:656` `sizeof(struct box)`
+    `%d`→`%zu` (startup stdout, not in the golden DB); `stack.c:204/400`
+    vestigial `just_name()` extra args on the VECT unstack/drop messages.
+  - **Memory-unsafe (3):** `c2.c:880` `board_message` `"%s%s%s boarded %s%s"` had
+    5 specs / 4 args → removed the stray leading `%s` (the sibling unboard at
+    `c2.c:1020`, `"%s%s disembarked from %s%s"`, proves 4 args); `scry.c:13`
+    `"%s is in %s."` had 1 arg → added `just_name(target)` subject; `scry.c:17`
+    same → added `box_name(target)` subject.
+  - **Dropped-output (1):** `storm.c:1256` `d_death_fog` `"Killed %s %s."` had
+    2 specs / 3 args, dropping `box_name(target)` → reformatted to
+    `"Killed %s %s of %s."` so the victim is named.
+- **6 deferred** — `-Wformat-security` non-literal format sites (intentional
+  `out(who, sout(...))`-style idioms): `immed.c:103/108`, `io.c:2843`,
+  `main.c:573`, `produce.c:733/735`. Per the issue, these are left for a later
+  hardening pass; `-Wno-format-security` / `-Wno-format-nonliteral` are kept,
+  placed **after** `-Wformat` (which re-enables them) and once (CMake de-dups
+  earlier copies). **G3-specific vs G2:** `io.c:2843` and `main.c:573` are extra
+  G3 sites G2 did not have; G2 *wrapped* its 5 in a follow-up (`9569e30`) — G3
+  defers the whole set. The capstone enforces `-Werror=format` only, **not**
+  `-security` / `-nonliteral`.
+
+Probe reports 0 (non-security) on **both** presets; all three targets carry
+`-Werror=format` (verified via `compile_commands.json`: 71/71, 6/6, 2/2 TUs) and
+build clean; debug and asan-ubsan golden gates both `YES` (byte-identical) and
+asan/ubsan clean.
 
 ### Known bugs deferred past the 64-bit effort
 
