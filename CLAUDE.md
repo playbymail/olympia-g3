@@ -161,5 +161,3 @@ detail in [BUILD_HISTORY.md](BUILD_HISTORY.md#known-bugs-deferred-past-the-64-bi
 - **#4 (combat):** `construct_guard_fight_list`'s guard check compares `fight`
   *pointers* to an int box-id (always -1). Fixing it **changes golden output** —
   needs a deliberate re-baseline.
-- **#19 (mapgen allocator):** replace `mapgen/z.c`'s hand-rolled boxing/guard
-  allocator (`my_malloc`/`my_realloc`/`my_free`) with thin stdlib wrappers.
