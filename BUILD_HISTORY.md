@@ -124,7 +124,8 @@ pointer/int hazards (bad casts, int↔pointer conversions). Fallout:
   **` post/order lists passed to `ilist_len` → switched to typed `cstrings_len`
   — plus 15 qsort comparators canonicalized to `(const void *, const void *)`.
 - **Phase 3** surfaced only the deferred issue #4 guard check (silenced
-  behaviorally with an explicit cast; the defect itself is left for #4).
+  behaviorally with an explicit cast at the time; the defect itself was later
+  fixed under #4 — see [Known bugs](#known-bugs-deferred-past-the-64-bit-effort)).
 
 ### Phase 4 — Prototypes & declarations ✅
 
@@ -385,15 +386,16 @@ trust sibling counts). Three groups:
   - **Dropped-output (1):** `storm.c:1256` `d_death_fog` `"Killed %s %s."` had
     2 specs / 3 args, dropping `box_name(target)` → reformatted to
     `"Killed %s %s of %s."` so the victim is named.
-- **6 deferred** — `-Wformat-security` non-literal format sites (intentional
-  `out(who, sout(...))`-style idioms): `immed.c:103/108`, `io.c:2843`,
-  `main.c:573`, `produce.c:733/735`. These are left for a later hardening pass
-  (issue #20); `-Wno-format-security` /
-  `-Wno-format-nonliteral` are kept, placed **after** `-Wformat` (which re-enables
-  them) and once (CMake de-dups earlier copies). **G3-specific vs G2:** `io.c:2843`
-  and `main.c:573` are extra G3 sites G2 did not have; G2 *wrapped* its 5 in a
-  follow-up — G3 defers the whole set to #20. The capstone enforces
-  `-Werror=format` only, **not** `-security` / `-nonliteral`.
+- **6 deferred, later fixed (#20)** — `-Wformat-security` non-literal format
+  sites (intentional `out(who, sout(...))`-style idioms): `immed.c:103/108`,
+  `io.c:2843`, `main.c:573`, `produce.c:733/735`. At the Phase 9 capstone these
+  were left for a later hardening pass, with `-Wno-format-security` /
+  `-Wno-format-nonliteral` kept (placed **after** `-Wformat`, which re-enables
+  them, and once — CMake de-dups earlier copies). **G3-specific vs G2:**
+  `io.c:2843` and `main.c:573` are extra G3 sites G2 did not have; G2 *wrapped*
+  its 5 in a follow-up. **Issue #20** since wrapped all 6 (literal `"%s"` format)
+  and dropped both `-Wno-` suppressions, so `-Werror=format` now enforces the
+  whole class — not just `-Werror=format` minus `-security` / `-nonliteral`.
 
 ### Phase 10 — `implicit-int-conversion` (Clang-guarded, code-quality) ✅ (#17)
 
@@ -492,23 +494,29 @@ remains a **stale 32-bit baseline** — *not* the gate; the mapgen check is
 
 ## Known bugs deferred past the 64-bit effort
 
-These are post-modernization tracks, intentionally **not** part of the phase
-ladder:
+These were post-modernization tracks, intentionally **not** part of the phase
+ladder. **All three are now resolved:**
 
-- **Bug #4 (combat):** `construct_guard_fight_list`'s guard check compares
-  `fight` *pointers* to an int box-id, so it is always -1. Labeled
-  bug / golden / tech-debt — fixing it **changes golden output** and needs a
-  deliberate re-baseline. Deferred until we are happy with the 64-bit
-  modernization effort.
-- **Issue #20 (format-security):** the 6 deferred non-literal `-Wformat-security`
-  sites (Phase 9, above) are kept suppressed (`-Wno-format-security` /
-  `-Wno-format-nonliteral`) pending a focused hardening pass to wrap them and drop
-  the suppression.
-- **Issue #19 (mapgen allocator):** replace `mapgen/z.c`'s hand-rolled
-  boxing/guard allocator (`my_malloc` / `my_realloc` / `my_free`) with thin
-  stdlib-forwarding wrappers. The guard-misalignment UBSan finding (Phase 5) and
-  the guard-constant sign casts (Phase 7) are band-aids on this allocator; #19
-  removes it.
+- **Bug #4 (combat) — ✅ fixed.** `construct_guard_fight_list`'s guard check
+  passed an int box-id to `fights_lookup`, which compared `fight` *pointers* to
+  that integer and so was always -1 (the "don't count a guard stacked-with /
+  allied-to the pillagers" rule never fired). Replaced with a `->unit == i`
+  membership scan over `l_a`. The change *is* a real behavior change to combat
+  resolution, but the turn-1 golden fixtures don't exercise the guard path, so
+  the manifest stayed **byte-identical** — no re-baseline was needed. The
+  corrected behavior is therefore **not yet pinned by a regression fixture** (no
+  fixture triggers combat); pinning it is deferred to the planned test-coverage
+  work.
+- **Issue #20 (format-security) — ✅ fixed.** The 6 non-literal `-Wformat-security`
+  sites (Phase 9, above) were wrapped so the format string is a literal
+  (`out(who, "%s", buf)` / `sout("%s", dir)` / `printf("%s", cmd)`), and
+  `-Wno-format-security` / `-Wno-format-nonliteral` were dropped — `-Werror=format`
+  now covers the whole format class with no sub-suppression. Output-neutral; both
+  gates stayed green.
+- **Issue #19 (mapgen allocator) — ✅ fixed.** `mapgen/z.c`'s hand-rolled
+  boxing/guard allocator (`my_malloc` / `my_realloc` / `my_free`) was replaced
+  with thin stdlib-forwarding wrappers, retiring the guard-misalignment and
+  guard-constant-sign band-aids (Phases 5 and 7) along with it.
 
 ## Warning policy
 
@@ -550,15 +558,15 @@ This is exactly the method the Phase 1–10 ladder used.
    - `-Wno-parentheses` — assignment/bitwise precedence without parens.
    - `-Wno-tautological-constant-out-of-range-compare` — narrow-type range
      compares.
-   - `-Wno-format-security` / `-Wno-format-nonliteral` — the 6 deferred
-     non-literal format sites (Phase 9); placed **after** `-Wformat` (which
-     re-enables them) and only once. Tracked for removal in **issue #20**.
+
+   `-Wno-format-security` / `-Wno-format-nonliteral` were **retired** when issue
+   #20 wrapped the 6 non-literal format sites, so the whole format class is now
+   enforced (see Phase 9).
 
    These stay suppressed until someone opens a dedicated cleanup track and drives
    the whole class to zero in one focused pass, then promotes it to `-Werror` —
-   never partially. The open cleanup tracks are **#20** (wrap the 6 non-literal
-   `-Wformat-security` sites + drop the suppression) and **#19** (replace mapgen's
-   hand-rolled boxing allocator).
+   never partially. As of the #4/#19/#20 closures there are **no open cleanup
+   tracks** of this kind.
 
 3. **Clang-only spellings.** `-Wshorten-64-to-32` (Phase 6) and
    `-Wimplicit-int-conversion` (Phase 10) are Clang-only diagnostics (GCC folds
