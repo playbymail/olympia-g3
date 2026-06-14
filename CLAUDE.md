@@ -60,8 +60,9 @@ Scripts auto-detect the repo root and look for binaries at
 > `./run/olympia-g3.sh` (a full `-r -S` turn) first, then `golden_check.sh`
 > (prints `YES`); re-baseline with `--update`. The baseline was captured *after*
 > the issue-1 list-triage fixes — the engine could not complete a turn before
-> them — so it reflects the corrected tree; every modernization edit (starting
-> with the `exit_views_list` migration, GitHub issue #2) must keep it byte-identical.
+> them — so it reflects the corrected tree; every modernization edit must keep
+> it byte-identical (the first such edit, the `exit_views_list` migration under
+> GitHub issue #2, is **done and closed**).
 > Unlike G2, G3 output is **deterministic across clean rebuilds** (verified), so
 > the gate has **no flaky-file holdout** (no G2-style `fact/100` `st -32`
 > flicker). `tests/mapgen/golden` remains a **stale 32-bit baseline** — *not* the
@@ -107,16 +108,30 @@ Scripts auto-detect the repo root and look for binaries at
 A phase ladder is being applied. What is actually *enforced* is the per-target
 `-Werror=` lines in each `target_compile_options` block. **G3 is earlier on the
 ladder than G1/G2, and enforcement is uneven across the three targets** — read
-the table literally:
+the table literally. The full, current roadmap lives in the **GitHub issues**
+(epic #10, "bring olympia-g3 to G1/G2 64-bit parity", with the phase ladder
+extended past Phase 5 there); this table is the on-disk summary.
 
-| Phase | Scope | State |
-|-------|-------|-------|
-| 1 | `int-to-pointer-cast`, `pointer-to-int-cast` | ✅ enforced on `olympia-g3` + `mapgen-g3`; ⬜ **not** on `island-g3` |
-| 2 | `incompatible-pointer-types` | ✅ enforced on `mapgen-g3`; ⬜ **not** on `olympia-g3` / `island-g3` |
-| 3 | `int-conversion` | ✅ enforced on `mapgen-g3`; ⬜ **not** on `olympia-g3` / `island-g3` |
-| 3.5 | **Remove dead/unused source files** | ✅ done |
-| 4 | `strict-prototypes`, `missing-prototypes`, `implicit-function-declaration` | ✅ enforced on **all three** targets; all classes 0 |
-| 5 | `missing-declarations` + sanitizers in CI | ⬜ wired (asan preset), not enforced |
+| Phase | Scope | State | Issue |
+|-------|-------|-------|-------|
+| 1 | `int-to-pointer-cast`, `pointer-to-int-cast` | ✅ enforced on `olympia-g3` + `mapgen-g3`; ⬜ **not** on `island-g3` | — |
+| 2 | `incompatible-pointer-types` | ✅ enforced on `mapgen-g3`; ⬜ **not** on `olympia-g3` / `island-g3` | #11 (Phase A) |
+| 3 | `int-conversion` | ✅ enforced on `mapgen-g3`; ⬜ **not** on `olympia-g3` / `island-g3` | #11 (Phase A) |
+| 3.5 | **Remove dead/unused source files** | ✅ done | — |
+| 4 | `strict-prototypes`, `missing-prototypes`, `implicit-function-declaration` | ✅ enforced on **all three** targets; all classes 0 | — |
+| 5 | `missing-declarations` + wire ASan/UBSan across all three targets | ⬜ wired (asan preset), not enforced | #13 (+ bug #3) |
+| 6 | `shorten-64-to-32` (Clang) + `sizeof-pointer-memaccess` | ⬜ not started | #14 |
+| 7 | `sign-conversion` | ⬜ not started | #15 |
+| 8 | `return-type` + return-mismatch | ⬜ not started | #16 |
+| 9 | format-string / vararg checking | ⬜ not started | #7 |
+| 10 | `implicit-int-conversion` (Clang, code-quality) | ⬜ not started | #17 |
+
+> Two build-cleanup steps and a docs step close out epic #10 *after* the warning
+> phases land: **Step B** (#12) — consolidate the per-target flags into one
+> `olympia_compile_flags()` helper and drop the dead `phase_N_build_flags()` /
+> `legacy_build_flags()` / `LEGACY_C_FLAGS_STRICT` scaffolding; **Step C** (#18)
+> — write `BUILD_HISTORY.md` and refresh this file to mark modernization
+> complete. A standing **post-64-bit warning policy** is tracked in #9.
 
 The dangerous 32→64-bit hazards are now *largely* fenced off: **Phase 4 is done
 on all three targets** (`strict-prototypes` / `missing-prototypes` /
@@ -129,12 +144,14 @@ the three prototype classes alongside it. So the remaining runway is: **(a)** �
 the pre-existing `olympia-g3` startup segfault is fixed — a full `-r -S` turn
 completes (the `plist`/`ilist` list-triage in GitHub issue #1); **(b)** ✅ the
 olympia golden gate is established and green (`tests/olympia/golden_check.sh`,
-Test section above); and **(c)** ⬜ bring `olympia-g3` (and ideally `island-g3`)
-up to Phase 2/3 parity by flipping `incompatible-pointer-types` and
-`int-conversion` to `-Werror` and fixing the fallout, keeping golden green at
-each step. A related hardening track is GitHub issue #2 (retire the generic
-`plist` for element-typed lists, starting with `exit_views_list`), which makes
-the issue-1 bug class a compile error.
+Test section above); and **(c)** ⬜ **the next step — GitHub issue #11 (Phase A,
+under epic #10):** bring `olympia-g3` (and ideally `island-g3`) up to Phase 2/3
+parity by flipping `incompatible-pointer-types` and `int-conversion` to
+`-Werror` and fixing the fallout, keeping golden green at each step. `mapgen-g3`
+already enforces both and is the worked example. The related hardening track —
+GitHub issue #2 (retire the generic `plist` for element-typed lists, starting
+with `exit_views_list`), which made the issue-1 bug class a compile error — is
+**done and closed**.
 
 > **The sister G1 and G2 repos are done through Phase 4.** `../olympia-g1` and
 > `../olympia-g2` have both completed Phase 3.5 and Phase 4 — all three Phase-4
@@ -273,10 +290,23 @@ than G1):**
   such functions `static`, or keep a local prototype after the macro defs.
   G3 has its own `olympia/tunnel.c` — expect similar.
 
-### Phase 5 — Lock down (next-after-4)
+### Phase 5 — Lock down (GitHub issue #13)
 
 Enable `-Werror=missing-declarations` and wire the `asan-ubsan` preset into CI
-so sanitizers run against the golden flow. **Watch for a build-to-build
-non-determinism** like G2's `st -32` flicker in `fact/100`; if one appears here,
-G2 proved it is *not* a missing-prototype bug — chase it with the sanitizer run
-(uninitialized read / UB is the leading suspect).
+so sanitizers run against the golden flow across all three targets. **Watch for
+a build-to-build non-determinism** like G2's `st -32` flicker in `fact/100`; if
+one appears here, G2 proved it is *not* a missing-prototype bug — chase it with
+the sanitizer run (uninitialized read / UB is the leading suspect).
+
+**Pick up bug #3 while working #13:** `times_masthead` reads `month_names[-1]`
+(turn-0 underflow; ASan global-buffer-overflow at `c2.c:422`). It is exactly the
+kind of finding the Phase-5 sanitizer wiring is meant to surface, so fix it in
+the same pass.
+
+### Known bugs deferred past the 64-bit effort
+
+- **Bug #4 (combat):** `construct_guard_fight_list`'s guard check compares
+  `fight` *pointers* to an int box-id, so it is always -1. Labeled
+  bug / golden / tech-debt — fixing it **changes golden output** and needs a
+  deliberate re-baseline. **Deferred** until we are happy with the 64-bit
+  modernization effort; do not pick it up as part of the phase ladder.
