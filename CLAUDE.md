@@ -87,13 +87,19 @@ Scripts auto-detect the repo root and look for binaries at
   must be deliberate and the snapshot updated in the same change with a note on
   why. Modernization changes (prototypes, casts, dead-code removal) must produce
   byte-identical golden output.
-- Build config lives in `CMakeLists.txt`. The enforced per-target flags are the
-  `${LEGACY_C_FLAGS}` variable (a big block of `-Wno-*` suppressions, ~line 136)
-  plus per-target `-Werror=` lines appended in each `target_compile_options`
-  block (`island-g3` ~line 212, `mapgen-g3` ~line 231, `olympia-g3` ~line 276).
-  **The `-Werror=` set differs per target** (see status table). The
-  `phase_N_build_flags()` / `legacy_build_flags()` functions and
-  `LEGACY_C_FLAGS_STRICT` are roadmap scaffolding — defined, not yet called.
+- Build config lives in `CMakeLists.txt`. All compiler flags live in **one
+  shared helper**, `olympia_compile_flags(tgt)` (~line 38, the G1/G2 pattern),
+  applied identically to all three targets — `olympia_compile_flags(island-g3)`,
+  `(mapgen-g3)`, `(olympia-g3)` — replacing the old per-target inline
+  `target_compile_options(... ${LEGACY_C_FLAGS} ...)` blocks (issue #12, Step B).
+  The helper carries the surviving `-Wno-*` suppressions plus the Phase 1-4
+  `-Wfoo -Werror=foo` pairs (one pair per line, `# Phase N` comments). **The
+  enforced set is now uniform across all three targets** (see status table).
+  Optimization/debug (`-O`/`-g`) is owned by `CMAKE_BUILD_TYPE` / the presets,
+  **not** the helper (the old hardcoded `-Og -g` was clobbering the preset). The
+  dead scaffolding (`legacy_build_flags()`, `phase_1..5_build_flags()`,
+  `LEGACY_C_FLAGS`, `LEGACY_C_FLAGS_STRICT`) was deleted in #12;
+  `olympia_enable_sanitizers(olympia-g3)` is kept (Phase 5 / issue #13).
 - **C11 standard** is set both project-wide (`CMAKE_C_STANDARD 11` /
   `…_REQUIRED ON` / `CMAKE_C_EXTENSIONS OFF`, lines 4–6) *and* declared
   explicitly per target via `target_compile_features(<tgt> PRIVATE c_std_11)`
@@ -127,20 +133,22 @@ extended past Phase 5 there); this table is the on-disk summary.
 | 9 | format-string / vararg checking | ⬜ not started | #7 |
 | 10 | `implicit-int-conversion` (Clang, code-quality) | ⬜ not started | #17 |
 
-> Two build-cleanup steps and a docs step close out epic #10 *after* the warning
-> phases land: **Step B** (#12) — consolidate the per-target flags into one
-> `olympia_compile_flags()` helper and drop the dead `phase_N_build_flags()` /
-> `legacy_build_flags()` / `LEGACY_C_FLAGS_STRICT` scaffolding; **Step C** (#18)
-> — write `BUILD_HISTORY.md` and refresh this file to mark modernization
-> complete. A standing **post-64-bit warning policy** is tracked in #9.
+> One build-cleanup step and a docs step close out epic #10 *after* the warning
+> phases land: **Step B** (#12) — ✅ **done**: the per-target flags were
+> consolidated into one `olympia_compile_flags()` helper and the dead
+> `phase_N_build_flags()` / `legacy_build_flags()` / `LEGACY_C_FLAGS` /
+> `LEGACY_C_FLAGS_STRICT` scaffolding deleted (the hardcoded `-Og -g` was also
+> moved out to the build type); **Step C** (#18) — write `BUILD_HISTORY.md` and
+> refresh this file to mark modernization complete. A standing **post-64-bit
+> warning policy** is tracked in #9.
 
 The dangerous 32→64-bit hazards are now fenced off uniformly: **Phases 1-4 are
 done on all three targets** (`int-to-pointer-cast` / `pointer-to-int-cast` /
 `incompatible-pointer-types` / `int-conversion` / `strict-prototypes` /
 `missing-prototypes` / `implicit-function-declaration` are `-Werror` and measure
 0 on `olympia-g3`, `mapgen-g3`, and `island-g3`; the shared `-Wno-*`
-suppressions for the prototype classes are deleted from `LEGACY_C_FLAGS`). The
-`olympia-g3` `target_compile_options` comment block now lists Phases 1-4
+suppressions for the prototype classes are deleted). As of **Step B (#12)** all
+three targets share one `olympia_compile_flags()` helper that lists Phases 1-4
 explicitly. So the runway up to here is closed out: **(a)** ✅ the pre-existing
 `olympia-g3` startup segfault is fixed — a full `-r -S` turn completes (the
 `plist`/`ilist` list-triage in GitHub issue #1); **(b)** ✅ the olympia golden
@@ -155,9 +163,13 @@ canonicalized to `(const void *, const void *)`; Phase 3 surfaced only the
 deferred GitHub issue #4 guard check (silenced behaviorally with an explicit
 cast, defect left for #4). The related hardening track — GitHub issue #2 (retire
 the generic `plist` for element-typed lists, starting with `exit_views_list`),
-which made the issue-1 bug class a compile error — is **done and closed**. **Next
-up: GitHub issue #12 (Step B)** — consolidate the per-target flags into one
-helper and drop the dead scaffolding.
+which made the issue-1 bug class a compile error — is **done and closed**.
+**GitHub issue #12 (Step B) is also done:** the per-target flags were
+consolidated into one `olympia_compile_flags()` helper and the dead scaffolding
+dropped. **Next up: GitHub issue #13 (Phase 5)** — enable
+`-Werror=missing-declarations` and wire ASan/UBSan across all three targets
+(fix the malformed `OLYMPIA_SANITIZERS` cache-default line + bug #3 in the same
+pass).
 
 > **The sister G1 and G2 repos are done through Phase 4.** `../olympia-g1` and
 > `../olympia-g2` have both completed Phase 3.5 and Phase 4 — all three Phase-4
@@ -217,7 +229,9 @@ Verified: clean build of all three targets succeeds; **mapgen output
 are now `-Werror` on **all three** targets (olympia-g3, mapgen-g3, island-g3),
 all three classes measure **0**, and golden output is **byte-identical**. The
 dead `-Wno-implicit-function-declaration` / `-Wno-deprecated-non-prototype`
-suppressions are deleted from `LEGACY_C_FLAGS` (and the mirrored scaffolding).
+suppressions are deleted from the shared flag set (then the `LEGACY_C_FLAGS`
+variable itself was retired in Step B / #12 — the flags now live in
+`olympia_compile_flags()`).
 
 What it took (62 K&R defs → ANSI [38 mapgen / 24 olympia], 245 empty-paren
 `name()` → `name(void)`, `olympia/proto.h` [657 protos] + `mapgen/proto.h` [74]):
