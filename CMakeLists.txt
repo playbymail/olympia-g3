@@ -294,6 +294,8 @@ target_compile_options(olympia-g3 PRIVATE
     -Wpointer-to-int-cast -Werror=pointer-to-int-cast
     # Phase 2 - incompatible pointer types
     -Wincompatible-pointer-types -Werror=incompatible-pointer-types
+    # Phase 3 - integer conversions
+    -Wint-conversion -Werror=int-conversion
     # Phase 4 - prototypes & declarations
     -Wmissing-prototypes -Werror=missing-prototypes
     -Wstrict-prototypes -Werror=strict-prototypes
