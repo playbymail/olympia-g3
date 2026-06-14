@@ -37,7 +37,7 @@ letter_val(char c, char *let)
 
 	for (p = let; *p; p++)
 		if (*p == c)
-			return p-let;
+			return (int) (p-let);	/* index into a fixed short string */
 
 	return 0;	/* error */
 }

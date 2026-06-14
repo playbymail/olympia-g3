@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
 		if (sscanf(buffer, "%[^\r\n]", map[y_size]))
 		{
 			if (!x_size)
-				x_size = strlen(map[y_size]);
+				x_size = (int) strlen(map[y_size]);	/* map row len fits 32 bits */
 			if (strlen(map[y_size]) == x_size)
 				y_size++;
 		}

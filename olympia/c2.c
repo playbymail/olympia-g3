@@ -164,7 +164,7 @@ line_length_check(char **l)
 	int len = 0;
 
 	for (i = 0; i < cstrings_len(l); i++)
-		len = max(len, strlen(l[i]));
+		len = max(len, (int) strlen(l[i]));	/* line len fits 32 bits */
 
 	return len;
 }

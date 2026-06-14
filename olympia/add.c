@@ -190,7 +190,7 @@ add_new_player(int pl, char *faction, char *character, char *start_city,
 	// by sbaillie:
 	// give new players a randomly generated password by default
 	for (i = 0; i < 8; i++)
-		password[i] = symbols[rnd(1, strlen(symbols)) - 1];
+		password[i] = symbols[rnd(1, (int) strlen(symbols)) - 1];	/* symbol-set len fits 32 bits */
 	password[i] = '\0';
 	pp->password = str_save(password);
 

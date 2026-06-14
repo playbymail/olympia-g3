@@ -834,7 +834,7 @@ strip_leading_stupid_word(char *s)
 
 	for (i = 0; stupid_words[i]; i++)
 	{
-		len = strlen(stupid_words[i]);
+		len = (int) strlen(stupid_words[i]);	/* word len fits 32 bits */
 
 		if (i_strncmp(s, stupid_words[i], len) == 0 &&
 		    s[len] == ' ')

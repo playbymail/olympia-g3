@@ -455,7 +455,7 @@ check_loc_name_lengths(void)
 
 	loop_loc(i)
 	{
-		len = strlen(just_name(i));
+		len = (int) strlen(just_name(i));	/* name len fits 32 bits */
 		if (len > 25)
 			fprintf(stderr, "\twarning: %s name too long\n",
 						box_name(i));

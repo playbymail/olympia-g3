@@ -908,7 +908,7 @@ do_eat_command(struct command *c, FILE *fp)
 				break;
 			}
 
-			len = strlen(s);
+			len = (int) strlen(s);	/* line len fits 32 bits */
 			if (len > max_len)
 			{
 				err(EAT_ERR, sout("Line length exceeds %d characters", max_len));
