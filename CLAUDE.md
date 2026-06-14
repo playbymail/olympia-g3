@@ -142,7 +142,7 @@ extended past Phase 5 there); this table is the on-disk summary.
 | 5 | `missing-declarations` + wire ASan/UBSan across all three targets | ✅ enforced on **all three** targets (0 hits); sanitizers wired + golden gate green on all three; bug #3 fixed | #13 ✅ (+ bug #3 ✅) |
 | 6 | `shorten-64-to-32` (Clang) + `sizeof-pointer-memaccess` | ✅ enforced on **all three** targets (0 hits); MD5 `sizeof(ctx)` bug fixed | #14 ✅ |
 | 7 | `sign-conversion` | ✅ enforced on **all three** targets (0 hits); MD5 RNG + qsort-nmemb + guard-slot casts | #15 ✅ |
-| 8 | `return-type` + return-mismatch | ⬜ not started | #16 |
+| 8 | `return-type` + return-mismatch | ✅ enforced on **all three** targets (0 hits); 60 sites: 45 mapgen + 6 main.c + 9 engine singles | #16 ✅ |
 | 9 | format-string / vararg checking | ⬜ not started | #7 |
 | 10 | `implicit-int-conversion` (Clang, code-quality) | ⬜ not started | #17 |
 
@@ -196,8 +196,13 @@ representation-preservingly, and both golden gates stay byte-identical.
 **GitHub issue #15 (Phase 7) is also done:** `-Werror=sign-conversion` (portable)
 is locked on all three targets, 47 implicit signed/unsigned conversion sites are
 made explicit representation-preservingly, and both golden gates stay
-byte-identical. **Next up: GitHub issue #16 (Phase 8)** — `return-type` +
-return-mismatch. From here on the asan-ubsan gate
+byte-identical. **GitHub issue #16 (Phase 8) is also done:**
+`-Werror=return-type` and `-Werror=return-mismatch` (both portable, GCC +
+Clang — *not* behind the Clang guard) are locked on all three targets, 60
+fall-off-the-end sites are made golden-neutral (45 mapgen + 6 main.c + 9 engine
+singles; 54 void-conversions plus 6 terminal returns), and both golden gates
+stay byte-identical with zero sanitizer diagnostics. **Next up: GitHub issue #7 (Phase 9)** —
+format-string / vararg checking. From here on the asan-ubsan gate
 (`OLYMPIA_PRESET=asan-ubsan ./tests/olympia/golden_check.sh` = YES, zero
 diagnostics) is part of every later phase.
 
@@ -481,6 +486,61 @@ asan-ubsan gates.
 Probe (`-Wsign-conversion`) reports 0 on **both** presets; all three targets
 build clean with the new `-Werror` flag; debug and asan-ubsan golden gates both
 `YES` (byte-identical) and asan/ubsan clean.
+
+### Phase 8 — `return-type` + `return-mismatch` (GitHub issue #16) ✅ done
+
+`-Wreturn-type -Werror=return-type` and `-Wreturn-mismatch
+-Werror=return-mismatch` are locked in the **portable** section of
+`olympia_compile_flags()` (GCC + Clang — *not* behind the Clang guard that holds
+Phase 6's `-Wshorten-64-to-32`; G2 kept this class portable and the macOS clang
+build accepts `-Wreturn-mismatch`). This is the register-garbage class: a
+non-void function that falls off the end (or hits a bare `return;`) leaves the
+caller reading whatever is in the return register — 8 bytes on LP64. It is the
+exact class behind G2's `fact/100` "st -32" flicker (`i_use()` fell off the end
+and its garbage return became `command->status`). G3 was verified deterministic
+with **no such flicker**, so there is **no deliberate golden change** this phase
+— every fix is golden-neutral and both gates stay byte-identical. Both `-Wno-`
+lines (`-Wno-return-type`, `-Wno-return-mismatch`) are dropped in the lock commit.
+
+**Inventory: 60 `-Wreturn-type`, 0 `-Wreturn-mismatch`** (identical under both the
+debug and asan-ubsan presets; the two `-Wno-` lines override `CMAKE_C_FLAGS`, so
+inventory by sed-dropping them first or probing a throwaway). Apple clang did
+**not** truncate here (these are warnings until `-Werror`, and `-- -k 0` built
+every TU), but re-inventory was reconciled against an unlimited error limit per
+the issue's caution. Two fix shapes, mirroring the siblings (g2 `c51f558` /
+`45ab4b2` / `3c3d22d`):
+
+- **(a) void-convert** a legacy default-`int` procedure whose callers *all*
+  ignore the return — definition **and** every `proto.h` declaration changed in
+  lockstep (a clean `-Werror` build proves no caller consumed it). **44 in
+  `mapgen/mapgen.c`** (the map pipeline: `open_fps`, `map_init`, `read_map`,
+  `add_road`, `link_roads`, `dump_*`, `print_*`, `bridge_*`, `make_*`, `gate_*`,
+  `count_*`, `clear_*_marks`, `dir_assert`, `randomize_dir_vector`,
+  `place_sublocations`, …), **6 in `olympia/main.c`** (`call_init_routines`,
+  `write_forward_sup`, `write_faction_sup`, `mail_reports`, `output_html_rep`,
+  `copy_public_turns`), and **4 olympia singles** (`check.c` `check_db`, `sout.c`
+  `init_spaces`, `order.c` `queue`, `gm.c` `gm_count_stuff` [static, no decl]).
+- **(b) add the missing `return <default>;`** where a value is genuinely
+  expected. Most fall-off paths sit after a live `assert(FALSE)` (asserts on in
+  both the `-Og` debug and asan-ubsan builds → the new return is unreachable in
+  the golden run → neutral). Matching the siblings' chosen values: `return 0`
+  (`basic.c` `hinder_med_chance`, `buy.c` `reduce_qty`, `combat.c` `fort_covers`,
+  `dir.c` `hidden_count_to_index`), `return ""` (`mapgen.c` `name_guild` — the
+  lone *consumed* mapgen return, stays `char *`), and `return TRUE` (`build.c`
+  `i_repair`).
+
+**G3-specific traps that held:** `build.c` `i_repair` is the `repair`
+**interrupt handler** in `glob.c`'s command table (`int (*)(struct command *)`),
+so it MUST stay `int` — fixed with shape (b) `return TRUE`, never void-converted
+(G2 had to revert the equivalent). `order.c` `queue` is already variadic
+(`(...)`/`vsprintf` with a `proto.h` prototype since Phase 4), so void-converting
+it carries no register-ABI hazard. The G3 count is 60 sites (45 mapgen + 6
+main.c + 9 engine singles), smaller than G2's ~91 — G3 has its own mapgen/main
+source, so sibling counts were not trusted (re-inventoried).
+
+Probe reports 0 on **both** presets; all three targets build clean with the new
+`-Werror` flags; debug and asan-ubsan golden gates both `YES` (byte-identical)
+and asan/ubsan clean.
 
 ### Known bugs deferred past the 64-bit effort
 

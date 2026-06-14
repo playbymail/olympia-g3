@@ -50,8 +50,9 @@ function(olympia_compile_flags tgt)
         -Wno-multichar
         -Wno-non-literal-null-conversion
         -Wno-parentheses
-        -Wno-return-mismatch
-        -Wno-return-type
+        # return-type / return-mismatch are now enforced below (Phase 8 /
+        # issue #16) — the fall-off-the-end functions were void-converted or
+        # given terminal returns, so both -Wno- lines are dropped.
         # sizeof-pointer-memaccess is now enforced below (Phase 6 / issue #14) —
         # the MD5 memset(ctx, sizeof(ctx)) bug is fixed, so the -Wno- is dropped.
         -Wno-tautological-constant-out-of-range-compare
@@ -84,6 +85,14 @@ function(olympia_compile_flags tgt)
         # counts, the loop_known macro, the MD5 RNG mixes. Portable (GCC + Clang),
         # so it stays in this section, NOT the Clang-only block below.
         -Wsign-conversion -Werror=sign-conversion
+        # Phase 8 (#16) - return-type / return-mismatch. A non-void function
+        # that falls off the end (or hits a bare `return;`) leaves the caller
+        # reading a garbage register — 8 bytes on LP64 (the class behind G2's
+        # fact/100 "st -32" flicker). Portable (GCC + Clang), so it stays in
+        # this section, NOT the Clang-only block below; the fall-off functions
+        # were void-converted or given terminal returns, so the class is 0.
+        -Wreturn-type -Werror=return-type
+        -Wreturn-mismatch -Werror=return-mismatch
     )
 
     # Phase 6 (#14) - 64-bit width hazards, Clang-only half.
