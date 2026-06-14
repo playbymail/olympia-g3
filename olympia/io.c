@@ -503,8 +503,8 @@ skill_list_scan(char *s, skill_ents_list *l, int box_num)
 					&experience,
 					&dummy);
 
-		new->know = know;
-		new->experience = experience;
+		new->know = (char) know;
+		new->experience = (short) experience;
 
 		if (valid_box(new->skill))
 			skill_ents_append(l, new);
@@ -694,7 +694,7 @@ req_list_scan(char *s, req_ents_list *l, int box_num)
 	{
 		new = my_malloc(sizeof(*new));
 		sscanf(s, "%d %d %d", &new->item, &new->qty, &consume);
-		new->consume = consume;
+		new->consume = (schar) consume;
 
 		if (valid_box(new->item))
 			req_ents_append(l, new);
@@ -859,24 +859,24 @@ scan_magic(struct char_magic *p, int box_num)
 
 		switch (c)
 		{
-		case 'im':	p->magician = atoi(t);		break;
+		case 'im':	p->magician = (schar) atoi(t);		break;
 		case 'ma':	p->max_aura = atoi(t);		break;
 		case 'ca':	p->cur_aura = atoi(t);		break;
-		case 'as':	p->ability_shroud = atoi(t);	break;
-		case 'hm':	p->hinder_meditation = atoi(t);	break;
+		case 'as':	p->ability_shroud = (short) atoi(t);	break;
+		case 'hm':	p->hinder_meditation = (schar) atoi(t);	break;
 		case 'pc':	p->project_cast = box_scan(t);	break;
-		case 'qc':	p->quick_cast = atoi(t);	break;
+		case 'qc':	p->quick_cast = (short) atoi(t);	break;
 		case 'ot':	p->token = box_scan(t);		break;
 		case 'pl':	p->pledge = box_scan(t);	break;
 		case 'ar':	p->auraculum = box_scan(t);	break;
-		case 'rb':	p->aura_reflect = atoi(t);	break;
-		case 'hs':	p->hide_self = atoi(t);		break;
-		case 'cm':	p->hide_mage = atoi(t);		break;
-		case 'pr':	p->pray = atoi(t);		break;
-		case 'sr':	p->swear_on_release = atoi(t);	break;
-		case 'kw':	p->knows_weather = atoi(t);	break;
-		case 'vp':	p->vis_protect = atoi(t);	break;
-		case 'dg':	p->default_garr = atoi(t);	break;
+		case 'rb':	p->aura_reflect = (schar) atoi(t);	break;
+		case 'hs':	p->hide_self = (schar) atoi(t);		break;
+		case 'cm':	p->hide_mage = (schar) atoi(t);		break;
+		case 'pr':	p->pray = (schar) atoi(t);		break;
+		case 'sr':	p->swear_on_release = (schar) atoi(t);	break;
+		case 'kw':	p->knows_weather = (schar) atoi(t);	break;
+		case 'vp':	p->vis_protect = (schar) atoi(t);	break;
+		case 'dg':	p->default_garr = (schar) atoi(t);	break;
 		case 'bf':	p->fee = atoi(t);		break;
 
 		case 'vi':
@@ -976,21 +976,21 @@ scan_char(struct entity_char *p, int box_num)
 		case 'ni':	p->unit_item = box_scan(t);	break;
 		case 'lo':	p->unit_lord = box_scan(t);	break;
 		case 'pl':	p->prev_lord = box_scan(t);	break;
-		case 'he':	p->health = atoi(t);		break;
-		case 'si':	p->sick = atoi(t);		break;
-		case 'pr':	p->prisoner = atoi(t);		break;
+		case 'he':	p->health = (schar) atoi(t);		break;
+		case 'si':	p->sick = (schar) atoi(t);		break;
+		case 'pr':	p->prisoner = (schar) atoi(t);		break;
 		case 'mo':	p->moving = atoi(t);		break;
-		case 'bh':	p->behind = atoi(t);		break;
-		case 'lk':	p->loy_kind = atoi(t);		break;
+		case 'bh':	p->behind = (schar) atoi(t);		break;
+		case 'lk':	p->loy_kind = (schar) atoi(t);		break;
 		case 'lr':	p->loy_rate = atoi(t);		break;
-		case 'gu':	p->guard = atoi(t);		break;
-		case 'tf':	p->time_flying = atoi(t);	break;
-		case 'bp':	p->break_point = atoi(t);	break;
-		case 'ra':	p->rank = atoi(t);		break;
-		case 'at':	p->attack = atoi(t);		break;
-		case 'df':	p->defense = atoi(t);		break;
-		case 'mi':	p->missile = atoi(t);		break;
-		case 'po':	p->npc_prog = atoi(t);		break;
+		case 'gu':	p->guard = (schar) atoi(t);		break;
+		case 'tf':	p->time_flying = (schar) atoi(t);	break;
+		case 'bp':	p->break_point = (schar) atoi(t);	break;
+		case 'ra':	p->rank = (schar) atoi(t);		break;
+		case 'at':	p->attack = (short) atoi(t);		break;
+		case 'df':	p->defense = (short) atoi(t);		break;
+		case 'mi':	p->missile = (short) atoi(t);		break;
+		case 'po':	p->npc_prog = (schar) atoi(t);		break;
 
 		case 'ct':
 			boxlist_scan(t, box_num, &(p->contact));
@@ -1067,12 +1067,12 @@ scan_loc(struct entity_loc *p, int box_num)
 
 		switch (c)
 		{
-		case 'hi':	p->hidden = atoi(t);		break;
-		case 'sh':	p->shroud = atoi(t);		break;
-		case 'ba':	p->barrier = atoi(t);		break;
-		case 'dg':	p->dist_from_gate = atoi(t);	break;
-		case 'lc':	p->civ = atoi(t);		break;
-		case 'sl':	p->sea_lane = atoi(t);		break;
+		case 'hi':	p->hidden = (schar) atoi(t);		break;
+		case 'sh':	p->shroud = (short) atoi(t);		break;
+		case 'ba':	p->barrier = (short) atoi(t);		break;
+		case 'dg':	p->dist_from_gate = (schar) atoi(t);	break;
+		case 'lc':	p->civ = (schar) atoi(t);		break;
+		case 'sl':	p->sea_lane = (schar) atoi(t);		break;
 
 		case 'pd':
 			boxlist0_scan(t, box_num, &(p->prov_dest));
@@ -1185,27 +1185,27 @@ scan_subloc(struct entity_subloc *p, int box_num)
 
 		switch (c)
 		{
-		case 'da':	p->damage = atoi(t);			break;
+		case 'da':	p->damage = (uchar) atoi(t);			break;
 		case 'de':	p->defense = atoi(t);			break;
 		case 'ca':	p->capacity = atoi(t);			break;
 		case 'er':	p->effort_required = atoi(t);		break;
 		case 'eg':	p->effort_given = atoi(t);		break;
-		case 'bm':	p->build_materials = atoi(t);		break;
+		case 'bm':	p->build_materials = (schar) atoi(t);		break;
 		case 'mo':	p->moving = atoi(t);			break;
-		case 'gr':	p->galley_ram = atoi(t);		break;
-		case 'sd':	p->shaft_depth = atoi(t);		break;
-		case 'sh':	p->safe = atoi(t);			break;
-		case 'mc':	p->major = atoi(t);			break;
+		case 'gr':	p->galley_ram = (schar) atoi(t);		break;
+		case 'sd':	p->shaft_depth = (short) atoi(t);		break;
+		case 'sh':	p->safe = (schar) atoi(t);			break;
+		case 'mc':	p->major = (schar) atoi(t);			break;
 		case 'op':	p->opium_econ = atoi(t);		break;
-		case 'lo':	p->loot = atoi(t);			break;
-		case 'cp':	p->prominence = atoi(t);		break;
-		case 'lw':	p->link_when = atoi(t);			break;
-		case 'lp':	p->link_open = atoi(t);			break;
-		case 'uf':	p->uldim_flag = atoi(t);		break;
-		case 'sf':	p->summer_flag = atoi(t);		break;
-		case 'ql':	p->quest_late = atoi(t);		break;
-		case 'td':	p->tunnel_level = atoi(t);		break;
-		case 'cl':	p->castle_lev = atoi(t);		break;
+		case 'lo':	p->loot = (schar) atoi(t);			break;
+		case 'cp':	p->prominence = (schar) atoi(t);		break;
+		case 'lw':	p->link_when = (schar) atoi(t);			break;
+		case 'lp':	p->link_open = (schar) atoi(t);			break;
+		case 'uf':	p->uldim_flag = (schar) atoi(t);		break;
+		case 'sf':	p->summer_flag = (schar) atoi(t);		break;
+		case 'ql':	p->quest_late = (schar) atoi(t);		break;
+		case 'td':	p->tunnel_level = (schar) atoi(t);		break;
+		case 'cl':	p->castle_lev = (schar) atoi(t);		break;
 
 		case 'lt':
 			boxlist_scan(t, box_num, &(p->link_to));
@@ -1308,19 +1308,19 @@ scan_item(struct entity_item *p, int box_num)
 		switch (c)
 		{
 		case 'pl':	p->plural_name = str_save(t);	break;
-		case 'wt':	p->weight = atoi(t);		break;
-		case 'lc':	p->land_cap = atoi(t);		break;
-		case 'rc':	p->ride_cap = atoi(t);		break;
-		case 'fc':	p->fly_cap = atoi(t);		break;
-		case 'mu':	p->is_man_item = atoi(t);	break;
-		case 'pr':	p->prominent = atoi(t);		break;
-		case 'an':	p->animal = atoi(t);		break;
+		case 'wt':	p->weight = (short) atoi(t);		break;
+		case 'lc':	p->land_cap = (short) atoi(t);		break;
+		case 'rc':	p->ride_cap = (short) atoi(t);		break;
+		case 'fc':	p->fly_cap = (short) atoi(t);		break;
+		case 'mu':	p->is_man_item = (schar) atoi(t);	break;
+		case 'pr':	p->prominent = (schar) atoi(t);		break;
+		case 'an':	p->animal = (schar) atoi(t);		break;
 		case 'un':	p->who_has = box_scan(t);	break;
-		case 'at':	p->attack = atoi(t);		break;
-		case 'df':	p->defense = atoi(t);		break;
-		case 'mi':	p->missile = atoi(t);		break;
+		case 'at':	p->attack = (short) atoi(t);		break;
+		case 'df':	p->defense = (short) atoi(t);		break;
+		case 'mi':	p->missile = (short) atoi(t);		break;
 		case 'bp':	p->base_price = atoi(t);	break;
-		case 'ca':	p->capturable = atoi(t);	break;
+		case 'ca':	p->capturable = (schar) atoi(t);	break;
 
 		case 0:
 		default:
@@ -1410,24 +1410,24 @@ scan_item_magic(struct item_magic *p, int box_num)
 
 		switch (c)
 		{
-		case 'au':	p->aura = atoi(t);			break;
-		case 'cl':	p->curse_loyalty = atoi(t);		break;
-		case 'cr':	p->cloak_region = atoi(t);		break;
-		case 'cc':	p->cloak_creator = atoi(t);		break;
-		case 'uk':	p->use_key = atoi(t);			break;
+		case 'au':	p->aura = (short) atoi(t);			break;
+		case 'cl':	p->curse_loyalty = (schar) atoi(t);		break;
+		case 'cr':	p->cloak_region = (schar) atoi(t);		break;
+		case 'cc':	p->cloak_creator = (schar) atoi(t);		break;
+		case 'uk':	p->use_key = (schar) atoi(t);			break;
 		case 'rc':	p->region_created = box_scan(t);	break;
 		case 'pc':	p->project_cast = box_scan(t);		break;
 		case 'ct':	p->creator = box_scan(t);		break;
 		case 'lo':	p->lore = box_scan(t);			break;
-		case 'qc':	p->quick_cast = atoi(t);		break;
-		case 'ab':	p->attack_bonus = atoi(t);		break;
-		case 'db':	p->defense_bonus = atoi(t);		break;
-		case 'mb':	p->missile_bonus = atoi(t);		break;
-		case 'ba':	p->aura_bonus = atoi(t);		break;
-		case 'rd':	p->relic_decay = atoi(t);		break;
-		case 'tn':	p->token_num = atoi(t);			break;
+		case 'qc':	p->quick_cast = (short) atoi(t);		break;
+		case 'ab':	p->attack_bonus = (schar) atoi(t);		break;
+		case 'db':	p->defense_bonus = (schar) atoi(t);		break;
+		case 'mb':	p->missile_bonus = (schar) atoi(t);		break;
+		case 'ba':	p->aura_bonus = (short) atoi(t);		break;
+		case 'rd':	p->relic_decay = (short) atoi(t);		break;
+		case 'tn':	p->token_num = (schar) atoi(t);			break;
 		case 'ti':	p->token_ni = atoi(t);			break;
-		case 'oc':	p->orb_use_count = atoi(t);		break;
+		case 'oc':	p->orb_use_count = (schar) atoi(t);		break;
 
 		case 'mu':
 			boxlist_scan(t, box_num, &(p->may_use));
@@ -1537,19 +1537,19 @@ scan_player(struct entity_player *p, int box_num)
 		case 've':	p->vis_email = str_save(t);	break;
 		case 'le':	p->last_email = str_save(t);	break;
 		case 'pw':	p->password = str_save(t);	break;
-		case 'np':	p->noble_points = atoi(t);	break;
-		case 'fs':	p->fast_study = atoi(t);	break;
+		case 'np':	p->noble_points = (short) atoi(t);	break;
+		case 'fs':	p->fast_study = (short) atoi(t);	break;
 		case 'ft':	p->first_turn = atoi(t);	break;
-		case 'fo':	p->format = atoi(t);		break;
-		case 'nt':	p->notab = atoi(t);		break;
-		case 'tf':	p->first_tower = atoi(t);	break;
-		case 'so':	p->sent_orders = atoi(t);	break;
+		case 'fo':	p->format = (schar) atoi(t);		break;
+		case 'nt':	p->notab = (schar) atoi(t);		break;
+		case 'tf':	p->first_tower = (schar) atoi(t);	break;
+		case 'so':	p->sent_orders = (schar) atoi(t);	break;
 		case 'lt':	p->last_order_turn = atoi(t);	break;
 		case 'sl':	p->split_lines = atoi(t);	break;
 		case 'sb':	p->split_bytes = atoi(t);	break;
-		case 'ci':	p->compuserve = atoi(t);	break;
-		case 'bm':	p->broken_mailer = atoi(t);	break;
-		case 'dr':	p->dont_remind = atoi(t);	break;
+		case 'ci':	p->compuserve = (schar) atoi(t);	break;
+		case 'bm':	p->broken_mailer = (schar) atoi(t);	break;
+		case 'dr':	p->dont_remind = (schar) atoi(t);	break;
 
 		case 'kn':
 			known_scan(t, &p->known, box_num);
@@ -1713,13 +1713,13 @@ scan_command(struct command *p, int box_num)
 			}
 			break;
 
-		case 'cs':	p->state = atoi(t);		break;
+		case 'cs':	p->state = (schar) atoi(t);		break;
 		case 'wa':	p->wait = atoi(t);		break;
-		case 'st':	p->status = atoi(t);		break;
+		case 'st':	p->status = (schar) atoi(t);		break;
 		case 'de':	p->days_executing = atoi(t);	break;
-		case 'po':	p->poll = atoi(t);		break;
-		case 'pr':	p->pri = atoi(t);		break;
-		case 'if':	p->inhibit_finish = atoi(t);	break;
+		case 'po':	p->poll = (schar) atoi(t);		break;
+		case 'pr':	p->pri = (schar) atoi(t);		break;
+		case 'if':	p->inhibit_finish = (schar) atoi(t);	break;
 		case 'us':	p->use_skill = box_scan(t);	break;
 		case 'ue':	p->use_exp = atoi(t);		break;
 
@@ -1782,8 +1782,8 @@ scan_gate(struct entity_gate *p, int box_num)
 		case 'tl':	p->to_loc = box_scan(t);	break;
 		case 'nj':	p->notify_jumps = box_scan(t);	break;
 		case 'nu':	p->notify_unseal = box_scan(t);	break;
-		case 'sk':	p->seal_key = atoi(t);		break;
-		case 'rh':	p->road_hidden = atoi(t);	break;
+		case 'sk':	p->seal_key = (short) atoi(t);		break;
+		case 'rh':	p->road_hidden = (schar) atoi(t);	break;
 
 		case 0:
 		default:
@@ -1856,10 +1856,10 @@ scan_misc(struct entity_misc *p, int box_num)
 
 		switch (c)
 		{
-		case 'di':	p->npc_dir = atoi(t);			break;
+		case 'di':	p->npc_dir = (schar) atoi(t);			break;
 		case 'mc':	p->npc_created = atoi(t);		break;
-		case 'md':	p->mine_delay = atoi(t);		break;
-		case 'ss':	p->storm_str = atoi(t);			break;
+		case 'md':	p->mine_delay = (schar) atoi(t);		break;
+		case 'ss':	p->storm_str = (short) atoi(t);			break;
 		case 'mh':	p->npc_home = box_scan(t);		break;
 		case 'gc':	p->garr_castle = box_scan(t);		break;
 		case 'sb':	p->summoned_by = box_scan(t);		break;
