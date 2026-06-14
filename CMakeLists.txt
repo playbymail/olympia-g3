@@ -87,14 +87,15 @@ function(olympia_compile_flags tgt)
         # counts, the loop_known macro, the MD5 RNG mixes. Portable (GCC + Clang),
         # so it stays in this section, NOT the Clang-only block below.
         -Wsign-conversion -Werror=sign-conversion
-        # Phase 8 (#16) - return-type / return-mismatch. A non-void function
-        # that falls off the end (or hits a bare `return;`) leaves the caller
-        # reading a garbage register — 8 bytes on LP64 (the class behind G2's
-        # fact/100 "st -32" flicker). Portable (GCC + Clang), so it stays in
-        # this section, NOT the Clang-only block below; the fall-off functions
-        # were void-converted or given terminal returns, so the class is 0.
+        # Phase 8 (#16) - return-type. A non-void function that falls off the
+        # end leaves the caller reading a garbage register — 8 bytes on LP64
+        # (the class behind G2's fact/100 "st -32" flicker). Portable (GCC +
+        # Clang), needed everywhere because it only warns by default, so it
+        # stays in this section; the fall-off functions were void-converted or
+        # given terminal returns, so the class is 0. The companion bare-`return;`
+        # class (-Wreturn-mismatch) is Clang-guarded below — GCC enforces it
+        # without the flag, and unconditionally passing it breaks GCC <=13 (#26).
         -Wreturn-type -Werror=return-type
-        -Wreturn-mismatch -Werror=return-mismatch
         # Phase 9 (#7) - format-string / vararg checking. -Wno-format had
         # suppressed the whole class engine-wide even though the printf-like
         # wrappers (out/wout/wiout/sout/html, and now queue) carry
@@ -122,10 +123,18 @@ function(olympia_compile_flags tgt)
     # zero with explicit (short)/(schar)/(char) casts (the on-negation sub-form
     # too); representation-preserving, so golden output is byte-identical. This
     # is the LAST warning phase of the ladder.
+    #
+    # Phase 8 (#26) - return-mismatch is also Clang-only here. Clang splits bare
+    # `return;` in a non-void function out of -Wreturn-type as its own class; GCC
+    # enforces it regardless (default permerror on >=14, folded into -Wreturn-type
+    # on <=13). The option did not exist before GCC 14 and GCC treats an unknown
+    # positive -W* as a fatal error, so passing it unconditionally breaks GCC <=13.
+    # Guarding the Clang-only spelling loses no coverage; the class measures 0.
     if (CMAKE_C_COMPILER_ID MATCHES "Clang")
         target_compile_options(${tgt} PRIVATE
             -Wshorten-64-to-32 -Werror=shorten-64-to-32
             -Wimplicit-int-conversion -Werror=implicit-int-conversion
+            -Wreturn-mismatch -Werror=return-mismatch
         )
     endif()
 endfunction()
