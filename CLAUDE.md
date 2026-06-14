@@ -144,7 +144,7 @@ extended past Phase 5 there); this table is the on-disk summary.
 | 7 | `sign-conversion` | ✅ enforced on **all three** targets (0 hits); MD5 RNG + qsort-nmemb + guard-slot casts | #15 ✅ |
 | 8 | `return-type` + return-mismatch | ✅ enforced on **all three** targets (0 hits); 60 sites: 45 mapgen + 6 main.c + 9 engine singles | #16 ✅ |
 | 9 | format-string / vararg checking (`-Wformat`) | ✅ enforced on **all three** targets (0 non-security hits); queue attr + 9 vararg fixes; 6 non-literal sites deferred | #7 ✅ |
-| 10 | `implicit-int-conversion` (Clang, code-quality) | ⬜ not started | #17 |
+| 10 | `implicit-int-conversion` (Clang, code-quality) | ✅ enforced on **all three** targets (0 hits); 167 sites: 92 io.c reader + 75 long tail (incl. 1 on-negation) | #17 ✅ |
 
 > One build-cleanup step and a docs step close out epic #10 *after* the warning
 > phases land: **Step B** (#12) — ✅ **done**: the per-target flags were
@@ -207,11 +207,20 @@ targets, `queue()` gained its missing `format(printf,2,3)` attribute, 9
 format/vararg defects (3 memory-unsafe, 1 dropped-output, 5 output-neutral) are
 fixed, the non-security format class measures 0, and both golden gates stay
 byte-identical (the 6 deferred non-literal `-Wformat-security` sites are kept
-suppressed for a later hardening pass). **Next up: GitHub issue #17 (Phase 10)** —
-`implicit-int-conversion` (Clang-guarded, code-quality), the last warning phase
-before Step C (#18, `BUILD_HISTORY.md`). From here on the asan-ubsan gate
+suppressed for a later hardening pass). **GitHub issue #17 (Phase 10) is also
+done:** `-Werror=implicit-int-conversion` (Clang-guarded, like Phase 6's
+`-Wshorten-64-to-32` — GCC folds this class into `-Wconversion`, so it MUST stay
+behind the Clang guard, *not* the portable section) is locked on all three
+targets, 167 implicit int→short/char narrowing sites are made explicit
+representation-preservingly (92 in io.c's entity-restore reader + 75 in the long
+tail, including the lone `-Wimplicit-int-conversion-on-negation` site
+`scry.c:628`), and both golden gates stay byte-identical. **This was the LAST
+warning phase of the ladder** — every `-Werror` class is now locked.
+**Next up: GitHub issue #18 (Step C)** — write `BUILD_HISTORY.md` and refresh
+this file to mark the modernization complete (folding in the post-64-bit warning
+policy from #9); no warning work remains. From Phase 5 on the asan-ubsan gate
 (`OLYMPIA_PRESET=asan-ubsan ./tests/olympia/golden_check.sh` = YES, zero
-diagnostics) is part of every later phase.
+diagnostics) is part of every step.
 
 > **The sister G1 and G2 repos are done through Phase 4.** `../olympia-g1` and
 > `../olympia-g2` have both completed Phase 3.5 and Phase 4 — all three Phase-4
@@ -609,6 +618,58 @@ Probe reports 0 (non-security) on **both** presets; all three targets carry
 `-Werror=format` (verified via `compile_commands.json`: 71/71, 6/6, 2/2 TUs) and
 build clean; debug and asan-ubsan golden gates both `YES` (byte-identical) and
 asan/ubsan clean.
+
+### Phase 10 — `implicit-int-conversion` (Clang-guarded, GitHub issue #17) ✅ done
+
+`-Wimplicit-int-conversion -Werror=implicit-int-conversion` is locked in the
+**Clang-only** `if (CMAKE_C_COMPILER_ID MATCHES "Clang")` block of
+`olympia_compile_flags()`, alongside Phase 6's `-Wshorten-64-to-32` — **this is
+the opposite of Phase 9** (format was portable). `-Wimplicit-int-conversion` is a
+Clang-only diagnostic spelling; GCC folds this class into the broader
+`-Wconversion` (not enabled here), so the pair MUST stay behind the Clang guard
+or GCC builds break. There was **no `-Wno-implicit-int-conversion` suppression to
+drop** — this phase only *adds* the pair (verified: 0 such lines pre-existed).
+This was the **LAST warning phase** of the ladder; every `-Werror` class is now
+locked, leaving only Step C (#18, docs).
+
+Explicitly a **code-quality / tech-debt** track, off the 64-bit critical path:
+`int`→`short`/`char` narrowing behaves identically on ILP32 and LP64. Every site
+is a narrowing of an `int` (or compound int expression) into a `short` / `schar`
+/ `char` / `uchar` entity-struct field; every fix is a representation-preserving
+explicit cast to the destination type (the implicit truncation already happens,
+the cast only documents it). Compound RHS is wrapped whole, e.g.
+`f = (schar)(aura * 5)`; simple RHS uses `(type) rhs`. **No deliberate golden
+change** — both gates stay byte-identical.
+
+**Inventory: 167 sites** (identical under both presets; re-inventoried with the
+flag added warn-only to the Clang block, since a bare `-DCMAKE_C_FLAGS` probe
+won't land in the Clang-guarded target options). **Count trap:** the negation
+sub-form `p->barrier = -(c->who)` reports under
+`-Wimplicit-int-conversion-on-negation`, a **distinct** bracket sub-tag — match
+the class by **prefix** (`grep -oE '\[-Wimplicit-int-conversion'`), not an exact
+`[-Wimplicit-int-conversion]` grep, or you undercount by the on-negation site and
+hit a discrepancy when `-Werror` surfaces it. Two commits mirroring G1/G2:
+
+- **92 sites in `olympia/io.c`** — the entity-restore `switch`
+  (`p->field = (type) atoi(t)`) plus three `new->field = (type) var`
+  initializers; landed as its own commit (the bulk; G1/G2 pattern). Mirrors
+  `../olympia-g2` `8274ba4`.
+- **75 long-tail sites across 28 other TUs** — one commit. Includes the lone
+  on-negation site `scry.c:628` → `(short)(-(c->who))` (G2 used `(short)`).
+  Because it was caught by the prefix-match inventory it is fixed *here* in the
+  long-tail commit rather than surfacing at the `-Werror` lock (G2 had to fix it
+  in its lock commit). Mirrors `../olympia-g2` `73152e4`.
+
+**G3-specific vs G1/G2:** G1/G2 each found 162 sites; G3 found **167** — G3 has
+its own `io.c` and G3-only feature code, so the sibling counts were not trusted
+(re-inventoried). G3-only long-tail sites with no sibling precedent include
+`add.c` (the sbaillie generated-password feature: `noble_points`, `fast_study`).
+G3's `z.c` `lower_array` build (`(char) i` / `(char)(i - 'A' + 'a')`) matches G1's
+`z.c` shape but lives in both `olympia/z.c` and `mapgen/z.c` here. Probe reports 0
+(both sub-tags) on **both** presets; all three targets carry
+`-Werror=implicit-int-conversion` (verified via `compile_commands.json`: 79/79
+TUs) and build clean as a hard error; debug and asan-ubsan golden gates both
+`YES` (byte-identical) and asan/ubsan clean.
 
 ### Known bugs deferred past the 64-bit effort
 
