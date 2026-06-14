@@ -139,7 +139,7 @@ Enforced classes (all `-Werror`):
 | 6 | `shorten-64-to-32` (Clang-guarded) + `sizeof-pointer-memaccess` |
 | 7 | `sign-conversion` |
 | 8 | `return-type` + `return-mismatch` |
-| 9 | `format` / vararg checking (project-wide) |
+| 9 | `format` / vararg checking, full class incl. non-literal sites (project-wide; #20) |
 | 10 | `implicit-int-conversion` (Clang-guarded, code-quality — not a 64-bit hazard) |
 
 Also locked in: flag consolidation into `olympia_compile_flags()` with the dead
@@ -161,7 +161,5 @@ detail in [BUILD_HISTORY.md](BUILD_HISTORY.md#known-bugs-deferred-past-the-64-bi
 - **#4 (combat):** `construct_guard_fight_list`'s guard check compares `fight`
   *pointers* to an int box-id (always -1). Fixing it **changes golden output** —
   needs a deliberate re-baseline.
-- **#20 (format-security):** the 6 deferred non-literal `-Wformat-security` sites
-  stay suppressed pending a focused hardening pass.
 - **#19 (mapgen allocator):** replace `mapgen/z.c`'s hand-rolled boxing/guard
   allocator (`my_malloc`/`my_realloc`/`my_free`) with thin stdlib wrappers.
