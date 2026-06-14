@@ -3,8 +3,8 @@
 #include <memory.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include "z.h"
 #include <stdint.h>
+#include "rnd.h"
 
 /*
  *  Random number generator built on top of MD5

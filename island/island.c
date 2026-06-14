@@ -25,13 +25,9 @@
 #include <stdlib.h>
 
 /*
- *  rnd.c (MD5 RNG) functions used here.  island.c is a standalone program that
- *  does not include z.h/oly.h, so declare the few RNG entry points it calls
- *  (Phase 4: gives them real prototypes instead of implicit declarations).
+ *  Shared MD5 RNG (lib/rnd.c) — rnd()/load_seed()/save_seed() used here.
  */
-extern int rnd(int low, int high);
-extern void load_seed(char *fnam);
-extern void save_seed(char *fnam);
+#include "../lib/rnd.h"
 
 #define MAX_MAP			120
 #define LINE_MAX		200

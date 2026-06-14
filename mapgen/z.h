@@ -10,6 +10,7 @@
 #include <fcntl.h>
 
 #include "../lib/checked_alloc.h"	/* shared my_malloc/my_realloc/my_free seam */
+#include "../lib/rnd.h"		/* shared MD5 RNG (lib/rnd.c) */
 
 #define	TRUE	1
 #define	FALSE	0
@@ -38,7 +39,6 @@ extern char *getlin_ew(FILE *);
 extern int i_strncmp(char *s, char *t, int n);
 extern int i_strcmp(char *s, char *t);
 extern int fuzzy_strcmp(char *, char *);
-extern int rnd(int low, int high);
 
 /*
  *  Assertion verifier
@@ -64,11 +64,5 @@ extern void copy_fp(FILE *a, FILE *b);
 extern void init_lower(void);
 extern void lcase(char *s);
 extern void test_random(void);
-
-/* rnd.c (MD5 RNG) functions; rnd.c includes z.h, not oly.h */
-extern void MD5(void *dest, void *orig, int len);
-extern void load_seed(char *fnam);
-extern void save_seed(char *fnam);
-extern int md5_int(int a, int b, int c, int d);
 
 extern int int_comp(void * a, void * b);

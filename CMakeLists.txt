@@ -204,9 +204,9 @@ endif ()
 # ------------------------------------------------------------------------------
 add_executable(island-g3)
 target_sources(island-g3 PRIVATE
-    mapgen/island.c mapgen/rnd.c
+    island/island.c lib/rnd.c
 )
-target_include_directories(island-g3 PRIVATE island/ mapgen/)
+target_include_directories(island-g3 PRIVATE island/ lib/)
 # Declare the C11 requirement at the target level (the project-level
 # CMAKE_C_STANDARD above stays as the default for any future targets).
 target_compile_features(island-g3 PRIVATE c_std_11)
@@ -220,9 +220,9 @@ olympia_enable_sanitizers(island-g3)
 # ------------------------------------------------------------------------------
 add_executable(mapgen-g3)
 target_sources(mapgen-g3 PRIVATE
-    mapgen/mapgen.c mapgen/rnd.c mapgen/z.c
+    mapgen/mapgen.c mapgen/z.c
     lib/ilist.c lib/roads.c lib/tiles.c
-    lib/checked_alloc.c
+    lib/checked_alloc.c lib/rnd.c
 )
 target_sources(mapgen-g3 PRIVATE
     FILE_SET HEADERS
@@ -231,6 +231,7 @@ target_sources(mapgen-g3 PRIVATE
     FILES
         mapgen/z.h
         lib/checked_alloc.h
+        lib/rnd.h
         lib/lists.h
 )
 target_include_directories(mapgen-g3 PRIVATE mapgen/ lib/)
