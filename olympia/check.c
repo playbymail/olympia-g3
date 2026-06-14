@@ -528,7 +528,7 @@ check_prisoner(void)
  *  Always notes a database correction with a message to strerr.
  */
 
-int check_db(void)
+void check_db(void)
 {
 
 	stage("check_db()");

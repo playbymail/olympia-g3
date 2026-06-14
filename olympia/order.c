@@ -196,7 +196,7 @@ queue_stop(int pl, int who)
  *  Loose, convenient interface for queue_order()
  */
 
-int queue(int who, char *s, ...)
+void queue(int who, char *s, ...)
 {
 	char buf[LEN];
 	va_list ap;

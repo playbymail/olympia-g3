@@ -217,7 +217,7 @@ extern void text_list_free(char **l);
 extern void times_masthead(void);
 
 /* olympia/check.c */
-extern int check_db(void);
+extern void check_db(void);
 
 /* olympia/cloud.c */
 extern void create_cloudlands(void);
@@ -474,7 +474,7 @@ extern void npc_move(int who);
 extern void queue_npc_orders(void);
 
 /* olympia/order.c */
-extern int queue(int who, char *s, ...);
+extern void queue(int who, char *s, ...);
 extern void flush_unit_orders(int pl, int who);
 extern void list_order_templates(void);
 extern void load_orders(void);
@@ -629,7 +629,7 @@ extern void seed_weather_cookies(void);
 
 /* olympia/sout.c */
 extern ilist save_output_vector(void);
-extern int init_spaces(void);
+extern void init_spaces(void);
 extern void close_logfile(void);
 extern void initialize_buffer(void);
 extern void open_logfile(void);

@@ -388,7 +388,7 @@ gm_show_control_arts(int pl)
 }
 
 
-static int
+static void
 gm_count_stuff(int pl)
 {
 	int castle = 0;

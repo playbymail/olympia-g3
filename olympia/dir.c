@@ -1063,6 +1063,7 @@ hidden_count_to_index(int which, exit_views_list l)
 	}
 
 	assert(FALSE);
+	return 0;
 }
 
 

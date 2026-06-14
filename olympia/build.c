@@ -1008,6 +1008,8 @@ i_repair(struct command *c)
 		wout(VECT, "%s repaired %s defense for %s.",
 					box_name(c->who),
 					nice_num(c->f), box_name(where));
+
+	return TRUE;
 }
 
 

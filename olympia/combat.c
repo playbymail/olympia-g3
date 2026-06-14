@@ -219,6 +219,7 @@ fort_covers(int n)
 		fprintf(stderr, "subkind is %s\n", subkind_s[subkind(n)]);
 		assert(FALSE);
 	}
+	return 0;
 }
 
 
