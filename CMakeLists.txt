@@ -79,6 +79,11 @@ function(olympia_compile_flags tgt)
         # (a real corruption risk). The MD5 memset(ctx, sizeof(ctx)) bug is
         # fixed; the class measures 0.
         -Wsizeof-pointer-memaccess -Werror=sizeof-pointer-memaccess
+        # Phase 7 (#15) - signed/unsigned implicit conversions. Arch-independent
+        # (it bites the same on ILP32 and LP64), but a large class — qsort nmemb
+        # counts, the loop_known macro, the MD5 RNG mixes. Portable (GCC + Clang),
+        # so it stays in this section, NOT the Clang-only block below.
+        -Wsign-conversion -Werror=sign-conversion
     )
 
     # Phase 6 (#14) - 64-bit width hazards, Clang-only half.

@@ -141,7 +141,7 @@ extended past Phase 5 there); this table is the on-disk summary.
 | 4 | `strict-prototypes`, `missing-prototypes`, `implicit-function-declaration` | ✅ enforced on **all three** targets; all classes 0 | — |
 | 5 | `missing-declarations` + wire ASan/UBSan across all three targets | ✅ enforced on **all three** targets (0 hits); sanitizers wired + golden gate green on all three; bug #3 fixed | #13 ✅ (+ bug #3 ✅) |
 | 6 | `shorten-64-to-32` (Clang) + `sizeof-pointer-memaccess` | ✅ enforced on **all three** targets (0 hits); MD5 `sizeof(ctx)` bug fixed | #14 ✅ |
-| 7 | `sign-conversion` | ⬜ not started | #15 |
+| 7 | `sign-conversion` | ✅ enforced on **all three** targets (0 hits); MD5 RNG + qsort-nmemb + guard-slot casts | #15 ✅ |
 | 8 | `return-type` + return-mismatch | ⬜ not started | #16 |
 | 9 | format-string / vararg checking | ⬜ not started | #7 |
 | 10 | `implicit-int-conversion` (Clang, code-quality) | ⬜ not started | #17 |
@@ -192,9 +192,13 @@ int-alignment rounding `my_realloc` already did). **GitHub issue #14 (Phase 6)
 is also done:** `-Werror=shorten-64-to-32` (Clang-guarded) and
 `-Werror=sizeof-pointer-memaccess` (portable) are locked on all three targets, 16
 LP64 width-truncation sites and the MD5 `sizeof(ctx)` wipe bug are fixed
-representation-preservingly, and both golden gates stay byte-identical. **Next
-up: GitHub issue #15 (Phase 7)** — `sign-conversion`. From here on the asan-ubsan
-gate (`OLYMPIA_PRESET=asan-ubsan ./tests/olympia/golden_check.sh` = YES, zero
+representation-preservingly, and both golden gates stay byte-identical.
+**GitHub issue #15 (Phase 7) is also done:** `-Werror=sign-conversion` (portable)
+is locked on all three targets, 47 implicit signed/unsigned conversion sites are
+made explicit representation-preservingly, and both golden gates stay
+byte-identical. **Next up: GitHub issue #16 (Phase 8)** — `return-type` +
+return-mismatch. From here on the asan-ubsan gate
+(`OLYMPIA_PRESET=asan-ubsan ./tests/olympia/golden_check.sh` = YES, zero
 diagnostics) is part of every later phase.
 
 > **The sister G1 and G2 repos are done through Phase 4.** `../olympia-g1` and
@@ -427,6 +431,56 @@ and `island.c` are extra sites with no G2 precedent — the third target,
 is `uint32_t` (the `unsigned long` typedef is commented out in `rnd.c`), so
 `buf[0]`→`int` is a 32→32 conversion, never flagged. Probe (`-Wshorten-64-to-32`)
 reports 0; all three targets build clean as errors.
+
+### Phase 7 — `sign-conversion` (GitHub issue #15) ✅ done
+
+`-Wsign-conversion -Werror=sign-conversion` is locked in the **portable** section
+of `olympia_compile_flags()` (GCC + Clang — *not* behind the Clang guard that
+holds Phase 6's `-Wshorten-64-to-32`). This is the signed/unsigned
+implicit-conversion class: architecture-independent (it bites the same on ILP32
+and LP64), but a large population. No `-Wno-sign-conversion` suppression existed
+to drop. **Mirrors `../olympia-g2`'s Phase 7 minus the seed fix** — G1's Phase 7
+canonicalised a `seed[3]` signed/unsigned `extern` mismatch in its
+`drand48`/`erand48` RNG; G2/G3 use the MD5 RNG, so there is **no `seed[3]`** and
+**no deliberate golden change** in this phase. All changes are
+representation-preserving → golden byte-identical on both the debug and
+asan-ubsan gates.
+
+**47 sites**, all matching what the implicit conversion already did:
+
+- **MD5 RNG (`olympia/rnd.c` + `mapgen/rnd.c`, identical twins).** `rnd()`:
+  `range = (unsigned)(high-low)`, `r = (int)range`, `mask |= (unsigned)r`,
+  `return (int)(num + (unsigned)low)` — modulo-2³² identities.
+  `xMD5Update()`: `t + (word32)len` (`len >= 0`). The `memcpy`/`memset` length
+  args (`(size_t)len`, `(size_t)(count+8)`) only surface under the asan-ubsan
+  preset's instrumentation — fixed too so the lock holds under **both** presets.
+  The digest is `memcpy`'d out before any wipe, so the produced MD5 — and the RNG
+  on it — is unchanged.
+- **G3-specific vs G2 in `rnd.c`:** `md5_int` needed `return (int) buf[0]` here.
+  G3's `word32` is `uint32_t`, so `buf[0]`→`int` is a *signedness* change Phase 6
+  (shorten) did not flag (G2 fixed it under Phase 6 because its `word32` differs);
+  in G3 it is a Phase 7 site.
+- **qsort `nmemb` (bulk).** The `*_len()` count (`int`) feeding qsort's `size_t`
+  `nmemb`, cast `(size_t)`: gm.c (×5), perm.c (×4), report.c (×3), input.c (×2),
+  use.c (×2), check.c, seed.c, swear.c.
+- **The shared `loop_known` macro** (`olympia/loop.h`). One `(size_t)` on its
+  embedded `qsort(ilist_len(kn))` clears **all** its expansion sites at once
+  (gm.c ×2, io.c, summary.c, report.c ×2) — those are *not* separate edits.
+- **`mapgen/z.c`** — the `my_malloc`/`my_realloc` size-header and guard slots.
+  **G3-specific vs G2:** G3's guard constants are `0xDEADBEEF`/`0xBABEFACE`
+  (both exceed `INT_MAX`, so unsigned→int), giving two extra `(int)` casts per
+  allocator beyond G2's lone `(int)size`. The guards are internal metadata, never
+  emitted, so `gate`/`loc`/`road` are byte-identical.
+- **The fixed `spaces` buffer** — `(size_t)spaces_len` in the `perm.c` subscript
+  and `my_malloc((size_t)spaces_len+1)` in `sout.c`.
+- **`mapgen/island.c`** — `(size_t)(target_size + 1)` on the island `malloc`
+  count (G3-only, no G1/G2 precedent; `target_size` is a non-negative count). The
+  third target, `island-g3`, contributed its own site — don't trust sibling
+  counts.
+
+Probe (`-Wsign-conversion`) reports 0 on **both** presets; all three targets
+build clean with the new `-Werror` flag; debug and asan-ubsan golden gates both
+`YES` (byte-identical) and asan/ubsan clean.
 
 ### Known bugs deferred past the 64-bit effort
 
