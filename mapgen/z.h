@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <fcntl.h>
 
+#include "../lib/checked_alloc.h"	/* shared my_malloc/my_realloc/my_free seam */
+
 #define	TRUE	1
 #define	FALSE	0
 
@@ -29,9 +31,6 @@ extern char lower_array[];
 
 #define	toupper(c)	(((c) >= 'a' && (c) <= 'z') ? ((c) - 'a' + 'A') : (c))
 
-extern void *my_malloc(size_t size);
-extern void *my_realloc(void *ptr, size_t size);
-extern void my_free(const void *ptr);
 extern char *str_save(char *);
 
 extern char *getlin(FILE *);

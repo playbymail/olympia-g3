@@ -18,37 +18,10 @@ int realloc_size = 0;
 
 
 /*
- *  Thin stdlib-forwarding allocator wrappers.
- *
- *  These used to be a hand-rolled "boxing" allocator that over-allocated by
- *  three ints to store the region size plus 0xDEADBEEF/0xBABEFACE guard
- *  markers, asserting their integrity on realloc/free to catch overruns,
- *  double-frees, and frees of non-malloc'd pointers.  AddressSanitizer and
- *  UndefinedBehaviorSanitizer (wired onto mapgen-g3 in #13) now detect those
- *  far more thoroughly and with zero per-allocation overhead, so the boxing
- *  is gone — matching the engine's lib/checked_alloc.c.
- *
- *  my_malloc uses calloc so callers keep zero-initialized memory.
+ *  The my_malloc/my_realloc/my_free allocator wrappers live in the engine's
+ *  lib/checked_alloc.c — the single allocation seam shared by olympia-g3 and
+ *  mapgen-g3 (declared in checked_alloc.h, included via z.h).
  */
-
-void *my_malloc(size_t size)
-{
-	return calloc(1, size);
-}
-
-
-void *my_realloc(void *ptr, size_t size)
-{
-	return realloc(ptr, size);
-}
-
-
-void my_free(const void *ptr)
-{
-	if (ptr)
-		free((void *) ptr);
-}
-
 
 char *
 str_save(char *s)

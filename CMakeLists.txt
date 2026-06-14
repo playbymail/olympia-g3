@@ -222,6 +222,7 @@ add_executable(mapgen-g3)
 target_sources(mapgen-g3 PRIVATE
     mapgen/mapgen.c mapgen/rnd.c mapgen/z.c
     lib/ilist.c lib/roads.c lib/tiles.c
+    lib/checked_alloc.c
 )
 target_sources(mapgen-g3 PRIVATE
     FILE_SET HEADERS
@@ -229,6 +230,7 @@ target_sources(mapgen-g3 PRIVATE
         mapgen lib
     FILES
         mapgen/z.h
+        lib/checked_alloc.h
         lib/lists.h
 )
 target_include_directories(mapgen-g3 PRIVATE mapgen/ lib/)
