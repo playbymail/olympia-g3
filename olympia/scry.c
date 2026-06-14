@@ -10,11 +10,11 @@ scry_show_where(int who, int target)
 
 	if (region(who) != region(target))
 	{
-		out(who, "%s is in %s.", just_name(region(target)));
+		out(who, "%s is in %s.", just_name(target), just_name(region(target)));
 		return;
 	}
 
-	out(who, "%s is in %s.", box_name(province(target)));
+	out(who, "%s is in %s.", box_name(target), box_name(province(target)));
 }
 
 

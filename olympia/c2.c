@@ -877,7 +877,7 @@ board_message(int who, int ship)
 	if (!*with)
 		with = ".";
 
-	wout(where, "%s%s%s boarded %s%s", desc, comma,
+	wout(where, "%s%s boarded %s%s", desc, comma,
 					box_name(ship), with);
 	show_chars_below(where, who);
 }
