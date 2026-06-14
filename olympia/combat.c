@@ -119,7 +119,7 @@ v_behind(struct command *c)
 	if (num > 9)
 		num = 9;
 
-	p_char(c->who)->behind = num;
+	p_char(c->who)->behind = (schar) num;
 
 	if (num == 0)
 		s = " (front unit)";

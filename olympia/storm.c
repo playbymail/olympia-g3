@@ -195,7 +195,7 @@ new_storm(int new, int sk, int aura, int where)
 			return -1;
 	}
 
-	p_misc(new)->storm_str = aura;
+	p_misc(new)->storm_str = (short) aura;
 	set_where(new, where);
 
 	show_to_garrison = TRUE;
@@ -624,7 +624,7 @@ v_direct_storm(struct command *c)
 
 	dest = v->destination;
 	p_misc(storm)->storm_move = dest;
-	p_misc(storm)->npc_dir = v->direction;
+	p_misc(storm)->npc_dir = (schar) v->direction;
 
 	wout(c->who, "%s will move to %s at month end.",
 					box_name(storm), box_name(dest));

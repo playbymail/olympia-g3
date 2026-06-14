@@ -43,9 +43,9 @@ immediate_commands(void)
 			out(immediate, "(assuming you meant '%s')",
 						cmd_tbl[c->cmd].name);
 
-		c->pri = cmd_tbl[c->cmd].pri;
+		c->pri = (schar) cmd_tbl[c->cmd].pri;
 		c->wait = cmd_tbl[c->cmd].time;
-		c->poll = cmd_tbl[c->cmd].poll;
+		c->poll = (schar) cmd_tbl[c->cmd].poll;
 		c->days_executing = 0;
 		c->state = STATE_LOAD;
 
@@ -622,7 +622,7 @@ fix_gates(void)
 		if (!in_hades(where) && !in_clouds(where) && !in_faery(where))
 			continue;
 
-		p_loc(where)->dist_from_gate = bx[where]->temp;
+		p_loc(where)->dist_from_gate = (schar) bx[where]->temp;
 	}
 	next_province;
 }

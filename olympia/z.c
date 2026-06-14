@@ -293,10 +293,10 @@ init_lower(void)
 	int i;
 
 	for (i = 0; i < 256; i++)
-		lower_array[i] = i;
+		lower_array[i] = (char) i;
 
 	for (i = 'A'; i <= 'Z'; i++)
-		lower_array[i] = i - 'A' + 'a';
+		lower_array[i] = (char)(i - 'A' + 'a');
 }
 
 

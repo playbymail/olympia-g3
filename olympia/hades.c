@@ -220,7 +220,7 @@ combat combatpassword
 			set_name(city, "Necropolis");
 			set_known(hades_player, city);
 			bx[n]->temp = 1;
-			bx[n]->x_loc->hidden = rnd(0, 1);
+			bx[n]->x_loc->hidden = (schar) rnd(0, 1);
 			space--;
 			
 			seed_city(city);

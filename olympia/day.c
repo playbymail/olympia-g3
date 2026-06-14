@@ -1553,7 +1553,7 @@ compute_civ_levels(void)
 
 	loop_province(where)
 	{
-		p_loc(where)->civ = bx[where]->temp / 4;
+		p_loc(where)->civ = (schar)(bx[where]->temp / 4);
 	}
 	next_province;
 }

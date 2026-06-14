@@ -133,8 +133,8 @@ d_undead_lord(struct command *c)
 		assert(FALSE);
 	}
 
-	p_char(undead)->attack = rating;
-	p_char(undead)->defense = rating;
+	p_char(undead)->attack = (short) rating;
+	p_char(undead)->defense = (short) rating;
 
 	set_loyal(undead, LOY_summon, 5);
 
@@ -534,7 +534,7 @@ v_aura_reflect(struct command *c)
 {
 	int flag = c->a;
 
-	p_magic(c->who)->aura_reflect = flag;
+	p_magic(c->who)->aura_reflect = (schar) flag;
 
 	if (flag)
 		wout(c->who, "Will reflect aura blasts back at the attacker.");

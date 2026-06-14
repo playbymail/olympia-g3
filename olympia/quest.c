@@ -37,9 +37,9 @@ create_a_relic(int n, char *name, int use, int weight)
 	create_unique_item_alloc(n, nowhere_loc, sub_relic); 
 
 	set_name(n, name);
-	p_item_magic(n)->use_key = use;
+	p_item_magic(n)->use_key = (schar) use;
 	p_item_magic(n)->lore = n;
-	p_item(n)->weight = weight;
+	p_item(n)->weight = (short) weight;
 
 	fprintf(stderr, "Created %s\n", box_name(n));
 }
@@ -262,22 +262,22 @@ new_artifact(int who)
 	{
 	case 1:
 		s = art_att_s[rnd(0,2)];
-		p_item_magic(new)->attack_bonus = rnd(1,10) * 5;
+		p_item_magic(new)->attack_bonus = (schar)(rnd(1,10) * 5);
 		break;
 
 	case 2:
 		s = art_def_s[rnd(0,2)];
-		p_item_magic(new)->defense_bonus = rnd(1,10) * 5;
+		p_item_magic(new)->defense_bonus = (schar)(rnd(1,10) * 5);
 		break;
 
 	case 3:
 		s = art_mis_s[rnd(0,3)];
-		p_item_magic(new)->missile_bonus = rnd(1,10) * 5;
+		p_item_magic(new)->missile_bonus = (schar)(rnd(1,10) * 5);
 		break;
 
 	case 4:
 		s = art_mag_s[rnd(0,2)];
-		p_item_magic(new)->aura_bonus = rnd(1,3);
+		p_item_magic(new)->aura_bonus = (short) rnd(1,3);
 		break;
 
 	default:
@@ -474,11 +474,11 @@ make_subloc_monster(int where, int questor)
 		switch (relic)
 		{
 		case RELIC_CROWN:
-			p_item_magic(relic)->relic_decay = rnd(8,16)+1;
+			p_item_magic(relic)->relic_decay = (short)(rnd(8,16)+1);
 			break;
 
 		case RELIC_BTA_SKULL:
-			p_item_magic(relic)->relic_decay = rnd(10,20)+1;
+			p_item_magic(relic)->relic_decay = (short)(rnd(10,20)+1);
 			break;
 		}
 		break;
@@ -657,7 +657,7 @@ d_quest(struct command *c)
 		return TRUE;
 	}
 
-	p_subloc(where)->quest_late = rnd(5,13);   /* no quests following 4-12 turns */
+	p_subloc(where)->quest_late = (schar) rnd(5,13);   /* no quests following 4-12 turns */
 
 	monster = make_subloc_monster(where, c->who);
 

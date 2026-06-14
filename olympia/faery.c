@@ -187,7 +187,7 @@ create_faery(void)
 		set_where(gate, ring);
 
 		p_gate(gate)->to_loc = other_ring;
-		rp_gate(gate)->seal_key = rnd(111,999);
+		rp_gate(gate)->seal_key = (short) rnd(111,999);
 
 		ilist_reclaim(&l);
 	}
@@ -245,7 +245,7 @@ create_faery(void)
 
 			sl = p_subloc(n);
 			ilist_append(&sl->link_to, randloc);
-			sl->link_when = rnd(0, NUM_MONTHS-1);
+			sl->link_when = (schar) rnd(0, NUM_MONTHS-1);
 
 			sl = p_subloc(randloc);
 			ilist_append(&sl->link_from, n);

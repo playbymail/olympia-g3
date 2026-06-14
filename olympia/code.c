@@ -134,7 +134,7 @@ code_to_int(char *s)
 
 		if (isdigit(*(s+1)) && isdigit(*(s+2)))		/* CNN */
 		{
-			a = letter_val(tolower(*s), letters2);
+			a = (char) letter_val(tolower(*s), letters2);
 			b = *(s+1) - '0';
 			c = *(s+2) - '0';
 
@@ -146,8 +146,8 @@ code_to_int(char *s)
 	case 4:							/* CCNN */
 		if (isalpha(*(s+1)) && isdigit(*(s+2)) && isdigit(*(s+3)))
 		{
-			a = letter_val(tolower(*s), letters2);
-			b = letter_val(tolower(*(s+1)), letters2);
+			a = (char) letter_val(tolower(*s), letters2);
+			b = (char) letter_val(tolower(*(s+1)), letters2);
 			c = *(s+2) - '0';
 			d = *(s+3) - '0';
 
@@ -157,7 +157,7 @@ code_to_int(char *s)
 
 		if (isdigit(*(s+1)) && isdigit(*(s+2)) && isdigit(*(s+3)))
 		{
-			a = letter_val(tolower(*s), letters2);
+			a = (char) letter_val(tolower(*s), letters2);
 			b = *(s+1) - '0';
 			c = *(s+2) - '0';
 			d = *(s+3) - '0';
@@ -641,7 +641,7 @@ change_box_kind(int n, int kind)
 {
 
 	remove_next_chain(n);
-	bx[n]->kind = kind;
+	bx[n]->kind = (schar) kind;
 	add_next_chain(n);
 }
 
@@ -654,7 +654,7 @@ change_box_subkind(int n, int sk)
 		return;
 
 	remove_sub_chain(n);
-	bx[n]->skind = sk;
+	bx[n]->skind = (schar) sk;
 	add_sub_chain(n);
 }
 
@@ -672,8 +672,8 @@ alloc_box(int n, int kind, int sk)
 	}
 
 	bx[n] = (struct box *) my_malloc(sizeof(struct box));
-	bx[n]->kind = kind;
-	bx[n]->skind = sk;
+	bx[n]->kind = (schar) kind;
+	bx[n]->skind = (schar) sk;
 	add_next_chain(n);
 	add_sub_chain(n);
 }

@@ -61,7 +61,7 @@ prop_city_near_list(int city)
 
 	bx[province(city)]->temp = 1;
 	prom = choose_city_prominence(city);
-	p_subloc(city)->prominence = prom;
+	p_subloc(city)->prominence = (schar) prom;
 	prom *= 3;
 
 	for (m = 1; m < prom; m++)
@@ -291,7 +291,7 @@ compute_dist(void)
 
 	loop_province(i)
 	{
-		p_loc(i)->dist_from_gate = bx[i]->temp;
+		p_loc(i)->dist_from_gate = (schar) bx[i]->temp;
 	}
 	next_province;
 }

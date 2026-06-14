@@ -44,7 +44,7 @@ set_loyal(int who, int k, int lev)
 
 	p = p_char(who);
 
-	p->loy_kind = k;
+	p->loy_kind = (schar) k;
 	p->loy_rate = lev;
 }
 

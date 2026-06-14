@@ -298,7 +298,7 @@ v_times(struct command *c)
 		c->a = 1;
 
 	p = p_player(player(c->who));
-	p->compuserve = c->a;
+	p->compuserve = (schar) c->a;
 
 	if (p->compuserve)
 		wout(c->who, "Will not receive the Times.");

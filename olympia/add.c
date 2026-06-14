@@ -196,7 +196,7 @@ add_new_player(int pl, char *faction, char *character, char *start_city,
 
   	// by Cappinator: 
     // Changed starting faction noble points
-  	pp->noble_points = 18 + (t/8);
+  	pp->noble_points = (short)(18 + (t/8));
 
 	pp->first_turn = sysclock.turn + 1;
 	pp->last_order_turn = sysclock.turn;
@@ -238,7 +238,7 @@ add_new_player(int pl, char *faction, char *character, char *start_city,
 	// by Cappinator:
 	// Changed starting faction fast study days
 	if (t < 101)
-		p_player(pl)->fast_study = 198 + (t * 2);       /* instant study days */
+		p_player(pl)->fast_study = (short)(198 + (t * 2));       /* instant study days */
 	else
 		p_player(pl)->fast_study = 400;
 

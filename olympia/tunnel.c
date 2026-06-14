@@ -330,7 +330,7 @@ add_chamber(int map[SZ+2][SZ+2][MAX_LEVELS], int l)
 
 	new = new_ent(T_loc, sub_chamber);
 	p_loc(new)->hidden = TRUE;
-	p_subloc(new)->tunnel_level = l; 
+	p_subloc(new)->tunnel_level = (schar) l; 
 	set_where(new, tunnel_region);
 	tun_total_locs++;
 

@@ -852,13 +852,13 @@ d_forge_aura(struct command *c)
 	set_name(new, new_name);
 
 	p = p_item(new);
-	p->weight = rnd(1,3);
+	p->weight = (short) rnd(1,3);
 
 	pm = p_item_magic(new);
 
 	pm->creator = c->who;
 	pm->region_created = province(c->who);
-	pm->aura = aura * 2;
+	pm->aura = (short)(aura * 2);
 
 	cm = p_magic(c->who);
 
@@ -892,7 +892,7 @@ new_orb(int who)
 	p_item(new)->weight = 1;
 	p_item_magic(new)->use_key = use_orb;
 	p_item_magic(new)->lore = lore_orb;
-	p_item_magic(new)->orb_use_count = rnd(1,4)*2+1;
+	p_item_magic(new)->orb_use_count = (schar)(rnd(1,4)*2+1);
 
 	return new;
 }
@@ -1383,17 +1383,17 @@ d_forge_art_x(struct command *c)
 	switch (c->use_skill)
 	{
 	case sk_forge_weapon:
-		pm->attack_bonus = aura * 5;
+		pm->attack_bonus = (schar)(aura * 5);
 		new_name = "enchanted sword";
 		break;
 
 	case sk_forge_armor:
-		pm->defense_bonus = aura * 5;
+		pm->defense_bonus = (schar)(aura * 5);
 		new_name = "enchanted armor";
 		break;
 
 	case sk_forge_bow:
-		pm->missile_bonus = aura * 5;
+		pm->missile_bonus = (schar)(aura * 5);
 		new_name = "enchanted bow";
 		break;
 
@@ -1457,7 +1457,7 @@ new_suffuse_ring(int who)
 	set_name(new, "Golden ring");
 
 	p_item(new)->weight = 1;
-	p_item_magic(new)->use_key = ni;
+	p_item_magic(new)->use_key = (schar) ni;
 	p_item_magic(new)->lore = lore;
 
 	return new;

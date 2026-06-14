@@ -1217,7 +1217,7 @@ new_tradegood(int where)
 
 	p = p_item(new);
 	p->plural_name = str_save(t->namep);
-	p->weight = t->weight;
+	p->weight = (short) t->weight;
 	p->base_price = t->base_price;
 
 	return new;

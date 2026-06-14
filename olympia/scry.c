@@ -625,7 +625,7 @@ d_bar_loc(struct command *c)
 
 	if (p->barrier >= 8)
 	{
-		p->barrier = -(c->who);
+		p->barrier = (short)(-(c->who));
 	}
 
 	wout(c->who, "Cast a barrier over %s.", box_name(where));

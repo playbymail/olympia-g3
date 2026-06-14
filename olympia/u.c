@@ -123,7 +123,7 @@ new_char(int sk, int ni, int where, int health, int pl,
 	if (name && *name)
 		set_name(new, name);
 	p = p_char(new);
-	p->health = health;
+	p->health = (schar) health;
 	p->unit_item = ni;
 	p->break_point = 50;
 
@@ -586,7 +586,7 @@ restore_dead_body(int owner, int who)
 		if (def < 0)
 			def = 0;
 
-		p_char(who)->defense = def;
+		p_char(who)->defense = (short) def;
 	}
 }
 

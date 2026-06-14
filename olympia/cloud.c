@@ -197,22 +197,22 @@ create_cloudlands(void)
 		gate1 = new_ent(T_gate, 0);
 		set_where(gate1, map[0][0]);
 		p_gate(gate1)->to_loc = l[0];
-		rp_gate(gate1)->seal_key = rnd(111,999);
+		rp_gate(gate1)->seal_key = (short) rnd(111,999);
 
 		gate2 = new_ent(T_gate, 0);
 		set_where(gate2, map[SZ][0]);
 		p_gate(gate2)->to_loc = l[1];
-		rp_gate(gate2)->seal_key = rnd(111,999);
+		rp_gate(gate2)->seal_key = (short) rnd(111,999);
 
 		gate3 = new_ent(T_gate, 0);
 		set_where(gate3, map[0][SZ]);
 		p_gate(gate3)->to_loc = l[2];
-		rp_gate(gate3)->seal_key = rnd(111,999);
+		rp_gate(gate3)->seal_key = (short) rnd(111,999);
 
 		gate4 = new_ent(T_gate, 0);
 		set_where(gate4, map[SZ][SZ]);
 		p_gate(gate4)->to_loc = l[3];
-		rp_gate(gate4)->seal_key = rnd(111,999);
+		rp_gate(gate4)->seal_key = (short) rnd(111,999);
 
 		ilist_reclaim(&l);
 	}

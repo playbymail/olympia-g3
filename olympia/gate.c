@@ -370,7 +370,7 @@ d_seal_gate(struct command *c)
 	if (!charge_aura(c->who, 6))
 		return FALSE;
 
-	p_gate(gate)->seal_key = key;
+	p_gate(gate)->seal_key = (short) key;
 
 	wout(c->who, "Sealed %s with key %d.", box_name(gate), key);
 	return TRUE;

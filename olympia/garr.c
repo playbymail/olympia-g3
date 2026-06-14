@@ -703,7 +703,7 @@ det_noble_rank_sup(int who)
 	if (pledged_to == 0)
 		return own_rank;
 
-	p_char(who)->rank = min(own_rank, lower_noble_rank(det_noble_rank_sup(pledged_to)));
+	p_char(who)->rank = (schar) min(own_rank, lower_noble_rank(det_noble_rank_sup(pledged_to)));
 
 	return char_rank(who);
 }
@@ -736,7 +736,7 @@ determine_noble_ranks(void)
 
 	loop_char(who)
 	{
-		p_char(who)->rank = nprovs_to_rank(bx[who]->temp);
+		p_char(who)->rank = (schar) nprovs_to_rank(bx[who]->temp);
 	}
 	next_char;
 
@@ -747,7 +747,7 @@ determine_noble_ranks(void)
 		if (!char_rank(who))
 			continue;
 
-		p_char(who)->rank = det_noble_rank_sup(who);
+		p_char(who)->rank = (schar) det_noble_rank_sup(who);
 	}
 	next_char;
 }
