@@ -296,7 +296,7 @@ target_include_directories(olympia-g3 PRIVATE olympia/ lib/)
 target_compile_features(olympia-g3 PRIVATE c_std_11)
 target_compile_options(olympia-g3 PRIVATE
     ${LEGACY_C_FLAGS} -Og -g
-    # Phase 1 - list triage - only pointer-cast errors
+    # Phase 1 - pointer-cast errors
     -Wint-to-pointer-cast -Werror=int-to-pointer-cast
     -Wpointer-to-int-cast -Werror=pointer-to-int-cast
     # Phase 2 - incompatible pointer types

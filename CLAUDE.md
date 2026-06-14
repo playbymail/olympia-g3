@@ -107,16 +107,17 @@ Scripts auto-detect the repo root and look for binaries at
 
 A phase ladder is being applied. What is actually *enforced* is the per-target
 `-Werror=` lines in each `target_compile_options` block. **G3 is earlier on the
-ladder than G1/G2, and enforcement is uneven across the three targets** — read
-the table literally. The full, current roadmap lives in the **GitHub issues**
+ladder than G1/G2, but as of Phase A (issue #11) all three targets now enforce a
+uniform Phases 1-4** — read the table literally. The full, current roadmap lives
+in the **GitHub issues**
 (epic #10, "bring olympia-g3 to G1/G2 64-bit parity", with the phase ladder
 extended past Phase 5 there); this table is the on-disk summary.
 
 | Phase | Scope | State | Issue |
 |-------|-------|-------|-------|
-| 1 | `int-to-pointer-cast`, `pointer-to-int-cast` | ✅ enforced on `olympia-g3` + `mapgen-g3`; ⬜ **not** on `island-g3` | — |
-| 2 | `incompatible-pointer-types` | ✅ enforced on `mapgen-g3`; ⬜ **not** on `olympia-g3` / `island-g3` | #11 (Phase A) |
-| 3 | `int-conversion` | ✅ enforced on `mapgen-g3`; ⬜ **not** on `olympia-g3` / `island-g3` | #11 (Phase A) |
+| 1 | `int-to-pointer-cast`, `pointer-to-int-cast` | ✅ enforced on **all three** targets | #11 (Phase A) ✅ |
+| 2 | `incompatible-pointer-types` | ✅ enforced on **all three** targets; all classes 0 | #11 (Phase A) ✅ |
+| 3 | `int-conversion` | ✅ enforced on **all three** targets; all classes 0 | #11 (Phase A) ✅ |
 | 3.5 | **Remove dead/unused source files** | ✅ done | — |
 | 4 | `strict-prototypes`, `missing-prototypes`, `implicit-function-declaration` | ✅ enforced on **all three** targets; all classes 0 | — |
 | 5 | `missing-declarations` + wire ASan/UBSan across all three targets | ⬜ wired (asan preset), not enforced | #13 (+ bug #3) |
@@ -133,25 +134,30 @@ extended past Phase 5 there); this table is the on-disk summary.
 > — write `BUILD_HISTORY.md` and refresh this file to mark modernization
 > complete. A standing **post-64-bit warning policy** is tracked in #9.
 
-The dangerous 32→64-bit hazards are now *largely* fenced off: **Phase 4 is done
-on all three targets** (`strict-prototypes` / `missing-prototypes` /
-`implicit-function-declaration` are `-Werror` and measure 0; the shared
-`-Wno-implicit-function-declaration` / `-Wno-deprecated-non-prototype`
-suppressions are deleted from `LEGACY_C_FLAGS`). `olympia-g3` still enforces
-**only Phase 1** for the *pointer* classes (its `target_compile_options` comment
-still says *"Phase 1 - list triage - only pointer-cast errors"*) — Phase 4 added
-the three prototype classes alongside it. So the remaining runway is: **(a)** ✅
-the pre-existing `olympia-g3` startup segfault is fixed — a full `-r -S` turn
-completes (the `plist`/`ilist` list-triage in GitHub issue #1); **(b)** ✅ the
-olympia golden gate is established and green (`tests/olympia/golden_check.sh`,
-Test section above); and **(c)** ⬜ **the next step — GitHub issue #11 (Phase A,
-under epic #10):** bring `olympia-g3` (and ideally `island-g3`) up to Phase 2/3
-parity by flipping `incompatible-pointer-types` and `int-conversion` to
-`-Werror` and fixing the fallout, keeping golden green at each step. `mapgen-g3`
-already enforces both and is the worked example. The related hardening track —
-GitHub issue #2 (retire the generic `plist` for element-typed lists, starting
-with `exit_views_list`), which made the issue-1 bug class a compile error — is
-**done and closed**.
+The dangerous 32→64-bit hazards are now fenced off uniformly: **Phases 1-4 are
+done on all three targets** (`int-to-pointer-cast` / `pointer-to-int-cast` /
+`incompatible-pointer-types` / `int-conversion` / `strict-prototypes` /
+`missing-prototypes` / `implicit-function-declaration` are `-Werror` and measure
+0 on `olympia-g3`, `mapgen-g3`, and `island-g3`; the shared `-Wno-*`
+suppressions for the prototype classes are deleted from `LEGACY_C_FLAGS`). The
+`olympia-g3` `target_compile_options` comment block now lists Phases 1-4
+explicitly. So the runway up to here is closed out: **(a)** ✅ the pre-existing
+`olympia-g3` startup segfault is fixed — a full `-r -S` turn completes (the
+`plist`/`ilist` list-triage in GitHub issue #1); **(b)** ✅ the olympia golden
+gate is established and green (`tests/olympia/golden_check.sh`, Test section
+above); and **(c)** ✅ **GitHub issue #11 (Phase A, under epic #10) is done:**
+`olympia-g3` gained Phase 2 (`incompatible-pointer-types`) + Phase 3
+(`int-conversion`) and `island-g3` gained Phases 1-3, so all three targets now
+match `mapgen-g3` at Phases 1-4. The Phase-2 fallout on `olympia-g3` was the
+`plist`/`ilist` hazard class again (`char **` post/order lists passed to
+`ilist_len` → switched to typed `cstrings_len`) plus 15 qsort comparators
+canonicalized to `(const void *, const void *)`; Phase 3 surfaced only the
+deferred GitHub issue #4 guard check (silenced behaviorally with an explicit
+cast, defect left for #4). The related hardening track — GitHub issue #2 (retire
+the generic `plist` for element-typed lists, starting with `exit_views_list`),
+which made the issue-1 bug class a compile error — is **done and closed**. **Next
+up: GitHub issue #12 (Step B)** — consolidate the per-target flags into one
+helper and drop the dead scaffolding.
 
 > **The sister G1 and G2 repos are done through Phase 4.** `../olympia-g1` and
 > `../olympia-g2` have both completed Phase 3.5 and Phase 4 — all three Phase-4
