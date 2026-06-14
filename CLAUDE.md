@@ -156,8 +156,11 @@ behind every locked-in flag, and the
 ### Known bugs deferred past the 64-bit effort
 
 Post-modernization tracks, intentionally **not** part of the phase ladder (full
-detail in [BUILD_HISTORY.md](BUILD_HISTORY.md#known-bugs-deferred-past-the-64-bit-effort)):
+detail in [BUILD_HISTORY.md](BUILD_HISTORY.md#known-bugs-deferred-past-the-64-bit-effort)).
 
-- **#4 (combat):** `construct_guard_fight_list`'s guard check compares `fight`
-  *pointers* to an int box-id (always -1). Fixing it **changes golden output** —
-  needs a deliberate re-baseline.
+All cleared: **#4** (combat guard-check pointer/int compare) is fixed with a
+proper `->unit` membership scan; **#19** (mapgen allocator) and **#20**
+(non-literal format strings) are resolved. The turn-1 golden fixtures don't
+exercise `construct_guard_fight_list`'s guard path, so the #4 fix left the
+manifest byte-identical — the corrected behavior is **not yet pinned by a
+regression fixture**.

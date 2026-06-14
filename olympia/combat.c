@@ -803,16 +803,26 @@ construct_guard_fight_list(int target, int attacker, fights_list l_a)
 			continue;
 
 /*
- *  GitHub issue #4 (deferred past the 64-bit effort): this passes the
- *  box-id 'i' where fights_lookup() wants a 'struct fight *', so the
- *  lookup compares fight pointers against a bogus pointer and is always
- *  -1 (the guard is never skipped).  The explicit (long) cast preserves
- *  that exact (buggy) behavior byte-for-byte while silencing
- *  -Wint-conversion; fixing the defect changes golden output and must be
- *  a deliberate re-baseline, not part of Phase A.
+ *  GitHub issue #4: skip a guard already present in the attacker's
+ *  fight list.  l_a holds 'struct fight *' elements keyed by ->unit, so
+ *  membership is a scan by unit box-id.  (The historic code passed the
+ *  box-id 'i' straight to fights_lookup(), which compares element
+ *  *pointers* to that integer and so never matched — the guard was never
+ *  skipped.  Fixing it changes combat resolution; the turn-1 golden
+ *  fixtures don't exercise this path, so the manifest is unchanged.)
  */
-		if (fights_lookup(l_a, (struct fight *)(long)i) >= 0)
-			continue;
+		{
+			int j, already = FALSE;
+
+			for (j = 0; j < fights_len(l_a); j++)
+				if (l_a[j]->unit == i)
+				{
+					already = TRUE;
+					break;
+				}
+			if (already)
+				continue;
+		}
 
 		add_fight_stack(&l, i, FALSE, TRUE);
 	}
