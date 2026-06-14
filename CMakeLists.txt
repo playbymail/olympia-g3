@@ -42,8 +42,11 @@ function(olympia_compile_flags tgt)
         -Wno-dangling-else
         -Wno-deprecated-declarations
         -Wno-extra-tokens
-        -Wno-format
-        -Wno-format-security
+        # -Wno-format / -Wno-format-security retired (Phase 9 / issue #7):
+        # format checking is now enforced below. The non-literal-format
+        # subclass (-Wformat-security / -Wformat-nonliteral) stays suppressed
+        # there (after -Wformat, which re-enables it) until a later hardening
+        # pass wraps the handful of out(who, sout(...)) sites.
         -Wno-incompatible-library-redeclaration
         -Wno-logical-not-parentheses
         -Wno-macro-redefined
@@ -93,6 +96,19 @@ function(olympia_compile_flags tgt)
         # were void-converted or given terminal returns, so the class is 0.
         -Wreturn-type -Werror=return-type
         -Wreturn-mismatch -Werror=return-mismatch
+        # Phase 9 (#7) - format-string / vararg checking. -Wno-format had
+        # suppressed the whole class engine-wide even though the printf-like
+        # wrappers (out/wout/wiout/sout/html, and now queue) carry
+        # __attribute__((format)). The worst subclass,
+        # -Wformat-insufficient-args (a bare %s with no data arg), deref's a
+        # garbage pointer — 8 bytes on LP64. Portable (GCC + Clang), so it
+        # stays in this section, NOT the Clang-only block below; the class is
+        # 0. -Wformat re-enables -Wformat-security, so the deferred
+        # non-literal-format sites are re-suppressed below — these MUST come
+        # after -Wformat and appear once (CMake de-dups earlier copies).
+        -Wformat -Werror=format
+        -Wno-format-security
+        -Wno-format-nonliteral
     )
 
     # Phase 6 (#14) - 64-bit width hazards, Clang-only half.
