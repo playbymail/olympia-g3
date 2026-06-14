@@ -45,6 +45,14 @@ typedef struct
 	int target_prob, prob;
 } terrain;
 
+/*
+ *  WARNING: these terrain glyphs ('p' plain, 'f' forest, 'm' mountain,
+ *  'd' desert, 's' swamp) are the map's shared vocabulary — mapgen reads the
+ *  very same symbols (see the case labels in mapgen/mapgen.c) when it turns a
+ *  map into locations.  Likewise '~'/'_' (water / continental shelf) below.
+ *  Any change to these characters must be coordinated with mapgen or the two
+ *  programs will disagree about what the map means.
+ */
 terrain terrains[] =
 {
 	{ 'p', 12, 30, 30, 0 },
@@ -62,6 +70,21 @@ static void make_shelf(
 	int x_size,
 	int shelf)
 {
+	/*
+	 *  POTENTIAL BUG: we rewrite water ('~') to a continental-shelf marker
+	 *  ('_') purely for island's own convenience, and this marker is printed
+	 *  verbatim into the output map (see the print loop near the end of main).
+	 *  Two problems if that map is then fed to mapgen:
+	 *    1. mapgen has no case for '_': its terrain switch hits the default
+	 *       arm, prints "unknown terrain _", and assert(FALSE) aborts.
+	 *    2. The water glyphs are NOT interchangeable in mapgen — '~' sets
+	 *       sea_lane=TRUE, and '.'/' '/':'/'"'/etc. carry distinct ocean
+	 *       semantics. Collapsing '~' to '_' destroys any distinction a map
+	 *       author used to separate or mark adjacent water regions.
+	 *  Either restore '_' back to a glyph mapgen understands before printing,
+	 *  or teach mapgen about '_'. Any change here must be coordinated with
+	 *  mapgen's terrain handling.
+	 */
 	if (map[y][x] == '~')
 		map[y][x] = '_';
 	if (shelf < 1)
