@@ -18,6 +18,7 @@ struct fight;
 struct harvest;
 struct make;
 struct wield;
+struct rng_stream;	/* lib/rng.h -- pointer-only in prototypes below */
 
 /* olympia/add.c */
 extern void add_new_players(void);
@@ -465,7 +466,7 @@ extern void auto_undead(int who);
 
 /* olympia/npc.c */
 extern int controlled_humans_here(int where);
-extern int create_peasant_mob(int where);
+extern int create_peasant_mob(int where, struct rng_stream *rng);
 extern struct exit_view *choose_npc_direction(int who, int where, int dir);
 extern struct exit_view *get_exit_dir(exit_views_list l, int dir);
 extern void faery_attack_check(int who, int where);

@@ -2,6 +2,7 @@
 #include	<stdio.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
 
 
 int
@@ -514,7 +515,7 @@ do_cookie_npc(int who, int where, int cookie, int place)
 
 
 int
-create_peasant_mob(int where)
+create_peasant_mob(int where, rng_stream *rng)
 {
 	int new;
 
@@ -523,7 +524,8 @@ create_peasant_mob(int where)
 	if (new <= 0)
 		return 0;
 
-	set_name(new, rnd(1,2) == 1 ? "Mob" : "Crowd");
+	/* issue #25: name draw on the per-pillage stream (caller's). */
+	set_name(new, rng_draw(rng, 1, 2) == 1 ? "Mob" : "Crowd");
 
 	queue(new, "guard 1");
 	init_load_sup(new);   /* make ready to execute commands immediately */
