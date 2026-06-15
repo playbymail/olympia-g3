@@ -107,7 +107,7 @@ xMD5Update(struct xMD5Context *ctx, byte const *buf, int len)
 	byteSwap(ctx->in, 16);
 	xMD5Transform(ctx->buf, ctx->in);
 	buf += (unsigned)t;
-	len -= (unsigned)t;
+	len -= (int)t;		/* t in [1,64], len >= t here; (int) keeps GCC's -Wsign-conversion quiet */
 
 	/* Process data in 64-byte chunks */
 	while (len >= 64) {

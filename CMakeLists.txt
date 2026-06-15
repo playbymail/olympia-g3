@@ -107,6 +107,13 @@ function(olympia_compile_flags tgt)
         # wrapped the deferred non-literal sites so the full class now enforces
         # with no sub-suppression.
         -Wformat -Werror=format
+        # -Wformat re-enables -Wformat-zero-length, a GCC sub-warning (Clang
+        # does not error on it) that flags the engine's intentional empty-format
+        # blank-line idiom -- wout(who, "") / out(who, "") -- at ~140 sites
+        # across 25 files. It is not a vararg/type hazard (the Phase 9 target),
+        # just a legacy idiom we are not chasing, so suppress it AFTER -Wformat.
+        # Portable spelling (both compilers recognize it; no-op on Clang).
+        -Wno-format-zero-length
     )
 
     # Phase 6 (#14) - 64-bit width hazards, Clang-only half.
@@ -135,6 +142,20 @@ function(olympia_compile_flags tgt)
             -Wshorten-64-to-32 -Werror=shorten-64-to-32
             -Wimplicit-int-conversion -Werror=implicit-int-conversion
             -Wreturn-mismatch -Werror=return-mismatch
+        )
+    endif()
+
+    # GCC-only half. -Wformat-overflow is a GCC fortify-style heuristic (no Clang
+    # equivalent) that -Wformat pulls in; it flags the legacy fixed-buffer sprintf
+    # idiom (sprintf into char[LEN] with %s of an unprovable length, e.g. the
+    # main.c html/.htaccess path builders). These are not 64-bit hazards and the
+    # paths are short in practice; converting the codebase's sprintf sites to
+    # snprintf is a separate cleanup track, not this one. Suppress GCC-only --
+    # the spelling is unknown to Clang, so it must sit behind this guard (mirror
+    # of the Clang-only block above). Placed after -Wformat, which enables it.
+    if (CMAKE_C_COMPILER_ID MATCHES "GNU")
+        target_compile_options(${tgt} PRIVATE
+            -Wno-format-overflow
         )
     endif()
 endfunction()
