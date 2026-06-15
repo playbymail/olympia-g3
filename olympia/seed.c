@@ -404,6 +404,8 @@ seed_city_trade(int where)
 
 	clear_all_trades(where);
 
+	begin_economy(where);		/* issue #25: per-market RNG stream */
+
 	if (in_hades(where))
 	{
 		return;
@@ -418,19 +420,19 @@ seed_city_trade(int where)
 		return;
 	}
 
-	if (rnd(1,2) == 1)
+	if (econ_pick(item_pot, where, 1, 2) == 1)
 		add_city_trade(where, CONSUME, item_pot, 17, 7, 0);
 	else
 		add_city_trade(where, CONSUME, item_basket, 30, 4, 0);
 
 	if (in_faery(where))		/* seed Faery city trade */
 	{
-		if (rnd(1,2) == 1)
+		if (econ_pick(item_lana_bark, where, 1, 2) == 1)
 			add_city_trade(where, PRODUCE, item_lana_bark, 3, 50, 0);
 		else
 			add_city_trade(where, PRODUCE, item_avinia_leaf, 10, 35, 0);
 
-		if (rnd(1,2) == 1)
+		if (econ_pick(item_yew, where, 1, 2) == 1)
 			add_city_trade(where, PRODUCE, item_yew, 5, 100, 0);
 		else
 			add_city_trade(where, PRODUCE, item_mallorn_wood, 5, 200, 0);
@@ -438,10 +440,10 @@ seed_city_trade(int where)
 
 		add_city_trade(where, CONSUME, item_mithril, 10, 500, 0);
 
-		if (rnd(1,2) == 1)
+		if (econ_stock(item_gate_crystal, where, 1, 2) == 1)
 			add_city_trade(where, CONSUME, item_gate_crystal, 2, 1000, 0);
 
-		if (rnd(1,2) == 1)
+		if (econ_stock(item_pegasus, where, 1, 2) == 1)
 			add_city_trade(where, PRODUCE, item_pegasus, 1, 1000, 0);
 
 		loc_trade_sup(where, TRUE);
@@ -457,29 +459,29 @@ seed_city_trade(int where)
 	if (prov_kind == sub_plain)
 	{
 		add_city_trade(where, PRODUCE, item_ox, 5, 100, 0);
-		qty = rnd(2,3);
-		cst = rnd(20,30);
+		qty = econ_qty(item_riding_horse, where, 2, 3);
+		cst = econ_cost(item_riding_horse, where, 20, 30);
 		add_city_trade(where, PRODUCE, item_riding_horse, qty, cst * 5, 0);
 		add_city_trade(where, CONSUME, item_riding_horse, qty, cst * 5 / 2, 0);
 	}
-	else if (rnd(1,3) == 1)
+	else if (econ_stock(item_hide, where, 1, 3) == 1)
 	{
-		qty = rnd(3,6);		/* sequenced: C leaves arg eval order */
-		cst = rnd(125,135);	/* unspecified, so two rnd() args desync */
+		qty = econ_qty(item_hide, where, 3, 6);	  /* keyed leaf draws -- */
+		cst = econ_cost(item_hide, where, 125, 135); /* order-independent  */
 		add_city_trade(where, CONSUME, item_hide, qty, cst, 0);
 	}
 
 	if (prov_kind == sub_mountain)
 	{
-		qty = rnd(1,2);
-		cst = rnd(25,30);
+		qty = econ_qty(item_iron, where, 1, 2);
+		cst = econ_cost(item_iron, where, 25, 30);
 		add_city_trade(where, PRODUCE, item_iron, qty, cst, 0);
 		add_city_trade(where, CONSUME, item_iron, qty, cst / 2, 0);
 	}
 
 	if (prov_kind == sub_forest)
 	{
-		cst = rnd(11,15);
+		cst = econ_cost(item_lumber, where, 11, 15);
 		add_city_trade(where, PRODUCE, item_lumber, 25, cst, 0);
 		add_city_trade(where, CONSUME, item_lumber, 25, cst / 2, 0);
 	}

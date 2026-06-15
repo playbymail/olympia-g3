@@ -4,6 +4,83 @@
 #include	<stdio.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
+
+
+/*
+ *  Issue #25: economy/market draws -- city trade seeding (seed_city_trade in
+ *  seed.c), the per-turn suffuse-ring restock, and the FIND BUY/SELL trade
+ *  goods -- draw from a per-market RNG stream instead of the global rnd()
+ *  serial stream. The stream is derived from the immutable master seed + turn +
+ *  market location, so a city's trade rolls are addressable and no longer
+ *  depend on how many global draws preceded them: a change to an unrelated
+ *  subsystem can no longer perturb a market. begin_economy(where) reseeds it per
+ *  market; the econ_*() helpers are keyed leaf draws (rng_keyed) so inserting or
+ *  removing one market roll cannot move a sibling roll (the leaf key is
+ *  (item, where, purpose), as recommended in doc/rng-state-granularity.md).
+ *
+ *  Deliberately left on the global rnd(): the non-market city seeding that runs
+ *  in the same INIT pass -- skill teaching and prominence (seed_city_skill /
+ *  choose_city_prominence) and garrisons (add_city_garrisons) -- and the
+ *  production/skill player commands in produce.c; none are market-specific.
+ *  The md5_int() buyer test in d_find_buy() (below) is already a keyed leaf and
+ *  is intentionally turn-INDEPENDENT -- the set of buyer cities must be stable
+ *  across turns -- so it stays as-is rather than moving onto the turn-keyed
+ *  stream.
+ */
+static rng_stream economy_rng;
+
+#define	TAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_ECONOMY	0x65636f6eu	/* "econ" */
+
+/* economy leaf-draw purpose tags (kept private, like combat.c's stream tags) */
+#define	ETAG_PICK	0x7069636bu	/* "pick" -- choose one of several goods  */
+#define	ETAG_STOCK	0x73746f6bu	/* "stok" -- does the market carry a good */
+#define	ETAG_QTY	0x716e7479u	/* "qnty" -- quantity offered             */
+#define	ETAG_COST	0x636f7374u	/* "cost" -- price                        */
+#define	ETAG_EXPIRE	0x65787072u	/* "expr" -- expiry countdown             */
+
+void
+begin_economy(int where)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	economy_rng = rng_stream_of(&turn, where, TAG_ECONOMY);
+}
+
+int
+econ_pick(int item, int where, int low, int high)
+{
+	return rng_keyed(&economy_rng, item, where, ETAG_PICK, low, high);
+}
+
+int
+econ_stock(int item, int where, int low, int high)
+{
+	return rng_keyed(&economy_rng, item, where, ETAG_STOCK, low, high);
+}
+
+int
+econ_qty(int item, int where, int low, int high)
+{
+	return rng_keyed(&economy_rng, item, where, ETAG_QTY, low, high);
+}
+
+int
+econ_cost(int item, int where, int low, int high)
+{
+	return rng_keyed(&economy_rng, item, where, ETAG_COST, low, high);
+}
+
+int
+econ_expire(int item, int where, int low, int high)
+{
+	return rng_keyed(&economy_rng, item, where, ETAG_EXPIRE, low, high);
+}
 
 
 /*
@@ -1049,7 +1126,9 @@ trade_suffuse_ring(int where)
 	}
 	next_trade;
 
-	if (found || rnd(1,3) < 3)
+	begin_economy(where);
+
+	if (found || econ_stock(sub_suffuse_ring, where, 1, 3) < 3)
 		return;
 
 	item = new_suffuse_ring(where);
@@ -1057,7 +1136,7 @@ trade_suffuse_ring(int where)
 	new = new_trade(where, SELL, item);
 
 	new->qty = 1;
-	new->cost = 450 + rnd(0,12) * 50;
+	new->cost = 450 + econ_cost(sub_suffuse_ring, where, 0, 12) * 50;
 	new->cloak = FALSE;
 }
 
@@ -1191,13 +1270,17 @@ new_tradegood(int where)
 	int already;
 	struct tradegood_ent *t;
 	int i;
+	int attempt = 0;
 
 	assert(subkind(where) == sub_city);
+
+	begin_economy(where);
 
 	l = tradegoods_for_sale(where);
 
 	do {
-		t = &tradegoods[rnd(0, sizeof(tradegoods) /
+		t = &tradegoods[rng_keyed(&economy_rng, where, attempt++,
+				ETAG_PICK, 0, sizeof(tradegoods) /
 				sizeof(struct tradegood_ent) - 2)];
 
 		/* pick a tradegood with a different name */
@@ -1278,18 +1361,20 @@ d_find_sell(struct command *c)
 	}
 	ilist_reclaim(&l);
 
+	begin_economy(where);
+
 	item = new_tradegood(where);
 
-	qty = rnd(25, 50);
+	qty = econ_qty(item, where, 25, 50);
 
 	/* cost is 0-50% over base price */
 
 	cost = item_price(item);
-	cost = cost + cost * rnd(0,5) * 10 / 100;
+	cost = cost + cost * econ_cost(item, where, 0, 5) * 10 / 100;
 
 	t = add_city_trade(where, PRODUCE, item, qty, cost, 0);
 
-	t->expire = rnd(25,37);
+	t->expire = econ_expire(item, where, 25, 37);
 
 	wout(c->who, "%s sells %s at %s.",
 				box_name(where),
@@ -1452,7 +1537,9 @@ d_find_buy(struct command *c)
  *  2000-3000 gold profit
  */
 
-	cost = t->cost + rnd(200,300)*10/t->qty;
+	begin_economy(where);
+
+	cost = t->cost + econ_cost(item, where, 200, 300)*10/t->qty;
 
 	tt = add_city_trade(where, CONSUME, item, qty, cost, 0);
 
