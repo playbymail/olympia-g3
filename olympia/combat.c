@@ -815,6 +815,23 @@ construct_fight_list(int target, int attacker, int add_allies, int is_defender)
 }
 
 
+/*
+ *  Is 'unit' (a character box-id) already present in fight list 'l'?
+ *  Scans the FK_noble entries, which key ->unit to a character box-id.
+ */
+
+static int
+contains_unit(fights_list l, int unit)
+{
+	int i;
+
+	for (i = 0; i < fights_len(l); i++)
+		if (l[i]->kind == FK_noble && l[i]->unit == unit)
+			return 1;
+	return 0;
+}
+
+
 static fights_list
 construct_guard_fight_list(int target, int attacker, fights_list l_a)
 {
@@ -844,18 +861,8 @@ construct_guard_fight_list(int target, int attacker, fights_list l_a)
  *  skipped.  Fixing it changes combat resolution; the turn-1 golden
  *  fixtures don't exercise this path, so the manifest is unchanged.)
  */
-		{
-			int j, already = FALSE;
-
-			for (j = 0; j < fights_len(l_a); j++)
-				if (l_a[j]->unit == i)
-				{
-					already = TRUE;
-					break;
-				}
-			if (already)
-				continue;
-		}
+		if (contains_unit(l_a, i))
+			continue;
 
 		add_fight_stack(&l, i, FALSE, TRUE);
 	}
