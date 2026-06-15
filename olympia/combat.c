@@ -27,8 +27,19 @@
  */
 static rng_stream combat_rng;
 
+/*
+ *  Issue #25: the pillage loot/mob path (d_pillage) draws from its own
+ *  per-pillage stream, a sibling of combat_rng under the same turn root but
+ *  with a distinct tag so it cannot collide with the battle stream at the same
+ *  (turn, location). begin_pillage() reseeds it at the top of d_pillage; prnd()
+ *  replaces rnd() at the mob-formation sites. The shared NPC troop-count draw
+ *  (do_cookie_npc) stays on the global rnd() -- it is not pillage-specific.
+ */
+static rng_stream pillage_rng;
+
 #define	TAG_TURN	0x7475726eu	/* "turn" */
 #define	TAG_COMBAT	0x636f6d62u	/* "comb" */
+#define	TAG_PILLAGE	0x70696c6cu	/* "pill" */
 
 static void
 begin_battle(int where)
@@ -46,6 +57,24 @@ static int
 crnd(int low, int high)
 {
 	return rng_draw(&combat_rng, low, high);
+}
+
+static void
+begin_pillage(int where)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	pillage_rng = rng_stream_of(&turn, where, TAG_PILLAGE);
+}
+
+static int
+prnd(int low, int high)
+{
+	return rng_draw(&pillage_rng, low, high);
 }
 
 
@@ -2862,6 +2891,8 @@ d_pillage(struct command *c)
 		return FALSE;
 	}
 
+	begin_pillage(where);	/* issue #25: reseed the per-pillage stream */
+
 	amount = has;
 	consume_item(where, item_tax_cookie, amount);
 	gen_item(c->who, item_gold, amount);
@@ -2881,17 +2912,17 @@ d_pillage(struct command *c)
 	else
 		wout(where, "%s loots the countryside.", box_name(c->who));
 
-	if (rnd(1,3) == 1)
-		mob = create_peasant_mob(where);
+	if (prnd(1,3) == 1)
+		mob = create_peasant_mob(where, &pillage_rng);
 
 	if (mob)
 	{
-		wout(c->who, "%s has formed to resist pillaging.",	
+		wout(c->who, "%s has formed to resist pillaging.",
 							liner_desc(mob));
 		wout(where, "%s has formed to resist pillaging.",
 							liner_desc(mob));
 
-		if (rnd(1,3) == 1)
+		if (prnd(1,3) == 1)
 			queue(mob, "attack %s", box_code_less(c->who));
 	}
 

@@ -142,8 +142,46 @@ tree, `tests/olympia/regress/guard-pillage/` (a pillager-vs-guard battle).
 This first migration used **per-stream isolation** (sequential `rng_draw` within
 a battle), not fully keyed leaf draws — the smaller-churn option that already
 delivers cross-subsystem isolation. Keyed leaf draws (`rng_keyed`) remain a
-future refinement. The pillage *loot* rolls (`d_pillage`) stay on the global
-stream for now — they are not battle resolution.
+future refinement.
+
+## Second consumer: pillage loot/mob path
+
+The pillage path (`d_pillage`) is the next subsystem migrated. It is a sibling of
+the combat stream, derived under the same turn root but with a distinct tag:
+
+```
+turn seed
+  ├─ (location, TAG_COMBAT)  → combat_rng  (battle resolution)
+  └─ (location, TAG_PILLAGE) → pillage_rng (loot/mob draws)
+```
+
+`begin_pillage(where)` reseeds `pillage_rng` at the top of `d_pillage` (after the
+men/loot early-outs); `prnd()` (`rng_draw` on that stream) replaces the two
+mob-formation `rnd()` calls (does a peasant mob form, does it queue an attack).
+The mob's **name** draw — in `create_peasant_mob()` (`olympia/npc.c`), which has
+exactly one caller — was migrated too: the function now takes the pillage stream
+as a parameter (`create_peasant_mob(where, &pillage_rng)`) and draws via
+`rng_draw`. Distinct tags mean a pillage and a battle at the **same**
+`(turn, location)` draw from independent streams.
+
+**Known residual coupling.** The mob's *troop count* draw lives in the shared
+`do_cookie_npc()` (`npc.c:508`), which also backs undead / storm / savage
+spawning — so it stays on the global `rnd()` for now. A pillage that *forms a
+mob* therefore still has one globally-coupled draw; full hermeticity folds into a
+later NPC/cookie-creation migration. The pillage-specific draws (form, attack,
+name) are fully isolated.
+
+Like combat, this is **byte-neutral on the 206-file main manifest** (the bare-map
+standard turn runs no pillage). It moved the pillage *reports* in the
+`guard-pillage` tree (`save/1/300`, `save/1/301`) — a deliberate one-time
+re-baseline of that subsystem's own golden tree; final faction state
+(`fact/300`, `fact/301`) and the battle dice were unchanged.
+
+Threading `struct rng_stream *` into a `proto.h` prototype required naming the
+formerly-anonymous `rng_stream` struct tag (`lib/rng.h`) and forward-declaring
+`struct rng_stream;` in `proto.h` (which `oly.h` includes before any TU pulls in
+`rng.h`) — pointer-only, matching proto.h's existing private-struct forward-decl
+convention.
 
 ### Aside: issue #4 is unreachable, not just uncovered
 
@@ -170,7 +208,9 @@ dead code; no black-box fixture can distinguish it. See
 - `olympia/io.c:2740` (load) / `olympia/io.c:2894` (save).
 - `tests/olympia/golden/manifest.sha256` — the 206-file all-or-nothing manifest.
 - `lib/rng.{c,h}`, `tests/rng/` — the seam and its self-check.
-- `olympia/combat.c` — `begin_battle()`/`crnd()`, the first consumer.
+- `olympia/combat.c` — `begin_battle()`/`crnd()` (combat) and
+  `begin_pillage()`/`prnd()` (pillage), the first two consumers;
+  `olympia/npc.c` `create_peasant_mob()` (pillage name draw).
 - `tests/olympia/regress/guard-pillage/` — the combat golden tree (and the
   #4-unreachability write-up).
 - [agentic-project-ultron.md](agentic-project-ultron.md) — the coverage

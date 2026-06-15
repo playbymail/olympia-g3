@@ -29,7 +29,7 @@
  *  sequentially with rng_draw(), or draw position-independently with
  *  rng_keyed().
  */
-typedef struct {
+typedef struct rng_stream {
 	uint32_t seed[4];
 	uint32_t counter;
 } rng_stream;

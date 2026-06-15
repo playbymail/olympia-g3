@@ -5,6 +5,16 @@ pins the result. It is the first golden tree that exercises the **combat
 resolution path** and, with it, the **per-battle keyed RNG** introduced for
 issue #25 (`lib/rng.{c,h}`; `begin_battle()`/`crnd()` in `olympia/combat.c`).
 
+It also pins the **second** issue #25 consumer: the **pillage loot/mob path**
+(`d_pillage`), migrated onto its own per-pillage stream
+(`begin_pillage()`/`prnd()` in `combat.c`, plus the mob-name draw in
+`create_peasant_mob()`, `olympia/npc.c`) — a sibling of the battle stream keyed
+on `(master seed, turn, location, TAG_PILLAGE)`. The mob's troop-count draw
+(shared `do_cookie_npc`) is the one pillage draw still on the global `rnd()`; see
+`doc/rng-state-granularity.md`. This migration moved the pillage *reports*
+(`save/1/300`, `save/1/301`) once — the committed `EXPECT.sha256` is the
+re-baselined result — while the battle dice and `fact/{300,301}` were unchanged.
+
 ## The scenario
 
 Built by `build-scenario.sh` from the bare-map fixture
