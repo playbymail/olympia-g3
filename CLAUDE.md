@@ -200,8 +200,8 @@ the addressable seam is `lib/rng.{c,h}`
 phase order the driver walks, and which draws are keyed vs still on the global
 stream — see [doc/turn-execution-order.md](doc/turn-execution-order.md).
 
-**Seven consumers landed so far: combat, pillage, economy/market, npc, weather,
-upkeep, quest.** Each reseeds a stream off the turn root (`rng_master_seed()` →
+**Eight consumers landed so far: combat, pillage, economy/market, npc, weather,
+upkeep, quest, explore.** Each reseeds a stream off the turn root (`rng_master_seed()` →
 turn → its own 4-char tag) and draws from it instead of the global `rnd()`:
 
 - **combat** — per-battle stream on `(turn, location)`, `begin_battle()`/`crnd()`
@@ -239,6 +239,18 @@ turn → its own 4-char tag) and draws from it instead of the global `rnd()`:
   (`d_quest`) or the actor (`v_use_bta_skull`) — there is no first-class quest
   entity. Shared infra on the path (`new_char`/`gen_item`/`create_unique_item`/
   `new_orb`/`create_npc_token`) stays global; `quest_decay` draws nothing.
+- **explore** — **one per-turn** stream (tag `expl`), seeded once via the
+  turn-guarded `begin_explore()` (`c1.c`); keyed-leaf helpers `expl_find`/
+  `expl_gate`/`expl_flavor`/`expl_pick` (EXPLORE command, `c1.c`) and
+  `expl_seek`/`expl_detect` (SEEK detect, `stealth.c` `d_seek`, exposed via
+  `proto.h`). The upkeep model (keyed leaves, actor in the leaf key `k1`) because
+  the draws are scattered across two files with no per-actor chokepoint and one
+  actor may issue EXPLORE *and* SEEK in a turn. **Boundary decisions:** `tunnel.c`
+  dungeon/subworld generation is **deferred to worldgen (step 11)** — pure
+  world-gen, fires at INIT, no actor, and the engine's largest draw set
+  (~409,727 `rnd()`/build), so migrating it would force a main-manifest +
+  `scenario.tgz` re-baseline for no command-fixture benefit; `stealth.c`'s
+  TORTURE/PETTY THIEF are **deferred to skills (step 9)** as skill commands.
 
 Combat and pillage were **byte-neutral on the main manifest** (the bare-map turn
 runs no combat/pillage); economy, npc, and weather each ran on the standard turn
@@ -250,12 +262,15 @@ inventory items, so its nobles afford maintenance and stay at full health — so
 took no re-baseline. **Quest is byte-neutral on *both* trees too** (the same
 profile): every quest draw is command-only and neither tree issues a QUEST/USE
 command, and the only world-init quest call (`create_relics`) draws nothing — so
-no re-baseline and no `scenario.tgz` regeneration.
+no re-baseline and no `scenario.tgz` regeneration. **Explore is byte-neutral on
+*both* trees too** (the quest/upkeep profile): every explore draw is command-only,
+neither tree issues an EXPLORE/SEEK command, and none fire at world-init — so no
+re-baseline and no `scenario.tgz` regeneration.
 Combat/pillage/npc/weather/upkeep behavior is pinned by its own golden tree,
 [tests/olympia/regress/guard-pillage](tests/olympia/regress/guard-pillage)
 (the **second** standing regress alongside secret-sea-route). Remaining
-subsystems (explore, skills, magic, worldgen, regions, mint) stay on the global
-`rnd()`; the migration
+subsystems (skills, magic, worldgen — which absorbs `tunnel.c` dungeon-gen —
+regions, mint) stay on the global `rnd()`; the migration
 order and per-subsystem keying live in
 [doc/rng-state-granularity.md](doc/rng-state-granularity.md), and a PCG32
 generator swap stays deferred behind the TAG 64-bit work.

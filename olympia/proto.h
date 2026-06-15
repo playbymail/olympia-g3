@@ -167,6 +167,8 @@ extern void match_trades(int who);
 extern void trade_suffuse_ring(int where);
 
 /* olympia/c1.c */
+extern int expl_seek(int who, int target);		/* issue #25: per-turn explore RNG stream */
+extern int expl_detect(int who, int cand);
 extern char *parse_wait_args(struct command *c);
 extern int d_add_ram(struct command *c);
 extern int d_explore(struct command *c);
