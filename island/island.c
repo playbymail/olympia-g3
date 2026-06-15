@@ -49,7 +49,14 @@ typedef struct
  *  WARNING: these terrain glyphs ('p' plain, 'f' forest, 'm' mountain,
  *  'd' desert, 's' swamp) are the map's shared vocabulary — mapgen reads the
  *  very same symbols (see the case labels in mapgen/mapgen.c) when it turns a
- *  map into locations.  Likewise '~'/'_' (water / continental shelf) below.
+ *  map into locations.  The same applies to the OCEAN glyphs: the author may
+ *  seed the starting map with any glyph mapgen treats as ocean —
+ *  ';' ',' ':' '.' '~' ' ' '"' '\'' (the ';' ':' '~' '"' variants become sea
+ *  lanes in mapgen; sea lanes are assigned later, but the glyph is still ocean).
+ *  The input classifier in main() must recognize that whole set as water, or
+ *  island will mistake an author's ocean for land.  '_' is NOT part of this
+ *  vocabulary: it is island's private continental-shelf marker, used only in
+ *  the `working` scratch grid and never printed (see make_shelf).
  *  Any change to these characters must be coordinated with mapgen or the two
  *  programs will disagree about what the map means.
  */
@@ -63,7 +70,7 @@ terrain terrains[] =
 };
 
 static void make_shelf(
-	char map[][MAX_MAP],
+	char working[][MAX_MAP],
 	int y,
 	int x,
 	int y_size,
@@ -71,33 +78,27 @@ static void make_shelf(
 	int shelf)
 {
 	/*
-	 *  POTENTIAL BUG: we rewrite water ('~') to a continental-shelf marker
-	 *  ('_') purely for island's own convenience, and this marker is printed
-	 *  verbatim into the output map (see the print loop near the end of main).
-	 *  Two problems if that map is then fed to mapgen:
-	 *    1. mapgen has no case for '_': its terrain switch hits the default
-	 *       arm, prints "unknown terrain _", and assert(FALSE) aborts.
-	 *    2. The water glyphs are NOT interchangeable in mapgen — '~' sets
-	 *       sea_lane=TRUE, and '.'/' '/':'/'"'/etc. carry distinct ocean
-	 *       semantics. Collapsing '~' to '_' destroys any distinction a map
-	 *       author used to separate or mark adjacent water regions.
-	 *  Either restore '_' back to a glyph mapgen understands before printing,
-	 *  or teach mapgen about '_'. Any change here must be coordinated with
-	 *  mapgen's terrain handling.
+	 *  Mark water ('~') within `shelf` squares of a land square as '_', the
+	 *  continental-shelf exclusion marker, so new-island placement keeps clear
+	 *  of existing land.  '_' is INTERNAL scratch state: it is written only into
+	 *  the `working` classification grid (never the output `map`), and is read
+	 *  back implicitly by the distance-from-land pass, which only propagates
+	 *  through '~' cells -- a '_' cell gets distance 0 and is never chosen as an
+	 *  island seed.  It is therefore never printed and never reaches mapgen.
 	 */
-	if (map[y][x] == '~')
-		map[y][x] = '_';
+	if (working[y][x] == '~')
+		working[y][x] = '_';
 	if (shelf < 1)
 		return;
-	
+
 	if (y > 0)
-		make_shelf(map, y - 1, x, y_size, x_size, shelf - 1);
+		make_shelf(working, y - 1, x, y_size, x_size, shelf - 1);
 	if (y < y_size - 1)
-		make_shelf(map, y + 1, x, y_size, x_size, shelf - 1);
+		make_shelf(working, y + 1, x, y_size, x_size, shelf - 1);
 	if (x > 0)
-		make_shelf(map, y, x - 1, y_size, x_size, shelf - 1);
+		make_shelf(working, y, x - 1, y_size, x_size, shelf - 1);
 	if (x < x_size - 1)
-		make_shelf(map, y, x + 1, y_size, x_size, shelf - 1);
+		make_shelf(working, y, x + 1, y_size, x_size, shelf - 1);
 
 	return;
 }
@@ -206,16 +207,28 @@ int main(int argc, char *argv[])
 
 	load_seed("randseed");
 
-	/* Divide the map into available and unavailable space */
-	/* Only count ,. ' chars as available */
+	/* Divide the map into available (water) and unavailable (land) space. */
+	/*
+	 *  Water is any glyph mapgen treats as ocean -- the author may seed the
+	 *  initial map with any of them (sea-lane variants included; sea lanes are
+	 *  assigned later, but the glyph is still ocean to mapgen).  This set MUST
+	 *  match mapgen's ocean cases (see the coordination note above terrains[]):
+	 *    ';' ','  ':' '.'  '~' ' '  '"' '\''
+	 *  The original map glyph is preserved verbatim in the output; `working` is
+	 *  only a scratch classification for island placement.
+	 */
 	for (y = 0; y < y_size; y++)
 		for (x = 0; x < x_size; x++)
 		{
 			switch (map[y][x])
 			{
+				case ';':
 				case ',':
+				case ':':
 				case '.':
+				case '~':
 				case ' ':
+				case '"':
 				case '\'':
 					working[y][x] = '~';
 					break;
