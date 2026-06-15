@@ -6,6 +6,7 @@
 #else
 #include	<sys/stat.h>
 #include	<unistd.h>
+#include	<getopt.h>	/* getopt() -- glibc hides it from <unistd.h> under -std=c11 */
 #endif
 #include	"z.h"
 #include	"oly.h"

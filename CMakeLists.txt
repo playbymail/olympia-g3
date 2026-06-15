@@ -107,6 +107,13 @@ function(olympia_compile_flags tgt)
         # wrapped the deferred non-literal sites so the full class now enforces
         # with no sub-suppression.
         -Wformat -Werror=format
+        # -Wformat re-enables -Wformat-zero-length, a GCC sub-warning (Clang
+        # does not error on it) that flags the engine's intentional empty-format
+        # blank-line idiom -- wout(who, "") / out(who, "") -- at ~140 sites
+        # across 25 files. It is not a vararg/type hazard (the Phase 9 target),
+        # just a legacy idiom we are not chasing, so suppress it AFTER -Wformat.
+        # Portable spelling (both compilers recognize it; no-op on Clang).
+        -Wno-format-zero-length
     )
 
     # Phase 6 (#14) - 64-bit width hazards, Clang-only half.
@@ -135,6 +142,20 @@ function(olympia_compile_flags tgt)
             -Wshorten-64-to-32 -Werror=shorten-64-to-32
             -Wimplicit-int-conversion -Werror=implicit-int-conversion
             -Wreturn-mismatch -Werror=return-mismatch
+        )
+    endif()
+
+    # GCC-only half. -Wformat-overflow is a GCC fortify-style heuristic (no Clang
+    # equivalent) that -Wformat pulls in; it flags the legacy fixed-buffer sprintf
+    # idiom (sprintf into char[LEN] with %s of an unprovable length, e.g. the
+    # main.c html/.htaccess path builders). These are not 64-bit hazards and the
+    # paths are short in practice; converting the codebase's sprintf sites to
+    # snprintf is a separate cleanup track, not this one. Suppress GCC-only --
+    # the spelling is unknown to Clang, so it must sit behind this guard (mirror
+    # of the Clang-only block above). Placed after -Wformat, which enables it.
+    if (CMAKE_C_COMPILER_ID MATCHES "GNU")
+        target_compile_options(${tgt} PRIVATE
+            -Wno-format-overflow
         )
     endif()
 endfunction()
@@ -292,6 +313,11 @@ target_include_directories(olympia-g3 PRIVATE olympia/ lib/)
 target_compile_features(olympia-g3 PRIVATE c_std_11)
 olympia_compile_flags(olympia-g3)
 
+# The engine uses sqrt/ceil/... (hades.c, report.c, ...). Linux/GCC needs the
+# math library linked explicitly; macOS folds libm into libSystem but tolerates
+# -lm. Only the olympia/ tree pulls math, so mapgen-g3/island-g3 don't need it.
+target_link_libraries(olympia-g3 PRIVATE m)
+
 # Optional ASan/UBSan via the asan-ubsan preset (OLYMPIA_SANITIZE=ON).
 olympia_enable_sanitizers(olympia-g3)
 
@@ -358,4 +384,4 @@ target_include_directories(olyscript-g3 PRIVATE olympia/ lib/ third_party/lua)
 target_compile_features(olyscript-g3 PRIVATE c_std_11)
 olympia_compile_flags(olyscript-g3)
 olympia_enable_sanitizers(olyscript-g3)
-target_link_libraries(olyscript-g3 PRIVATE lua_vendored)
+target_link_libraries(olyscript-g3 PRIVATE lua_vendored m)
