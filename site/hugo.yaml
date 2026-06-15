@@ -1,0 +1,76 @@
+# Olympia G3 documentation site (Hugo + Hextra).
+#
+# Served under the /docs path of the production domain, so baseURL carries the
+# /docs/ suffix and all internal links MUST be path-aware (relref/relURL) so
+# they resolve correctly under /docs/.
+baseURL: https://olympia-g3.pbbgaming.com/docs/
+title: Olympia G3
+
+# Hextra is wired in as a Hugo Module (see go.mod). No theme is vendored under
+# themes/; `hugo mod get` / `hugo mod tidy` resolve it.
+module:
+  imports:
+    - path: github.com/imfing/hextra
+
+enableInlineShortcodes: true
+enableGitInfo: true
+
+# Pretty URLs and a clean 404.
+enableRobotsTXT: true
+
+markup:
+  highlight:
+    noClasses: false
+  goldmark:
+    renderer:
+      unsafe: true
+
+menu:
+  main:
+    - name: Tutorials
+      pageRef: /tutorials
+      weight: 1
+    - name: How-to guides
+      pageRef: /how-to
+      weight: 2
+    - name: Reference
+      pageRef: /reference
+      weight: 3
+    - name: Explanation
+      pageRef: /explanation
+      weight: 4
+    - name: Search
+      weight: 5
+      params:
+        type: search
+    - name: GitHub
+      weight: 6
+      url: https://github.com/playbymail/olympia-g3
+      params:
+        icon: github
+
+params:
+  description: Game master and player documentation for the Olympia G3 play-by-mail engine.
+
+  navbar:
+    displayTitle: true
+    displayLogo: false
+
+  footer:
+    enable: true
+    displayCopyright: true
+    displayPoweredBy: true
+
+  theme:
+    # Respect the visitor's system preference, with a toggle (dark mode).
+    default: system
+    displayToggle: true
+
+  editURL:
+    enable: true
+    base: https://github.com/playbymail/olympia-g3/edit/main/site/content
+
+  # Full-text search (Hextra default: FlexSearch, index built at build time).
+  search:
+    enable: true
+    type: flexsearch
