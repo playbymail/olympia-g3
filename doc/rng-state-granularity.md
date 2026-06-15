@@ -2,9 +2,9 @@
 
 Status: **in progress.** Groundwork for Project Ultron
 ([agentic-project-ultron.md](agentic-project-ultron.md)). The seam
-(`lib/rng.{c,h}`) is wired into six subsystems so far — combat, pillage,
-economy/market, NPC spawning, weather, and upkeep (see the consumer sections
-below); the remaining subsystems in the
+(`lib/rng.{c,h}`) is wired into seven subsystems so far — combat, pillage,
+economy/market, NPC spawning, weather, upkeep, and quest (see the consumer
+sections below); the remaining subsystems in the
 [distribution map](#recommended-subsystem-distribution) are still on the global
 `rnd()`.
 
@@ -516,6 +516,85 @@ upkeep) and the `daily_events` day-picks (`curse_erode`/`faery`/`dog_bark`).
 `collapsed_mine`/`link`/`quest`/`storm_decay`/`storm_move`) draw **no `rnd()`**
 at all — nothing to migrate.
 
+## Seventh consumer: quest
+
+Quest — the QUEST player command and its sublocation guardian/loot generation —
+is the seventh subsystem migrated, tag `"qest"`. It is a sibling of the others
+under the turn root:
+
+```
+turn seed
+  ├─ (location, TAG_COMBAT)  → combat_rng   (battle resolution)
+  ├─ (location, TAG_PILLAGE) → pillage_rng  (loot/mob draws)
+  ├─ (market,   TAG_ECONOMY) → economy_rng  (city trade seeding, market restock)
+  ├─ (location, TAG_NPC)     → npc_rng      (savage attacks, monster spawn qty, mob behavior)
+  ├─ (0,        TAG_WEATHER) → weather_rng  (storm generation, schedule, environmental damage)
+  ├─ (0,        TAG_UPKEEP)  → upkeep_rng   (healing, loyalty/starvation, animal/corpse decay)
+  └─ (where|who,TAG_QUEST)   → quest_rng    (quest monster/loot generation; skull relic use)
+```
+
+### Fresh per-scenario sequential stream (the combat model)
+
+Unlike weather/upkeep (one turn-guarded per-turn stream), quest reseeds a
+**fresh per-scenario** stream at its chokepoint — the `begin_battle()` model,
+not the `begin_weather()` one — because the quest path is an **ordered run of
+draws building one outcome**: the QUEST command picks a monster, rolls its
+troops, picks a treasure class, then assembles gold / a relic / an artifact
+(kind + bonus + a name from a prefix-or-`of`-name template) / a teach-book / a
+pegasus, and finally hands off to the (already-keyed) combat stream via
+`attack`. That whole chain is sequential, so `begin_quest(key)` seeds the stream
+and the ~20 draws go through `qrnd()` (`rng_draw`), exactly as combat's
+`begin_battle()`/`crnd()`. A change to an unrelated subsystem can't perturb a
+quest result, and within quest the draw order is what #25 wants to preserve.
+
+There is **no first-class quest entity**, so the scenario key is the natural
+context of each of the **two** entry points (reconciling the map's nominal
+"quest_id"):
+
+- **`d_quest`** (the QUEST command, `glob.c` priority 7) — `begin_quest(where)`,
+  keyed on the sublocation being quested in. Seeded after the early-outs (safe
+  haven / not stack leader / no quests here / recently quested all return before
+  any draw), so an invalid quest never seeds. Drives the whole generation chain
+  (`make_subloc_monster` → `new_monster`/`choose_quest_monster`,
+  `random_unassigned_relic`, `new_artifact`, `make_teach_book`).
+- **`v_use_bta_skull`** (USE the Skull of Bastrestric, `use.c`) —
+  `begin_quest(c->who)`, keyed on the actor; its two draws (the death/survive
+  check and the aura granted to a surviving magician) go through `qrnd()`.
+
+`make_teach_book`'s skill-scramble — formerly `ilist_scramble()` on the global
+`rnd()` — now shuffles via `ilist_shuffle_rng(list, &quest_rng)` (the same
+stream-taking Fisher-Yates the weather migration added to `lib/ilist.c`), so it
+rides the quest stream like every other quest draw. `begin_quest`/`qrnd` are
+exposed via `proto.h` (the `begin_economy`/`begin_npc`/`begin_weather`
+convention); `quest_rng` stays file-static in `quest.c`.
+
+### Why this one is byte-neutral on both trees (the upkeep profile)
+
+Like upkeep, **every quest draw is unreached on both golden trees** — measured
+empirically (instrument each entry point, build, count, revert):
+
+- **Bare-map standard turn: 0 quest draws.** No player characters, so no QUEST
+  or USE command is ever issued.
+- **guard-pillage turn: 0 quest draws.** Its factions issue `pillage`/`guard`,
+  never `quest`/`use`.
+- **World-init (`-s`/`-a`/`-i`): 0 quest draws.** The only quest call at
+  world-init is `create_relics()` (`io.c`), which mints three fixed relics and
+  **draws no `rnd()`** — confirmed by counting it firing (twice, at INIT) while
+  emitting zero draws. So the frozen `scenario.tgz` is **not** stale.
+
+So the migration is **byte-neutral on both manifests** (combat/pillage/upkeep
+profile, not the economy/npc/weather one): no re-baseline of the main manifest
+*or* the guard-pillage tree, and `scenario.tgz` is untouched. Its value is
+purely future Ultron-fixture addressability (a quest fixture can now be
+re-baselined in isolation).
+
+**Deliberately left on the global `rnd()`** (shared infra, other subsystems'
+draws reached indirectly on the quest path): `new_char` / `gen_item` /
+`create_unique_item(_alloc)` / `new_orb` / `create_npc_token` / `kill_char` —
+item/character/mint primitives migrated under their own tracks (the
+`do_cookie_npc` precedent). The post-month `quest_decay()` (`day.c`) draws **no
+`rnd()`** at all (a pure `quest_late` decrement loop) — nothing to migrate.
+
 ## Recommended subsystem distribution
 
 The map below is the canonical target the remaining migrations work against. It
@@ -556,8 +635,9 @@ master seed                                  rng_seed(randseed bytes)
    │     └─ leaf key(noble, sub, "heal"/"loyl"/"sckn"/"dier"/"corp")  ← keyed leaves, one per-turn stream
    │             entity in leaf key (no per-entity chokepoint); inn_income -> future income subsystem
    │
-   ├─ quest      key(turn, quest_id, "qest")  [proposed] quest.c
-   │     └─ leaf key(stage, actor, "reward"/"branch"/"encounter")
+   ├─ quest      key(turn, where|who, "qest")  [LANDED]   quest.c (begin_quest/qrnd), use.c
+   │     └─ seq  monster/loot/artifact generation; fresh per-scenario stream (begin_battle model)
+   │             where for the QUEST command, actor for the skull relic use
    │
    ├─ explore    key(turn, actor,    "expl")  [proposed] tunnel.c, stealth.c
    │     └─ leaf key(where, dir, "find"/"detect"/"hide")
@@ -588,7 +668,7 @@ master seed                                  rng_seed(randseed bytes)
 | 4 | npc | `npcs` | location | **landed** | `npc.c`, `savage.c` |
 | 5 | weather | `wthr` | turn (loc 0) | **landed** | `storm.c`, `day.c` |
 | 6 | upkeep | `upkp` | turn (loc 0) | **landed** | `day.c` |
-| 7 | quest | `qest` | quest id | proposed | `quest.c` |
+| 7 | quest | `qest` | where / actor | **landed** | `quest.c`, `use.c` |
 | 8 | explore | `expl` | actor | proposed | `tunnel.c`, `stealth.c` |
 | 9 | skills | `skil` | actor | proposed | `c1.c`, `c2.c`, `basic.c`, `use.c`, `alchem.c`, `art.c` |
 | 10 | magic | `magc` | actor | proposed | `scry.c`, `necro.c`, `relig.c` |
@@ -630,6 +710,16 @@ master seed                                  rng_seed(randseed bytes)
   maintenance and stay at full health) — the combat/pillage profile, so no
   re-baseline. `inn_income` (per-structure income) was left a global residual for
   a future income subsystem — see [Sixth consumer](#sixth-consumer-upkeep).
+- **quest came next** (now landed) — the QUEST command and its sublocation
+  guardian/loot generation (`quest.c`) plus the skull-relic use (`use.c`). Unlike
+  upkeep's keyed leaves it uses a **fresh per-scenario sequential stream** (the
+  `begin_battle` model), because the quest path is an ordered run of ~20 draws
+  building one monster+loot outcome. Keyed on the sublocation (`d_quest`) or the
+  actor (`v_use_bta_skull`); there is no first-class quest entity. Byte-neutral
+  on **both** golden trees (every quest draw is command-only, unreached on the
+  bare map and guard-pillage; the only world-init quest call, `create_relics`,
+  draws nothing) — the upkeep profile, so no re-baseline and no `scenario.tgz`
+  regeneration. See [Seventh consumer](#seventh-consumer-quest).
 - **mint is last** — `z.c` password/id generation is *creation-order* sensitive
   today, so keying it on the minted entity id is what most directly enables small
   fixtures, but it touches the most golden bytes; stage it after everything else.
@@ -654,6 +744,8 @@ master seed                                  rng_seed(randseed bytes)
 - `olympia/combat.c` — `begin_battle()`/`crnd()` (combat) and
   `begin_pillage()`/`prnd()` (pillage), the first two consumers;
   `olympia/npc.c` `create_peasant_mob()` (pillage name draw).
+- `olympia/quest.c` — `begin_quest()`/`qrnd()` (quest), the seventh consumer;
+  the QUEST command and skull-relic use, command-only (unreached on both trees).
 - `tests/olympia/regress/guard-pillage/` — the combat golden tree (and the
   #4-unreachability write-up).
 - [agentic-project-ultron.md](agentic-project-ultron.md) — the coverage
