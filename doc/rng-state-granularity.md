@@ -194,6 +194,102 @@ byte-identical battle report. The #4 fix is correct-on-principle hardening of
 dead code; no black-box fixture can distinguish it. See
 `tests/olympia/regress/guard-pillage/README.md`.
 
+## Recommended subsystem distribution
+
+The map below is the canonical target the remaining migrations work against. It
+realizes the five-tier hierarchy from [Recommendation](#recommendation)
+(`master → turn → subsystem → scenario → leaf`): the **root-level systems** are
+the subsystem tier. Each gets a 4-char ASCII tag packed to `uint32` (like the
+landed `TAG_TURN`/`TAG_COMBAT`/`TAG_PILLAGE`), is derived order-independently via
+`rng_stream_of(turn, key, TAG)`, and migrates its hottest paths to keyed leaf
+draws via `rng_keyed(stream, k1, k2, tag, lo, hi)` so an inserted draw between
+two siblings cannot perturb either.
+
+The tree is **sorted by recommended order of implementation** — top to bottom is
+the order to migrate, chosen by blast-radius payoff (cheapest/highest-leverage
+first; the byte-heaviest, most order-sensitive last).
+
+```
+master seed                                  rng_seed(randseed bytes)
+└─ turn          key(master, turn#,  "turn") rng_stream_of  ← time tier
+   │
+   ├─ combat     key(turn, location, "comb")  [LANDED]   combat.c (begin_battle/crnd)
+   │     └─ leaf key(round, attacker<<16|defender, "hit"/"dmg"/"morale"/"flee")
+   │
+   ├─ pillage    key(turn, location, "pill")  [LANDED]   combat.c (begin_pillage/prnd), npc.c
+   │     └─ leaf key(0, 0, "form"/"name"/"attack")        troop-count residual -> npc, below
+   │
+   ├─ economy    key(turn, market,   "econ")  [next]     buy.c, produce.c, seed.c (market seeding)
+   │     └─ leaf key(item, where, "sold"/"qty"/"price")   ← already proto'd by md5_int @ buy.c:1442
+   │
+   ├─ npc        key(turn, location, "npcs")  [proposed] npc.c, savage.c, swear.c, beast.c
+   │     └─ leaf key(cookie, entity, "spawn"/"qty"/"behavior")  ← absorbs the pillage residual
+   │
+   ├─ weather    key(turn, location, "wthr")  [proposed] storm.c, day.c (environmental damage)
+   │     └─ leaf key(where, 0, "storm"/"wreck"/"decay")
+   │
+   ├─ upkeep     key(turn, entity,   "upkp")  [proposed] day.c (healing, loyalty/structure decay, NPC orders)
+   │     └─ leaf key(noble, 0, "heal"/"loyalty"/"sicken")
+   │
+   ├─ quest      key(turn, quest_id, "qest")  [proposed] quest.c
+   │     └─ leaf key(stage, actor, "reward"/"branch"/"encounter")
+   │
+   ├─ explore    key(turn, actor,    "expl")  [proposed] tunnel.c, stealth.c
+   │     └─ leaf key(where, dir, "find"/"detect"/"hide")
+   │
+   ├─ skills     key(turn, actor,    "skil")  [proposed] c1.c, c2.c, basic.c, use.c, alchem.c, art.c
+   │     └─ leaf key(skill, target, "success"/"yield"/"crit")
+   │
+   ├─ magic      key(turn, actor,    "magc")  [proposed] scry.c, necro.c, relig.c
+   │     └─ leaf key(spell, target, "scry"/"summon"/"piety")
+   │
+   ├─ worldgen   key(turn, location, "wgen")  [proposed] seed.c (region/sublocation/feature seeding)
+   │     └─ leaf key(where, feature_id, "terrain"/"gate"/"resource")
+   │
+   ├─ region:faery  key(turn, location, "faer")  [proposed] faery.c
+   ├─ region:hades  key(turn, location, "hads")  [proposed] hades.c
+   ├─ region:cloud  key(turn, location, "clud")  [proposed] cloud.c
+   │     └─ leaf key(where, entity, "encounter"/"reward"/"gate")
+   │
+   └─ mint       key(turn, new_id,   "mint")  [last]     z.c, pw.c (passwords / entity ids)
+         └─ leaf key(entity, slot, "pw"/"id")             ← order-sensitive today; keyed fixes it
+```
+
+| Order | Root system | Tag | Scenario key | Status | Primary files |
+|-------|-------------|-----|--------------|--------|---------------|
+| 1 | combat | `comb` | location | **landed** | `combat.c` |
+| 2 | pillage | `pill` | location | **landed** | `combat.c`, `npc.c` |
+| 3 | economy | `econ` | market | next | `buy.c`, `produce.c`, `seed.c` |
+| 4 | npc | `npcs` | location | proposed | `npc.c`, `savage.c`, `swear.c`, `beast.c` |
+| 5 | weather | `wthr` | location | proposed | `storm.c`, `day.c` |
+| 6 | upkeep | `upkp` | entity | proposed | `day.c` |
+| 7 | quest | `qest` | quest id | proposed | `quest.c` |
+| 8 | explore | `expl` | actor | proposed | `tunnel.c`, `stealth.c` |
+| 9 | skills | `skil` | actor | proposed | `c1.c`, `c2.c`, `basic.c`, `use.c`, `alchem.c`, `art.c` |
+| 10 | magic | `magc` | actor | proposed | `scry.c`, `necro.c`, `relig.c` |
+| 11 | worldgen | `wgen` | location | proposed | `seed.c` |
+| 12 | regions | `faer`/`hads`/`clud` | location | proposed | `faery.c`, `hades.c`, `cloud.c` |
+| 13 | mint | `mint` | entity id | last | `z.c`, `pw.c` |
+
+### Why this order
+
+- **economy is next** — `buy.c:1442` already draws with `md5_int(...)`, the exact
+  keyed-leaf model, so it is the cheapest first proposed migration and a clean
+  template for the rest.
+- **npc fourth, deliberately** — the pillage troop-count residual lives in the
+  shared `do_cookie_npc()` (also backing undead/storm/savage spawning), so it
+  belongs under `npc`, not `pillage`. Migrating this one stream clears the
+  residual *and* the same coupling in those subsystems at once.
+- **weather/upkeep next** — `day.c` is a 28-draw hot spot split across
+  environmental events (location-keyed) and per-noble upkeep (entity-keyed);
+  splitting it removes a large slice of global coupling.
+- **mint is last** — `z.c` password/id generation is *creation-order* sensitive
+  today, so keying it on the minted entity id is what most directly enables small
+  fixtures, but it touches the most golden bytes; stage it after everything else.
+- Each step is **byte-neutral on the main manifest** wherever the bare-map
+  standard turn does not exercise it (as combat and pillage were), otherwise a
+  one-time re-baseline of just that subsystem's tree.
+
 ## Migration & re-baseline cost
 
 - **Stageable, not a flag day.** Migrate one subsystem at a time. Each migration
