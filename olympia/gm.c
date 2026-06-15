@@ -34,7 +34,9 @@ skill_use_comp(const void *av, const void *bv)
 	pa = rp_skill(*a);
 	pb = rp_skill(*b);
 
-	return pb->use_count - pa->use_count;
+	if (pa->use_count != pb->use_count)
+		return pb->use_count - pa->use_count;
+	return *a - *b;		/* total order: tie-break so qsort is stable across libc */
 }
 
 
@@ -94,7 +96,9 @@ skills_known_comp(const void *av, const void *bv)
 	int *a = (int *) av;
 	int *b = (int *) bv;
 
-	return bx[*b]->temp - bx[*a]->temp;
+	if (bx[*a]->temp != bx[*b]->temp)
+		return bx[*b]->temp - bx[*a]->temp;
+	return *a - *b;		/* total order: tie-break so qsort is stable across libc */
 }
 
 static void
@@ -666,7 +670,9 @@ region_occupy_comp(const void *av, const void *bv)
 	int *a = (int *) av;
 	int *b = (int *) bv;
 
-	return bx[*b]->temp - bx[*a]->temp;
+	if (bx[*a]->temp != bx[*b]->temp)
+		return bx[*b]->temp - bx[*a]->temp;
+	return *a - *b;		/* total order: tie-break so qsort is stable across libc */
 }
 
 
@@ -722,7 +728,9 @@ wealth_list_comp(const void *av, const void *bv)
 	int *a = (int *) av;
 	int *b = (int *) bv;
 
-	return bx[*b]->temp - bx[*a]->temp;
+	if (bx[*a]->temp != bx[*b]->temp)
+		return bx[*b]->temp - bx[*a]->temp;
+	return *a - *b;		/* total order: tie-break so qsort is stable across libc */
 }
 
 
@@ -775,7 +783,9 @@ nobles_list_comp(const void *av, const void *bv)
 	int *a = (int *) av;
 	int *b = (int *) bv;
 
-	return bx[*b]->temp - bx[*a]->temp;
+	if (bx[*a]->temp != bx[*b]->temp)
+		return bx[*b]->temp - bx[*a]->temp;
+	return *a - *b;		/* total order: tie-break so qsort is stable across libc */
 }
 
 
