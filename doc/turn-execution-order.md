@@ -247,9 +247,10 @@ stream they're on:
 | Each day, day 1 | `daily_events()` `weather_days` schedule shuffle | **keyed** per-turn weather — `begin_weather()` (#25) |
 | Each day, after commands | `daily_events()` `ship_coastal_damage` / `random_loc_damage` (acute) | **keyed** weather `wthr_wreck` (#25) — *not reached on the bare map* |
 | Weather-days | `daily_events()` → `natural_weather()` province shuffle + storm-strength rolls | **keyed** per-turn weather (#25) — the ~76.7k draws/turn that dominate the phase |
-| Each day, after commands | `daily_events()` day picks (`curse_erode`/`faery`/`dog_bark`) | **global** `rnd()` (magic / region:faery / stealth residuals) |
+| Each day, after commands | `daily_events()` day picks (`curse_erode`/`faery`/`dog_bark`) | **global** `rnd()` (magic / region:faery / detection residuals — the *day picks*, distinct from the keyed EXPLORE/SEEK commands below) |
 | Per-pillage / undead / storm | `do_cookie_npc()` troop count when `man_kind` set | **keyed** per-location, `begin_npc(where)` (`npc.c:575`) — *not reached on the standard turn* |
 | Combat (only if a battle occurs) | `begin_battle()` / `crnd()` | **keyed** per-battle (combat migration) |
+| Command phase (only if issued) | EXPLORE (`d_explore`/`find_lost_items`) + SEEK (`d_seek`) detect rolls | **keyed** per-turn explore — `begin_explore()` / `expl_*` (#25, tag `expl`) — *not reached on either golden tree* |
 | Each day (`day%7`) / end of month | `heal_characters`, `loyalty_decay`, `men_starve`, `animal_deaths`, `corpse_decay` | **keyed** per-turn upkeep — `begin_upkeep()` (#25) — *not reached on either golden tree* |
 | End of month | `inn_income()` (`temple_income` draws nothing) | **global** `rnd()` (future income subsystem residual) |
 
@@ -273,5 +274,13 @@ Notes for #25 work:
   soldiers are inventory items (its two nobles afford maintenance, are
   LOY_oath/LOY_npc, and stay at full health). So the upkeep migration is
   byte-neutral on both manifests, the combat/pillage profile.
+- **Explore is command-only** (the quest/upkeep profile): the EXPLORE and SEEK
+  detect rolls draw from the keyed per-turn explore stream (`begin_explore()` /
+  `expl_*`, tag `expl`), but a standard `-r` turn issues neither command, so the
+  stream is unreached on both golden trees and at world-init — byte-neutral, no
+  re-baseline. `tunnel.c` dungeon generation (the engine's largest draw set,
+  ~409,727 `rnd()`/build, fired at INIT) was **deferred to worldgen**, and
+  `stealth.c`'s torture/petty-thief skill draws to **skills** — both still on the
+  global stream.
 - The keyed-stream seam is `lib/rng.{c,h}`; the per-subsystem migration order is
   in [rng-state-granularity.md](rng-state-granularity.md).

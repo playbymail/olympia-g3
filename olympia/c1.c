@@ -4,6 +4,125 @@
 #include 	<string.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
+
+
+/*
+ *  issue #25 (step 8): explore/detect RNG stream.
+ *
+ *  The EXPLORE command (find_lost_items/d_explore here) and the SEEK detect
+ *  rolls (d_seek in stealth.c) draw from a per-turn `explore_rng` stream keyed
+ *  off the turn root, tag "expl", instead of the global rnd(). Like upkeep (and
+ *  unlike combat/quest's fresh per-scenario sequential stream), this is ONE
+ *  per-turn stream seeded once via the turn-guarded begin_explore(), with all
+ *  draws being KEYED LEAVES (rng_keyed, which never advances a counter). The
+ *  upkeep model is the right fit here -- not the map's literal "scenario key =
+ *  actor" -- because the draws are scattered across several independent player
+ *  commands in two files (c1.c, stealth.c) with no single per-actor chokepoint,
+ *  and one actor may issue explore AND seek in the same turn. Carrying the actor
+ *  in the leaf key (k1 = who) instead of the scenario seed gives identical
+ *  per-(actor, context) addressability for free and is collision-free across
+ *  commands. Every draw is command-only, so this migration is byte-neutral on
+ *  both golden trees (no explore/seek order is issued on the bare-map or
+ *  guard-pillage turns, and none of these fire at world-init).
+ *
+ *  Deliberately NOT migrated here (documented residuals):
+ *    - tunnel.c dungeon/subworld generation -- pure world-gen, fires at INIT
+ *      (~409,727 rnd() draws), no actor; deferred to worldgen (step 11, "wgen"),
+ *      where it keys naturally on (where, feature). Migrating it would force a
+ *      main-manifest + scenario.tgz re-baseline for no command-fixture benefit.
+ *    - stealth.c TORTURE / PETTY THIEF -- skill commands (sk_torture,
+ *      sk_petty_thief in use.c); deferred to skills (step 9, "skil").
+ *    - d_hide/d_sneak/spy_* draw nothing; equip_new_noble is #if 0 dead code.
+ *
+ *  begin_explore() and the c1.c-local helpers are static; only expl_seek/
+ *  expl_detect are exposed via proto.h so stealth.c's d_seek can draw from the
+ *  same stream (the begin_economy/econ_* cross-file convention).
+ */
+#define	TAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_EXPLORE	0x6578706cu	/* "expl" */
+
+/* explore/detect leaf-draw purpose tags (kept private, like day.c's up_* tags) */
+#define	XTAG_FIND	0x66696e64u	/* "find" -- find_lost_items unique-item check */
+#define	XTAG_GATE	0x67617465u	/* "gate" -- d_explore success gate            */
+#define	XTAG_FLAVOR	0x666c6176u	/* "flav" -- d_explore promising-flavor text   */
+#define	XTAG_PICK	0x7069636bu	/* "pick" -- d_explore hidden-exit choice      */
+#define	XTAG_SEEK	0x7365656bu	/* "seek" -- d_seek targeted detect            */
+#define	XTAG_DETECT	0x64746374u	/* "dtct" -- d_seek hidden-noble scan          */
+
+static rng_stream explore_rng;
+static int explore_rng_turn = -1;	/* seed explore_rng once per turn */
+
+/*
+ *  Seed the per-turn explore stream once per turn. Self-seeded by every helper
+ *  below (including the cross-file expl_seek/expl_detect), so the first explore
+ *  or detect draw of the turn cannot read an unseeded stream regardless of which
+ *  command fires first.
+ */
+static void
+begin_explore(void)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	if (explore_rng_turn == sysclock.turn)
+		return;			/* already seeded this turn */
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	explore_rng = rng_stream_of(&turn, 0, TAG_EXPLORE);
+
+	explore_rng_turn = sysclock.turn;
+}
+
+/* find_lost_items: chance to recover a unique item, keyed on (who, where). */
+static int
+expl_find(int who, int where)
+{
+	begin_explore();
+	return rng_keyed(&explore_rng, who, where, XTAG_FIND, 1, 100);
+}
+
+/* d_explore success gate (the 50/33/17 split), keyed on (who, where). */
+static int
+expl_gate(int who, int where)
+{
+	begin_explore();
+	return rng_keyed(&explore_rng, who, where, XTAG_GATE, 1, 100);
+}
+
+/* d_explore "something is hidden here" flavor text, keyed on (who, where). */
+static int
+expl_flavor(int who, int where)
+{
+	begin_explore();
+	return rng_keyed(&explore_rng, who, where, XTAG_FLAVOR, 1, 4);
+}
+
+/* d_explore: choose which hidden exit was found, keyed on (who, where). */
+static int
+expl_pick(int who, int where, int high)
+{
+	begin_explore();
+	return rng_keyed(&explore_rng, who, where, XTAG_PICK, 1, high);
+}
+
+/* d_seek (stealth.c): targeted detect roll, keyed on (who, target). */
+int
+expl_seek(int who, int target)
+{
+	begin_explore();
+	return rng_keyed(&explore_rng, who, target, XTAG_SEEK, 1, 10);
+}
+
+/* d_seek (stealth.c): per-candidate hidden-noble scan, keyed on (who, cand). */
+int
+expl_detect(int who, int cand)
+{
+	begin_explore();
+	return rng_keyed(&explore_rng, who, cand, XTAG_DETECT, 1, 100);
+}
 
 
 int
@@ -65,7 +184,7 @@ find_lost_items(int who, int where)
 	else
 		chance = 40;
 
-	if (item == 0 || rnd(1,100) > chance)
+	if (item == 0 || expl_find(who, where) > chance)	/* issue #25: explore stream */
 		return FALSE;
 
 	move_item(where, who, item, 1);
@@ -109,7 +228,7 @@ d_explore(struct command *c)
 		find_lost_items(c->who, where);
 	}
 
-	r = rnd(1,100);
+	r = expl_gate(c->who, where);	/* issue #25: explore stream */
 
 	if (r <= 50)
 	{
@@ -139,7 +258,7 @@ d_explore(struct command *c)
 
 	if (r <= 67)
 	{
-		switch (rnd(1,4))
+		switch (expl_flavor(c->who, where))	/* issue #25: explore stream */
 		{
 		case 1:
 			wout(c->who, "Rumors speak of hidden features here, "
@@ -171,7 +290,7 @@ d_explore(struct command *c)
  *  Choose what we found randomly
  */
 
-	i = rnd(1, hidden_exits);
+	i = expl_pick(c->who, where, hidden_exits);	/* issue #25: explore stream */
 
 	find_hidden_exit(c->who, l, hidden_count_to_index(i, l));
 

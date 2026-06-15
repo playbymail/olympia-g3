@@ -2,9 +2,9 @@
 
 Status: **in progress.** Groundwork for Project Ultron
 ([agentic-project-ultron.md](agentic-project-ultron.md)). The seam
-(`lib/rng.{c,h}`) is wired into seven subsystems so far — combat, pillage,
-economy/market, NPC spawning, weather, upkeep, and quest (see the consumer
-sections below); the remaining subsystems in the
+(`lib/rng.{c,h}`) is wired into eight subsystems so far — combat, pillage,
+economy/market, NPC spawning, weather, upkeep, quest, and explore (see the
+consumer sections below); the remaining subsystems in the
 [distribution map](#recommended-subsystem-distribution) are still on the global
 `rnd()`.
 
@@ -595,6 +595,107 @@ item/character/mint primitives migrated under their own tracks (the
 `do_cookie_npc` precedent). The post-month `quest_decay()` (`day.c`) draws **no
 `rnd()`** at all (a pure `quest_late` decrement loop) — nothing to migrate.
 
+## Eighth consumer: explore
+
+Explore — the EXPLORE player command and the SEEK detect rolls — is the eighth
+subsystem migrated, tag `"expl"`. It is a sibling of the others under the turn
+root:
+
+```
+turn seed
+  ├─ (location, TAG_COMBAT)  → combat_rng   (battle resolution)
+  ├─ (location, TAG_PILLAGE) → pillage_rng  (loot/mob draws)
+  ├─ (market,   TAG_ECONOMY) → economy_rng  (city trade seeding, market restock)
+  ├─ (location, TAG_NPC)     → npc_rng      (savage attacks, monster spawn qty, mob behavior)
+  ├─ (0,        TAG_WEATHER) → weather_rng  (storm generation, schedule, environmental damage)
+  ├─ (0,        TAG_UPKEEP)  → upkeep_rng   (healing, loyalty/starvation, animal/corpse decay)
+  ├─ (where|who,TAG_QUEST)   → quest_rng    (quest monster/loot generation; skull relic use)
+  └─ (0,        TAG_EXPLORE) → explore_rng  (explore find/detect rolls; actor in the leaf key)
+```
+
+### One per-turn stream, keyed leaves (the upkeep model)
+
+Like upkeep, explore uses **one per-turn stream seeded once** — `begin_explore()`
+(`olympia/c1.c`) is turn-guarded, scenario key `0` — with all draws being
+**keyed leaves** (`rng_keyed`, which never advances a counter). This is *not*
+the map's literal "scenario key = actor": the draws are scattered across several
+independent player commands in **two files** (`c1.c`, `stealth.c`) with no single
+per-actor chokepoint, and one actor may issue EXPLORE *and* SEEK in the same turn
+— so a per-command `begin_explore(who)` sequential reseed on `(turn, actor)` would
+collide across commands. Carrying the actor in the **leaf key** (`k1 = who`)
+instead of the scenario seed gives identical per-`(actor, context)`
+addressability for free and is collision-free across commands. This is the same
+refinement upkeep made (entity in the leaf key, one per-turn stream), forced by
+placement rather than sequencing.
+
+Migrated draws (all keyed leaves via small named helpers, purpose a 4-char tag):
+
+- **`find_lost_items`** (`expl_find`, `"find"`) — the unique-item recovery check
+  `rnd(1,100)`, keyed on `(who, where)`. (Called twice on the EXPLORE path — once
+  for the build loc, once for the surrounding ocean on a ship — distinguished by
+  the `where` key.)
+- **`d_explore`** — the success gate `rnd(1,100)` (`expl_gate`, `"gate"`), the
+  "something is hidden here" flavor `rnd(1,4)` (`expl_flavor`, `"flav"`), and the
+  hidden-exit choice `rnd(1,hidden_exits)` (`expl_pick`, `"pick"`), all keyed on
+  `(who, where)`.
+- **`d_seek`** (`stealth.c`) — the targeted detect roll `rnd(1,10)` (`expl_seek`,
+  `"seek"`, keyed on `(who, target)`) and the per-candidate hidden-noble scan
+  `rnd(1,100)` (`expl_detect`, `"dtct"`, keyed on `(who, candidate)`).
+
+`begin_explore()` and the `c1.c`-local helpers are static; only `expl_seek` /
+`expl_detect` are exposed via `proto.h` so `stealth.c`'s `d_seek` draws from the
+same stream (the `begin_economy`/`econ_*` cross-file convention). The helpers
+self-seed via the turn-guarded `begin_explore()`, so whichever explore/detect
+draw fires first that turn seeds the stream.
+
+### Why this one is byte-neutral on both trees (the quest/upkeep profile)
+
+Like quest and upkeep, **every explore draw is unreached on both golden trees** —
+measured empirically (instrument each site, build, run, count, revert):
+
+- **Bare-map standard turn: 0 explore draws.** No player characters, so no
+  EXPLORE or SEEK command is ever issued.
+- **guard-pillage turn (both `check.sh` and `check-lua.sh`): 0 explore draws.**
+  Its factions issue `pillage`/`guard`, never `explore`/`seek`.
+- **World-init (`-s`/`-a`/`-i`): 0 explore draws.** None of the migrated draws
+  fire at world-init.
+
+So the migration is **byte-neutral on both manifests** (the quest/upkeep
+profile): no re-baseline of the main manifest *or* the guard-pillage tree, and
+`scenario.tgz` is untouched. Its value is purely future Ultron-fixture
+addressability.
+
+### The boundary: explore-command vs stealth-skill vs worldgen
+
+The map's `explore` row nominally lists `tunnel.c, stealth.c`, but the actual
+EXPLORE command lives in `c1.c` (`d_explore`/`find_lost_items`), and the file
+list conflates three distinct reachability profiles. The boundary was drawn as:
+
+- **Migrated now (`expl`):** the genuine explore/detect rolls — `c1.c`
+  `find_lost_items`/`d_explore` and `stealth.c` `d_seek` — matching the map's
+  literal `"find"`/`"detect"` leaf names.
+- **Deferred to worldgen (step 11, `"wgen"`):** `tunnel.c` dungeon/subworld
+  generation. These are **pure world-gen** draws that fire at INIT (`create_tunnels`
+  ← `io.c`, init-guarded `if (tunnel_region == 0)`), have **no actor** (explore
+  keys on the actor; a dungeon keys on `(where, feature)` — exactly worldgen's
+  proposed leaf), and are the **single largest draw set in the engine: ~409,727
+  `rnd()` calls per fresh world build** (≈5× weather). `tunnel.c` sits in the same
+  `io.c` world-init block as `create_faery`/`create_hades`, which the map already
+  defers to regions (step 12) — direct precedent. Migrating it would force a
+  main-manifest re-baseline **plus** a `scenario.tgz` regeneration +
+  `EXPECT.sha256` re-baseline (it fires inside `build-scenario.sh`/`check-lua.sh`
+  world-init — the economy precedent) for **zero** command-fixture benefit.
+- **Deferred to skills (step 9, `"skil"`):** `stealth.c` TORTURE and PETTY THIEF.
+  Both are **skill commands** (`sk_torture`, `sk_petty_thief` registered in
+  `use.c`), so they belong with the skills subsystem keyed on `(actor, skill)`,
+  not with explore. When skills migrates, it picks these up; `d_explore`/
+  `find_lost_items` in `c1.c` (nominally a "skills" file) stay on `expl` as a
+  documented cross-reference (the npc→`swear.c`/`beast.c` split precedent).
+
+**Draw nothing / dead code (nothing to migrate):** `d_hide`, `d_sneak`, and the
+`spy_*` commands draw no `rnd()`; the map's `"hide"` leaf has no draw.
+`equip_new_noble` (`c1.c`) is inside `#if 0` — never compiled.
+
 ## Recommended subsystem distribution
 
 The map below is the canonical target the remaining migrations work against. It
@@ -639,8 +740,9 @@ master seed                                  rng_seed(randseed bytes)
    │     └─ seq  monster/loot/artifact generation; fresh per-scenario stream (begin_battle model)
    │             where for the QUEST command, actor for the skull relic use
    │
-   ├─ explore    key(turn, actor,    "expl")  [proposed] tunnel.c, stealth.c
-   │     └─ leaf key(where, dir, "find"/"detect"/"hide")
+   ├─ explore    key(turn, 0,        "expl")  [LANDED]   c1.c (begin_explore/expl_*), stealth.c (d_seek)
+   │     └─ leaf key(who, where|target, "find"/"gate"/"flav"/"pick"/"seek"/"dtct")  ← keyed leaves, one per-turn stream
+   │             actor in leaf key (no chokepoint); tunnel.c dungeon-gen -> worldgen (11), torture/petty -> skills (9)
    │
    ├─ skills     key(turn, actor,    "skil")  [proposed] c1.c, c2.c, basic.c, use.c, alchem.c, art.c
    │     └─ leaf key(skill, target, "success"/"yield"/"crit")
@@ -648,7 +750,7 @@ master seed                                  rng_seed(randseed bytes)
    ├─ magic      key(turn, actor,    "magc")  [proposed] scry.c, necro.c, relig.c
    │     └─ leaf key(spell, target, "scry"/"summon"/"piety")
    │
-   ├─ worldgen   key(turn, location, "wgen")  [proposed] seed.c (region/sublocation/feature seeding)
+   ├─ worldgen   key(turn, location, "wgen")  [proposed] seed.c (region/sublocation/feature seeding), tunnel.c (dungeon-gen, deferred from explore)
    │     └─ leaf key(where, feature_id, "terrain"/"gate"/"resource")
    │
    ├─ region:faery  key(turn, location, "faer")  [proposed] faery.c
@@ -669,10 +771,10 @@ master seed                                  rng_seed(randseed bytes)
 | 5 | weather | `wthr` | turn (loc 0) | **landed** | `storm.c`, `day.c` |
 | 6 | upkeep | `upkp` | turn (loc 0) | **landed** | `day.c` |
 | 7 | quest | `qest` | where / actor | **landed** | `quest.c`, `use.c` |
-| 8 | explore | `expl` | actor | proposed | `tunnel.c`, `stealth.c` |
-| 9 | skills | `skil` | actor | proposed | `c1.c`, `c2.c`, `basic.c`, `use.c`, `alchem.c`, `art.c` |
+| 8 | explore | `expl` | turn (loc 0) | **landed** | `c1.c`, `stealth.c` |
+| 9 | skills | `skil` | actor | proposed | `c1.c`, `c2.c`, `basic.c`, `use.c`, `alchem.c`, `art.c` (+ `stealth.c` torture/petty) |
 | 10 | magic | `magc` | actor | proposed | `scry.c`, `necro.c`, `relig.c` |
-| 11 | worldgen | `wgen` | location | proposed | `seed.c` |
+| 11 | worldgen | `wgen` | location | proposed | `seed.c`, `tunnel.c` (dungeon-gen) |
 | 12 | regions | `faer`/`hads`/`clud` | location | proposed | `faery.c`, `hades.c`, `cloud.c` |
 | 13 | mint | `mint` | entity id | last | `z.c`, `pw.c` |
 
@@ -720,6 +822,18 @@ master seed                                  rng_seed(randseed bytes)
   bare map and guard-pillage; the only world-init quest call, `create_relics`,
   draws nothing) — the upkeep profile, so no re-baseline and no `scenario.tgz`
   regeneration. See [Seventh consumer](#seventh-consumer-quest).
+- **explore came next** (now landed) — the EXPLORE command (`c1.c`) and the SEEK
+  detect rolls (`stealth.c` `d_seek`). Like upkeep it uses **one per-turn stream,
+  keyed leaves** (the actor in the leaf key, no per-actor chokepoint across the
+  two files). The boundary was the crux: `tunnel.c` dungeon generation was
+  **deferred to worldgen** (step 11) — it is pure world-gen, fires at INIT with
+  the largest draw set in the engine (~409,727 `rnd()`/build), and keys on
+  `(where, feature)` not an actor — and `stealth.c`'s TORTURE/PETTY THIEF were
+  **deferred to skills** (step 9) as skill commands. Byte-neutral on **both**
+  golden trees (every explore draw is command-only, unreached on the bare map and
+  guard-pillage, and none fire at world-init) — the quest/upkeep profile, so no
+  re-baseline and no `scenario.tgz` regeneration. See
+  [Eighth consumer](#eighth-consumer-explore).
 - **mint is last** — `z.c` password/id generation is *creation-order* sensitive
   today, so keying it on the minted entity id is what most directly enables small
   fixtures, but it touches the most golden bytes; stage it after everything else.
@@ -746,6 +860,9 @@ master seed                                  rng_seed(randseed bytes)
   `olympia/npc.c` `create_peasant_mob()` (pillage name draw).
 - `olympia/quest.c` — `begin_quest()`/`qrnd()` (quest), the seventh consumer;
   the QUEST command and skull-relic use, command-only (unreached on both trees).
+- `olympia/c1.c` — `begin_explore()`/`expl_*` (explore), the eighth consumer;
+  the EXPLORE command + `stealth.c` `d_seek` detect, command-only (unreached on
+  both trees). `tunnel.c` dungeon-gen deferred to worldgen, torture/petty to skills.
 - `tests/olympia/regress/guard-pillage/` — the combat golden tree (and the
   #4-unreachability write-up).
 - [agentic-project-ultron.md](agentic-project-ultron.md) — the coverage

@@ -384,7 +384,8 @@ d_seek(struct command *c)
 			return TRUE;
 		}
 
-		if ((subloc(c->who) == subloc(target)) && (rnd(1,10) == 1))
+		if ((subloc(c->who) == subloc(target)) &&
+		    (expl_seek(c->who, target) == 1))	/* issue #25: explore stream */
 		{
 			add_contact(target, c->who);
 			wout(c->who, "Found %s.", box_name(target));
@@ -405,7 +406,7 @@ d_seek(struct command *c)
 		if (kind(i) != T_char || char_here(c->who, i))
 			continue;
 
-		if (rnd(1,100) > 5)
+		if (expl_detect(c->who, i) > 5)	/* issue #25: explore stream */
 			continue;
 
 		add_contact(i, c->who);
