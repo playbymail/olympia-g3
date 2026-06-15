@@ -1,0 +1,11 @@
+Lua 5.4.7
+Released 2024-06-13 by Lua.org, PUC-Rio.
+Source: https://www.lua.org/ftp/lua-5.4.7.tar.gz
+
+Vendored for olyscript-g3 (issue #31). This is the upstream src/ tree with the
+two standalone mains removed (lua.c, the interpreter; luac.c, the compiler);
+olyscript-g3 supplies its own host main(). The single-TU build entry point is
+onelua.c (MAKE_LIB mode). License: MIT (see LICENSE in this directory).
+
+Scripts target the Lua 5.1 common subset where practical, to preserve the
+gopher-lua Go-portability path described in doc/scripting-tool.md §7.

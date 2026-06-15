@@ -220,6 +220,29 @@ inv_item_comp(const void *av, const void *bv)
 }
 
 
+#ifdef OLYSCRIPT_HOST
+/*
+ *  olyscript-g3 host hook (issue #31). The -a add-player pass sorts each new
+ *  entity's item list ascending-by-id as a SIDE EFFECT of generating its
+ *  report (show_char_inventory / show_unclaimed qsort bx[num]->items in place,
+ *  above), and that sorted order is what the saved db -- and hence the
+ *  guard-pillage golden tree -- records. The scripting host issues no reports,
+ *  so it must apply the SAME sort (same comparator) explicitly to stay
+ *  byte-identical. Compiled only for olyscript-g3; report.c is unchanged for
+ *  the engine target.
+ */
+#include "scenario.h"
+
+void
+scenario_sort_items(int who)
+{
+	if (valid_box(who) && item_ents_len(bx[who]->items) > 0)
+		qsort(bx[who]->items, (size_t) item_ents_len(bx[who]->items),
+				sizeof(*bx[who]->items), inv_item_comp);
+}
+#endif	/* OLYSCRIPT_HOST */
+
+
 static char *
 extra_item_info(int who, int item, int qty)
 {
