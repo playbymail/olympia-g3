@@ -21,7 +21,7 @@ effort is underway to make it compile cleanly on 64-bit systems.
 > The goal is to bring the existing G3 engine to clean C11 on 64-bit while
 > preserving its exact behavior. **Golden output is the contract:** every change
 > must keep the golden tests passing (byte-identical), and any behavior change
-> must be deliberate, justified, and re-baselined in the same commit. New game
+> must be deliberate, justified, and re-baselined in the same change (PR). New game
 > features, gameplay tweaks, and scope expansion are out of bounds. See
 > [BUILD_HISTORY.md](BUILD_HISTORY.md) for the full modernization record.
 

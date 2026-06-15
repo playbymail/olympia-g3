@@ -210,7 +210,7 @@ endif ()
 # ------------------------------------------------------------------------------
 add_executable(island-g3)
 target_sources(island-g3 PRIVATE
-    island/island.c lib/rnd.c
+    island/island.c lib/rnd.c lib/rng.c
 )
 target_include_directories(island-g3 PRIVATE island/ lib/)
 # Declare the C11 requirement at the target level (the project-level
@@ -228,7 +228,7 @@ add_executable(mapgen-g3)
 target_sources(mapgen-g3 PRIVATE
     mapgen/mapgen.c mapgen/z.c
     lib/ilist.c lib/roads.c lib/tiles.c
-    lib/checked_alloc.c lib/rnd.c
+    lib/checked_alloc.c lib/rnd.c lib/rng.c
 )
 target_sources(mapgen-g3 PRIVATE
     FILE_SET HEADERS
@@ -238,6 +238,7 @@ target_sources(mapgen-g3 PRIVATE
         mapgen/z.h
         lib/checked_alloc.h
         lib/rnd.h
+        lib/rng.h
         lib/lists.h
 )
 target_include_directories(mapgen-g3 PRIVATE mapgen/ lib/)
@@ -275,7 +276,7 @@ target_sources(olympia-g3 PRIVATE
     lib/accept_ents.c lib/admits.c lib/cstrings.c lib/exit_views.c lib/fights.c lib/flag_ents.c lib/item_ents.c
     lib/ilist.c
     lib/orders.c lib/req_ents.c lib/roads.c lib/skill_ents.c lib/tiles.c lib/trades.c lib/wait_args.c
-    lib/checked_alloc.c
+    lib/checked_alloc.c lib/rng.c
 )
 target_sources(olympia-g3 PRIVATE
     FILE_SET HEADERS
@@ -283,7 +284,7 @@ target_sources(olympia-g3 PRIVATE
         olympia lib
     FILES
         olympia/legacy.h
-        lib/checked_alloc.h lib/lists.h
+        lib/checked_alloc.h lib/lists.h lib/rng.h
 )
 target_include_directories(olympia-g3 PRIVATE olympia/ lib/)
 # Declare the C11 requirement at the target level (the project-level
