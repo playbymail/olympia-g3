@@ -55,11 +55,7 @@ static int get_city_id(char *start_city) {
   char *s;
   char idxs[1];
   int id = 0;
-#ifdef OLYSCRIPT_HOST
-  char ids[6];			/* +1 vs the engine build so atoi()'s arg can be NUL-terminated */
-#else
-  char ids[5];
-#endif
+  char ids[6];			/* 5-digit city id + NUL */
   char *cname;
   int i;
   int rnd_id_cnt;
@@ -81,17 +77,14 @@ static int get_city_id(char *start_city) {
 	  if (strlen(s) > 9) {
 		strncpy(idxs, &s[0], 1);
 		strncpy(ids, &s[2], 5);
-#ifdef OLYSCRIPT_HOST
 		/*
-		 *  strncpy() leaves ids[] unterminated, so the atoi() below
-		 *  reads past it -- a latent stack-buffer-overflow ASan flags
-		 *  the moment the scripting host (issue #31) drives the
-		 *  add-player path under sanitizers. The standard turn never
-		 *  reaches get_city_id (no Join-g3 files), so the engine build
-		 *  is left byte-for-byte unchanged; the host build is hardened.
+		 *  strncpy() leaves ids[] unterminated, so atoi() would read
+		 *  past it -- a latent stack-buffer-overflow. NUL-terminate the
+		 *  6th byte before atoi(). get_city_id is dead in the standard
+		 *  turn (no Join-g3 files), so this is byte-neutral on both
+		 *  golden gates; the add-player path is now ASan-clean too.
 		 */
 		ids[5] = '\0';
-#endif
 		id = atoi(ids);
 		if (rnd_id_cnt == rnd_line_cur)
 			rnd_id = id;
