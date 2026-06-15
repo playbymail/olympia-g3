@@ -631,6 +631,16 @@ extract_startlocs(void)
 		fprintf(stderr, "Can't write %s!\n", fnam);
 }
 
+/*
+ *  olyscript-g3 (issue #31) reuses every engine object in this file -- the
+ *  global flags (immediate, save_flag, ...), extract_startlocs(),
+ *  call_init_routines(), v_remail() (referenced by cmd_tbl), etc. -- but
+ *  supplies its OWN entry point in olympia/lua_bindings.c. Guard only main()
+ *  out of that build; the rest of the TU compiles identically for both. For
+ *  the engine target (olympia-g3) OLYSCRIPT_HOST is never defined, so this is
+ *  byte-neutral. See CMakeLists.txt (olyscript-g3) and doc/scripting-tool.md.
+ */
+#ifndef OLYSCRIPT_HOST
 int
 main(int argc, char **argv)
 {
@@ -867,3 +877,4 @@ main(int argc, char **argv)
 
 	return 0;
 }
+#endif	/* !OLYSCRIPT_HOST */

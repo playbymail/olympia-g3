@@ -294,3 +294,68 @@ olympia_compile_flags(olympia-g3)
 
 # Optional ASan/UBSan via the asan-ubsan preset (OLYMPIA_SANITIZE=ON).
 olympia_enable_sanitizers(olympia-g3)
+
+# ------------------------------------------------------------------------------
+# G3 olyscript -- scenario-scripting host (issue #31)
+# ------------------------------------------------------------------------------
+# A FOURTH target (the doc's "separate executable" option, doc/scripting-tool.md
+# §4/§5) that embeds Lua to author test scenarios. It reuses every engine object
+# olympia-g3 builds (so behavior matches -i exactly) plus a single binding TU,
+# and links vendored Lua. NOTHING above this line changes: the three shipping
+# targets, their flags, and both golden gates are untouched -- olyscript-g3 is
+# never built or run by run/olympia-g3.sh or the manifest checks.
+#
+# Two build-isolation rules from the design (§5.2), and why:
+#   1. Vendored Lua is its OWN static lib that does NOT call
+#      olympia_compile_flags(): the -Werror modernization ladder stays OFF Lua's
+#      sources (they would not survive sign-conversion / shorten-64-to-32 etc.).
+#      Per BUILD_HISTORY.md's warning policy "one flag set for the whole project"
+#      is about the engine trio, not a ban on separate third-party tiers --
+#      PRIVATE per-target scoping is already the architecture.
+#   2. OUR binding TU (lua_bindings.c) DOES take the full ladder + sanitizers --
+#      it is engine-adjacent code and should be held to the same bar.
+
+# Vendored Lua 5.4.7 -- single-TU build, deliberately NO olympia_compile_flags().
+add_library(lua_vendored STATIC third_party/lua/onelua.c)
+target_include_directories(lua_vendored PUBLIC third_party/lua)
+target_compile_definitions(lua_vendored PRIVATE LUA_USE_POSIX)
+target_compile_features(lua_vendored PRIVATE c_std_11)
+olympia_enable_sanitizers(lua_vendored)
+
+# The scripting host = every engine source olympia-g3 uses (compiled with
+# OLYSCRIPT_HOST, which only drops main.c's main() and enables the scenario.h
+# hooks) + the binding TU. The list is duplicated rather than hoisted into a
+# shared variable so the olympia-g3 block above is left byte-for-byte alone.
+add_executable(olyscript-g3)
+target_sources(olyscript-g3 PRIVATE
+    olympia/add.c olympia/adv.c olympia/alchem.c olympia/art.c
+    olympia/basic.c olympia/beast.c olympia/build.c
+    olympia/buy.c olympia/c1.c olympia/c2.c olympia/check.c
+    olympia/cloud.c olympia/code.c olympia/combat.c
+    olympia/day.c olympia/dir.c olympia/display.c olympia/eat.c
+    olympia/faery.c olympia/garr.c olympia/gate.c
+    olympia/glob.c olympia/gm.c olympia/hades.c
+    olympia/immed.c olympia/input.c olympia/io.c
+    olympia/loc.c olympia/lore.c olympia/main.c olympia/make.c
+    olympia/move.c olympia/necro.c olympia/npc.c
+    olympia/order.c olympia/perm.c olympia/produce.c
+    olympia/pw.c olympia/quest.c olympia/relig.c
+    olympia/report.c olympia/rnd.c olympia/savage.c
+    olympia/scry.c olympia/seed.c olympia/sout.c
+    olympia/stack.c olympia/stealth.c olympia/storm.c
+    olympia/summary.c olympia/swear.c olympia/tunnel.c
+    olympia/u.c olympia/use.c olympia/z.c
+
+    lib/accept_ents.c lib/admits.c lib/cstrings.c lib/exit_views.c lib/fights.c lib/flag_ents.c lib/item_ents.c
+    lib/ilist.c
+    lib/orders.c lib/req_ents.c lib/roads.c lib/skill_ents.c lib/tiles.c lib/trades.c lib/wait_args.c
+    lib/checked_alloc.c lib/rng.c
+
+    olympia/lua_bindings.c
+)
+target_compile_definitions(olyscript-g3 PRIVATE OLYSCRIPT_HOST)
+target_include_directories(olyscript-g3 PRIVATE olympia/ lib/ third_party/lua)
+target_compile_features(olyscript-g3 PRIVATE c_std_11)
+olympia_compile_flags(olyscript-g3)
+olympia_enable_sanitizers(olyscript-g3)
+target_link_libraries(olyscript-g3 PRIVATE lua_vendored)

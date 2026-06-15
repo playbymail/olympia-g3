@@ -34,6 +34,42 @@ OLYMPIA_PRESET=asan-ubsan ./tests/olympia/regress/guard-pillage/check.sh
 run by the test). The frozen `scenario.tgz` is pure data, so the test —
 extract, run a turn, diff report bytes — ports directly to a future engine.
 
+## Same scenario, authored as one Lua script (issue #31)
+
+`guard-pillage.lua` + `check-lua.sh` rebuild the *exact same* pre-turn `lib` with
+the `olyscript-g3` scenario-scripting host (the embedded-Lua prototype, see
+[`doc/scripting-tool.md`](../../../../doc/scripting-tool.md) §8–§9) instead of
+the six-tool `build-scenario.sh` dance, and assert the post-turn manifest is
+**byte-identical to the same committed `EXPECT.sha256`**:
+
+```bash
+./tests/olympia/regress/guard-pillage/check-lua.sh                 # prints YES
+OLYMPIA_PRESET=asan-ubsan ./tests/olympia/regress/guard-pillage/check-lua.sh
+```
+
+It is the prototype's pass/fail gate: one readable, error-checked script
+replaces the tar + `oly -s` + hand-written `Join-g3` + `oly -a` +
+`awk`-recover-ids + piped `oly -i` + hand-written orders flow, and the engine
+output is preserved bit-for-bit. Determinism notes:
+
+- A single deterministic process loading the fixed `randseed` reproduces the
+  legacy three-process `rnd()` draw sequence exactly (the `-s` pass's world-init
+  draws are discarded unsaved, so one process is equivalent). Faction boxes are
+  allocated at explicit ids (no `rnd()`); the nobles are minted by the engine and
+  **named** via the host registry, so the `awk` id-recovery step is gone.
+- `add_player` replays the `-a` pass's in-place item-list sort
+  (`scenario_sort_items`, mirroring `report.c`'s `inv_item_comp`), since the host
+  issues no reports; and the entity ops replay the `-i` `be/.../save` stream so
+  per-entity command state matches.
+- Surfaced (and fixed for the host build only) a latent stack-buffer-overflow in
+  `add.c`'s `get_city_id` — `atoi()` on an unterminated `strncpy` buffer — which
+  ASan flags the first time the add-player path runs under sanitizers. The
+  standard turn never reaches it, so the engine build is left byte-for-byte
+  unchanged.
+
+Both `build-scenario.sh`/`check.sh` (the frozen `scenario.tgz`) and the Lua pair
+are kept side by side — the rollout is incremental; `-i`/`-a` stay load-bearing.
+
 ## What this does NOT test: issue #4
 
 This fixture was originally intended to pin the **issue #4** guard-dedup fix

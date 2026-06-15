@@ -55,7 +55,11 @@ static int get_city_id(char *start_city) {
   char *s;
   char idxs[1];
   int id = 0;
+#ifdef OLYSCRIPT_HOST
+  char ids[6];			/* +1 vs the engine build so atoi()'s arg can be NUL-terminated */
+#else
   char ids[5];
+#endif
   char *cname;
   int i;
   int rnd_id_cnt;
@@ -77,6 +81,17 @@ static int get_city_id(char *start_city) {
 	  if (strlen(s) > 9) {
 		strncpy(idxs, &s[0], 1);
 		strncpy(ids, &s[2], 5);
+#ifdef OLYSCRIPT_HOST
+		/*
+		 *  strncpy() leaves ids[] unterminated, so the atoi() below
+		 *  reads past it -- a latent stack-buffer-overflow ASan flags
+		 *  the moment the scripting host (issue #31) drives the
+		 *  add-player path under sanitizers. The standard turn never
+		 *  reaches get_city_id (no Join-g3 files), so the engine build
+		 *  is left byte-for-byte unchanged; the host build is hardened.
+		 */
+		ids[5] = '\0';
+#endif
 		id = atoi(ids);
 		if (rnd_id_cnt == rnd_line_cur)
 			rnd_id = id;
@@ -249,6 +264,45 @@ add_new_player(int pl, char *faction, char *character, char *start_city,
 
 	return pl;
 }
+
+
+#ifdef OLYSCRIPT_HOST
+/*
+ *  olyscript-g3 host hook (issue #31): the scripted equivalent of
+ *  make_new_players_sup(), driven from explicit arguments rather than an
+ *  act/<pl>/Join-g3 file. Same two steps in the same order -- alloc_box(pl)
+ *  then add_new_player() -- so the global rnd() draw sequence (noble slot,
+ *  password, starting-city pick, unformed ids) is IDENTICAL to the -a pass,
+ *  which is what keeps the guard-pillage golden tree byte-for-byte stable.
+ *  The faction box id `pl` is caller-chosen (explicit alloc_box, no rnd); the
+ *  noble id new_ent() minted is the last entry add_new_player() pushed onto
+ *  new_chars, returned here so the host can name it in the registry.
+ *
+ *  Compiled only for olyscript-g3 (OLYSCRIPT_HOST); add.c is byte-identical
+ *  for the engine target.
+ */
+#include "scenario.h"
+
+int
+scenario_add_player(int pl, char *faction, char *character,
+		    char *start_city, char *full_name, char *email)
+{
+	int before;
+
+	if (pl <= 0 || pl >= MAX_BOXES || bx[pl] != NULL)
+		return 0;
+
+	alloc_box(pl, T_player, sub_pl_regular);
+
+	before = ilist_len(new_chars);
+	add_new_player(pl, faction, character, start_city, full_name, email);
+
+	if (ilist_len(new_chars) <= before)
+		return 0;			/* new_ent() failed: no noble */
+
+	return new_chars[ilist_len(new_chars) - 1];
+}
+#endif	/* OLYSCRIPT_HOST */
 
 
 static int
