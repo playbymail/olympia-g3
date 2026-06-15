@@ -200,9 +200,9 @@ the addressable seam is `lib/rng.{c,h}`
 phase order the driver walks, and which draws are keyed vs still on the global
 stream — see [doc/turn-execution-order.md](doc/turn-execution-order.md).
 
-**Four consumers landed so far: combat, pillage, economy/market, npc.** Each
-reseeds a stream off the turn root (`rng_master_seed()` → turn → its own 4-char
-tag) and draws from it instead of the global `rnd()`:
+**Five consumers landed so far: combat, pillage, economy/market, npc, weather.**
+Each reseeds a stream off the turn root (`rng_master_seed()` → turn → its own
+4-char tag) and draws from it instead of the global `rnd()`:
 
 - **combat** — per-battle stream on `(turn, location)`, `begin_battle()`/`crnd()`
   in `olympia/combat.c` (sequential `rng_draw`).
@@ -213,14 +213,25 @@ tag) and draws from it instead of the global `rnd()`:
 - **npc** — per-location `npcs` stream, `begin_npc()`/`npc_spawn`/`npc_qty`/
   `npc_behavior` (`npc.c`, `savage.c`); absorbs the pillage troop-count residual
   in the shared `do_cookie_npc()`.
+- **weather** — **one per-turn** stream (tag `wthr`), seeded once via the
+  turn-guarded `begin_weather()` (`storm.c`); `wthr_shuffle`/`wthr_storm`/
+  `wthr_wreck` exposed via `proto.h` for `day.c`. Unlike the others it carries a
+  *persistent counter* across the turn because its reached draws are sequential
+  province shuffles (`natural_weather`/`create_some_storms` + the `weather_days`
+  schedule, via the new `ilist_shuffle_rng` in `lib/ilist.c`). Largest
+  manifest-mover yet (~76.7k draws/turn). Acute damage (`ship_coastal_damage`,
+  mine/inn calamities) migrated to keyed `wthr_wreck` but is unreached on the bare
+  map; `storm_decay`/`storm_move` draw nothing (the `"decay"` tag is reserved/
+  unused).
 
 Combat and pillage were **byte-neutral on the main manifest** (the bare-map turn
-runs no combat/pillage); economy and npc each ran on the standard turn
-(`seed_city_trade` at INIT, `init_savage_attacks` per turn) and took a deliberate
-one-time re-baseline. Combat/pillage/npc behavior is pinned by its own golden
-tree, [tests/olympia/regress/guard-pillage](tests/olympia/regress/guard-pillage)
+runs no combat/pillage); economy, npc, and weather each ran on the standard turn
+(`seed_city_trade` at INIT, `init_savage_attacks` per turn, `daily_events`
+weather every day) and took a deliberate one-time re-baseline. Combat/pillage/npc/
+weather behavior is pinned by its own golden tree,
+[tests/olympia/regress/guard-pillage](tests/olympia/regress/guard-pillage)
 (the **second** standing regress alongside secret-sea-route). Remaining
-subsystems (weather, upkeep, quest, …) stay on the global `rnd()`; the migration
+subsystems (upkeep, quest, …) stay on the global `rnd()`; the migration
 order and per-subsystem keying live in
 [doc/rng-state-granularity.md](doc/rng-state-granularity.md), and a PCG32
 generator swap stays deferred behind the TAG 64-bit work.

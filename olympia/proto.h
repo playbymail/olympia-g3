@@ -688,6 +688,10 @@ extern int v_torture(struct command *c);
 extern void clear_contacts(int stack);
 
 /* olympia/storm.c */
+extern void begin_weather(void);			/* issue #25: per-turn weather RNG stream */
+extern void wthr_shuffle(ilist l);
+extern int wthr_storm(int where, int k2, int low, int high);
+extern int wthr_wreck(int where, int sub, int low, int high);
 extern int d_banish_corpses(struct command *c);
 extern int d_bind_storm(struct command *c);
 extern int d_death_fog(struct command *c);

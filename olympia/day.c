@@ -43,6 +43,7 @@ ship_coastal_damage(void)
 {
 	int ship;
 	int n;
+	int sub;			/* issue #25: weather leaf-key disambiguator */
 
 	loop_ship(ship)
 	{
@@ -50,6 +51,7 @@ ship_coastal_damage(void)
 			continue;
 
 		n = near_rocky_coast(subloc(ship));
+		sub = sysclock.day * 16;	/* keyed on (ship, day*16+slot) */
 
 		switch (n)
 		{
@@ -57,27 +59,27 @@ ship_coastal_damage(void)
 			break;
 
 		case 1:
-			if (rnd(1,75) == 1)
+			if (wthr_wreck(ship, sub + 0, 1, 75) == 1)
 			{
 				wout(ship, "%s struck a coastal reef.  "
 					"There is minor damage to the ship.",
 							box_name(ship));
-				add_structure_damage(ship, rnd(3,5), TRUE);
+				add_structure_damage(ship, wthr_wreck(ship, sub + 1, 3, 5), TRUE);
 			}
 			break;
 
 		case 2:
-			if (rnd(1,50) == 1)
+			if (wthr_wreck(ship, sub + 2, 1, 50) == 1)
 			{
 				wout(ship, "%s struck some submerged rocks.  "
 					"There is minor damage to the ship.",
 							box_name(ship));
-				add_structure_damage(ship, rnd(6,9), TRUE);
+				add_structure_damage(ship, wthr_wreck(ship, sub + 3, 6, 9), TRUE);
 			}
 			break;
 
 		case 3:
-			switch (rnd(1,200))
+			switch (wthr_wreck(ship, sub + 4, 1, 200))
 			{
 			case 1:
 			case 2:
@@ -106,8 +108,9 @@ mine_calamity(int mine)
 	int i;
 	int to_kill;
 	int m, n;
+	int sub = sysclock.day * 16;	/* issue #25: weather leaf-key per (mine, day*16+slot) */
 
-	what = rnd(1,4);
+	what = wthr_wreck(mine, sub + 0, 1, 4);
 
 	vector_char_here(mine);
 	vector_add(mine);
@@ -138,7 +141,7 @@ mine_calamity(int mine)
 		assert(FALSE);
 	}
 
-	to_kill = min(rnd(1,5), count_loc_char_item(mine, item_worker));
+	to_kill = min(wthr_wreck(mine, sub + 1, 1, 5), count_loc_char_item(mine, item_worker));
 
 	if (to_kill > 0)
 	{
@@ -166,7 +169,7 @@ mine_calamity(int mine)
 		next_char_here;
 	}
 
-	add_structure_damage(mine, rnd(1, 15), TRUE);
+	add_structure_damage(mine, wthr_wreck(mine, sub + 2, 1, 15), TRUE);
 }
 
 
@@ -177,11 +180,12 @@ inn_calamity(int where)
 	int own;
 	int dam;
 	char buf[LEN];
+	int sub = sysclock.day * 16;	/* issue #25: weather leaf-key per (inn, day*16+slot) */
 
 	own = building_owner(where);
-	dam = rnd(5, 15);
+	dam = wthr_wreck(where, sub + 0, 5, 15);
 
-	switch (rnd(1,6))
+	switch (wthr_wreck(where, sub + 1, 1, 6))
 	{
 	case 1:	strcpy(buf, "Some customers ");				break;
 	case 2:	strcpy(buf, "Some patrons ");				break;
@@ -191,7 +195,7 @@ inn_calamity(int where)
 	case 6:	strcpy(buf, "A party of traveling entertainers ");	break;
 	}
 
-	switch (rnd(1,5))
+	switch (wthr_wreck(where, sub + 2, 1, 5))
 	{
 	case 1:	strcat(buf, "got drunk, ");			break;
 	case 2:	strcat(buf, "started a fight, ");		break;
@@ -200,7 +204,7 @@ inn_calamity(int where)
 	case 5:	strcat(buf, "refused to pay, ");		break;
 	}
 
-	switch (rnd(1,7))
+	switch (wthr_wreck(where, sub + 3, 1, 7))
 	{
 	case 1: strcat(buf, "and broke some furniture");	break;
 	case 2: strcat(buf, "and damaged a wall");		break;
@@ -234,12 +238,12 @@ random_loc_damage(void)
 		case sub_mine:
 			depth = mine_depth(where);
 
-			if (rnd(1, 90) <= depth)
+			if (wthr_wreck(where, sysclock.day * 16 + 8, 1, 90) <= depth)
 				mine_calamity(where);
 			break;
 
 		case sub_inn:
-			if (rnd(1, 100) == 1)
+			if (wthr_wreck(where, sysclock.day * 16 + 9, 1, 100) == 1)
 				inn_calamity(where);
 			break;
 		}
@@ -1833,7 +1837,7 @@ daily_events(void)
 
 		assert(4 <= MONTH_DAYS);
 
-		ilist_scramble(weather_days);
+		wthr_shuffle(weather_days);	/* issue #25: weather stream, not global rnd() */
 		qsort(weather_days, 4, sizeof(int), int_comp);
 	}
 

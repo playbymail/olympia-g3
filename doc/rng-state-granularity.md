@@ -2,8 +2,8 @@
 
 Status: **in progress.** Groundwork for Project Ultron
 ([agentic-project-ultron.md](agentic-project-ultron.md)). The seam
-(`lib/rng.{c,h}`) is wired into four subsystems so far — combat, pillage,
-economy/market, and NPC spawning (see the consumer sections below); the
+(`lib/rng.{c,h}`) is wired into five subsystems so far — combat, pillage,
+economy/market, NPC spawning, and weather (see the consumer sections below); the
 remaining subsystems in the [distribution map](#recommended-subsystem-distribution)
 are still on the global `rnd()`.
 
@@ -330,6 +330,104 @@ or cookie consumption, never during the `-s`/`-a`/`-i` world-init that
   spawn/behavior. The one spawn coupling in `swear.c` (an incited mob is *created*
   via `do_cookie_npc`) already rides the migrated troop-count draw.
 
+## Fifth consumer: weather
+
+Weather is the fifth subsystem migrated, and the **largest manifest-mover** of
+any consumer so far — it removes **~76,700 draws per turn** from the global serial
+stream (vs npc's 243, economy's per-city handful). It is a sibling of the others
+under the turn root, tag `"wthr"`:
+
+```
+turn seed
+  ├─ (location, TAG_COMBAT)  → combat_rng   (battle resolution)
+  ├─ (location, TAG_PILLAGE) → pillage_rng  (loot/mob draws)
+  ├─ (market,   TAG_ECONOMY) → economy_rng  (city trade seeding, market restock)
+  ├─ (location, TAG_NPC)     → npc_rng      (savage attacks, monster spawn qty, mob behavior)
+  └─ (0,        TAG_WEATHER) → weather_rng  (storm generation, schedule, environmental damage)
+```
+
+### The structural divergence: one per-turn stream, seeded once
+
+Unlike combat/npc/economy — which reseed a **fresh per-scenario** stream at each
+chokepoint (`begin_battle(where)`, `begin_npc(where)`, `begin_economy(where)`) —
+weather's reached draws are **Fisher-Yates province shuffles**
+(`ilist_shuffle`), which are inherently *sequential* and span the **whole turn**:
+the day-1 `weather_days` schedule shuffle, then the `natural_weather()` province
+shuffles on each later weather-day. A shuffle cannot be expressed as a keyed leaf
+draw (each swap's range depends on position), so the stream must carry a
+**persistent counter** across the turn.
+
+So `begin_weather()` (`olympia/storm.c`) is **turn-guarded** — it seeds
+`weather_rng = master → turn → (0, TAG_WEATHER)` **once per turn** (scenario key
+`0`, i.e. turn-global weather) and is a no-op on subsequent calls that turn. The
+counter advances monotonically across all the shuffles. Cross-subsystem isolation
+still holds (no non-weather draw moves); only *within* weather does draw order
+matter — which is exactly the granularity #25 wants. This is documented as a
+deliberate divergence in the `storm.c` header.
+
+### Hybrid draw model
+
+- **Sequential generation path (reached, ~76.7k draws/turn):** `wthr_shuffle()`
+  (a thin wrapper over the new `ilist_shuffle_rng(ilist, struct rng_stream *)` in
+  `lib/ilist.c`) for the `weather_days` schedule shuffle (`day.c`) and the
+  `create_some_storms` province shuffles (`storm.c`); plus the per-province
+  storm-strength roll `wthr_storm(province, day*256+kind, 2, 3)` — keyed on
+  `(province, day, kind)` so a chosen province's aura is addressable independent
+  of how the surrounding shuffle ordered the list.
+- **Keyed acute path (UNREACHED on the bare-map turn, byte-neutral):**
+  `wthr_wreck(where, sub, lo, hi)` (`rng_keyed`, purpose `"wrck"`) for ship
+  coastal damage, mine calamities, and inn calamities (`day.c`), plus the
+  death-fog flavor `wthr_storm()` (`storm.c` `fog_excuse`). `sub = day*16 + slot`
+  disambiguates the several draws within one calamity and across days. These sit
+  inside `n>0` / `sub_mine` / `sub_inn` branches the bare map never enters, so
+  their keying is free design space for future Ultron fixtures.
+
+The cross-file helpers (`begin_weather`, `wthr_shuffle`, `wthr_storm`,
+`wthr_wreck`) live in `storm.c` and are exposed via `proto.h` so `day.c` can call
+them — the same pattern as `begin_economy`/`econ_*` and `begin_npc`/`npc_*`. The
+helpers self-seed via the turn-guarded `begin_weather()`, so a player
+weather-spell command (`d_death_fog`) firing during the day's command loop —
+before `daily_events()` reaches its first weather draw — cannot read an unseeded
+stream.
+
+### Why this one moved the manifest (and by how much)
+
+`daily_events()` runs every day of the standard turn, and its weather path fires
+heavily on the bare map: the `weather_days` schedule shuffle (29 draws, day 1),
+**8** `create_some_storms` calls each shuffling a province list of ~7.5k–10k
+(~70k draws), and **6608** `new_storm` strength rolls. Removing all of that from
+the global serial stream realigns every global draw that follows, so this
+migration took a **deliberate one-time re-baseline of the main manifest** (still
+204 files; only content shifted — the still-global entity-id mint draws moved).
+
+The **acute damage paths draw nothing on the bare map** (no rocky-coast ships, no
+mines, no inns — their `rnd` lives inside branches never entered), so migrating
+them is byte-neutral; they were migrated anyway for future fixture addressability.
+
+It also moved the **guard-pillage golden tree** (its turn runs `daily_events`):
+the pillage *reports* `save/1/{300,301}` shifted while `fact/{300,301}` and the
+battle dice were unchanged — the same signature as the npc migration. As with npc,
+the frozen `scenario.tgz` did **not** go stale (weather draws fire only during a
+turn, never during the `-s`/`-a`/`-i` world-init `build-scenario.sh` bakes), so
+both `check.sh` and `check-lua.sh` agree on the re-baselined `EXPECT.sha256` and
+no `scenario.tgz` regeneration was needed.
+
+**Reserved-but-unused: the `"decay"` purpose.** The distribution map proposed a
+`"decay"` leaf for storm lifecycle. In fact `storm_decay()` / `storm_move()`
+(`day.c` `post_month`) **draw nothing** — a storm's strength is a pure decrement
+and its move uses a stored direction — so weather has no decay draw. The tag is
+left documented for symmetry but wired to nothing.
+
+**Deliberately left on the global `rnd()`** (documented residuals): the
+`daily_events` day-picks `curse_erode_day` (magic), `faery_day` (region:faery,
+step 12), `dog_bark_day` (detection/stealth); the **upkeep** routines
+(`heal_char_sup`, `loyalty_decay`, `men_starve`, `animal_deaths`, `corpse_decay`
+— step 6, `"upkp"`); `inn_income` (per-structure income → economy/upkeep); and the
+`post_month` gradual decays (link/relic/pillage/hide_mage/ghost_warrior/
+dead_body_rot/collapsed_mine). Storm *summoning* via `do_cookie_npc` already
+passes through without a draw (storm cookies carry `man_kind == 0`), so there was
+no entanglement to unwind.
+
 ## Recommended subsystem distribution
 
 The map below is the canonical target the remaining migrations work against. It
@@ -362,8 +460,9 @@ master seed                                  rng_seed(randseed bytes)
    │     └─ leaf key(cookie/fort, entity, "spwn"/"qnty"/"bhvr")  ← absorbed the pillage residual
    │             (hades/faery bandits -> region; swear/beast social -> residual on global)
    │
-   ├─ weather    key(turn, location, "wthr")  [proposed] storm.c, day.c (environmental damage)
-   │     └─ leaf key(where, 0, "storm"/"wreck"/"decay")
+   ├─ weather    key(turn, 0,        "wthr")  [LANDED]   storm.c (begin_weather/wthr_*), day.c (environmental damage)
+   │     └─ seq  shuffle+aura (generation); leaf key(where, day*16+slot, "wrck") (acute, unreached)
+   │             one per-turn stream, seeded once; "decy" reserved/unused (storm_decay draws nothing)
    │
    ├─ upkeep     key(turn, entity,   "upkp")  [proposed] day.c (healing, loyalty/structure decay, NPC orders)
    │     └─ leaf key(noble, 0, "heal"/"loyalty"/"sicken")
@@ -398,7 +497,7 @@ master seed                                  rng_seed(randseed bytes)
 | 2 | pillage | `pill` | location | **landed** | `combat.c`, `npc.c` |
 | 3 | economy | `econ` | market | **landed** | `buy.c`, `seed.c` |
 | 4 | npc | `npcs` | location | **landed** | `npc.c`, `savage.c` |
-| 5 | weather | `wthr` | location | proposed | `storm.c`, `day.c` |
+| 5 | weather | `wthr` | turn (loc 0) | **landed** | `storm.c`, `day.c` |
 | 6 | upkeep | `upkp` | entity | proposed | `day.c` |
 | 7 | quest | `qest` | quest id | proposed | `quest.c` |
 | 8 | explore | `expl` | actor | proposed | `tunnel.c`, `stealth.c` |
@@ -424,9 +523,18 @@ master seed                                  rng_seed(randseed bytes)
   documented residuals (region / social subsystems). Like economy it ran on the
   standard turn (`init_savage_attacks`), so it took a one-time main-manifest
   re-baseline — see [Fourth consumer](#fourth-consumer-npc-spawning).
-- **weather/upkeep next** — `day.c` is a 28-draw hot spot split across
+- **weather came next** (now landed) — `day.c` + `storm.c` are split across
   environmental events (location-keyed) and per-noble upkeep (entity-keyed);
-  splitting it removes a large slice of global coupling.
+  splitting weather out removed the single largest slice of global coupling
+  (~76.7k draws/turn, dominated by the `create_some_storms` province shuffles).
+  It is the one consumer that uses a **persistent per-turn stream** (seeded once,
+  turn-guarded) rather than a fresh per-scenario one, because its reached draws
+  are sequential province shuffles — see
+  [Fifth consumer](#fifth-consumer-weather). Like economy/npc it ran on the
+  standard turn, so it took a one-time main-manifest re-baseline.
+- **upkeep is next** — the per-noble/per-structure half of `day.c` (healing,
+  loyalty/structure decay, starvation, animal deaths, corpse decay, inn income),
+  entity-keyed.
 - **mint is last** — `z.c` password/id generation is *creation-order* sensitive
   today, so keying it on the minted entity id is what most directly enables small
   fixtures, but it touches the most golden bytes; stage it after everything else.

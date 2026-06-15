@@ -3,6 +3,105 @@
 #include	<string.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
+
+
+/*
+ *  issue #25: per-turn weather RNG stream (tag "wthr"), a sibling of the
+ *  combat/pillage/economy/npc streams under the same turn root. Natural-weather
+ *  generation (the weather_days schedule, the per-region province shuffles, and
+ *  the storm-strength rolls) and acute environmental damage (ship coastal
+ *  damage, mine/inn calamities) draw from here instead of the global rnd(), so
+ *  an unrelated subsystem can no longer perturb them and vice versa.
+ *
+ *  DIVERGENCE from the per-scenario reseed of combat/npc/economy: weather's
+ *  reached draws are Fisher-Yates province shuffles (ilist_shuffle_rng), which
+ *  are inherently sequential and span the whole turn (the day-1 schedule shuffle
+ *  through the natural_weather() generation passes on later days). So the stream
+ *  is seeded ONCE per turn (begin_weather() is turn-guarded) and its counter
+ *  advances monotonically across those shuffles -- a persistent per-turn stream
+ *  rather than a fresh per-call one. Cross-subsystem isolation still holds; only
+ *  WITHIN weather does draw order matter.
+ *
+ *  Hybrid draw model:
+ *    - the reached generation path uses SEQUENTIAL draws: wthr_shuffle() for the
+ *      schedule/province shuffles, plus a sequential storm-strength roll keyed
+ *      per (province, day, kind) via wthr_storm() so a chosen province's aura is
+ *      addressable independent of shuffle order;
+ *    - the acute per-location damage (ship/mine/inn), UNREACHED on the bare-map
+ *      standard turn, uses KEYED leaf draws (wthr_wreck) on (where, sub) so a
+ *      future fixture can pin one location's calamity.
+ *
+ *  Reserved-but-unused: the "decay" leaf purpose. storm_decay()/storm_move()
+ *  (day.c post_month) draw NOTHING -- a storm's lifecycle is a pure strength
+ *  decrement and a stored-direction move -- so weather has no decay draw. The
+ *  tag is kept documented for symmetry with the distribution map.
+ */
+static rng_stream weather_rng;
+static int weather_rng_turn = -1;	/* seed weather_rng once per turn */
+
+#define	TAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_WEATHER	0x77746872u	/* "wthr" */
+
+/* weather leaf-draw purpose tags (kept private, like combat.c's stream tags) */
+#define	WTAG_STORM	0x73746f6du	/* "stom" -- storm strength / fog flavor  */
+#define	WTAG_WRECK	0x7772636bu	/* "wrck" -- ship/mine/inn acute damage   */
+/* WTAG_DECAY "decy" reserved -- storm lifecycle decay draws nothing (above)  */
+
+void
+begin_weather(void)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	if (weather_rng_turn == sysclock.turn)
+		return;			/* already seeded this turn */
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	weather_rng = rng_stream_of(&turn, 0, TAG_WEATHER);
+
+	weather_rng_turn = sysclock.turn;
+}
+
+/*
+ *  Sequential shuffle of an ilist on the per-turn weather stream. Self-seeds via
+ *  begin_weather() so a player weather-spell command (e.g. d_death_fog) that
+ *  fires during the day's command loop -- before daily_events() seeds the
+ *  stream -- cannot read an unseeded stream. Keyed helpers never advance the
+ *  counter, so the schedule shuffle still begins at counter 0 regardless.
+ */
+void
+wthr_shuffle(ilist l)
+{
+	begin_weather();
+	ilist_shuffle_rng(l, &weather_rng);
+}
+
+/*
+ *  Storm-strength roll for a province (sequential generation path). Keyed on
+ *  (province, day*256+kind) so a chosen province's aura is reproducible
+ *  regardless of how the surrounding shuffle ordered the list.
+ */
+int
+wthr_storm(int where, int k2, int low, int high)
+{
+	begin_weather();
+	return rng_keyed(&weather_rng, where, k2, WTAG_STORM, low, high);
+}
+
+/*
+ *  Acute environmental-damage roll for a location (ship coastal damage, mine /
+ *  inn calamity). Keyed leaf on (where, sub) -- sub disambiguates the several
+ *  draws within one calamity and the day. Unreached on the bare-map turn.
+ */
+int
+wthr_wreck(int where, int sub, int low, int high)
+{
+	begin_weather();
+	return rng_keyed(&weather_rng, where, sub, WTAG_WRECK, low, high);
+}
 
 
 int
@@ -1111,10 +1210,10 @@ v_death_fog(struct command *c)
 
 
 static char *
-fog_excuse(void)
+fog_excuse(int where, int target)
 {
 
-	switch (rnd(1,3))
+	switch (wthr_storm(where, target, 1, 3))
 	{
 	case 1:	return "wandered off in the fog and were lost.";
 	case 2:	return "choked to death in the poisonous fog.";
@@ -1248,7 +1347,7 @@ d_death_fog(struct command *c)
 
 		wout(target, "%s %s %s.", cap(nice_num(aura_used)),
 				aura_used == 1 ? "man" : "men",
-				fog_excuse());
+				fog_excuse(where, target));
 
 		wout(c->who, "Killed %s %s of %s.",
 				nice_num(aura_used),
@@ -1443,10 +1542,11 @@ create_some_storms(int num, int kind)
 	}
 	next_province;
 
-	ilist_scramble(l);
+	wthr_shuffle(l);
 
 	for (i = 0; i < ilist_len(l) && i < num; i++)
-		new_storm(0, kind, rnd(2,3), l[i]);
+		new_storm(0, kind, wthr_storm(l[i], sysclock.day * 256 + kind, 2, 3),
+				l[i]);
 }
 
 
