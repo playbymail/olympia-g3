@@ -134,6 +134,12 @@ extern int v_raze(struct command *c);
 extern int v_repair(struct command *c);
 
 /* olympia/buy.c */
+extern void begin_economy(int where);			/* issue #25: per-market RNG stream */
+extern int econ_pick(int item, int where, int low, int high);
+extern int econ_stock(int item, int where, int low, int high);
+extern int econ_qty(int item, int where, int low, int high);
+extern int econ_cost(int item, int where, int low, int high);
+extern int econ_expire(int item, int where, int low, int high);
 extern int d_find_buy(struct command *c);
 extern int d_find_sell(struct command *c);
 extern int is_tradegood(int item);

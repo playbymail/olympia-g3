@@ -1,9 +1,11 @@
 # RNG-state granularity — survey & recommendation (issue #25)
 
-Status: **design / exploration.** Groundwork for Project Ultron
-([agentic-project-ultron.md](agentic-project-ultron.md)). The prototype seam
-described here (`lib/rng.{c,h}`) is committed but **unwired** — no engine code
-calls it yet, so golden output is unchanged.
+Status: **in progress.** Groundwork for Project Ultron
+([agentic-project-ultron.md](agentic-project-ultron.md)). The seam
+(`lib/rng.{c,h}`) is wired into three subsystems so far — combat, pillage, and
+economy/market (see the consumer sections below); the remaining subsystems in
+the [distribution map](#recommended-subsystem-distribution) are still on the
+global `rnd()`.
 
 ## The problem
 
@@ -194,6 +196,66 @@ byte-identical battle report. The #4 fix is correct-on-principle hardening of
 dead code; no black-box fixture can distinguish it. See
 `tests/olympia/regress/guard-pillage/README.md`.
 
+## Third consumer: economy/market seeding
+
+The economy/market subsystem is the third migrated, and the **first that was
+not byte-neutral** on the main manifest. It is a sibling of combat and pillage
+under the same turn root, with its own tag:
+
+```
+turn seed
+  ├─ (location, TAG_COMBAT)  → combat_rng   (battle resolution)
+  ├─ (location, TAG_PILLAGE) → pillage_rng  (loot/mob draws)
+  └─ (market,   TAG_ECONOMY) → economy_rng  (city trade seeding, market restock)
+```
+
+`begin_economy(where)` (`olympia/buy.c`) reseeds `economy_rng` per market, and
+the market rolls use **keyed leaf draws** (`rng_keyed`) rather than the
+sequential `rng_draw` combat/pillage used — the leaf key is `(item, where,
+purpose)`, with `purpose` a 4-char tag (`pick`/`stok`/`qnty`/`cost`/`expr`)
+exposed through small named helpers (`econ_pick`/`econ_stock`/`econ_qty`/
+`econ_cost`/`econ_expire`). So an inserted draw between two market rolls cannot
+move either, and the same `(item, where)` always yields the same value
+regardless of how many other rolls preceded it. This generalizes the
+already-keyed `md5_int()` buyer test the doc pointed at as the template.
+
+Migrated draws: `seed_city_trade()` (`olympia/seed.c`, the staple/faery-good
+choices and the riding-horse/hide/iron/lumber qty & cost), the per-turn
+suffuse-ring restock (`trade_suffuse_ring`), and the FIND SELL/BUY trade-good
+draws (`new_tradegood`, `d_find_sell`, `d_find_buy`).
+
+**Deliberately left on the global `rnd()`** (not market-specific, the
+`do_cookie_npc` precedent): the city *skill*-teaching and *prominence* seeding
+(`seed_city_skill` / `choose_city_prominence`), the city *garrison* count
+(`add_city_garrisons`), and the production/skill player commands in
+`produce.c` (mining, harvest, mage-menial flavor). `buy.c`'s `md5_int()` buyer
+test stays as-is: it is already a keyed leaf and is intentionally
+turn-INDEPENDENT (the set of buyer cities must be stable across turns), so it
+must *not* move onto the turn-keyed `economy_rng`.
+
+### Why this one moved the manifest (combat/pillage did not)
+
+Combat and pillage were byte-neutral because the bare-map standard turn has no
+characters and never reached them. Economy/market seeding is different:
+`seed_city_trade()` runs at **INIT** (`seed_initial_locations`, re-run during
+the standard `./run/olympia-g3.sh` turn — verified via the `INIT:
+seed_initial_locations()` stage) for every city across all four regions.
+Removing those draws from the global serial stream realigns every global draw
+that follows — so this migration required a **deliberate one-time re-baseline of
+the 206-file main manifest** (it shrank to 204 files: the special-region entity
+ids are minted on the still-global stream, so they shifted).
+
+It also moved the **guard-pillage golden tree**, for a subtler reason worth
+recording: the battle dice are keyed and unchanged, but `check-lua.sh` rebuilds
+the scenario from the bare map via `olyscript-g3`, which re-runs INIT seeding and
+**saves a different `randseed`** (economy draws no longer advance the global
+stream during the build). That different saved seed becomes the next turn's
+master seed, so the still-global mint/loot draws shift. The frozen `scenario.tgz`
+(used by `check.sh`, `init=1` so it never re-seeds) was therefore stale; it was
+regenerated with `build-scenario.sh` and `EXPECT.sha256` re-baselined so both the
+C and Lua twins agree again. This coupling through the saved `randseed` → master
+seed disappears once the `mint` subsystem (last in the map) is migrated.
+
 ## Recommended subsystem distribution
 
 The map below is the canonical target the remaining migrations work against. It
@@ -219,10 +281,10 @@ master seed                                  rng_seed(randseed bytes)
    ├─ pillage    key(turn, location, "pill")  [LANDED]   combat.c (begin_pillage/prnd), npc.c
    │     └─ leaf key(0, 0, "form"/"name"/"attack")        troop-count residual -> npc, below
    │
-   ├─ economy    key(turn, market,   "econ")  [next]     buy.c, produce.c, seed.c (market seeding)
-   │     └─ leaf key(item, where, "sold"/"qty"/"price")   ← already proto'd by md5_int @ buy.c:1442
+   ├─ economy    key(turn, market,   "econ")  [LANDED]   buy.c (begin_economy/econ_*), seed.c (seed_city_trade)
+   │     └─ leaf key(item, where, "pick"/"stok"/"qnty"/"cost"/"expr")  ← keyed via rng_keyed
    │
-   ├─ npc        key(turn, location, "npcs")  [proposed] npc.c, savage.c, swear.c, beast.c
+   ├─ npc        key(turn, location, "npcs")  [next]     npc.c, savage.c, swear.c, beast.c
    │     └─ leaf key(cookie, entity, "spawn"/"qty"/"behavior")  ← absorbs the pillage residual
    │
    ├─ weather    key(turn, location, "wthr")  [proposed] storm.c, day.c (environmental damage)
@@ -259,8 +321,8 @@ master seed                                  rng_seed(randseed bytes)
 |-------|-------------|-----|--------------|--------|---------------|
 | 1 | combat | `comb` | location | **landed** | `combat.c` |
 | 2 | pillage | `pill` | location | **landed** | `combat.c`, `npc.c` |
-| 3 | economy | `econ` | market | next | `buy.c`, `produce.c`, `seed.c` |
-| 4 | npc | `npcs` | location | proposed | `npc.c`, `savage.c`, `swear.c`, `beast.c` |
+| 3 | economy | `econ` | market | **landed** | `buy.c`, `seed.c` |
+| 4 | npc | `npcs` | location | next | `npc.c`, `savage.c`, `swear.c`, `beast.c` |
 | 5 | weather | `wthr` | location | proposed | `storm.c`, `day.c` |
 | 6 | upkeep | `upkp` | entity | proposed | `day.c` |
 | 7 | quest | `qest` | quest id | proposed | `quest.c` |
@@ -273,10 +335,13 @@ master seed                                  rng_seed(randseed bytes)
 
 ### Why this order
 
-- **economy is next** — `buy.c:1442` already draws with `md5_int(...)`, the exact
-  keyed-leaf model, so it is the cheapest first proposed migration and a clean
-  template for the rest.
-- **npc fourth, deliberately** — the pillage troop-count residual lives in the
+- **economy was the cheapest first proposed migration** (now landed) —
+  `buy.c:1442` already drew with `md5_int(...)`, the exact keyed-leaf model, so it
+  was a clean template; the migrated draws use `rng_keyed` on a `(item, where,
+  purpose)` key. Unlike combat/pillage it ran on the standard turn (`seed_city_trade`
+  at INIT), so it took a one-time main-manifest re-baseline — see
+  [Third consumer](#third-consumer-economymarket-seeding).
+- **npc is next, deliberately** — the pillage troop-count residual lives in the
   shared `do_cookie_npc()` (also backing undead/storm/savage spawning), so it
   belongs under `npc`, not `pillage`. Migrating this one stream clears the
   residual *and* the same coupling in those subsystems at once.
