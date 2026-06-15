@@ -227,6 +227,11 @@ the **global** stream as documented residuals: `inn_income` (per-structure
 income → a future income subsystem; `temple_income` draws nothing). Note
 `storm_decay()` / `storm_move()` draw **nothing** (pure strength decrement /
 stored-direction move), so the weather migration left `post_month` untouched.
+`quest_decay()` likewise draws **nothing** (a pure `quest_late` decrement loop),
+so the quest migration (#25, tag `qest`) left `post_month` untouched too — quest
+draws are **command-only** (the QUEST command / skull-relic use, on the keyed
+per-quest stream `begin_quest()`/`qrnd()`), and a standard `-r` turn issues
+neither, so the quest stream is unreached on both golden trees.
 
 ---
 

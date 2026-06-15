@@ -2,6 +2,50 @@
 #include	<stdio.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
+
+
+/*
+ *  Issue #25: the quest path draws from a per-quest RNG stream instead of the
+ *  global rnd() serial stream. Two entry points seed it -- the QUEST command
+ *  (d_quest), keyed on the sublocation being quested in, and the use-bta-skull
+ *  relic command (v_use_bta_skull), keyed on the actor -- both under TAG_QUEST.
+ *  Unlike weather/upkeep (one turn-guarded per-turn stream), quest reseeds a
+ *  FRESH per-scenario stream at each entry point, the begin_battle() model: the
+ *  whole d_quest chain (monster pick, gold/loot switch, artifact assembly,
+ *  teach-book shuffle) is an ordered run of draws building one outcome, so the
+ *  sequential rng_draw (qrnd) carries it -- a change to an unrelated subsystem
+ *  can't perturb a quest result. The seeding helpers (random_unassigned_relic,
+ *  new_artifact, choose_quest_monster, new_monster, make_subloc_monster,
+ *  make_teach_book) are all reached only through these two entry points, so
+ *  begin_quest() is always called before they draw. begin_quest()/qrnd() are
+ *  exposed via proto.h, the begin_economy/begin_npc/begin_weather convention.
+ *  Shared infra reached on the quest path (new_char/gen_item/create_unique_item/
+ *  new_orb/create_npc_token) keeps the legacy rnd() -- those are other
+ *  subsystems' draws (mint/item), migrated under their own tracks.
+ */
+static rng_stream quest_rng;
+
+#define	TAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_QUEST	0x71657374u	/* "qest" */
+
+void
+begin_quest(int key)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	quest_rng = rng_stream_of(&turn, key, TAG_QUEST);
+}
+
+int
+qrnd(int low, int high)
+{
+	return rng_draw(&quest_rng, low, high);
+}
 
 
 int subloc_player = 0;
@@ -82,7 +126,7 @@ random_unassigned_relic(void)
 	if (sum == 0)
 		return 0;
 
-	choice = rnd(1, sum);
+	choice = qrnd(1, sum);
 
 	loop_inv(nowhere_loc, e)
 	{
@@ -175,12 +219,12 @@ make_teach_book(int who, int questor)
 
 	if (ilist_len(candidate) > 0)
 	{
-		ilist_scramble(candidate);
+		ilist_shuffle_rng(candidate, &quest_rng);	/* issue #25: quest stream */
 		sk = candidate[0];
 	}
 	else if (ilist_len(candidate2) > 0)
 	{
-		ilist_scramble(candidate2);
+		ilist_shuffle_rng(candidate2, &quest_rng);	/* issue #25: quest stream */
 		sk = candidate2[0];
 	}
 	else
@@ -258,35 +302,35 @@ new_artifact(int who)
 
 	new = create_unique_item(who, sub_artifact);
 
-	switch (rnd(1,4))
+	switch (qrnd(1,4))
 	{
 	case 1:
-		s = art_att_s[rnd(0,2)];
-		p_item_magic(new)->attack_bonus = (schar)(rnd(1,10) * 5);
+		s = art_att_s[qrnd(0,2)];
+		p_item_magic(new)->attack_bonus = (schar)(qrnd(1,10) * 5);
 		break;
 
 	case 2:
-		s = art_def_s[rnd(0,2)];
-		p_item_magic(new)->defense_bonus = (schar)(rnd(1,10) * 5);
+		s = art_def_s[qrnd(0,2)];
+		p_item_magic(new)->defense_bonus = (schar)(qrnd(1,10) * 5);
 		break;
 
 	case 3:
-		s = art_mis_s[rnd(0,3)];
-		p_item_magic(new)->missile_bonus = (schar)(rnd(1,10) * 5);
+		s = art_mis_s[qrnd(0,3)];
+		p_item_magic(new)->missile_bonus = (schar)(qrnd(1,10) * 5);
 		break;
 
 	case 4:
-		s = art_mag_s[rnd(0,2)];
-		p_item_magic(new)->aura_bonus = (short) rnd(1,3);
+		s = art_mag_s[qrnd(0,2)];
+		p_item_magic(new)->aura_bonus = (short) qrnd(1,3);
 		break;
 
 	default:
 		assert(FALSE);
 	}
 
-	if (rnd(1,3) < 3)
+	if (qrnd(1,3) < 3)
 	{
-		s = sout("%s %s", pref[rnd(0,4)], s);
+		s = sout("%s %s", pref[qrnd(0,4)], s);
 	}
 	else
 	{
@@ -294,7 +338,7 @@ new_artifact(int who)
 
 		for (i = 0; of_names[i]; i++)
 			;
-		i = rnd(0, i-1);
+		i = qrnd(0, i-1);
 
 		s = sout("%s of %s", cap(s), of_names[i]);
 	}
@@ -400,7 +444,7 @@ choose_quest_monster(int where)
 
 	assert(sum > 0);
 
-	choice = rnd(1, sum);
+	choice = qrnd(1, sum);
 
 	for (i = 0; quest_monster[i].terr; i++)
 		if (quest_monster[i].terr == terr &&
@@ -431,9 +475,9 @@ new_monster(int where)
 	new = new_char(sub_ni, quest_monster[i].item, where,
 			-1, npc_pl, LOY_npc, 0, NULL);
 
-	gen_item(new,	
+	gen_item(new,
 		quest_monster[i].item,
-		rnd(quest_monster[i].low-1, quest_monster[i].high-1));
+		qrnd(quest_monster[i].low-1, quest_monster[i].high-1));
 
 	p_char(new)->npc_prog = PROG_subloc_monster;
 
@@ -462,9 +506,9 @@ make_subloc_monster(int where, int questor)
 	if (relic)
 		low = 0;
 
-	gen_item(monster, item_gold, rnd(100, 500));
+	gen_item(monster, item_gold, qrnd(100, 500));
 
-	switch (rnd(low, 18))
+	switch (qrnd(low, 18))
 	{
 	case 0:
 	case 1:
@@ -474,11 +518,11 @@ make_subloc_monster(int where, int questor)
 		switch (relic)
 		{
 		case RELIC_CROWN:
-			p_item_magic(relic)->relic_decay = (short)(rnd(8,16)+1);
+			p_item_magic(relic)->relic_decay = (short)(qrnd(8,16)+1);
 			break;
 
 		case RELIC_BTA_SKULL:
-			p_item_magic(relic)->relic_decay = (short)(rnd(10,20)+1);
+			p_item_magic(relic)->relic_decay = (short)(qrnd(10,20)+1);
 			break;
 		}
 		break;
@@ -488,7 +532,7 @@ make_subloc_monster(int where, int questor)
 	case 4:
 	case 5:
 	case 6:
-		gen_item(monster, item_gold, rnd(100, 3000));
+		gen_item(monster, item_gold, qrnd(100, 3000));
 		break;
 
 	case 7:
@@ -511,7 +555,7 @@ make_subloc_monster(int where, int questor)
 	{
 		int item;
 
-		if (rnd(0,1) == 0)
+		if (qrnd(0,1) == 0)
 			item = create_npc_token(monster);
 		break;
 	}
@@ -539,7 +583,7 @@ make_subloc_monster(int where, int questor)
 
 		item = item_pegasus;
 
-		gen_item(monster, item, rnd(1, 6));
+		gen_item(monster, item, qrnd(1, 6));
 		break;
 	}
 
@@ -651,13 +695,15 @@ d_quest(struct command *c)
 		return TRUE;
 	}
 
-	if (rnd(1,100) <= 50)
+	begin_quest(where);	/* issue #25: reseed the per-quest stream */
+
+	if (qrnd(1,100) <= 50)
 	{
 		wout(c->who, "Nothing of interest was found.");
 		return TRUE;
 	}
 
-	p_subloc(where)->quest_late = (schar) rnd(5,13);   /* no quests following 4-12 turns */
+	p_subloc(where)->quest_late = (schar) qrnd(5,13);   /* no quests following 4-12 turns */
 
 	monster = make_subloc_monster(where, c->who);
 
@@ -684,10 +730,12 @@ v_use_bta_skull(struct command *c)
 
 	assert(item == RELIC_BTA_SKULL);
 
+	begin_quest(c->who);	/* issue #25: reseed the per-quest stream (actor-keyed) */
+
 	p_item_magic(item)->relic_decay = 0;
 	move_item(c->who, nowhere_loc, item, 1);
 
-	if (!is_magician(c->who) || rnd(1,100) <= 25)
+	if (!is_magician(c->who) || qrnd(1,100) <= 25)
 	{
 		wout(c->who, "The skull erupts with an intense blast of aura,"
 			" killing %s!", just_name(c->who));
@@ -695,7 +743,7 @@ v_use_bta_skull(struct command *c)
 	}
 	else
 	{
-		int aura = rnd(50,75);
+		int aura = qrnd(50,75);
 
 		wout(c->who, "The skull radiates a burst of %s aura!",
 				comma_num(aura));

@@ -543,6 +543,8 @@ extern void mine_production(int where);
 extern char *read_pw(char *type);
 
 /* olympia/quest.c */
+extern void begin_quest(int key);			/* issue #25: per-quest RNG stream */
+extern int qrnd(int low, int high);
 extern int choose_quest_monster(int where);
 extern int d_quest(struct command *c);
 extern int make_subloc_monster(int where, int questor);

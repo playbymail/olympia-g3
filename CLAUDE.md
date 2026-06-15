@@ -200,9 +200,9 @@ the addressable seam is `lib/rng.{c,h}`
 phase order the driver walks, and which draws are keyed vs still on the global
 stream — see [doc/turn-execution-order.md](doc/turn-execution-order.md).
 
-**Six consumers landed so far: combat, pillage, economy/market, npc, weather,
-upkeep.** Each reseeds a stream off the turn root (`rng_master_seed()` → turn →
-its own 4-char tag) and draws from it instead of the global `rnd()`:
+**Seven consumers landed so far: combat, pillage, economy/market, npc, weather,
+upkeep, quest.** Each reseeds a stream off the turn root (`rng_master_seed()` →
+turn → its own 4-char tag) and draws from it instead of the global `rnd()`:
 
 - **combat** — per-battle stream on `(turn, location)`, `begin_battle()`/`crnd()`
   in `olympia/combat.c` (sequential `rng_draw`).
@@ -231,6 +231,14 @@ its own 4-char tag) and draws from it instead of the global `rnd()`:
   per-entity chokepoint, like weather). `inn_income` (per-structure income) and
   the `daily_events` day-picks stay global residuals; `temple_income` and the
   `post_month` decays draw nothing.
+- **quest** — per-quest stream (tag `qest`), but a **fresh per-scenario reseed**
+  (the `begin_battle` model, not turn-guarded) via `begin_quest()`/`qrnd()`
+  exposed through `proto.h` (`quest.c`, `use.c`). The QUEST command generation
+  chain is a sequential ~20-draw run (monster pick, gold/loot switch, artifact
+  assembly, teach-book shuffle via `ilist_shuffle_rng`); keyed on the sublocation
+  (`d_quest`) or the actor (`v_use_bta_skull`) — there is no first-class quest
+  entity. Shared infra on the path (`new_char`/`gen_item`/`create_unique_item`/
+  `new_orb`/`create_npc_token`) stays global; `quest_decay` draws nothing.
 
 Combat and pillage were **byte-neutral on the main manifest** (the bare-map turn
 runs no combat/pillage); economy, npc, and weather each ran on the standard turn
@@ -239,11 +247,15 @@ weather every day) and took a deliberate one-time re-baseline. **Upkeep is
 byte-neutral on *both* trees** (the combat/pillage profile): every upkeep draw is
 unreached — the bare map has no player chars and the guard-pillage soldiers are
 inventory items, so its nobles afford maintenance and stay at full health — so it
-took no re-baseline. Combat/pillage/npc/weather/upkeep behavior is pinned by its
-own golden tree,
+took no re-baseline. **Quest is byte-neutral on *both* trees too** (the same
+profile): every quest draw is command-only and neither tree issues a QUEST/USE
+command, and the only world-init quest call (`create_relics`) draws nothing — so
+no re-baseline and no `scenario.tgz` regeneration.
+Combat/pillage/npc/weather/upkeep behavior is pinned by its own golden tree,
 [tests/olympia/regress/guard-pillage](tests/olympia/regress/guard-pillage)
 (the **second** standing regress alongside secret-sea-route). Remaining
-subsystems (quest, …) stay on the global `rnd()`; the migration
+subsystems (explore, skills, magic, worldgen, regions, mint) stay on the global
+`rnd()`; the migration
 order and per-subsystem keying live in
 [doc/rng-state-granularity.md](doc/rng-state-granularity.md), and a PCG32
 generator swap stays deferred behind the TAG 64-bit work.
