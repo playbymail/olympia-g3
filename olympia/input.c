@@ -433,7 +433,9 @@ exec_comp(const void *av, const void *bv)
 	int *a = (int *) av;
 	int *b = (int *) bv;
 
-	return bx[*a]->temp - bx[*b]->temp;
+	if (bx[*a]->temp != bx[*b]->temp)
+		return bx[*a]->temp - bx[*b]->temp;
+	return *a - *b;		/* total order: tie-break so qsort is stable across libc */
 }
 
 
