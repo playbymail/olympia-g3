@@ -115,6 +115,8 @@ extern void ilist_rem_value(ilist *l, int n);
 extern void ilist_rem_value_uniq(ilist *l, int n);
 extern void ilist_scramble(ilist l);
 extern void ilist_shuffle(ilist l);
+struct rng_stream;					/* issue #25: pointer-only, defined in rng.h */
+extern void ilist_shuffle_rng(ilist l, struct rng_stream *s);
 extern void ilist_test(void);
 
 // 'item_ents_list' reallocing array definitions

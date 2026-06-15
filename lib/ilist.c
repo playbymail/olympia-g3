@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "lists.h"
+#include "rng.h"		/* issue #25: ilist_shuffle_rng() stream-taking shuffle */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -278,6 +279,33 @@ ilist_shuffle(ilist l)
     for (i = 0; i < len; i++)
     {
         int r = rnd(i, len);
+        if (r != i)
+        {
+            int tmp = l[i];
+            l[i] = l[r];
+            l[r] = tmp;
+        }
+    }
+}
+
+
+/*
+ *  issue #25: same Knuth shuffle as ilist_shuffle(), but every swap draws from
+ *  a caller-supplied rng_stream instead of the process-global rnd(). Used by the
+ *  weather migration (storm.c create_some_storms, day.c weather_days) so the
+ *  weather subsystem's province/day shuffles no longer perturb the global
+ *  serial stream. Sequential within the stream (a shuffle is inherently
+ *  order-dependent), but isolated from every other subsystem. See
+ *  doc/rng-state-granularity.md.
+ */
+void
+ilist_shuffle_rng(ilist l, struct rng_stream *s)
+{
+    int len = ilist_len(l) - 1;
+    int i;
+    for (i = 0; i < len; i++)
+    {
+        int r = rng_draw(s, i, len);
         if (r != i)
         {
             int tmp = l[i];

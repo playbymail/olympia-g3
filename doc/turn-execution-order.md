@@ -138,11 +138,12 @@ evening if `poll` is set (`input.c:614-618`). State machine is
 Scheduled, day-conditioned effects. **First-call RNG draws** pick the random days
 for the month (these fire the first time `daily_events` runs, i.e. day 1):
 
-- `curse_erode_day = rnd(1, MONTH_DAYS)` (`day.c:1819`)
-- `faery_day = rnd(MONTH_DAYS/2, MONTH_DAYS)` (`day.c:1822`)
-- `dog_bark_day = rnd(1, MONTH_DAYS)` (`day.c:1825`)
-- `weather_days`: built `1..MONTH_DAYS`, `ilist_scramble`d, then the first 4
-  `qsort`ed (`day.c:1827-1838`) — `ilist_scramble` draws from the RNG
+- `curse_erode_day = rnd(1, MONTH_DAYS)` (`day.c:1819`) — **global** (magic)
+- `faery_day = rnd(MONTH_DAYS/2, MONTH_DAYS)` (`day.c:1822`) — **global** (region:faery)
+- `dog_bark_day = rnd(1, MONTH_DAYS)` (`day.c:1825`) — **global** (detection/stealth)
+- `weather_days`: built `1..MONTH_DAYS`, shuffled, then the first 4 `qsort`ed
+  (`day.c:1827-1838`) — the shuffle now draws from the **keyed** weather stream
+  (`wthr_shuffle` → `ilist_shuffle_rng`, #25), not the global `rnd()`
 
 Then, every day in order (`day.c:1840-1868`):
 
@@ -159,9 +160,16 @@ if (day == weather_days[wday_index]) { wday_index++; natural_weather(); }
 if (day == faery_day)      auto_faery();
 ```
 
-> All of these `rnd(...)` draws above are still on the **global serial stream**
-> (`rnd()`), not a keyed per-subsystem stream. They are part of why reordering or
-> adding any global draw re-bakes the whole manifest — exactly the #25 problem.
+> Mixed streams since the weather migration (#25). The **weather** draws here are
+> now on the keyed per-turn weather stream (seeded once via `begin_weather()`):
+> the `weather_days` shuffle, `ship_coastal_damage` and `random_loc_damage` (acute
+> damage — keyed `wthr_wreck`, unreached on the bare map), and `natural_weather()`
+> (the province shuffles + storm-strength rolls — the ~76.7k draws/turn that
+> dominate this phase). The remaining draws — the three day-picks
+> (`curse_erode_day`/`faery_day`/`dog_bark_day`) — stay on the **global serial
+> stream** (`rnd()`) as documented residuals for the magic / region:faery /
+> stealth subsystems. Those global residuals are part of why reordering or adding
+> a global draw still re-bakes the rest of the manifest.
 
 ---
 
@@ -207,8 +215,11 @@ check_token_units();
 determine_noble_ranks();
 ```
 
-Several of these draw from the RNG (`animal_deaths`, decay routines, storm
-movement, etc.) — also on the global stream unless migrated.
+Several of these draw from the RNG (`animal_deaths`, `loyalty_decay`,
+`inn_income`, `corpse_decay`, etc.) — all still on the **global** stream
+(upkeep/economy residuals, not yet migrated). Note `storm_decay()` /
+`storm_move()` draw **nothing** (pure strength decrement / stored-direction
+move), so the weather migration left `post_month` untouched.
 
 ---
 
@@ -221,10 +232,13 @@ stream they're on:
 |------|-----------|--------|
 | Setup / day 0 | `init_savage_attacks()` → `npc_spawn()` per fort | **keyed** per-fort (#25) — `begin_npc(fort)` |
 | Setup / day 0 | other `queue_npc_orders()` NPC programs | mixed (see per-subsystem migration map) |
-| Each day, after commands | `daily_events()` first-call day picks + per-day effects | **global** `rnd()` |
+| Each day, day 1 | `daily_events()` `weather_days` schedule shuffle | **keyed** per-turn weather — `begin_weather()` (#25) |
+| Each day, after commands | `daily_events()` `ship_coastal_damage` / `random_loc_damage` (acute) | **keyed** weather `wthr_wreck` (#25) — *not reached on the bare map* |
+| Weather-days | `daily_events()` → `natural_weather()` province shuffle + storm-strength rolls | **keyed** per-turn weather (#25) — the ~76.7k draws/turn that dominate the phase |
+| Each day, after commands | `daily_events()` day picks (`curse_erode`/`faery`/`dog_bark`) | **global** `rnd()` (magic / region:faery / stealth residuals) |
 | Per-pillage / undead / storm | `do_cookie_npc()` troop count when `man_kind` set | **keyed** per-location, `begin_npc(where)` (`npc.c:575`) — *not reached on the standard turn* |
 | Combat (only if a battle occurs) | `begin_battle()` / `crnd()` | **keyed** per-battle (combat migration) |
-| End of month | `post_month()` decay/income/death routines | **global** `rnd()` |
+| End of month | `post_month()` decay/income/death routines | **global** `rnd()` (upkeep/economy; `storm_decay`/`storm_move` draw nothing) |
 
 Notes for #25 work:
 
@@ -234,5 +248,11 @@ Notes for #25 work:
 - Combat draws only happen if a battle resolves; the standard turn runs none, so
   the combat per-battle stream is byte-neutral on the main manifest and is pinned
   separately by `tests/olympia/regress/guard-pillage`.
+- **Weather is the heaviest phase on the bare map**: `natural_weather()` shuffles
+  the full province list (~7.5k–10k) up to 8 times per turn plus ~6608
+  storm-strength rolls — ~76.7k draws, all now on the keyed per-turn weather
+  stream. Its acute-damage cousins (`ship_coastal_damage`, mine/inn calamities)
+  draw **nothing** on the bare map (no rocky-coast ships, mines, or inns), so they
+  show 0 hits there despite being migrated.
 - The keyed-stream seam is `lib/rng.{c,h}`; the per-subsystem migration order is
   in [rng-state-granularity.md](rng-state-granularity.md).
