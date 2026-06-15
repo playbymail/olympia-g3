@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <stdint.h>
 #include "rnd.h"
+#include "rng.h"		/* rng_master_seed() prototype */
 
 /*
  *  Random number generator built on top of MD5
@@ -274,6 +275,14 @@ void MD5(void *dest, void *orig, int len)
 
 static word32 digest[4];
 
+/*
+ *  The immutable master seed: the randseed as loaded, captured before any
+ *  rnd() advances `digest`. rng_master_seed() (rng.h) hands this to the
+ *  addressable RNG layer. (Defined here for the mapgen/island targets;
+ *  the engine has its own copy in olympia/rnd.c.)
+ */
+static word32 master_seed[4];
+
 void load_seed(char *fnam)
 {
 	FILE *fd;
@@ -284,6 +293,16 @@ void load_seed(char *fnam)
 		fclose(fd);
 	} else
 		printf("%s could not be opened.\n", fnam);
+
+	memcpy(master_seed, digest, sizeof(master_seed));
+}
+
+void rng_master_seed(uint32_t out[4])
+{
+	out[0] = master_seed[0];
+	out[1] = master_seed[1];
+	out[2] = master_seed[2];
+	out[3] = master_seed[3];
 }
 
 void save_seed(char *fnam)

@@ -104,10 +104,9 @@ blast-radius problem; do it first, alone.
   only becomes easy *after* the addressing model is no longer tied to one global
   stream.
 
-## The prototype seam — `lib/rng.{c,h}`
+## The seam — `lib/rng.{c,h}`
 
-This change commits a small, **MD5-backed, intentionally unwired** layer that
-codifies the recommended API:
+A small, **MD5-backed** layer codifies the recommended API:
 
 ```c
 typedef struct { uint32_t seed[4]; uint32_t counter; } rng_stream;
@@ -120,20 +119,48 @@ int        rng_keyed(const rng_stream *s, int k1, int k2, uint32_t tag,
 ```
 
 Range reduction (mask + rejection) mirrors legacy `rnd()` exactly, so
-distribution semantics are unchanged — only the *addressing* differs. Nothing
-links against these symbols yet, so the golden manifest is byte-identical. The
+distribution semantics are unchanged — only the *addressing* differs. The
 standalone check `tests/rng/check.sh` asserts the three properties that make the
 approach worth adopting: determinism, keyed independence (an inserted draw does
 not move a sibling), and order-independent stream derivation.
+
+## First consumer: combat resolution
+
+Combat is the first subsystem migrated onto the seam. The immutable master seed
+is captured at `load_seed()` time (`rng_master_seed()`, defined alongside the
+legacy `rnd()` in each target's `rnd.c`). At the single battle chokepoint
+`combat_top()`, `begin_battle(where)` derives a **per-battle stream** from
+`(master seed, turn, location)`; the ~13 resolution-stage draws now go through
+`crnd()` (`rng_draw` on that stream) instead of global `rnd()`. A battle's dice
+are thus addressable and independent of how many global draws preceded them.
+
+Because the standard turn-1 fixtures run **no combat** (the bare map has zero
+characters), this migration is **byte-neutral on the 206-file main manifest** —
+it required no re-baseline. The new behavior is pinned by its own small golden
+tree, `tests/olympia/regress/guard-pillage/` (a pillager-vs-guard battle).
+
+This first migration used **per-stream isolation** (sequential `rng_draw` within
+a battle), not fully keyed leaf draws — the smaller-churn option that already
+delivers cross-subsystem isolation. Keyed leaf draws (`rng_keyed`) remain a
+future refinement. The pillage *loot* rolls (`d_pillage`) stay on the global
+stream for now — they are not battle resolution.
+
+### Aside: issue #4 is unreachable, not just uncovered
+
+The combat migration was paired with an attempt to pin issue #4 (the guard-dedup
+fix). It turned out the #4 branch is **unreachable** through the only caller:
+`attack_guard_units` builds `l_a` with `add_allies = FALSE` (the pillager's
+stack only), while guards are found via `loop_here(province)` (province-direct
+only) — so a guard can never be both. An A/B build (fixed vs buggy #4) yields a
+byte-identical battle report. The #4 fix is correct-on-principle hardening of
+dead code; no black-box fixture can distinguish it. See
+`tests/olympia/regress/guard-pillage/README.md`.
 
 ## Migration & re-baseline cost
 
 - **Stageable, not a flag day.** Migrate one subsystem at a time. Each migration
   is its own deliberate, one-time golden re-baseline of *that subsystem's* tree
-  — which is the whole point: the blast radius is finally contained.
-- **Combat is the natural first proving ground** — it ties back to #4 (the
-  guard-path fix that still has no regression fixture) and currently has no
-  coverage. A combat migration would let us add the focused fixture #4 needs.
+  (combat happened to be free — see above).
 - Keep `rnd()` / `md5_int()` available until the last consumer is migrated.
 
 ## References
@@ -142,7 +169,9 @@ not move a sibling), and order-independent stream derivation.
   global `digest[]` (:275).
 - `olympia/io.c:2740` (load) / `olympia/io.c:2894` (save).
 - `tests/olympia/golden/manifest.sha256` — the 206-file all-or-nothing manifest.
-- `lib/rng.{c,h}`, `tests/rng/` — the prototype seam and its self-check.
-- #4 — combat guard fix; the output-neutral-only-because-uncovered example.
+- `lib/rng.{c,h}`, `tests/rng/` — the seam and its self-check.
+- `olympia/combat.c` — `begin_battle()`/`crnd()`, the first consumer.
+- `tests/olympia/regress/guard-pillage/` — the combat golden tree (and the
+  #4-unreachability write-up).
 - [agentic-project-ultron.md](agentic-project-ultron.md) — the coverage
   initiative this unblocks.
