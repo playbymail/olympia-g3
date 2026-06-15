@@ -463,8 +463,11 @@ seed_city_trade(int where)
 		add_city_trade(where, CONSUME, item_riding_horse, qty, cst * 5 / 2, 0);
 	}
 	else if (rnd(1,3) == 1)
-		add_city_trade(where, CONSUME, item_hide, rnd(3,6),
-						rnd(125,135), 0);
+	{
+		qty = rnd(3,6);		/* sequenced: C leaves arg eval order */
+		cst = rnd(125,135);	/* unspecified, so two rnd() args desync */
+		add_city_trade(where, CONSUME, item_hide, qty, cst, 0);
+	}
 
 	if (prov_kind == sub_mountain)
 	{
