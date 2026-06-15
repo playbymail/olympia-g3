@@ -10,10 +10,16 @@ It also pins the **second** issue #25 consumer: the **pillage loot/mob path**
 (`begin_pillage()`/`prnd()` in `combat.c`, plus the mob-name draw in
 `create_peasant_mob()`, `olympia/npc.c`) — a sibling of the battle stream keyed
 on `(master seed, turn, location, TAG_PILLAGE)`. The mob's troop-count draw
-(shared `do_cookie_npc`) is the one pillage draw still on the global `rnd()`; see
-`doc/rng-state-granularity.md`. This migration moved the pillage *reports*
-(`save/1/300`, `save/1/301`) once — the committed `EXPECT.sha256` is the
-re-baselined result — while the battle dice and `fact/{300,301}` were unchanged.
+(shared `do_cookie_npc`) was the one pillage draw left on the global `rnd()` at
+the time; it has since been **absorbed by the fourth consumer, NPC spawning** —
+it now draws from the per-location `npcs` stream keyed on `(cookie, entity)`. See
+`doc/rng-state-granularity.md`. This tree was re-baselined twice: once by the
+pillage migration and once by the NPC migration (the troop count is now keyed and
+the turn also runs `init_savage_attacks`), each moving the pillage *reports*
+(`save/1/300`, `save/1/301`) while the battle dice and `fact/{300,301}` stayed
+unchanged. The committed `EXPECT.sha256` is the current re-baselined result;
+`scenario.tgz` is unchanged (the NPC draws never fire during the pre-turn world
+init it freezes).
 
 ## The scenario
 

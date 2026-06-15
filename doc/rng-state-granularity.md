@@ -2,10 +2,10 @@
 
 Status: **in progress.** Groundwork for Project Ultron
 ([agentic-project-ultron.md](agentic-project-ultron.md)). The seam
-(`lib/rng.{c,h}`) is wired into three subsystems so far — combat, pillage, and
-economy/market (see the consumer sections below); the remaining subsystems in
-the [distribution map](#recommended-subsystem-distribution) are still on the
-global `rnd()`.
+(`lib/rng.{c,h}`) is wired into four subsystems so far — combat, pillage,
+economy/market, and NPC spawning (see the consumer sections below); the
+remaining subsystems in the [distribution map](#recommended-subsystem-distribution)
+are still on the global `rnd()`.
 
 ## The problem
 
@@ -166,12 +166,14 @@ as a parameter (`create_peasant_mob(where, &pillage_rng)`) and draws via
 `rng_draw`. Distinct tags mean a pillage and a battle at the **same**
 `(turn, location)` draw from independent streams.
 
-**Known residual coupling.** The mob's *troop count* draw lives in the shared
-`do_cookie_npc()` (`npc.c:508`), which also backs undead / storm / savage
-spawning — so it stays on the global `rnd()` for now. A pillage that *forms a
-mob* therefore still has one globally-coupled draw; full hermeticity folds into a
-later NPC/cookie-creation migration. The pillage-specific draws (form, attack,
-name) are fully isolated.
+**Known residual coupling (now cleared).** The mob's *troop count* draw lives in
+the shared `do_cookie_npc()` (`npc.c`), which also backs undead / storm / savage
+spawning — so it stayed on the global `rnd()` at the time of the pillage
+migration. A pillage that *forms a mob* therefore still had one globally-coupled
+draw. That residual was **absorbed by the NPC migration** (the fourth consumer,
+below): `do_cookie_npc`'s troop count now draws from the per-location `npcs`
+stream keyed on `(cookie, entity)`. The pillage-specific draws (form, attack,
+name) were already fully isolated.
 
 Like combat, this is **byte-neutral on the 206-file main manifest** (the bare-map
 standard turn runs no pillage). It moved the pillage *reports* in the
@@ -256,6 +258,78 @@ regenerated with `build-scenario.sh` and `EXPECT.sha256` re-baselined so both th
 C and Lua twins agree again. This coupling through the saved `randseed` → master
 seed disappears once the `mint` subsystem (last in the map) is migrated.
 
+## Fourth consumer: NPC spawning
+
+NPC spawning is the fourth subsystem migrated, and the **second to move the main
+manifest** (after economy). It is a sibling of the others under the turn root,
+with its own tag, and — like economy — uses **keyed leaf draws**:
+
+```
+turn seed
+  ├─ (location, TAG_COMBAT)  → combat_rng   (battle resolution)
+  ├─ (location, TAG_PILLAGE) → pillage_rng  (loot/mob draws)
+  ├─ (market,   TAG_ECONOMY) → economy_rng  (city trade seeding, market restock)
+  └─ (location, TAG_NPC)     → npc_rng      (savage attacks, monster spawn qty, mob behavior)
+```
+
+`begin_npc(where)` (`olympia/npc.c`) reseeds `npc_rng` per location; the draws go
+through small keyed helpers `npc_spawn` / `npc_qty` / `npc_behavior`
+(`rng_keyed` on a `(k1, k2, purpose)` key, `purpose` a 4-char tag
+`spwn`/`qnty`/`bhvr`), exposed through `proto.h` so `savage.c` can call them — the
+same cross-file pattern as `begin_economy`/`econ_*`.
+
+Migrated draws:
+
+- **`init_savage_attacks`** (`savage.c`) — the per-fort `rnd(1,100)` savage-attack
+  check, keyed on the fort. This is the one NPC draw the bare-map standard turn
+  reaches (243 build-locs, once each, every turn via `queue_npc_orders`), so it
+  is why this migration moved the main manifest.
+- **`do_cookie_npc`** troop count (`npc.c`) — the mob/undead spawn quantity, keyed
+  on `(cookie, entity)`. **This absorbs the pillage troop-count residual** (#44)
+  and the same coupling for undead summoning. Storm cookies carry `man_kind == 0`
+  and never reach the draw, so the later weather migration splits cleanly.
+- **savage spawn/behavior** (`savage.c`) — `create_savage` stack quantity,
+  `call_savage` / `auto_savage` wait-times.
+- **autonomous NPC behavior** (`npc.c`) — `choose_npc_direction` (keep-direction),
+  `auto_unsworn` (wander), `auto_mob` (disperse / wait).
+
+**Why this one moved the manifest.** Like economy, an NPC draw fires on the
+standard turn: `init_savage_attacks` draws once per build-loc every turn (243
+draws on the bare map, none of which spawned a savage). Removing those from the
+global serial stream realigns every global draw that follows, so this migration
+took a **deliberate one-time re-baseline of the main manifest** (still 204 files;
+only content shifted — the still-global entity-id mint draws moved). The other
+migrated draws (`do_cookie_npc`, savage spawn, mob behavior) are unreached by the
+bare-map turn and so were byte-neutral on the main manifest.
+
+It also moved the **guard-pillage golden tree** (the pillage forms its mob via
+`do_cookie_npc`, whose troop count is now keyed, and the turn also runs
+`init_savage_attacks`): the pillage *reports* `save/1/{300,301}` shifted, while
+`fact/{300,301}` and the battle dice were unchanged. Unlike economy, the frozen
+`scenario.tgz` did **not** go stale — the migrated draws fire only during a turn
+or cookie consumption, never during the `-s`/`-a`/`-i` world-init that
+`build-scenario.sh` bakes, so the pre-turn saved `randseed` is unchanged. Both
+`check.sh` and `check-lua.sh` produce identical post-turn hashes; only
+`EXPECT.sha256` was re-baselined (no `scenario.tgz` regeneration).
+
+**Deliberately left on the global `rnd()`** (documented residuals, the
+`do_cookie_npc`/storm precedent):
+
+- **Hades / faery bandits** (`npc.c` `create_hades_bandit` / `create_faery_bandit`
+  / `hades_attack_check` / `faery_attack_check`) — region-environmental ambushes;
+  they belong to the later `region:hades` / `region:faery` migration (tags
+  `hads`/`faer`), not generic NPC infra. Byte-neutral now (unreached on the bare
+  turn).
+- **`storm.c`** environmental draws — the **weather** subsystem (tag `wthr`).
+  `do_cookie_npc` passes storm cookies through without a troop-count draw, so
+  there is no entanglement to unwind.
+- **`hades.c`** `auto_hades` / `create_hades_nasty` — `region:hades`.
+- **`swear.c`** social/loyalty rolls (bribe success, terrorize severity,
+  persuade-oath, gift-thanks, incite-riot rumor/failure) and **`beast.c`**
+  breeding-accident rolls — these are player-command social/skill draws, not NPC
+  spawn/behavior. The one spawn coupling in `swear.c` (an incited mob is *created*
+  via `do_cookie_npc`) already rides the migrated troop-count draw.
+
 ## Recommended subsystem distribution
 
 The map below is the canonical target the remaining migrations work against. It
@@ -279,13 +353,14 @@ master seed                                  rng_seed(randseed bytes)
    │     └─ leaf key(round, attacker<<16|defender, "hit"/"dmg"/"morale"/"flee")
    │
    ├─ pillage    key(turn, location, "pill")  [LANDED]   combat.c (begin_pillage/prnd), npc.c
-   │     └─ leaf key(0, 0, "form"/"name"/"attack")        troop-count residual -> npc, below
+   │     └─ leaf key(0, 0, "form"/"name"/"attack")        troop-count residual absorbed by npc, below
    │
    ├─ economy    key(turn, market,   "econ")  [LANDED]   buy.c (begin_economy/econ_*), seed.c (seed_city_trade)
    │     └─ leaf key(item, where, "pick"/"stok"/"qnty"/"cost"/"expr")  ← keyed via rng_keyed
    │
-   ├─ npc        key(turn, location, "npcs")  [next]     npc.c, savage.c, swear.c, beast.c
-   │     └─ leaf key(cookie, entity, "spawn"/"qty"/"behavior")  ← absorbs the pillage residual
+   ├─ npc        key(turn, location, "npcs")  [LANDED]   npc.c (begin_npc/npc_*), savage.c
+   │     └─ leaf key(cookie/fort, entity, "spwn"/"qnty"/"bhvr")  ← absorbed the pillage residual
+   │             (hades/faery bandits -> region; swear/beast social -> residual on global)
    │
    ├─ weather    key(turn, location, "wthr")  [proposed] storm.c, day.c (environmental damage)
    │     └─ leaf key(where, 0, "storm"/"wreck"/"decay")
@@ -322,7 +397,7 @@ master seed                                  rng_seed(randseed bytes)
 | 1 | combat | `comb` | location | **landed** | `combat.c` |
 | 2 | pillage | `pill` | location | **landed** | `combat.c`, `npc.c` |
 | 3 | economy | `econ` | market | **landed** | `buy.c`, `seed.c` |
-| 4 | npc | `npcs` | location | next | `npc.c`, `savage.c`, `swear.c`, `beast.c` |
+| 4 | npc | `npcs` | location | **landed** | `npc.c`, `savage.c` |
 | 5 | weather | `wthr` | location | proposed | `storm.c`, `day.c` |
 | 6 | upkeep | `upkp` | entity | proposed | `day.c` |
 | 7 | quest | `qest` | quest id | proposed | `quest.c` |
@@ -341,10 +416,14 @@ master seed                                  rng_seed(randseed bytes)
   purpose)` key. Unlike combat/pillage it ran on the standard turn (`seed_city_trade`
   at INIT), so it took a one-time main-manifest re-baseline — see
   [Third consumer](#third-consumer-economymarket-seeding).
-- **npc is next, deliberately** — the pillage troop-count residual lives in the
-  shared `do_cookie_npc()` (also backing undead/storm/savage spawning), so it
-  belongs under `npc`, not `pillage`. Migrating this one stream clears the
-  residual *and* the same coupling in those subsystems at once.
+- **npc came next, deliberately** (now landed) — the pillage troop-count residual
+  lived in the shared `do_cookie_npc()` (also backing undead/storm/savage
+  spawning), so it belonged under `npc`, not `pillage`. Migrating this one stream
+  cleared the residual *and* the same coupling at once; the region-flavored
+  hades/faery bandit spawns and the `swear.c`/`beast.c` social rolls were left as
+  documented residuals (region / social subsystems). Like economy it ran on the
+  standard turn (`init_savage_attacks`), so it took a one-time main-manifest
+  re-baseline — see [Fourth consumer](#fourth-consumer-npc-spawning).
 - **weather/upkeep next** — `day.c` is a 28-draw hot spot split across
   environmental events (location-keyed) and per-noble upkeep (entity-keyed);
   splitting it removes a large slice of global coupling.

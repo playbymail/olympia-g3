@@ -196,14 +196,31 @@ makes the small, per-subsystem fixtures Ultron needs impossible. The design
 survey lives in [doc/rng-state-granularity.md](doc/rng-state-granularity.md);
 the addressable seam is `lib/rng.{c,h}`
 (`rng_seed`/`rng_stream_of`/`rng_draw`/`rng_keyed`), with a self-check at
-`tests/rng/check.sh`.
+`tests/rng/check.sh`. For **when** each draw fires during a turn — the fixed
+phase order the driver walks, and which draws are keyed vs still on the global
+stream — see [doc/turn-execution-order.md](doc/turn-execution-order.md).
 
-**First consumer landed: combat.** Combat resolution now draws from a per-battle
-stream keyed on `(master seed, turn, location)` — `begin_battle()`/`crnd()` in
-`olympia/combat.c`, rooted via `rng_master_seed()`. Because the standard turn
-runs no combat (bare-map fixture), this was **byte-neutral on the main
-manifest**; the behavior is pinned by its own golden tree,
-[tests/olympia/regress/guard-pillage](tests/olympia/regress/guard-pillage) (the
-**second** standing regress alongside secret-sea-route). Other subsystems remain
-on the global `rnd()`; keyed leaf draws and a PCG32 generator swap stay deferred
-behind the TAG 64-bit work.
+**Four consumers landed so far: combat, pillage, economy/market, npc.** Each
+reseeds a stream off the turn root (`rng_master_seed()` → turn → its own 4-char
+tag) and draws from it instead of the global `rnd()`:
+
+- **combat** — per-battle stream on `(turn, location)`, `begin_battle()`/`crnd()`
+  in `olympia/combat.c` (sequential `rng_draw`).
+- **pillage** — sibling per-pillage stream, `begin_pillage()`/`prnd()`
+  (`combat.c`) plus the mob-name draw in `create_peasant_mob()` (`npc.c`).
+- **economy/market** — `begin_economy()`/`econ_*` (`buy.c`, `seed.c`), keyed leaf
+  draws on `(item, where, purpose)` via `rng_keyed`.
+- **npc** — per-location `npcs` stream, `begin_npc()`/`npc_spawn`/`npc_qty`/
+  `npc_behavior` (`npc.c`, `savage.c`); absorbs the pillage troop-count residual
+  in the shared `do_cookie_npc()`.
+
+Combat and pillage were **byte-neutral on the main manifest** (the bare-map turn
+runs no combat/pillage); economy and npc each ran on the standard turn
+(`seed_city_trade` at INIT, `init_savage_attacks` per turn) and took a deliberate
+one-time re-baseline. Combat/pillage/npc behavior is pinned by its own golden
+tree, [tests/olympia/regress/guard-pillage](tests/olympia/regress/guard-pillage)
+(the **second** standing regress alongside secret-sea-route). Remaining
+subsystems (weather, upkeep, quest, …) stay on the global `rnd()`; the migration
+order and per-subsystem keying live in
+[doc/rng-state-granularity.md](doc/rng-state-granularity.md), and a PCG32
+generator swap stays deferred behind the TAG 64-bit work.

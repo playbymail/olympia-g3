@@ -5,6 +5,62 @@
 #include	"rng.h"
 
 
+/*
+ *  issue #25: per-location NPC RNG stream (tag "npcs"), a sibling of the
+ *  combat/pillage/economy streams under the same turn root. NPC spawning and
+ *  autonomous-behavior draws (savage attacks, monster spawn quantities, mob
+ *  movement/disperse) come from here instead of the global rnd(), so an
+ *  unrelated subsystem can no longer perturb them. begin_npc(where) reseeds it
+ *  per location; the npc_*() helpers are keyed leaf draws (rng_keyed) so
+ *  inserting or removing one draw cannot move a sibling.
+ *
+ *  This stream also absorbs the pillage troop-count residual: the mob/undead
+ *  spawn quantity in the shared do_cookie_npc() (which a pillage forms its mob
+ *  through) was deliberately left on the global rnd() by the pillage migration
+ *  (#44) because do_cookie_npc also backs undead and storm spawning. It now
+ *  draws here, keyed on (cookie, entity). Storm cookies carry man_kind == 0 and
+ *  so never reach the draw, leaving the later weather migration a clean split.
+ */
+static rng_stream npc_rng;
+
+#define	TAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_NPC		0x6e706373u	/* "npcs" */
+
+#define	NTAG_SPAWN	0x7370776eu	/* "spwn" -- does an NPC spawn here      */
+#define	NTAG_QTY	0x716e7479u	/* "qnty" -- spawned quantity            */
+#define	NTAG_BEHAVE	0x62687672u	/* "bhvr" -- autonomous NPC behavior     */
+
+void
+begin_npc(int where)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	npc_rng = rng_stream_of(&turn, where, TAG_NPC);
+}
+
+int
+npc_spawn(int k1, int k2, int low, int high)
+{
+	return rng_keyed(&npc_rng, k1, k2, NTAG_SPAWN, low, high);
+}
+
+int
+npc_qty(int k1, int k2, int low, int high)
+{
+	return rng_keyed(&npc_rng, k1, k2, NTAG_QTY, low, high);
+}
+
+int
+npc_behavior(int k1, int k2, int low, int high)
+{
+	return rng_keyed(&npc_rng, k1, k2, NTAG_BEHAVE, low, high);
+}
+
+
 int
 controlled_humans_here(int where)
 {
@@ -56,7 +112,8 @@ choose_npc_direction(int who, int where, int dir)
  *  direction, if it can.
  */
 
-	if (dir && rnd(1,10) < 10)
+	begin_npc(where);
+	if (dir && npc_behavior(who, dir, 1, 10) < 10)
 		if (e = get_exit_dir(l, dir))
 			return e;
 
@@ -96,9 +153,10 @@ auto_unsworn(int who)
 	if (loc_depth(where) == LOC_build)
 		return;
 
-	if (rnd(1,2) == 1)
+	begin_npc(where);
+	if (npc_behavior(who, 0, 1, 2) == 1)
 	{
-		if ((n = city_here(where)) && rnd(1,2)==1)
+		if ((n = city_here(where)) && npc_behavior(who, 1, 1, 2)==1)
 			queue(who, "move %s", box_code_less(n));
 		else
 			npc_move(who);
@@ -129,10 +187,11 @@ auto_mob(int who)
  *  dispersing the mob.
  */
 
+	begin_npc(subloc(who));
 	if ((subloc(who) != p->npc_home) ||
-	   (sysclock.turn - p->npc_created >= 5 && rnd(1,2) == 1))
+	   (sysclock.turn - p->npc_created >= 5 && npc_behavior(who, 0, 1, 2) == 1))
 	{
-		queue(who, "wait time %d", rnd(10,20));
+		queue(who, "wait time %d", npc_behavior(who, 1, 10, 20));
 		queue(who, "reclaim \"disperses.\"");
 		return;
 	}
@@ -506,7 +565,16 @@ do_cookie_npc(int who, int where, int cookie, int place)
 	p->npc_created = sysclock.turn;
 
 	if (t->man_kind)
-		gen_item(new, t->man_kind, rnd(t->low, t->high));
+	{
+		/*
+		 *  issue #25: spawn quantity on the per-location NPC stream,
+		 *  keyed on (cookie, entity). This is the pillage troop-count
+		 *  residual (#44) and the same coupling for undead spawning.
+		 *  Storm cookies have man_kind == 0 and never reach here.
+		 */
+		begin_npc(where);
+		gen_item(new, t->man_kind, npc_qty(cookie, new, t->low, t->high));
+	}
 
 	consume_item(where, cookie, 1);
 
