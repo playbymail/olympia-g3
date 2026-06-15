@@ -21,8 +21,9 @@ create_savage(int where)
 	if (new < 0)
 		return -1;
 
+	begin_npc(where);		/* issue #25: per-location NPC stream */
 	gen_item(new, item_drum, 1);
-	gen_item(new, item_savage, rnd(3,25));
+	gen_item(new, item_savage, npc_qty(where, new, 3, 25));
 
 	return new;
 }
@@ -52,7 +53,8 @@ call_savage(int where, int to_where, int who, int why)
 
 	case 2:			/* move and attack structure */
 		queue(new, "use 98 1");
-		queue(new, "wait time %d", rnd(35, 50));
+		/* issue #25: NPC stream seeded by create_savage(where) above */
+		queue(new, "wait time %d", npc_behavior(new, 0, 35, 50));
 		queue(new, "attack %s", box_code_less(who));
 		break;
 	}
@@ -312,8 +314,9 @@ auto_savage(int who)
 			if (has_item(who, item_drum) < 1)
 				gen_item(who, item_drum, 1);
 
+			begin_npc(where);	/* issue #25: per-location NPC stream */
 			queue(who, "use %d 1", item_drum);
-			queue(who, "wait time %d", rnd(35, 50));
+			queue(who, "wait time %d", npc_behavior(who, 0, 35, 50));
 			queue(who, "attack %s", box_code_less(target));
 			return;
 		}
@@ -369,7 +372,9 @@ init_savage_attacks(void)
 		if (loc_depth(fort) != LOC_build)
 			continue;
 
-		if (rnd(1,100) != 1)
+		/* issue #25: per-fort savage-spawn check, keyed on the fort */
+		begin_npc(fort);
+		if (npc_spawn(fort, 0, 1, 100) != 1)
 			continue;
 
 		where = subloc(fort);

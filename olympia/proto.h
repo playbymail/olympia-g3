@@ -142,6 +142,12 @@ extern int econ_cost(int item, int where, int low, int high);
 extern int econ_expire(int item, int where, int low, int high);
 extern int d_find_buy(struct command *c);
 extern int d_find_sell(struct command *c);
+
+/* olympia/npc.c */
+extern void begin_npc(int where);			/* issue #25: per-location NPC RNG stream */
+extern int npc_spawn(int k1, int k2, int low, int high);
+extern int npc_qty(int k1, int k2, int low, int high);
+extern int npc_behavior(int k1, int k2, int low, int high);
 extern int is_tradegood(int item);
 extern int new_tradegood(int where);
 extern int v_buy(struct command *c);
