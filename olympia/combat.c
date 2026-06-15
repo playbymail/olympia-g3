@@ -13,7 +13,40 @@
 #include 	<string.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
 
+
+/*
+ *  Issue #25: combat resolution draws from a per-battle RNG stream instead of
+ *  the global rnd() serial stream. The stream is derived from the immutable
+ *  master seed + turn + battle location, so a battle's dice are addressable and
+ *  no longer depend on how many global draws preceded them -- a change to an
+ *  unrelated subsystem can't perturb a combat's outcome. begin_battle() reseeds
+ *  it at the single battle chokepoint (combat_top); crnd() replaces rnd() at the
+ *  resolution sites. Everything outside combat still uses the legacy rnd().
+ */
+static rng_stream combat_rng;
+
+#define	TAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_COMBAT	0x636f6d62u	/* "comb" */
+
+static void
+begin_battle(int where)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	combat_rng = rng_stream_of(&turn, where, TAG_COMBAT);
+}
+
+static int
+crnd(int low, int high)
+{
+	return rng_draw(&combat_rng, low, high);
+}
 
 
 #define	allied(a,b)	(is_defend((a),(b)))
@@ -1057,7 +1090,7 @@ decrement_num(fights_list l, struct fight *attacker, struct fight *g)
 
 	case FK_fort:
 		if (is_siege_engine(attacker->kind))
-			hit = rnd(5, 10);
+			hit = crnd(5, 10);
 		else
 			hit = 1;
 
@@ -1078,7 +1111,7 @@ decrement_num(fights_list l, struct fight *attacker, struct fight *g)
 		break;
 
 	case item_blessed_soldier:
-		if (rnd(1,2) == 1)	/* 50% chance of surviving a hit */
+		if (crnd(1,2) == 1)	/* 50% chance of surviving a hit */
 			g->num--;
 		break;
 
@@ -1128,7 +1161,7 @@ resolve_hit(fights_list l, struct fight *f, struct fight *g, int man)
 		attack = max(f->missile, f->attack);
 	}
 
-	n = rnd(1, attack + defense);
+	n = crnd(1, attack + defense);
 
 	if (n > attack)
 	{
@@ -1212,7 +1245,7 @@ choose_attack(int attacker, fights_list l_a, fights_list l_b)
 		num_defend = total_valid_targets(l_b, l_a);
 		assert(num_defend > 0);
 
-		man = rnd(1, num_defend);
+		man = crnd(1, num_defend);
 		g = find_defender(l_b, man, l_a);
 	}
 
@@ -1252,12 +1285,12 @@ combat_round(fights_list l_a, fights_list l_b, int force_win)
 	{
 		if (side_to_go == 0)	/* attacker goes */
 		{
-			choose_attack(rnd(1, total_attack_a), l_a, l_b);
+			choose_attack(crnd(1, total_attack_a), l_a, l_b);
 			num_attack_a--;
 		}
 		else			/* defender goes */
 		{
-			choose_attack(rnd(1, total_attack_b), l_b, l_a);
+			choose_attack(crnd(1, total_attack_b), l_b, l_a);
 			num_attack_b--;
 		}
 
@@ -1266,13 +1299,13 @@ combat_round(fights_list l_a, fights_list l_b, int force_win)
 	else
 	if (num_attack_a > 0)
 	{
-		choose_attack(rnd(1, total_attack_a), l_a, l_b);
+		choose_attack(crnd(1, total_attack_a), l_a, l_b);
 		num_attack_a--;
 	}
 	else
 	if (num_attack_b > 0)
 	{
-		choose_attack(rnd(1, total_attack_b), l_b, l_a);
+		choose_attack(crnd(1, total_attack_b), l_b, l_a);
 		num_attack_b--;
 	}
 }
@@ -1294,7 +1327,7 @@ combat_round(fights_list l_a, fights_list l_b, int force_win)
 
 	assert(num_attack_a + num_attack_b > 0);
 
-	man = rnd(1, num_attack_a + num_attack_b);
+	man = crnd(1, num_attack_a + num_attack_b);
 
 	if (man <= num_attack_a)
 	{
@@ -1360,7 +1393,7 @@ deduct_dead(fights_list l_a, fights_list l_b, int inherit)
 			side_has_skill(l_b, sk_capture_beasts))
 		    {
 #if 1
-			if (num_to_kill > 0 && rnd(1,2) == 1)
+			if (num_to_kill > 0 && crnd(1,2) == 1)
 				num_to_kill--;
 /* 
  *  This will leave randomly 1-2 beasts in the inventory
@@ -1370,7 +1403,7 @@ deduct_dead(fights_list l_a, fights_list l_b, int inherit)
  *  here
  */
 #else
-			num_to_kill = rnd(0, num_to_kill/2);
+			num_to_kill = crnd(0, num_to_kill/2);
 #endif
 		    }
 
@@ -1475,7 +1508,7 @@ determine_noble_wounds(fights_list l)
 		if (l[i]->sav_num <= 0)
 			l[i]->new_health = 0;
 		else {
-			l[i]->new_health = max(l[i]->sav_num - rnd(1,100), 0);
+			l[i]->new_health = max(l[i]->sav_num - crnd(1,100), 0);
 			if (l[i]->new_health < 0)
 				l[i]->new_health = 0;
 		}
@@ -1641,7 +1674,7 @@ determine_prisoners(fights_list l_a, fights_list l_b)
 		if (l_b[i]->new_health == 0)
 			continue;
 
-		if (rnd(1,100) > chance)
+		if (crnd(1,100) > chance)
 			continue;
 
 		if (no_take)
@@ -2336,6 +2369,8 @@ combat_top(fights_list l_a, fights_list l_b, int force_win)
 	{
 		int where = subloc(lead_char(l_a));
 		int where2 = subloc(lead_char(l_b));
+
+		begin_battle(where);	/* issue #25: reseed the per-battle stream */
 
 		if (weather_here(where, sub_rain))
 			combat_rain = TRUE;

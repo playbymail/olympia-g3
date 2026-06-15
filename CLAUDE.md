@@ -177,22 +177,33 @@ detail in [BUILD_HISTORY.md](BUILD_HISTORY.md#known-bugs-deferred-past-the-64-bi
 
 All cleared: **#4** (combat guard-check pointer/int compare) is fixed with a
 proper `->unit` membership scan; **#19** (mapgen allocator) and **#20**
-(non-literal format strings) are resolved. The turn-1 golden fixtures don't
-exercise `construct_guard_fight_list`'s guard path, so the #4 fix left the
-manifest byte-identical — the corrected behavior is **not yet pinned by a
-regression fixture**.
+(non-literal format strings) are resolved. The #4 branch turned out to be
+**unreachable** through its only caller — `attack_guard_units` builds `l_a` with
+`add_allies = FALSE` (pillager's stack only) while guards are found via
+`loop_here(province)` (province-direct only), so a guard can never be in both.
+An A/B build (fixed vs buggy) yields a byte-identical battle report, so the fix
+is correct-on-principle hardening of dead code and **no black-box fixture can
+pin it** (write-up in
+[tests/olympia/regress/guard-pillage/README.md](tests/olympia/regress/guard-pillage/README.md)).
 
 ### Next track: Ultron groundwork (#25)
 
 The next forward track is the [Project Ultron](doc/agentic-project-ultron.md)
-test-coverage initiative, blocked by **#25 — RNG-state granularity**. The engine
+test-coverage initiative, gated by **#25 — RNG-state granularity**. The engine
 draws from one process-global serial stream (`lib/rnd.c` / `olympia/rnd.c`), so
 any reordered/added `rnd()` call re-bakes the whole 206-file manifest — which
 makes the small, per-subsystem fixtures Ultron needs impossible. The design
-survey and recommendation live in
-[doc/rng-state-granularity.md](doc/rng-state-granularity.md). A prototype seam,
-`lib/rng.{c,h}` (MD5-backed `rng_seed`/`rng_stream_of`/`rng_draw`/`rng_keyed`),
-is committed but **intentionally unwired** — nothing calls it yet, so golden
-output is byte-identical — with a standalone self-check at `tests/rng/check.sh`.
-No subsystem has been migrated onto it (that step requires a deliberate one-time
-re-baseline and stays deferred behind the TAG 64-bit work).
+survey lives in [doc/rng-state-granularity.md](doc/rng-state-granularity.md);
+the addressable seam is `lib/rng.{c,h}`
+(`rng_seed`/`rng_stream_of`/`rng_draw`/`rng_keyed`), with a self-check at
+`tests/rng/check.sh`.
+
+**First consumer landed: combat.** Combat resolution now draws from a per-battle
+stream keyed on `(master seed, turn, location)` — `begin_battle()`/`crnd()` in
+`olympia/combat.c`, rooted via `rng_master_seed()`. Because the standard turn
+runs no combat (bare-map fixture), this was **byte-neutral on the main
+manifest**; the behavior is pinned by its own golden tree,
+[tests/olympia/regress/guard-pillage](tests/olympia/regress/guard-pillage) (the
+**second** standing regress alongside secret-sea-route). Other subsystems remain
+on the global `rnd()`; keyed leaf draws and a PCG32 generator swap stay deferred
+behind the TAG 64-bit work.
