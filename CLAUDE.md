@@ -116,6 +116,23 @@ OLYMPIA_PRESET=asan-ubsan ./tests/olympia/golden_check.sh   # YES, zero diagnost
 - **No CI.** Both golden gates are run locally (maintainer decision); warning
   enforcement is not wired into CI.
 
+### Git workflow
+
+Changes land via **feature branch + pull request** (the repo moved off
+direct-to-`main` as of the #25 groundwork). Conventions:
+
+- **Branch** from `main` named `type/slug` — `feat/…`, `fix/…`, `build/…`,
+  `docs/…`, `refactor/…` (matching the Conventional-Commits type of the work).
+- **Keep both golden gates green** on the branch before opening the PR — the
+  byte-identical manifest check *and* the same flow clean under ASan/UBSan (see
+  [Test](#test--golden-snapshots-must-stay-green)).
+- **Reference the issue** in the PR body: `Closes #NN` when the PR fully resolves
+  it, `Refs #NN` for partial/groundwork work. The `#NN` in commit subjects and
+  PR bodies are **GitHub issue numbers**.
+- **Squash-merge** to keep `main` linear. The squashed commit keeps the
+  `type(scope): subject (#NN)` subject and the
+  `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>` trailer.
+
 ## Modernization status
 
 The C11/64-bit modernization ran as a phased warning ladder and is **complete**.
@@ -164,3 +181,18 @@ proper `->unit` membership scan; **#19** (mapgen allocator) and **#20**
 exercise `construct_guard_fight_list`'s guard path, so the #4 fix left the
 manifest byte-identical — the corrected behavior is **not yet pinned by a
 regression fixture**.
+
+### Next track: Ultron groundwork (#25)
+
+The next forward track is the [Project Ultron](doc/agentic-project-ultron.md)
+test-coverage initiative, blocked by **#25 — RNG-state granularity**. The engine
+draws from one process-global serial stream (`lib/rnd.c` / `olympia/rnd.c`), so
+any reordered/added `rnd()` call re-bakes the whole 206-file manifest — which
+makes the small, per-subsystem fixtures Ultron needs impossible. The design
+survey and recommendation live in
+[doc/rng-state-granularity.md](doc/rng-state-granularity.md). A prototype seam,
+`lib/rng.{c,h}` (MD5-backed `rng_seed`/`rng_stream_of`/`rng_draw`/`rng_keyed`),
+is committed but **intentionally unwired** — nothing calls it yet, so golden
+output is byte-identical — with a standalone self-check at `tests/rng/check.sh`.
+No subsystem has been migrated onto it (that step requires a deliberate one-time
+re-baseline and stays deferred behind the TAG 64-bit work).
