@@ -2,10 +2,11 @@
 
 Status: **in progress.** Groundwork for Project Ultron
 ([agentic-project-ultron.md](agentic-project-ultron.md)). The seam
-(`lib/rng.{c,h}`) is wired into five subsystems so far — combat, pillage,
-economy/market, NPC spawning, and weather (see the consumer sections below); the
-remaining subsystems in the [distribution map](#recommended-subsystem-distribution)
-are still on the global `rnd()`.
+(`lib/rng.{c,h}`) is wired into six subsystems so far — combat, pillage,
+economy/market, NPC spawning, weather, and upkeep (see the consumer sections
+below); the remaining subsystems in the
+[distribution map](#recommended-subsystem-distribution) are still on the global
+`rnd()`.
 
 ## The problem
 
@@ -428,6 +429,93 @@ dead_body_rot/collapsed_mine). Storm *summoning* via `do_cookie_npc` already
 passes through without a draw (storm cookies carry `man_kind == 0`), so there was
 no entanglement to unwind.
 
+## Sixth consumer: upkeep
+
+Upkeep — the per-noble gradual-maintenance half of `day.c` — is the sixth
+subsystem migrated, and the **first since combat/pillage to be byte-neutral on
+*both* golden trees**. It is a sibling of the others under the turn root, tag
+`"upkp"`:
+
+```
+turn seed
+  ├─ (location, TAG_COMBAT)  → combat_rng   (battle resolution)
+  ├─ (location, TAG_PILLAGE) → pillage_rng  (loot/mob draws)
+  ├─ (market,   TAG_ECONOMY) → economy_rng  (city trade seeding, market restock)
+  ├─ (location, TAG_NPC)     → npc_rng      (savage attacks, monster spawn qty, mob behavior)
+  ├─ (0,        TAG_WEATHER) → weather_rng  (storm generation, schedule, environmental damage)
+  └─ (0,        TAG_UPKEEP)  → upkeep_rng   (healing, loyalty/starvation, animal/corpse decay)
+```
+
+### One per-turn stream, all keyed leaves
+
+Like weather (its sibling in `day.c`), upkeep uses **one per-turn stream seeded
+once** — `begin_upkeep()` (`olympia/day.c`) is turn-guarded, scenario key `0` —
+rather than the fresh per-scenario reseed of combat/npc/economy. The reason is
+different from weather's, though: weather needs a persistent counter because its
+reached draws are *sequential* shuffles; upkeep's draws are all **keyed leaves**
+(`rng_keyed`, which never advances the counter), so the single stream is
+effectively stateless and draw order within upkeep is irrelevant. The choice is
+forced by *placement*, not sequencing: the upkeep draws are scattered across
+several `loop_char` passes in `post_month()`/`daily_events()` with **no single
+per-entity chokepoint**, so a per-entity `begin_upkeep(who)` reseed would mean
+threading a seed call into every loop body. Carrying the entity in the **leaf
+key** instead gives identical per-`(entity, purpose)` addressability for free.
+This is a deliberate refinement of the map's literal "scenario key = entity"
+(the entity lands in the leaf `k1` rather than the scenario seed), the same way
+weather refined "per-scenario reseed" into "one per-turn stream".
+
+The helpers are **static in `day.c`** — no `proto.h` exposure — because every
+draw site is in this file. The one cross-file entry point (`garr.c`'s
+`garrison_gold()` → `charge_maint_sup()` → `men_starve()`) reaches the draw
+*inside* `men_starve()`, which lives here; the turn-guarded `begin_upkeep()` means
+whichever upkeep routine fires first that turn seeds the stream.
+
+Migrated draws (all keyed leaves via small named helpers, purpose a 4-char tag):
+
+- **`heal_char_sup`** (`up_heal`, `"heal"`) — the sick-recovery check `rnd(1,100)`
+  (sub 0) and the heal/lose amount `rnd(3,15)` (sub 1), keyed on the char.
+- **`loyalty_decay`** (`up_loyal`, `"loyl"`) — the contract-desertion (sub 0) and
+  fear-desertion (sub 1) `rnd(1,2)` checks, keyed on the char.
+- **`men_starve`** (`up_starve`, `"sckn"`) — the left-service-vs-deserted flavor
+  `rnd(1,2)`, keyed on `(char, item type)`. Reached via `charge_maint_costs` and
+  `garr.c`'s `garrison_gold`.
+- **`animal_deaths`** (`up_animal`, `"dier"`) — the per-individual death Bernoulli
+  `rnd(1,1000)`, keyed on `(char, animal index)` with the item type folded into
+  the purpose tag so each `(char, item)` pair gets an independent per-individual
+  sequence (overflow-free for any herd size).
+- **`corpse_decay`** (`up_corpse`, `"corp"`) — the `rnd(0,2)` decomposition count,
+  keyed on the char.
+
+### Why this one is byte-neutral on both trees (the inverse of weather)
+
+Unlike economy/npc/weather (each fires on the standard turn), **every upkeep
+draw is unreached on both golden trees** — measured empirically (instrument each
+site, build, count, revert):
+
+- **Bare-map standard turn: 0 upkeep draws.** No player characters
+  (`charge_maint_costs`/`animal_deaths` filter `sub_pl_regular`; `loop_char` heal
+  finds none wounded), no inns, no corpses.
+- **guard-pillage turn: also 0 upkeep draws** — which corrected a prior
+  expectation that its 70 soldiers would exercise upkeep. State diagnostics show
+  why: **soldiers are inventory items, not chars**, so only the two commanders
+  reach `charge_maint_sup` (one `cost=71, have=450` affords it; the other
+  `cost=0`), no char is `LOY_contract`/`LOY_fear`/`LOY_summon` (the 462 NPCs are
+  `LOY_npc`, the 2 nobles `LOY_oath` — all skipped), no noble is wounded into
+  0–99 health on a `day%7` heal tick, and there are no animals/corpses/inns.
+
+So the migration is **byte-neutral on both manifests** (the combat/pillage
+profile, not weather's): no re-baseline of the main manifest *or* the
+guard-pillage tree, and `scenario.tgz` is untouched (upkeep fires only during a
+turn). Its value is purely future Ultron-fixture addressability.
+
+**Deliberately left on the global `rnd()`** (documented residuals): `inn_income`
+(per-structure income — deferred to a future income subsystem, not per-noble
+upkeep) and the `daily_events` day-picks (`curse_erode`/`faery`/`dog_bark`).
+`temple_income` and the `post_month` gradual decays
+(`relic`/`pillage`/`hide_mage`/`ghost_warrior`/`dead_body_rot`/
+`collapsed_mine`/`link`/`quest`/`storm_decay`/`storm_move`) draw **no `rnd()`**
+at all — nothing to migrate.
+
 ## Recommended subsystem distribution
 
 The map below is the canonical target the remaining migrations work against. It
@@ -464,8 +552,9 @@ master seed                                  rng_seed(randseed bytes)
    │     └─ seq  shuffle+aura (generation); leaf key(where, day*16+slot, "wrck") (acute, unreached)
    │             one per-turn stream, seeded once; "decy" reserved/unused (storm_decay draws nothing)
    │
-   ├─ upkeep     key(turn, entity,   "upkp")  [proposed] day.c (healing, loyalty/structure decay, NPC orders)
-   │     └─ leaf key(noble, 0, "heal"/"loyalty"/"sicken")
+   ├─ upkeep     key(turn, 0,        "upkp")  [LANDED]   day.c (begin_upkeep/up_*: healing, loyalty/starve, animal/corpse decay)
+   │     └─ leaf key(noble, sub, "heal"/"loyl"/"sckn"/"dier"/"corp")  ← keyed leaves, one per-turn stream
+   │             entity in leaf key (no per-entity chokepoint); inn_income -> future income subsystem
    │
    ├─ quest      key(turn, quest_id, "qest")  [proposed] quest.c
    │     └─ leaf key(stage, actor, "reward"/"branch"/"encounter")
@@ -498,7 +587,7 @@ master seed                                  rng_seed(randseed bytes)
 | 3 | economy | `econ` | market | **landed** | `buy.c`, `seed.c` |
 | 4 | npc | `npcs` | location | **landed** | `npc.c`, `savage.c` |
 | 5 | weather | `wthr` | turn (loc 0) | **landed** | `storm.c`, `day.c` |
-| 6 | upkeep | `upkp` | entity | proposed | `day.c` |
+| 6 | upkeep | `upkp` | turn (loc 0) | **landed** | `day.c` |
 | 7 | quest | `qest` | quest id | proposed | `quest.c` |
 | 8 | explore | `expl` | actor | proposed | `tunnel.c`, `stealth.c` |
 | 9 | skills | `skil` | actor | proposed | `c1.c`, `c2.c`, `basic.c`, `use.c`, `alchem.c`, `art.c` |
@@ -532,9 +621,15 @@ master seed                                  rng_seed(randseed bytes)
   are sequential province shuffles — see
   [Fifth consumer](#fifth-consumer-weather). Like economy/npc it ran on the
   standard turn, so it took a one-time main-manifest re-baseline.
-- **upkeep is next** — the per-noble/per-structure half of `day.c` (healing,
-  loyalty/structure decay, starvation, animal deaths, corpse decay, inn income),
-  entity-keyed.
+- **upkeep came next** (now landed) — the per-noble half of `day.c` (healing,
+  loyalty decay, starvation, animal deaths, corpse decay), entity carried in the
+  leaf key on one per-turn stream (like weather, seeded once / turn-guarded,
+  because the draws have no per-entity chokepoint). It is byte-neutral on **both**
+  golden trees — every upkeep draw is unreached (the bare map has no player
+  chars; the guard-pillage soldiers are inventory items, its nobles afford
+  maintenance and stay at full health) — the combat/pillage profile, so no
+  re-baseline. `inn_income` (per-structure income) was left a global residual for
+  a future income subsystem — see [Sixth consumer](#sixth-consumer-upkeep).
 - **mint is last** — `z.c` password/id generation is *creation-order* sensitive
   today, so keying it on the minted entity id is what most directly enables small
   fixtures, but it touches the most golden bytes; stage it after everything else.

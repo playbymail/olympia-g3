@@ -200,9 +200,9 @@ the addressable seam is `lib/rng.{c,h}`
 phase order the driver walks, and which draws are keyed vs still on the global
 stream — see [doc/turn-execution-order.md](doc/turn-execution-order.md).
 
-**Five consumers landed so far: combat, pillage, economy/market, npc, weather.**
-Each reseeds a stream off the turn root (`rng_master_seed()` → turn → its own
-4-char tag) and draws from it instead of the global `rnd()`:
+**Six consumers landed so far: combat, pillage, economy/market, npc, weather,
+upkeep.** Each reseeds a stream off the turn root (`rng_master_seed()` → turn →
+its own 4-char tag) and draws from it instead of the global `rnd()`:
 
 - **combat** — per-battle stream on `(turn, location)`, `begin_battle()`/`crnd()`
   in `olympia/combat.c` (sequential `rng_draw`).
@@ -223,15 +223,27 @@ Each reseeds a stream off the turn root (`rng_master_seed()` → turn → its ow
   mine/inn calamities) migrated to keyed `wthr_wreck` but is unreached on the bare
   map; `storm_decay`/`storm_move` draw nothing (the `"decay"` tag is reserved/
   unused).
+- **upkeep** — **one per-turn** stream (tag `upkp`), seeded once via the
+  turn-guarded `begin_upkeep()` (`day.c`); keyed-leaf helpers `up_heal`/`up_loyal`/
+  `up_starve`/`up_animal`/`up_corpse` (static in `day.c` — every draw site is
+  there). The per-noble gradual-maintenance draws (healing, loyalty decay,
+  starvation, animal deaths, corpse decay); entity carried in the leaf key (no
+  per-entity chokepoint, like weather). `inn_income` (per-structure income) and
+  the `daily_events` day-picks stay global residuals; `temple_income` and the
+  `post_month` decays draw nothing.
 
 Combat and pillage were **byte-neutral on the main manifest** (the bare-map turn
 runs no combat/pillage); economy, npc, and weather each ran on the standard turn
 (`seed_city_trade` at INIT, `init_savage_attacks` per turn, `daily_events`
-weather every day) and took a deliberate one-time re-baseline. Combat/pillage/npc/
-weather behavior is pinned by its own golden tree,
+weather every day) and took a deliberate one-time re-baseline. **Upkeep is
+byte-neutral on *both* trees** (the combat/pillage profile): every upkeep draw is
+unreached — the bare map has no player chars and the guard-pillage soldiers are
+inventory items, so its nobles afford maintenance and stay at full health — so it
+took no re-baseline. Combat/pillage/npc/weather/upkeep behavior is pinned by its
+own golden tree,
 [tests/olympia/regress/guard-pillage](tests/olympia/regress/guard-pillage)
 (the **second** standing regress alongside secret-sea-route). Remaining
-subsystems (upkeep, quest, …) stay on the global `rnd()`; the migration
+subsystems (quest, …) stay on the global `rnd()`; the migration
 order and per-subsystem keying live in
 [doc/rng-state-granularity.md](doc/rng-state-granularity.md), and a PCG32
 generator swap stays deferred behind the TAG 64-bit work.

@@ -4,7 +4,123 @@
 #include	<string.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
 
+
+/*
+ *  issue #25: per-turn upkeep RNG stream (tag "upkp"), a sibling of the
+ *  combat/pillage/economy/npc/weather streams under the same turn root. The
+ *  per-noble gradual-maintenance draws -- sick recovery / healing, loyalty-decay
+ *  desertion, starvation flavor, animal deaths, and corpse decay -- draw from
+ *  here instead of the global rnd(), so an unrelated subsystem can no longer
+ *  perturb them and vice versa.
+ *
+ *  Like weather (its sibling in this file), upkeep uses ONE per-turn stream
+ *  seeded once -- begin_upkeep() is turn-guarded (scenario key 0) -- rather than
+ *  the fresh per-scenario reseed of combat/npc/economy. Its draws are scattered
+ *  across several loop_char passes in post_month()/daily_events() with no single
+ *  per-entity chokepoint, but every upkeep draw is a KEYED LEAF (rng_keyed,
+ *  which never advances the counter) with the entity carried in the leaf key --
+ *  so one stream gives full per-(entity, purpose) addressability and draw order
+ *  WITHIN upkeep is irrelevant (an inserted draw cannot move a sibling). The
+ *  turn guard means the first upkeep draw of the turn -- whichever it is, e.g.
+ *  garrison maintenance via garr.c's garrison_gold() -- seeds the stream.
+ *
+ *  UNREACHED on both golden trees, so this migration is byte-neutral on BOTH
+ *  manifests (the combat/pillage profile, not weather's): the bare-map standard
+ *  turn has no player characters, and the guard-pillage turn's soldiers are
+ *  inventory items rather than chars -- its two nobles afford maintenance, are
+ *  LOY_oath/LOY_npc (no loyalty decay), and stay at full health -- so every
+ *  upkeep draw is unreached. The keying is free design space for future Ultron
+ *  fixtures. Helpers are static (every draw site is in this file: the one
+ *  cross-file caller, garr.c -> charge_maint_sup -> men_starve, draws inside
+ *  men_starve here).
+ *
+ *  Left on the global rnd() as documented residuals: inn_income (per-structure
+ *  income -> a future income subsystem, not per-noble upkeep) and the
+ *  daily_events day-picks (curse_erode/faery/dog_bark). temple_income and the
+ *  post_month gradual decays (relic/pillage/hide_mage/ghost_warrior/
+ *  dead_body_rot/collapsed_mine/link/quest) draw no rnd() at all.
+ */
+static rng_stream upkeep_rng;
+static int upkeep_rng_turn = -1;	/* seed upkeep_rng once per turn */
+
+#define	TAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_UPKEEP	0x75706b70u	/* "upkp" */
+
+/* upkeep leaf-draw purpose tags (kept private, like storm.c's weather tags) */
+#define	UTAG_HEAL	0x6865616cu	/* "heal" -- sick recovery / heal amount    */
+#define	UTAG_LOYAL	0x6c6f796cu	/* "loyl" -- loyalty-decay desertion checks */
+#define	UTAG_SICKEN	0x73636b6eu	/* "sckn" -- starvation left-service/desert */
+#define	UTAG_ANIMAL	0x64696572u	/* "dier" -- per-animal death Bernoulli     */
+#define	UTAG_CORPSE	0x636f7270u	/* "corp" -- corpse decomposition           */
+
+/*
+ *  Seed the per-turn upkeep stream once per turn. Self-seeded by every helper
+ *  below, so the first upkeep draw of the turn cannot read an unseeded stream
+ *  regardless of which routine fires first.
+ */
+static void
+begin_upkeep(void)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	if (upkeep_rng_turn == sysclock.turn)
+		return;			/* already seeded this turn */
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	upkeep_rng = rng_stream_of(&turn, 0, TAG_UPKEEP);
+
+	upkeep_rng_turn = sysclock.turn;
+}
+
+/* Healing roll for a char: sub 0 = sick-recovery check, sub 1 = heal/lose amt. */
+static int
+up_heal(int who, int sub, int low, int high)
+{
+	begin_upkeep();
+	return rng_keyed(&upkeep_rng, who, sub, UTAG_HEAL, low, high);
+}
+
+/* Loyalty-decay desertion check: sub 0 = contract desert, sub 1 = fear desert. */
+static int
+up_loyal(int who, int sub, int low, int high)
+{
+	begin_upkeep();
+	return rng_keyed(&upkeep_rng, who, sub, UTAG_LOYAL, low, high);
+}
+
+/* Starvation flavor (left service vs deserted), keyed on (char, item type). */
+static int
+up_starve(int who, int item, int low, int high)
+{
+	begin_upkeep();
+	return rng_keyed(&upkeep_rng, who, item, UTAG_SICKEN, low, high);
+}
+
+/*
+ *  Per-individual animal-death Bernoulli. Keyed on (char, animal index) with the
+ *  item type folded into the purpose tag, so each (char, item) pair gets an
+ *  independent per-individual sequence -- overflow-free for any herd size.
+ */
+static int
+up_animal(int who, int item, int idx, int low, int high)
+{
+	begin_upkeep();
+	return rng_keyed(&upkeep_rng, who, idx, UTAG_ANIMAL ^ (uint32_t)item,
+				low, high);
+}
+
+/* Corpse-decomposition count for a char. */
+static int
+up_corpse(int who, int low, int high)
+{
+	begin_upkeep();
+	return rng_keyed(&upkeep_rng, who, 0, UTAG_CORPSE, low, high);
+}
 
 
 /*
@@ -297,7 +413,7 @@ heal_char_sup(int who)
 	if (inn)
 		chance = 10;
 
-	if (char_sick(who) && rnd(1,100) <= chance)
+	if (char_sick(who) && up_heal(who, 0, 1, 100) <= chance)
 	{
 		wout(who, "%s defeated illness and is now recovering.",
 							box_name(who));
@@ -305,7 +421,7 @@ heal_char_sup(int who)
 		p_char(who)->sick = FALSE;
 	}
 
-	amount = rnd(3, 15);
+	amount = up_heal(who, 1, 3, 15);
 
 	if (char_sick(who))
 	{
@@ -734,7 +850,7 @@ loyalty_decay(void)
 
 		if (p->loy_rate < 50 &&
 		    p->loy_kind == LOY_contract &&
-		    rnd(1,2) == 1)
+		    up_loyal(who, 0, 1, 2) == 1)
 		{
 			log_write(LOG_DEATH, "%s deserts, %s", box_name(who), loyal_s(who));
 			unit_deserts(who, indep_player, TRUE, LOY_unsworn, 0);
@@ -749,7 +865,7 @@ loyalty_decay(void)
 
 		case LOY_fear:
 			p->loy_rate--;
-			if (p->loy_rate <= 0 && rnd(1,2) == 1)
+			if (p->loy_rate <= 0 && up_loyal(who, 1, 1, 2) == 1)
 			{
 				log_write(LOG_DEATH, "%s deserts, %s", box_name(who), loyal_s(who));
 				unit_deserts(who, indep_player, TRUE, LOY_unsworn, 0);
@@ -968,7 +1084,7 @@ men_starve(int who, int have)
 				s = "starved";
 			else
 			{
-				if (rnd(1,2) == 1)
+				if (up_starve(who, item[i], 1, 2) == 1)
 					s = "left service";
 				else
 					s = "deserted";
@@ -1071,7 +1187,7 @@ animal_deaths(void)
 				int i;
 
 				for (i = 1; i <= e->qty; i++)
-					if (rnd(1, 1000) < 10)
+					if (up_animal(who, e->item, i, 1, 1000) < 10)
 						dead++;
 
 				if (dead > 0)
@@ -1258,7 +1374,7 @@ corpse_decay(void)
 		if (has <= 0)
 			continue;
 
-		has = min(has, rnd(0,2));
+		has = min(has, up_corpse(i, 0, 2));
 
 		if (has)
 		{

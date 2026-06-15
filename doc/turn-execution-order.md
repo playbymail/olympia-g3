@@ -165,11 +165,13 @@ if (day == faery_day)      auto_faery();
 > the `weather_days` shuffle, `ship_coastal_damage` and `random_loc_damage` (acute
 > damage — keyed `wthr_wreck`, unreached on the bare map), and `natural_weather()`
 > (the province shuffles + storm-strength rolls — the ~76.7k draws/turn that
-> dominate this phase). The remaining draws — the three day-picks
-> (`curse_erode_day`/`faery_day`/`dog_bark_day`) — stay on the **global serial
-> stream** (`rnd()`) as documented residuals for the magic / region:faery /
-> stealth subsystems. Those global residuals are part of why reordering or adding
-> a global draw still re-bakes the rest of the manifest.
+> dominate this phase). The weekly `heal_characters()` (`day % 7 == 0`) draws
+> from the keyed per-turn **upkeep** stream (seeded once via `begin_upkeep()`,
+> `up_heal`, #25) — unreached on the bare map (no wounded chars). The remaining
+> draws — the three day-picks (`curse_erode_day`/`faery_day`/`dog_bark_day`) —
+> stay on the **global serial stream** (`rnd()`) as documented residuals for the
+> magic / region:faery / stealth subsystems. Those global residuals are part of
+> why reordering or adding a global draw still re-bakes the rest of the manifest.
 
 ---
 
@@ -215,11 +217,16 @@ check_token_units();
 determine_noble_ranks();
 ```
 
-Several of these draw from the RNG (`animal_deaths`, `loyalty_decay`,
-`inn_income`, `corpse_decay`, etc.) — all still on the **global** stream
-(upkeep/economy residuals, not yet migrated). Note `storm_decay()` /
-`storm_move()` draw **nothing** (pure strength decrement / stored-direction
-move), so the weather migration left `post_month` untouched.
+Several of these draw from the RNG. Since the **upkeep** migration (#25) the
+per-noble gradual-maintenance draws are on the keyed per-turn upkeep stream
+(seeded once via `begin_upkeep()`): `loyalty_decay` (`up_loyal`), `men_starve`
+via `charge_maint_costs`/`garrison_gold` (`up_starve`), `animal_deaths`
+(`up_animal`), and `corpse_decay` (`up_corpse`). All are **unreached on both
+golden trees** (no eligible chars), so the migration was byte-neutral. Still on
+the **global** stream as documented residuals: `inn_income` (per-structure
+income → a future income subsystem; `temple_income` draws nothing). Note
+`storm_decay()` / `storm_move()` draw **nothing** (pure strength decrement /
+stored-direction move), so the weather migration left `post_month` untouched.
 
 ---
 
@@ -238,7 +245,8 @@ stream they're on:
 | Each day, after commands | `daily_events()` day picks (`curse_erode`/`faery`/`dog_bark`) | **global** `rnd()` (magic / region:faery / stealth residuals) |
 | Per-pillage / undead / storm | `do_cookie_npc()` troop count when `man_kind` set | **keyed** per-location, `begin_npc(where)` (`npc.c:575`) — *not reached on the standard turn* |
 | Combat (only if a battle occurs) | `begin_battle()` / `crnd()` | **keyed** per-battle (combat migration) |
-| End of month | `post_month()` decay/income/death routines | **global** `rnd()` (upkeep/economy; `storm_decay`/`storm_move` draw nothing) |
+| Each day (`day%7`) / end of month | `heal_characters`, `loyalty_decay`, `men_starve`, `animal_deaths`, `corpse_decay` | **keyed** per-turn upkeep — `begin_upkeep()` (#25) — *not reached on either golden tree* |
+| End of month | `inn_income()` (`temple_income` draws nothing) | **global** `rnd()` (future income subsystem residual) |
 
 Notes for #25 work:
 
@@ -254,5 +262,11 @@ Notes for #25 work:
   stream. Its acute-damage cousins (`ship_coastal_damage`, mine/inn calamities)
   draw **nothing** on the bare map (no rocky-coast ships, mines, or inns), so they
   show 0 hits there despite being migrated.
+- **Upkeep is the inverse of weather**: every per-noble upkeep draw (healing,
+  loyalty decay, starvation, animal deaths, corpse decay) is **unreached on both
+  golden trees** — the bare map has no player chars, and the guard-pillage turn's
+  soldiers are inventory items (its two nobles afford maintenance, are
+  LOY_oath/LOY_npc, and stay at full health). So the upkeep migration is
+  byte-neutral on both manifests, the combat/pillage profile.
 - The keyed-stream seam is `lib/rng.{c,h}`; the per-subsystem migration order is
   in [rng-state-granularity.md](rng-state-granularity.md).
