@@ -313,6 +313,11 @@ target_include_directories(olympia-g3 PRIVATE olympia/ lib/)
 target_compile_features(olympia-g3 PRIVATE c_std_11)
 olympia_compile_flags(olympia-g3)
 
+# The engine uses sqrt/ceil/... (hades.c, report.c, ...). Linux/GCC needs the
+# math library linked explicitly; macOS folds libm into libSystem but tolerates
+# -lm. Only the olympia/ tree pulls math, so mapgen-g3/island-g3 don't need it.
+target_link_libraries(olympia-g3 PRIVATE m)
+
 # Optional ASan/UBSan via the asan-ubsan preset (OLYMPIA_SANITIZE=ON).
 olympia_enable_sanitizers(olympia-g3)
 
@@ -379,4 +384,4 @@ target_include_directories(olyscript-g3 PRIVATE olympia/ lib/ third_party/lua)
 target_compile_features(olyscript-g3 PRIVATE c_std_11)
 olympia_compile_flags(olyscript-g3)
 olympia_enable_sanitizers(olyscript-g3)
-target_link_libraries(olyscript-g3 PRIVATE lua_vendored)
+target_link_libraries(olyscript-g3 PRIVATE lua_vendored m)
