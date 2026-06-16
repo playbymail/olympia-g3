@@ -311,7 +311,7 @@ d_breed(struct command *c)
 	if (i1 == i2)
 		breed_accident *= 2;
 
-	if (i1 && rnd(1,100) <= breed_accident)
+	if (i1 && soc_breed(c->who, i1, 0, 1, 100) <= breed_accident)	/* issue #25: social stream */
 	{
 		wout(c->who, "%s was killed in the breeding attempt.",
 					cap(box_name_qty(i1, 1)));
@@ -319,7 +319,7 @@ d_breed(struct command *c)
 		killed = TRUE;
 	}
 
-	if (i2 && rnd(1,100) <= breed_accident && i1 != i2)
+	if (i2 && soc_breed(c->who, i2, 0, 1, 100) <= breed_accident && i1 != i2)	/* issue #25: social stream */
 	{
 		wout(c->who, "%s was killed in the breeding attempt.",
 					cap(box_name_qty(i2, 1)));
@@ -327,7 +327,7 @@ d_breed(struct command *c)
 		killed = TRUE;
 	}
 
-	if (offspring == 0 || (killed && rnd(1,2) == 1))
+	if (offspring == 0 || (killed && soc_breed(c->who, 0, 1, 1, 2) == 1))	/* issue #25: social stream */
 	{
 		wout(c->who, "No offspring was produced.");
 		return FALSE;

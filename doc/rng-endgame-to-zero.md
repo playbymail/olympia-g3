@@ -29,18 +29,18 @@ grep -rnE '[^_a-zA-Z]rnd\(' olympia/*.c | grep -v 'olympia/rnd.c' \
 ## Full remaining surface (audited against current main — re-verify, line numbers shift)
 
 41 live gameplay draws in 7 buckets at the start (after excluding the dead code +
-the `-R` self-test). **Units A–C are landed**: Unit A removed the 6 skills/magic
+the `-R` self-test). **Units A–D are landed**: Unit A removed the 6 skills/magic
 residuals (bucket 4); Units B+C (one PR) removed the 3 calendar day-picks (bucket
-1) and the 4 `inn_income` draws (bucket 2) → **28 live draws in 3 buckets** remain
-(D–F):
+1) and the 4 `inn_income` draws (bucket 2); Unit D removed the 10 social-command
+draws (bucket 3) → **18 live draws in 2 buckets** remain (E–F):
 
 1. **calendar** ✅ **LANDED (Unit B)** — `day.c` daily_events day-picks
    (`curse_erode_day`, `faery_day`, `dog_bark_day`) → new per-turn `caln` stream.
 2. **income** ✅ **LANDED (Unit C)** — `day.c inn_income()` (base, `rnd(1,8)`
    gate, `rnd(5,13)` bonus, `switch rnd(1,3)` flavor) → folded into upkeep `upkp`.
-3. **social** — `swear.c`: `:405`, `:488`, `:495`, `:713`, `:1022`, `:1039`,
-   `:1110` (bribe / terrorize / persuade-oath / incite-riot); `beast.c`: `:314`,
-   `:322`, `:330` (breeding accidents).
+3. **social** ✅ **LANDED (Unit D)** — `swear.c`: `:405`, `:488`, `:495`, `:713`,
+   `:1022`, `:1039`, `:1110` (gift flavor / bribe / terrorize / incite / persuade-oath);
+   `beast.c`: `:314`, `:322`, `:330` (breeding accidents) → new per-turn `socl` stream.
 4. **skills/magic residuals** ✅ **LANDED (Unit A)** — `produce.c`
    `finish_generic_mine:242` / `d_generic_harvest:654` → `econ_mine`/`econ_harvest`;
    `necro.c auto_undead:405` → `npc_behavior`; `art.c` minters `new_orb:895` /
@@ -119,14 +119,26 @@ trees**: neither golden tree contains an inn (0 `inn_income` draws on either tur
 and at world-init, verified empirically), so it added nothing to Unit B's
 re-baseline. Bundled into Unit B's PR (both touch `day.c`).
 
-### Unit D — social → new `socl` stream  (tag 0x736f636c)
-`swear.c` (bribe success, terrorize severity, persuade-oath, incite-riot
-rumor/failure) + `beast.c` breeding-accident rolls — the npc-deferred social/loyalty
-residuals. Keyed leaves on `(actor, target|purpose)` (these are player social
-commands, no per-actor chokepoint, the explore/magic model). The one incite-mob
-*spawn* in `swear.c` already rides the `npcs` troop-count — leave it. Expected
-byte-neutral on both trees (no social commands on the bare map) — verify, likely no
-re-baseline.
+### Unit D — social → new `socl` stream  (tag 0x736f636c)  ✅ LANDED
+`swear.c` (gift-acknowledgement flavor, bribe pre-gate + success, terrorize
+severity, incite rumor/failure, persuade-oath) + `beast.c` breeding-accident rolls —
+the npc-deferred social/loyalty residuals. **All 10 draws on ONE turn-guarded
+per-turn `socl` stream** seeded once via `begin_social()` (the skills/magic model:
+keyed leaves, ACTOR in the leaf key k1, target/item folded into k2, a distinct
+purpose tag per command — `SOTAG_GIFT`/`BRIBE`/`TERROR`/`INCITE`/`OATH`/`BREED`).
+Hosted in `swear.c` (the hub, 7 sites; `begin_social()` + the `soc_gift`/`soc_bribe`/
+`soc_terror`/`soc_incite`/`soc_persuade` helpers are **static**); `soc_breed`
+(beast.c, 3 sites) is **exposed via `proto.h`** so its draws share the one stream
+(the `begin_economy`/`skil_crit`/`magc_scry` cross-file convention — NOT a second
+stream). The one incite-mob *spawn* in `swear.c:863` already rides the `npcs`
+troop-count — left alone.
+
+**Byte-neutral on both trees** (the quest/explore/skills/magic profile): every site
+is a player social command, neither golden tree issues BRIBE/TERRORIZE/INCITE/
+PERSUADE/BREED, and none fire at world-init — verified empirically (0 draws on the
+bare-map turn, both guard-pillage twins, and `-s`/`-a`/`-i` world-init via an
+instrument/count/revert pass). So **no re-baseline, no `scenario.tgz` regen**; both
+golden gates green on both presets, `tests/rng/check.sh` YES, audit grep zero.
 
 ### Unit E — entity catch-all → new `enty` stream  (tag 0x656e7479) + quest-infra to qrnd
 The one-off entity/command behaviors with no natural subsystem: `stack.c`

@@ -762,6 +762,7 @@ extern int d_rally(struct command *c);
 extern int d_terrorize(struct command *c);
 extern int enough_np_to_acquire(int who, int target);
 extern int np_to_acquire(int who, int target);
+extern int soc_breed(int who, int item, int sub, int low, int high);	/* issue #25: social RNG stream (beast.c d_breed) */
 extern int sworn_beneath(int a, int b);
 extern int terrorize_prisoner(struct command *c);
 extern int terrorize_vassal(struct command *c);

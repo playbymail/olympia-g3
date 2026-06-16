@@ -398,7 +398,16 @@ on both trees but 0 at world-init, so EXPECT-only re-baseline — the main manif
 moved **204→205** as the mint shift adds an `orders/204` residual, guard-pillage
 EXPECT only, no `scenario.tgz` regen); **C (LANDED, bundled with B)** `inn_income`
 (→ folded into `upkp` as `up_income(inn,sub,…)`, no new tag — byte-neutral, no inn
-on either golden tree); **D** social (`swear.c`/`beast.c` → new `socl`), **E** an entity catch-all
+on either golden tree); **D (LANDED)** the social commands (`swear.c` gift/bribe/
+terrorize/incite/persuade + `beast.c` breeding-accident rolls — 10 draws → new
+`socl` per-turn stream via the turn-guarded `begin_social()` + keyed-leaf helpers,
+actor in the leaf key k1, a distinct purpose tag per command; the cross-file
+skills/magic model — `begin_social()` + `soc_gift`/`soc_bribe`/`soc_terror`/
+`soc_incite`/`soc_persuade` static in `swear.c`, `soc_breed` exposed via `proto.h`
+for `beast.c`; the `swear.c:863` incite-mob spawn already rides `npcs`, left alone;
+this retired the `swear.c`/`beast.c` "residual on global" framing — byte-neutral on
+both trees, verified empirically 0 draws on the bare-map turn / both guard-pillage
+twins / `-s`/`-a`/`-i`, so NO re-baseline and NO `scenario.tgz` regen); **E** an entity catch-all
 for the `u.c`/`stack.c`/`build.c` one-offs plus `produce.c mage_menial_how` (→ new
 `enty`, quest-infra → `qrnd`), and
 **F** mint last (`code.c rnd_alloc_num` + `add.c` ids/passwords → `mint`; same PR
