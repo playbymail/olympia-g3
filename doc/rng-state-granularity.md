@@ -1235,11 +1235,11 @@ master seed                                  rng_seed(randseed bytes)
    │
    │   ── endgame: drive gameplay rnd() to zero (each its own PR; see rng-endgame-to-zero.md) ──
    │
-   ├─ (residuals)   → existing econ/npcs/qest  [planned A]  produce.c, necro.c auto_undead, art.c minters (NO new tag)
+   ├─ (residuals)   → existing econ/npcs/qest  [planned A]  produce.c mine/harvest, necro.c auto_undead, art.c minters (NO new tag; produce.c mage_menial -> E)
    ├─ calendar   key(turn, 0,        "caln")  [planned B]  day.c day-picks (curse_erode/faery/dog_bark); leaf key(which, 0, "day")
    ├─ income     → upkeep "upkp"               [planned C]  day.c inn_income (folds into upkeep; up_income leaf)
    ├─ social     key(turn, 0,        "socl")  [planned D]  swear.c (bribe/terrorize/persuade/incite), beast.c (breeding); leaf key(actor, target)
-   ├─ entity     key(turn, 0,        "enty")  [planned E]  u.c/stack.c/build.c one-off behaviors (catch-all); quest-infra -> qrnd
+   ├─ entity     key(turn, 0,        "enty")  [planned E]  u.c/stack.c/build.c one-offs + produce.c mage_menial (catch-all); quest-infra -> qrnd
    │     └─ leaf key(who|where, purpose, "escp"/"land"/"grav"/"take"/"dmg"/"bark"/"bild")  ← keyed leaves, one per-turn stream
    │
    └─ mint       key(turn, new_id,   "mint")  [LAST]    code.c rnd_alloc_num, add.c (ids / passwords)
@@ -1265,7 +1265,7 @@ master seed                                  rng_seed(randseed bytes)
 | B     | calendar    | `caln`               | turn (loc 0)            | **planned (endgame)** — day-picks; fires every turn → re-baseline                                              | `day.c`                                                                              |
 | C     | income      | `upkp`               | turn (loc 0)            | **planned (endgame)** — `inn_income` folds into upkeep (no new tag)                                            | `day.c`                                                                              |
 | D     | social      | `socl`               | actor                   | **planned (endgame)** — bribe/terrorize/persuade/incite/breeding; likely byte-neutral                         | `swear.c`, `beast.c`                                                                 |
-| E     | entity      | `enty`               | actor / location        | **planned (endgame)** — catch-all one-off behaviors; quest-infra → `qrnd`                                      | `u.c`, `stack.c`, `build.c`, `quest.c`                                               |
+| E     | entity      | `enty`               | actor / location        | **planned (endgame)** — catch-all one-off behaviors (incl. `produce.c` mage-menial flavor); quest-infra → `qrnd` | `u.c`, `stack.c`, `build.c`, `quest.c`, `produce.c`                                  |
 | F     | mint        | `mint`               | entity id               | **last** — re-bakes every id; repoint `test_random`, flip on the no-gameplay-`rnd()` gate                      | `code.c`, `add.c`, `z.c`                                                             |
 
 ### Endgame — driving gameplay `rnd()` to zero
@@ -1286,8 +1286,9 @@ At the time of writing this leaves **41 live draws in 7 buckets**: the
 **skills/magic residuals** (Unit A → existing `econ`/`npcs`/`qest`), the **calendar**
 day-picks (Unit B → `caln` — this retires the day-picks' "deliberate permanent
 residual" status), **income** (Unit C → folded into `upkp`), **social** (Unit D →
-`socl`), an **entity** catch-all for the `u.c`/`stack.c`/`build.c` one-offs (Unit E
-→ `enty`, with the quest shared-infra folded into `qrnd`), and **mint** (Unit F,
+`socl`), an **entity** catch-all for the `u.c`/`stack.c`/`build.c` one-offs plus
+`produce.c`'s mage-menial flavor pick (Unit E → `enty`, with the quest shared-infra
+folded into `qrnd`), and **mint** (Unit F,
 last — it re-bakes every entity id, so nothing may follow it). Excluded as
 non-gameplay: the `#if 0 equip_new_noble` dead code, the commented
 `tunnel.c:506`/`buy.c:1547`, and `test_random()` (the `-R` self-test, repointed to

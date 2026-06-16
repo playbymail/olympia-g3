@@ -39,14 +39,16 @@ self-test):
    `:1110` (bribe / terrorize / persuade-oath / incite-riot); `beast.c`: `:314`,
    `:322`, `:330` (breeding accidents).
 4. **skills/magic residuals** — `produce.c` `finish_generic_mine:242` /
-   `d_generic_harvest:654` / `mage_menial_how:702`; `necro.c auto_undead:405`;
-   `art.c` minters `new_orb:895` / `create_npc_token:1102`+`1253` /
-   `new_suffuse_ring:1427`.
+   `d_generic_harvest:654`; `necro.c auto_undead:405`; `art.c` minters
+   `new_orb:895` / `create_npc_token:1102`+`1253` / `new_suffuse_ring:1427`.
+   (`produce.c mage_menial_how:702`, a cosmetic actor-keyed flavor pick, is in
+   bucket 6 / Unit E instead.)
 5. **quest shared-infra** — `quest.c free_artifact:288`,
    `make_subloc_monster:598`.
 6. **entity catch-all** — `stack.c check_prisoner_escape:267` / `drop_stack:409`+`420`;
    `u.c take_unit_items:291`+`292` / `add_char_damage:402` / `nearby_grave:451` /
-   `find_nearest_land:1882`+`1945` / `bark_dogs:2458`; `build.c create_new_building:447`.
+   `find_nearest_land:1882`+`1945` / `bark_dogs:2458`; `build.c create_new_building:447`;
+   `produce.c mage_menial_how:702` (cosmetic labor-flavor pick, actor-keyed).
 7. **mint** — `code.c rnd_alloc_num:706` (THE entity-id allocator, reached by every
    random-id `new_ent`/`alloc_box`), `add.c get_city_id:73` / password gen `:201`.
 
@@ -62,9 +64,11 @@ keep both golden gates green on both presets (debug + asan-ubsan).
 
 ### Unit A — skills/magic residuals → existing econ / npcs / qest streams
 Route onto **already-landed** subsystems (NO new tags):
-- `produce.c` mining/harvest/menial → **economy** (`econ`): `begin_economy(where)` +
-  new `econ_*` keyed leaves on `(who|where, item|purpose)`. `mage_menial_how()`
-  takes no args today — thread a who/where context for the key.
+- `produce.c` mining/harvest → **economy** (`econ`): `begin_economy(where)` +
+  new `econ_*` keyed leaves on `(item, where)` for `finish_generic_mine:242` and
+  `d_generic_harvest:654`. (`mage_menial_how:702` is **not** in this unit — it is a
+  cosmetic labor-flavor pick with no item/where, deferred to Unit E as an
+  actor-keyed `enty` leaf.)
 - `necro.c auto_undead:405` `rnd(1,2)` → **npc** (`npcs`): `npc_behavior(who, …)`
   (the auto_bandit/auto_savage precedent). Do NOT touch the undead troop-count
   (`necro.c:114` `do_cookie_npc`, already on `npcs`).
@@ -106,8 +110,11 @@ re-baseline.
 ### Unit E — entity catch-all → new `enty` stream  (tag 0x656e7479) + quest-infra to qrnd
 The one-off entity/command behaviors with no natural subsystem: `stack.c`
 (prisoner escape, drop-stack), `u.c` (TAKE qty, char damage, nearby_grave,
-find_nearest_land, bark_dogs), `build.c` (build outcome). One turn-guarded per-turn
-stream, keyed leaves keyed on the actor/location + a purpose sub-tag per site. Fold
+find_nearest_land, bark_dogs), `build.c` (build outcome), and `produce.c`
+`mage_menial_how:702` (the cosmetic mage labor-flavor pick, deferred here from
+Unit A because it is actor-keyed flavor, not an economic draw). One turn-guarded
+per-turn stream, keyed leaves keyed on the actor/location + a purpose sub-tag per
+site. Fold
 the **quest shared-infra** (`free_artifact`, `make_subloc_monster`) into quest's
 `qrnd()` instead (they run inside quest gen — confirm they're under a `begin_quest`
 scope; if not, they join `enty`). Mixed byte-neutrality (prisoner-escape / damage
