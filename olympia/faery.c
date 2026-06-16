@@ -3,6 +3,7 @@
 #include	<math.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
 
 
 int faery_region = 0;
@@ -10,6 +11,137 @@ int faery_player = 0;
 
 
 #define	SZ	100		/* SZ x SZ is the maximum size of faery */
+
+
+/*
+ *  issue #25 (regions, step 12): Faery draws from a per-turn "faer" stream
+ *  instead of the global rnd(). Like hades/worldgen it is a hybrid -- one tag,
+ *  two draw models (the weather/worldgen precedent):
+ *
+ *  - The WORLD BUILD (create_faery) is ordered terrain/gate/hill/city generation,
+ *    so it uses a fresh per-build SEQUENTIAL stream (the tunnel.c model):
+ *    begin_faery_build() reseeds it and fseq_rnd()/fseq_shuffle() draw in order.
+ *    It fires at the -i/-s/-a world init (io.c, init-guarded if (faery_region ==
+ *    0)), so the build half is NOT byte-neutral.
+ *
+ *  - The AUTONOMOUS turn-time behavior (auto_faery's create_elven_hunt spawns and
+ *    the npc.c bandit ambushes) uses KEYED LEAVES on a turn-guarded per-turn
+ *    stream (the explore/magic model): begin_faery() seeds once per turn and the
+ *    faer_*() helpers are order-independent leaf draws. The build stream keys on
+ *    the (nonzero) region id and the leaf stream keys on 0, so they never collide
+ *    (the worldgen convention). The bandit helpers are exposed via proto.h.
+ */
+static rng_stream faery_seq;			/* build: ordered generation        */
+static rng_stream faery_rng;			/* autonomous: keyed leaves         */
+static int faery_rng_turn = -1;			/* seed faery_rng once per turn     */
+
+#define	TAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_FAERY	0x66616572u	/* "faer" */
+
+/* faery autonomous leaf-draw purpose tags (kept private) */
+#define	FTAG_HUNT	0x68756e74u	/* "hunt" -- create_elven_hunt where pick (retry-keyed) */
+#define	FTAG_HQTY	0x68717479u	/* "hqty" -- create_elven_hunt elf count               */
+#define	FTAG_BKND	0x626b6e64u	/* "bknd" -- create_faery_bandit kind                  */
+#define	FTAG_BQTY	0x62717479u	/* "bqty" -- create_faery_bandit troop count           */
+#define	FTAG_BGLD	0x62676c64u	/* "bgld" -- create_faery_bandit gold                  */
+#define	FTAG_AMBS	0x616d6273u	/* "ambs" -- faery_attack_check ambush trigger         */
+#define	FTAG_RTAL	0x7274616cu	/* "rtal" -- faery_attack_check retaliate              */
+
+/* build: fresh per-build reseed (the tunnel.c/worldgen sequential model). */
+static void
+begin_faery_build(int where)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	faery_seq = rng_stream_of(&turn, where, TAG_FAERY);
+}
+
+static int
+fseq_rnd(int low, int high)
+{
+	return rng_draw(&faery_seq, low, high);
+}
+
+static void
+fseq_shuffle(ilist l)
+{
+	ilist_shuffle_rng(l, &faery_seq);
+}
+
+/* autonomous: turn-guarded per-turn keyed-leaf stream (the explore/magic model). */
+static void
+begin_faery(void)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	if (faery_rng_turn == sysclock.turn)
+		return;			/* already seeded this turn */
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	faery_rng = rng_stream_of(&turn, 0, TAG_FAERY);
+
+	faery_rng_turn = sysclock.turn;
+}
+
+/* create_elven_hunt where pick: keyed on (auto_faery slot, retry). The legacy
+ * pick sits in a do/while that re-rolls until the loc is non-ocean, so a fixed
+ * leaf key would spin forever -- the retry index makes each re-roll distinct. */
+static int
+faer_hunt_loc(int slot, int retry, int low, int high)
+{
+	begin_faery();
+	return rng_keyed(&faery_rng, slot, retry, FTAG_HUNT, low, high);
+}
+
+static int
+faer_hunt_qty(int slot)
+{
+	begin_faery();
+	return rng_keyed(&faery_rng, slot, 0, FTAG_HQTY, 25, 100);
+}
+
+/* exposed via proto.h for the npc.c bandit ambushes (region-environmental). */
+int
+faer_bandit_kind(int who, int where)
+{
+	begin_faery();
+	return rng_keyed(&faery_rng, who, where, FTAG_BKND, 1, 3);
+}
+
+int
+faer_bandit_qty(int unit)
+{
+	begin_faery();
+	return rng_keyed(&faery_rng, unit, 0, FTAG_BQTY, 4, 24);
+}
+
+int
+faer_bandit_gold(int unit)
+{
+	begin_faery();
+	return rng_keyed(&faery_rng, unit, 0, FTAG_BGLD, 1, 25);
+}
+
+int
+faer_ambush(int who, int where)
+{
+	begin_faery();
+	return rng_keyed(&faery_rng, who, where, FTAG_AMBS, 1, 100);
+}
+
+int
+faer_retal(int who, int where)
+{
+	begin_faery();
+	return rng_keyed(&faery_rng, who, where, FTAG_RTAL, 1, 2);
+}
 
 
 void
@@ -34,6 +166,8 @@ create_faery(void)
 	set_name(faery_region, "Faery");
 
 	fprintf(stderr, "INIT: creating %s\n", box_name(faery_region));
+
+	begin_faery_build(faery_region);	/* issue #25: per-build faer stream */
 
 /*
  * Size Faery dynamically to fit the number of faery hills we want
@@ -170,13 +304,13 @@ create_faery(void)
 		next_loc;
 
 		assert(ilist_len(l) > 0);
-		ilist_scramble(l);
+		fseq_shuffle(l);
 		other_ring = l[0];
 
 		li = rp_loc_info(faery_region);
 		assert(li && ilist_len(li->here_list) > 0);
 
-		randloc = li->here_list[rnd(0, ilist_len(li->here_list)-1)];
+		randloc = li->here_list[fseq_rnd(0, ilist_len(li->here_list)-1)];
 
 		ring = new_ent(T_loc, sub_stone_cir);
 		set_where(ring, randloc);
@@ -187,7 +321,7 @@ create_faery(void)
 		set_where(gate, ring);
 
 		p_gate(gate)->to_loc = other_ring;
-		rp_gate(gate)->seal_key = (short) rnd(111,999);
+		rp_gate(gate)->seal_key = (short) fseq_rnd(111,999);
 
 		ilist_reclaim(&l);
 	}
@@ -230,13 +364,13 @@ create_faery(void)
 			/* 50% chance of a hill for each 50 provinces
 			 * in a region, but at least one
 			 */
-			if (hills && rnd(0,1))
+			if (hills && fseq_rnd(0,1))
 				continue;
 			do
 			{
-				randloc = li->here_list[rnd(0, ilist_len(li->here_list)-1)];
-				r = rnd(1, sz - 2);
-				c = rnd(1, sz - 2);
+				randloc = li->here_list[fseq_rnd(0, ilist_len(li->here_list)-1)];
+				r = fseq_rnd(1, sz - 2);
+				c = fseq_rnd(1, sz - 2);
 			}
 			while (bx[randloc]->temp || bx[map[r][c]]->temp);
 
@@ -245,7 +379,7 @@ create_faery(void)
 
 			sl = p_subloc(n);
 			ilist_append(&sl->link_to, randloc);
-			sl->link_when = (schar) rnd(0, NUM_MONTHS-1);
+			sl->link_when = (schar) fseq_rnd(0, NUM_MONTHS-1);
 
 			sl = p_subloc(randloc);
 			ilist_append(&sl->link_from, n);
@@ -268,7 +402,7 @@ create_faery(void)
 		{
 			if (bx[map[r][c]]->temp)
 				continue;
-			if (rnd(0, 30))
+			if (fseq_rnd(0, 30))
 				continue;
 			new = new_ent(T_loc, sub_city);
 			set_where(new, map[r][c]);
@@ -280,8 +414,8 @@ create_faery(void)
 	
 	while (!new && space > 0)
 	{
-		r = rnd(2, sz - 3);
-		c = rnd(2, sz - 3);
+		r = fseq_rnd(2, sz - 3);
+		c = fseq_rnd(2, sz - 3);
 		if (bx[map[r][c]]->temp)
 			continue;
 		new = new_ent(T_loc, sub_city);
@@ -379,18 +513,20 @@ v_use_faery_stone(struct command *c)
 
 
 static void
-create_elven_hunt(void)
+create_elven_hunt(int slot)
 {
 	int new;
 	struct loc_info *p;
 	int where;
+	int retry = 0;
 
 	p = rp_loc_info(faery_region);
 	assert(p);
 
 	do
 	{
-		where = p->here_list[rnd(0,ilist_len(p->here_list)-1)];
+		where = p->here_list[faer_hunt_loc(slot, retry++, 0,
+						ilist_len(p->here_list)-1)];
 	}
 	while (subkind(where) == sub_ocean);
 
@@ -400,7 +536,7 @@ create_elven_hunt(void)
 	if (new < 0)
 		return;
 
-	gen_item(new, item_elf, rnd(25,100));
+	gen_item(new, item_elf, faer_hunt_qty(slot));
 
 	queue(new, "wait time 0");
 	init_load_sup(new);   /* make ready to execute commands immediately */
@@ -468,7 +604,7 @@ auto_faery(void)
 
 	while (n_faery < 15)
 	{
-		create_elven_hunt();
+		create_elven_hunt(n_faery);
 		n_faery++;
 	}
 

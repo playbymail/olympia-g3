@@ -199,13 +199,13 @@ auto_mob(int who)
 
 
 static int
-create_hades_bandit(int where)
+create_hades_bandit(int who, int where)
 {
 	int new;
 	char *name = NULL;
 	int item;
 
-	switch (rnd(1,5))
+	switch (hads_bandit_kind(who, where))	/* issue #25: region hads stream */
 	{
 	case 1:
 		item = item_spirit;
@@ -240,7 +240,7 @@ create_hades_bandit(int where)
 	if (new < 0)
 		return -1;
 
-	gen_item(new, item, rnd(4,24));
+	gen_item(new, item, hads_bandit_qty(new));
 
 	wout(where, "%s appear.", box_name(new));
 
@@ -249,13 +249,13 @@ create_hades_bandit(int where)
 
 
 static int
-create_faery_bandit(int where)
+create_faery_bandit(int who, int where)
 {
 	int new;
 	char *name = NULL;
 	int item;
 
-	switch (rnd(1,3))
+	switch (faer_bandit_kind(who, where))	/* issue #25: region faer stream */
 	{
 	case 1:
 	case 2:
@@ -279,11 +279,11 @@ create_faery_bandit(int where)
 	if (new < 0)
 		return -1;
 
-	gen_item(new, item, rnd(4,24));
+	gen_item(new, item, faer_bandit_qty(new));
 
 	wout(where, "%s appear.", box_name(new));
 
-	gen_item(new, item_gold, rnd(1,25));
+	gen_item(new, item_gold, faer_bandit_gold(new));
 
 	return new;
 }
@@ -294,7 +294,7 @@ hades_attack_check(int who, int where)
 {
 	int new;
 
-	if (rnd(1,100) > 6)
+	if (hads_ambush(who, where) > 6)	/* issue #25: region hads stream */
 		return;
 
 	if (is_npc(who) ||
@@ -303,7 +303,7 @@ hades_attack_check(int who, int where)
 	    (has_skill(who, sk_transcend_death) && char_alone(who)))
 		return;
 
-	new = create_hades_bandit(where);
+	new = create_hades_bandit(who, where);
 
 	if (new < 0)
 		return;
@@ -311,7 +311,7 @@ hades_attack_check(int who, int where)
 	queue(new, "wait time 0");
 	init_load_sup(new);   /* make ready to execute commands immediately */
 
-	if (rnd(1,2) == 1)
+	if (hads_retal(who, where) == 1)
 	{
 		queue(new, "attack %s", box_code_less(who));
 	}
@@ -323,7 +323,7 @@ faery_attack_check(int who, int where)
 {
 	int new;
 
-	if (rnd(1,100) > 6)
+	if (faer_ambush(who, where) > 6)	/* issue #25: region faer stream */
 		return;
 
 	if (is_npc(who) ||
@@ -332,7 +332,7 @@ faery_attack_check(int who, int where)
 	    stack_has_use_key(who, use_faery_stone))
 		return;
 
-	new = create_faery_bandit(where);
+	new = create_faery_bandit(who, where);
 
 	if (new < 0)
 		return;
@@ -340,7 +340,7 @@ faery_attack_check(int who, int where)
 	queue(new, "wait time 0");
 	init_load_sup(new);   /* make ready to execute commands immediately */
 
-	if (rnd(1,2) == 1)
+	if (faer_retal(who, where) == 1)
 	{
 		queue(new, "attack %s", box_code_less(who));
 	}

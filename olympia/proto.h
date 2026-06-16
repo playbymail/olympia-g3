@@ -292,6 +292,12 @@ extern int v_use_faery_stone(struct command *c);
 extern void auto_faery(void);
 extern void create_faery(void);
 extern void link_opener(int who, int where, int sk);
+/* issue #25 (regions, step 12): faery autonomous leaf draws for npc.c bandits */
+extern int faer_bandit_kind(int who, int where);
+extern int faer_bandit_qty(int unit);
+extern int faer_bandit_gold(int unit);
+extern int faer_ambush(int who, int where);
+extern int faer_retal(int who, int where);
 
 /* olympia/garr.c */
 extern int allowed_garrisons(int level);
@@ -343,9 +349,14 @@ extern void list_all_items(int pl);
 extern void list_all_notices(int pl);
 
 /* olympia/hades.c */
-extern int random_hades_loc(void);
+extern int random_hades_loc(int who);		/* issue #25: keyed on the actor */
 extern void auto_hades(void);
 extern void create_hades(void);
+/* issue #25 (regions, step 12): hades autonomous leaf draws for npc.c bandits */
+extern int hads_bandit_kind(int who, int where);
+extern int hads_bandit_qty(int unit);
+extern int hads_ambush(int who, int where);
+extern int hads_retal(int who, int where);
 
 /* olympia/immed.c */
 extern int v_add_item(struct command *c);

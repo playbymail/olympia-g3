@@ -2,15 +2,17 @@
 
 Status: **in progress.** Groundwork for Project Ultron
 ([agentic-project-ultron.md](agentic-project-ultron.md)). The seam
-(`lib/rng.{c,h}`) is wired into eleven subsystems so far — combat, pillage,
+(`lib/rng.{c,h}`) is wired into twelve subsystems so far — combat, pillage,
 economy/market, NPC spawning, weather, upkeep, quest, explore, skills, magic
 (the latter two **command core only** — the crafting/aura/alchemy draws and the
 turn-auto curse-erode / autonomous-undead draws are deferred; see the consumer
-sections below), and worldgen (INIT-time city seeding + dungeon generation — the
-engine's largest draw set, the one consumer that fires at INIT rather than during
-the turn); the remaining subsystems in the
-[distribution map](#recommended-subsystem-distribution) are still on the global
-`rnd()`.
+sections below), worldgen (INIT-time city seeding + dungeon generation — the
+engine's largest draw set, the first consumer that fires at INIT rather than during
+the turn), and regions (faery/hades/cloud — each a worldgen-style hybrid: an INIT
+world build *and* turn-time autonomous behavior, on tags `faer`/`hads`/`clud`);
+the only remaining subsystem in the
+[distribution map](#recommended-subsystem-distribution) is **mint** (entity-id /
+password generation), still on the global `rnd()`.
 
 ## The problem
 
@@ -323,12 +325,16 @@ or cookie consumption, never during the `-s`/`-a`/`-i` world-init that
 - **Hades / faery bandits** (`npc.c` `create_hades_bandit` / `create_faery_bandit`
   / `hades_attack_check` / `faery_attack_check`) — region-environmental ambushes;
   they belong to the later `region:hades` / `region:faery` migration (tags
-  `hads`/`faer`), not generic NPC infra. Byte-neutral now (unreached on the bare
-  turn).
+  `hads`/`faer`), not generic NPC infra. **Now absorbed** by regions (step 12):
+  they draw from the keyed `hads`/`faer` streams via helpers exposed from
+  `hades.c`/`faery.c` through `proto.h`. (The ambush *trigger* roll turns out to
+  fire ~25/15× on the bare-map turn — the spawned NPCs move through the regions —
+  so it is not byte-neutral, but no bandit actually spawns there.)
 - **`storm.c`** environmental draws — the **weather** subsystem (tag `wthr`).
   `do_cookie_npc` passes storm cookies through without a troop-count draw, so
   there is no entanglement to unwind.
-- **`hades.c`** `auto_hades` / `create_hades_nasty` — `region:hades`.
+- **`hades.c`** `auto_hades` / `create_hades_nasty` — `region:hades`. **Now landed**
+  (step 12) on the keyed `hads` stream (slot-keyed leaves).
 - **`swear.c`** social/loyalty rolls (bribe success, terrorize severity,
   persuade-oath, gift-thanks, incite-riot rumor/failure) and **`beast.c`**
   breeding-accident rolls — these are player-command social/skill draws, not NPC
@@ -916,7 +922,8 @@ a manifest or belongs to another subsystem, and stays on the global `rnd()`:
   here (see the crafting follow-up below), but the three shared-infra **minters**
   stay deferred: `new_orb`/`create_npc_token` (quest loot) and `new_suffuse_ring`
   (economy per-turn restock).
-- **`cloud.c`** (4 draws) — `region:cloud` (step 12).
+- **`cloud.c`** (the gate seal-key + ring shuffle build draws) — `region:cloud`
+  (step 12). **Now landed** on the sequential `clud` build stream.
 
 ### Crafting follow-up: art.c command draws (still on magc)
 
@@ -1047,6 +1054,102 @@ worldgen takes the city-seeding + dungeon half).
 economy residual). The dead `rnd(1,2)` inside `create_tunnel_set`'s `#if 0`/`/* */`
 hades block draws nothing.
 
+## Twelfth consumer: regions (faery / hades / cloud)
+
+Regions are the twelfth migration, and — like worldgen — they span **both**
+reachability profiles, so they are **NOT byte-neutral**. Three sibling subsystems
+under the turn root, one tag each:
+
+```
+turn seed
+  ├─ … (combat … worldgen)
+  ├─ (turn, region|0, TAG_FAERY) → region:faery   faery.c
+  ├─ (turn, region|0, TAG_HADES) → region:hades    hades.c, npc.c, u.c
+  └─ (turn, region|0, TAG_CLOUD) → region:cloud    cloud.c
+```
+
+Tags: `faer` (`0x66616572`), `hads` (`0x68616473`), `clud` (`0x636c7564`).
+
+### One subsystem, two draw models (the worldgen precedent)
+
+Each region file mixes an INIT-time world build with turn-time autonomous
+behavior, so — exactly like worldgen (and weather before it) — each tag carries
+**two draw models**, separated by stream key (the nonzero region id for the
+sequential build stream, `0` for the keyed-leaf autonomous stream, so they never
+collide):
+
+- **World BUILD → fresh per-build SEQUENTIAL stream** (the `tunnel.c`/worldgen
+  model). `create_faery`/`create_hades`/`create_cloudlands` fire once at the
+  `-i`/`-s`/`-a` world-init (`io.c`, init-guarded `if (<region>_region == 0)`).
+  The build is an ordered terrain/gate/hill/city generation (with `do/while`
+  placement retries and ring-of-stones Fisher-Yates shuffles), so it **cannot** be
+  keyed — it must be sequential. `begin_<region>_build(<region>_id)` reseeds a
+  file-static stream and `<r>seq_rnd`/`<r>seq_shuffle` (over `ilist_shuffle_rng`,
+  replacing the global `ilist_scramble`) draw in order. Each region is built
+  exactly once, so the fresh reseed never correlates across builds.
+- **Turn-time AUTONOMOUS → KEYED LEAVES on a turn-guarded per-turn stream** (the
+  explore/npc model). The autonomous draws are scattered across `hades.c`/`faery.c`
+  (the `auto_hades`/`auto_faery` spawns), `npc.c` (the bandit ambushes), and `u.c`
+  (the transcend-death loc pick) with no per-actor chokepoint, so they use keyed
+  leaves: `begin_<region>()` seeds once per turn and the `hads_*`/`faer_*` helpers
+  are order-independent. The auto-spawn loops (`create_hades_nasty`,
+  `create_elven_hunt`) have **no entity yet** at the where/kind pick, so they key
+  on the `auto_*` **loop slot index**; the bandit/transcend draws key on the
+  **actor/location**. The bandit/transcend helpers are exposed via `proto.h` (the
+  `begin_economy`/`wgen_gate` cross-file convention) so `npc.c`/`u.c` can call them.
+  cloud has **no autonomous half** (build-only — the simplest of the three).
+
+One retry-loop subtlety: `create_elven_hunt`'s where-pick sits in a
+`do{…}while(ocean)` that re-rolls until the loc is non-ocean. A *fixed* keyed leaf
+would return the same value forever, so the re-roll index is threaded into the
+leaf key (`faer_hunt_loc(slot, retry, …)`) — each re-roll is a distinct leaf. The
+build's retries don't need this: the sequential stream advances its counter each
+draw, so retries get fresh values naturally.
+
+### Why this one moved both manifests (the worldgen/economy profile)
+
+The build halves fire at the `-i`/`-s`/`-a` world-init that `./run/olympia-g3.sh`
+and `build-scenario.sh` run, so removing them from the global serial stream
+realigns the still-global **mint** draws. **The autonomous halves are not
+byte-neutral either** — contrary to the initial expectation, `auto_hades` runs
+every turn via `queue_npc_orders` and `auto_faery` fires mid-month (`faery_day`
+lands in the back half), so the bare-map turn draws **25** nasty spawns, **15**
+elven-hunt spawns, and **40** ambush-trigger rolls through the new streams
+(verified by instrument/count: `create_hades_nasty`=25, `create_elven_hunt`=15,
+`hades`/`faery_attack_check`=25/15; unreached: `random_hades_loc`=0,
+`create_*_bandit`=0, retaliate=0 — the ambush passes only 6% and NPC movers
+short-circuit). Both halves migrated in **one PR** (all three builds fire in the
+same `io.c` INIT block, so they share a single re-baseline event — the worldgen
+one-PR rationale) under a **deliberate one-time re-baseline**:
+
+- **Main manifest** re-baselined (`golden_check.sh --update`) — still **204 files**,
+  content-only shift (only the still-global entity-id mint draws moved — the
+  npc/weather/worldgen signature).
+- **guard-pillage tree** re-baselined: `scenario.tgz` regenerated with
+  `build-scenario.sh` (its world-init now runs the migrated region build draws → a
+  different saved `randseed` → the still-global mint/loot draws shift; the noble
+  ids moved to pillager 6249 / guard 2002) and `EXPECT.sha256` re-baselined via
+  `check.sh --update`. **Both `check.sh` and `check-lua.sh` agree** on the
+  re-baselined tree. This coupling disappears once **mint** (step 13) lands.
+
+This migration is smaller than worldgen's re-baseline because `tunnel.c`/`seed.c`
+were already off the global stream — only the still-global mint draws (+ saved
+`randseed`) shift.
+
+**Honest framing:** the **build halves** yield **zero command-fixture benefit** (no
+small Ultron fixture — they have no player command); their value is removing region
+world-gen from the global serial stream and completing the world-build partition.
+The **autonomous halves**, by contrast, *do* give future fixture addressability — a
+hades-ambush or faery-bandit fixture becomes possible now that those draws are
+keyed on the actor.
+
+**Absorbed here** (previously documented residuals now resolved): the npc-deferred
+hades/faery **bandit** ambushes (`create_hades_bandit`/`create_faery_bandit` /
+`hades_attack_check`/`faery_attack_check`, `npc.c`) and the magic-deferred
+**`cloud.c`** gate-build draws. **Deliberately left global:** the `faery_day`
+day-pick (`day.c`, a turn-auto schedule pick like `curse_erode_day`) and the
+entity-id **mint** (step 13).
+
 ## Recommended subsystem distribution
 
 The map below is the canonical target the remaining migrations work against. It
@@ -1101,16 +1204,17 @@ master seed                                  rng_seed(randseed bytes)
    │
    ├─ magic      key(turn, 0,        "magc")  [PARTIAL]  basic.c (begin_magic/magc_*), scry.c, relig.c, necro.c, alchem.c, art.c
    │     └─ leaf key(who, ctx, "scry"/"piet"/"eatd"/"lern"/"medi"/"omen"/"heal"/"potn"/"forg"/"orb "/"ring")  ← keyed leaves, one per-turn stream, actor in k1
-   │             COMMAND CORE + art.c crafting commands landed; deferred: curse_erode day-pick (day.c) -> stays global; auto_undead -> npc; art.c minters new_orb/create_npc_token -> quest, new_suffuse_ring -> economy; cloud.c -> region:cloud (12)
+   │             COMMAND CORE + art.c crafting commands landed; deferred: curse_erode day-pick (day.c) -> stays global; auto_undead -> npc; art.c minters new_orb/create_npc_token -> quest, new_suffuse_ring -> economy; cloud.c -> region:cloud (12, landed)
    │
    ├─ worldgen   key(turn, 0|location, "wgen")  [LANDED]  seed.c (begin_worldgen/wgen_*: prominence/skill/garrison + tunnel gate), tunnel.c (begin_worldgen_loc/wseq_*: dungeon-gen, from explore)
    │     └─ seed.c keyed leaf key(where, sub, "prom"/"tech"/"garr"/"gate"); tunnel.c SEQ per-location (ordered recursive build)
    │             two draw models on one tag (weather precedent); fires at INIT -> NOT byte-neutral, one-time re-baseline of both trees
    │
-   ├─ region:faery  key(turn, location, "faer")  [proposed] faery.c
-   ├─ region:hades  key(turn, location, "hads")  [proposed] hades.c
-   ├─ region:cloud  key(turn, location, "clud")  [proposed] cloud.c
-   │     └─ leaf key(where, entity, "encounter"/"reward"/"gate")
+   ├─ region:faery  key(turn, region|0, "faer")  [LANDED]   faery.c (build seq + auto keyed leaves), npc.c
+   ├─ region:hades  key(turn, region|0, "hads")  [LANDED]   hades.c (build seq + auto keyed leaves), npc.c, u.c
+   ├─ region:cloud  key(turn, region|0, "clud")  [LANDED]   cloud.c (build seq only -- no autonomous half)
+   │     └─ build SEQ per-region (ordered gen); auto leaf key(slot|who, sub|where, "nast"/"hunt"/"bknd"/"ambs"/...)
+   │             two draw models on one tag (worldgen precedent); fires at INIT + every turn -> NOT byte-neutral, one re-baseline of both trees
    │
    └─ mint       key(turn, new_id,   "mint")  [last]     z.c, pw.c (passwords / entity ids)
          └─ leaf key(entity, slot, "pw"/"id")             ← order-sensitive today; keyed fixes it
@@ -1129,7 +1233,7 @@ master seed                                  rng_seed(randseed bytes)
 | 9     | skills      | `skil`               | turn (loc 0)            | **landed (command core)** — crafting/aura/alchemy deferred                                                     | `use.c`, `c2.c`, `stealth.c` (deferred: `basic.c`, `alchem.c`, `art.c`, `produce.c`) |
 | 10    | magic       | `magc`               | turn (loc 0)            | **landed (command core + art.c crafting commands)** — curse-erode/auto-undead + quest/economy minters deferred | `basic.c`, `scry.c`, `relig.c`, `necro.c`, `alchem.c`, `art.c`                       |
 | 11    | worldgen    | `wgen`               | turn (loc 0) / location | **landed** — INIT-time, NOT byte-neutral (one-time re-baseline of both trees)                                  | `seed.c` (keyed leaves), `tunnel.c` (sequential dungeon-gen)                         |
-| 12    | regions     | `faer`/`hads`/`clud` | location                | proposed                                                                                                       | `faery.c`, `hades.c`, `cloud.c`                                                      |
+| 12    | regions     | `faer`/`hads`/`clud` | region (build) / actor (auto) | **landed** — INIT build + turn autonomous, NOT byte-neutral (one-time re-baseline of both trees)          | `faery.c`, `hades.c`, `cloud.c`, `npc.c`, `u.c`                                      |
 | 13    | mint        | `mint`               | entity id               | last                                                                                                           | `z.c`, `pw.c`                                                                        |
 
 ### Why this order
@@ -1211,7 +1315,8 @@ master seed                                  rng_seed(randseed bytes)
   profile, so no re-baseline and no `scenario.tgz` regeneration. The slice **stops
   at the command/auto boundary**: the `day.c` `curse_erode_day` turn-auto day-pick
   stays global (migrating it would move the main manifest), `necro.c` `auto_undead`
-  defers to npc (autonomous behavior), and `cloud.c` to region:cloud (step 12). The
+  defers to npc (autonomous behavior), and `cloud.c` to region:cloud (step 12 — now
+  landed). The
   `art.c` **crafting commands** (FORGE AURACULUM / USE orb / USE suffuse-ring) then
   landed on `magc` too (the crafting follow-up — also byte-neutral, also 0 at
   world-init), leaving only the `art.c` **shared-infra minters** deferred
@@ -1233,6 +1338,19 @@ master seed                                  rng_seed(randseed bytes)
   is an ordered recursive build, un-keyable). Worldgen yields no command fixture;
   its value is removing the largest draw set from the global stream and completing
   the INIT-seeding partition. See [Eleventh consumer](#eleventh-consumer-worldgen).
+- **regions came next** (now landed) — `faery.c`/`hades.c`/`cloud.c` (three sibling
+  tags `faer`/`hads`/`clud`), each a worldgen-style hybrid: a fresh per-build
+  **sequential** stream for the INIT world build (`create_faery`/`create_hades`/
+  `create_cloudlands`) and **keyed leaves** on a turn-guarded per-turn stream for
+  the turn-time autonomous behavior (`auto_hades`/`auto_faery` spawns, the `npc.c`
+  bandit ambushes, the `u.c` transcend pick). Like worldgen the build halves fire at
+  world-init → **NOT byte-neutral**; the autonomous halves turned out **not**
+  byte-neutral either (`auto_hades`/`auto_faery` run on the bare-map turn). Migrated
+  in **one PR** (all three builds share the same `io.c` INIT block) under a single
+  deliberate re-baseline of both trees — smaller than worldgen's because
+  `tunnel.c`/`seed.c` were already off-stream, so only the still-global mint draws
+  (+ saved `randseed`) shifted. It absorbs the npc-deferred bandit residuals and the
+  magic-deferred `cloud.c`. See [Twelfth consumer](#twelfth-consumer-regions-faery--hades--cloud).
 - **mint is last** — `z.c` password/id generation is *creation-order* sensitive
   today, so keying it on the minted entity id is what most directly enables small
   fixtures, but it touches the most golden bytes; stage it after everything else.
