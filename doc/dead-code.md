@@ -3,7 +3,7 @@ Samples of code that was dead in the G3 sources.
 Kept for history and possible revival.
 (Even with Git, we can't resist the temptation.)
 
-# c1.c - Equip Noble
+## Equip Noble
 From `c1.c`.
 
 ```c++
@@ -155,4 +155,118 @@ A commented-out random jitter on a city trade's expiry, left inline:
 
 ```c++
 	tt->expire = t->expire; /*  + rnd(2,5); */
+```
+
+## Nearby Grave
+From `u.c`.
+
+```c++
+#if 0
+static int
+nearby_grave(int where)
+{
+	struct entity_loc *p;
+	int i;
+	static ilist l = NULL;
+
+	where = province(where);
+	p = rp_loc(where);
+
+	if (p && p->near_grave)
+		return p->near_grave;
+
+	log(LOG_CODE, "%s has no nearby grave", box_name(where));
+
+	ilist_clear(&l);
+	loop_subkind(sub_graveyard, i)
+	{
+		ilist_append(&l, i);
+	}
+	next_subkind;
+
+	assert(ilist_len(l) > 0);
+
+	ilist_scramble(l);
+
+	return l[rnd(0, ilist_len(l)-1)];
+}
+#endif
+```
+
+## Free Artifact
+From `quest.c`.
+
+```c++
+#if 0
+/*
+ *  Find an artifact in our region held by a subloc monster
+ *  which is not only-defeatable by another artifact.
+ */
+
+static int
+free_artifact(int where)
+{
+	int reg = region(where);
+	int i;
+	int owner;
+	ilist l = NULL;
+	int ret;
+
+	loop_item(i)
+	{
+		if (subkind(i) != sub_artifact)
+			continue;
+
+		owner = item_unique(i);
+		assert(owner);
+
+		if (region(owner) != reg)
+			continue;
+
+		if (!is_npc(owner) ||
+		    npc_program(owner) != PROG_subloc_monster)
+			continue;
+
+		if (only_defeatable(owner))
+			continue;
+
+		ilist_append(&l, i);
+	}
+	next_item;
+
+	if (ilist_len(l) == 0)
+		return 0;
+
+	ret = l[rnd(0,ilist_len(l)-1)];
+
+	ilist_reclaim(&l);
+
+	return ret;
+}
+#endif
+```
+
+Its only caller is also dead — a `#if 0` block in `make_subloc_monster()`
+(`quest.c`, around line 597) that would have given the monster a free artifact:
+
+```c++
+#if 0
+	if (rnd(1,6) == 1)
+	{
+		int item;
+
+/*
+ *  Temporarily set only_vulnerable for ourselves so we don't
+ *  have a circular problem.  free_artifact() will take care of
+ *  skipping over other only_vulnerable's.
+ */
+		p_misc(monster)->only_vulnerable = 1;
+		item = free_artifact(monster);
+
+		if (item)
+			rp_misc(monster)->only_vulnerable = item;
+		else
+			rp_misc(monster)->only_vulnerable = 0;
+	}
+#endif
 ```

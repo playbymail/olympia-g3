@@ -810,6 +810,11 @@ extern void get_rid_of_collapsed_mine(int fort);
 extern void print_dot(int c);
 extern void put_back_cookie(int who);
 extern void restore_dead_body(int owner, int who);
+/* issue #25 (Unit E): per-turn entity RNG stream; hosted in u.c, called from stack.c/build.c/produce.c */
+extern int ent_prisoner(int who);				/* stack.c: prisoner-escape roll */
+extern int ent_drop(int who, int sub, int low, int high);	/* stack.c: drop-stack scatter gate/dir */
+extern int ent_build(int where);				/* build.c: new-mine gate-crystal gate */
+extern int ent_menial(int who);					/* produce.c: mage-menial labor-flavor pick */
 
 /* olympia/use.c */
 /* issue #25 (step 9): per-turn skills RNG stream; helpers called from c2.c/stealth.c */

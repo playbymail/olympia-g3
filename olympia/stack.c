@@ -264,7 +264,7 @@ check_prisoner_escape(int who, int chance)
 	if (hound)
 		chance /= 2;
 
-	n = rnd(1,1000);
+	n = ent_prisoner(who);
 
 	if (n > chance)
 	{
@@ -406,7 +406,7 @@ drop_stack(int who, int to_drop)
 		log_write(LOG_SPECIAL, "%s frees a swear_on_release prisoner",
 					box_name(who));
 
-		if (rnd(1,5) < 5)
+		if (ent_drop(who, 0, 1, 5) < 5)
 		{
 			wout(who, "%s is grateful for your gallantry.",
 						box_name(to_drop));
@@ -417,7 +417,7 @@ drop_stack(int who, int to_drop)
 		}
 		else
 		{
-			switch (rnd(1,3))
+			switch (ent_drop(who, 1, 1, 3))
 			{
 			case 1:
 				wout(who, "%s spits on you, and vanishes in a cloud of orange smoke.", box_name(to_drop));

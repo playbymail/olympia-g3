@@ -1264,8 +1264,9 @@ master seed                                  rng_seed(randseed bytes)
    ├─ income     → upkeep "upkp"               [LANDED C]   day.c inn_income (folds into upkeep; up_income leaf, sub 0-3, "inco"); byte-neutral (no inn on either tree)
    ├─ social     key(turn, 0,        "socl")  [LANDED D]   swear.c (gift/bribe/terrorize/incite/persuade), beast.c (breeding); leaf key(who, target|item, "gift"/"brib"/"terr"/"inci"/"oath"/"bred")
    │     └─ keyed leaves, one per-turn stream, actor in k1 (begin_social, static helpers in swear.c; soc_breed via proto.h); byte-neutral both trees
-   ├─ entity     key(turn, 0,        "enty")  [planned E]  u.c/stack.c/build.c one-offs + produce.c mage_menial (catch-all); quest-infra -> qrnd
-   │     └─ leaf key(who|where, purpose, "escp"/"land"/"grav"/"take"/"dmg"/"bark"/"bild")  ← keyed leaves, one per-turn stream
+   ├─ entity     key(turn, 0,        "enty")  [LANDED E]   stack.c/u.c/build.c/produce.c one-offs (catch-all); 11 sites; host begin_entity in u.c
+   │     └─ leaf key(actor|loc, purpose, "pris"/"drop"/"take"/"sick"/"ldir"/"lpkk"/"bark"/"bldg"/"meni")  ← keyed leaves, one per-turn stream
+   │        quest-infra (free_artifact/make_subloc_monster #if 0) + u.c nearby_grave were DEAD #if 0, not live -> no-op; byte-neutral both trees
    │
    └─ mint       key(turn, new_id,   "mint")  [LAST]    code.c rnd_alloc_num, add.c (ids / passwords)
          └─ leaf key(entity, slot, "pw"/"id")           ← order-sensitive today; keyed fixes it; re-bakes every id (biggest re-baseline)
@@ -1290,16 +1291,16 @@ master seed                                  rng_seed(randseed bytes)
 | B     | calendar    | `caln`               | turn (loc 0)                  | **landed (endgame)** — day-picks; fires every turn, 0 at world-init → EXPECT-only re-baseline (main 204→205, mint shift adds `orders/204`); guard-pillage EXPECT only                 | `day.c`                                                          |
 | C     | income      | `upkp`               | turn (loc 0)                  | **landed (endgame)** — `inn_income` folds into upkeep (`up_income`, no new tag); byte-neutral (no inn on either tree)                                                                 | `day.c`                                                          |
 | D     | social      | `socl`               | actor                         | **landed (endgame)** — gift/bribe/terrorize/incite/persuade/breeding; actor in k1, `soc_breed` via `proto.h`; byte-neutral both trees (no re-baseline)                                | `swear.c`, `beast.c`                                             |
-| E     | entity      | `enty`               | actor / location              | **planned (endgame)** — catch-all one-off behaviors (incl. `produce.c` mage-menial flavor); quest-infra → `qrnd`                                                                      | `u.c`, `stack.c`, `build.c`, `quest.c`, `produce.c`              |
+| E     | entity      | `enty`               | actor / location              | **landed (endgame)** — 11 catch-all one-offs (prisoner/drop/take/sick/land/bark/build/mage-menial); host `begin_entity` in `u.c`, 4 helpers via `proto.h`; byte-neutral both trees (the listed quest-infra + `u.c nearby_grave` were dead `#if 0`, a no-op) | `u.c`, `stack.c`, `build.c`, `produce.c`                         |
 | F     | mint        | `mint`               | entity id                     | **last** — re-bakes every id; repoint `test_random`, flip on the no-gameplay-`rnd()` gate                                                                                             | `code.c`, `add.c`, `z.c`                                         |
 
 ### Endgame — driving gameplay `rnd()` to zero
 
-Steps 1–12 are landed, and **Unit A is now landed** (the skills/magic residuals,
-below). The remaining units (B–F above) finish #25 against an explicit exit
-criterion: **no gameplay or world-build draw may call the global
-`rnd()`** — it survives only as the low-level MD5 primitive the `rng` layer is
-itself built on. The full per-unit plan (sites, routing, keying, byte-neutrality,
+Steps 1–12 are landed, and **Units A–E are now landed** (skills/magic residuals,
+calendar, income, social, and the entity catch-all — below). The remaining unit (F,
+mint) finishes #25 against an explicit exit criterion: **no gameplay or world-build
+draw may call the global `rnd()`** — it survives only as the low-level MD5 primitive
+the `rng` layer is itself built on. The full per-unit plan (sites, routing, keying, byte-neutrality,
 gates) is in [rng-endgame-to-zero.md](rng-endgame-to-zero.md); the audit that
 defines "done" is:
 
@@ -1315,25 +1316,26 @@ faery/cloud restock (`location_trades`), so it forced a **main-manifest re-basel
 shifted as the 25 draws left the global stream); the other five sites draw **0** on
 both trees and at world-init, so **guard-pillage is byte-neutral** (no `scenario.tgz`
 regen, no `EXPECT` change). `produce.c mage_menial_how` (cosmetic actor-keyed labor
-flavor, no item/where) stays on the global `rnd()` and is deferred to **Unit E**.
+flavor, no item/where) was deferred to **Unit E** (now landed → `enty`/`ent_menial`).
 
 ```
 # live gameplay rnd() call sites — must reduce to ZERO game-logic lines
 grep -rnE '[^_a-zA-Z]rnd\(' olympia/*.c | grep -v 'olympia/rnd.c' | grep -vE ':\s*\*|//'
 ```
 
-With Units A–D landed this leaves **18 live draws in 2 buckets** (was 41 in 7): the
+With Units A–E landed this leaves **only the mint bucket** (was 41 draws in 7): the
 now-landed **skills/magic residuals** (Unit A → existing `econ`/`npcs`/`qest`), the
 now-landed **calendar** day-picks (Unit B → `caln` — this retired the day-picks'
 "deliberate permanent residual" status), **income** (Unit C → folded into `upkp`),
-and the now-landed **social** commands (Unit D → `socl` — this retired the
-`swear.c`/`beast.c` "residual on global" status), and still ahead: an **entity**
-catch-all for the `u.c`/`stack.c`/`build.c` one-offs plus `produce.c`'s mage-menial
-flavor pick (Unit E → `enty`, with the quest shared-infra folded into `qrnd`), and
-**mint** (Unit F, last — it re-bakes every entity id, so nothing may follow it). Excluded as
-non-gameplay: the `#if 0 equip_new_noble` dead code, the commented
-`tunnel.c:506`/`buy.c:1547`, and `test_random()` (the `-R` self-test, repointed to
-an `rng_stream` in Unit F). Each unit is its own branch + squash PR (`Refs #25`),
+the now-landed **social** commands (Unit D → `socl` — this retired the
+`swear.c`/`beast.c` "residual on global" status), and the now-landed **entity**
+catch-all for the `stack.c`/`u.c`/`build.c`/`produce.c` one-offs (Unit E → `enty`,
+**11 live sites** — the brief's quest shared-infra half and a 12th entity site
+turned out to be dead `#if 0` code, a no-op; see [dead-code.md](dead-code.md)), and
+still ahead only **mint** (Unit F, last — it re-bakes every entity id, so nothing may
+follow it). Excluded as non-gameplay: the `#if 0 equip_new_noble`/`nearby_grave`/
+`free_artifact` dead code, the commented `tunnel.c:506`/`buy.c:1547`, and
+`test_random()` (the `-R` self-test, repointed to an `rng_stream` in Unit F). Each unit is its own branch + squash PR (`Refs #25`),
 surfaces scope + re-baseline plan first, and keeps both golden gates green on both
 presets.
 
@@ -1461,7 +1463,8 @@ presets.
   [Endgame](#endgame--driving-gameplay-rnd-to-zero)): the skills/magic residuals fold
   onto existing streams (A, landed), then the **calendar** day-picks (B, `caln`,
   landed) and **income** (C, into `upkp`, landed), then **social** (D, `socl`,
-  landed — byte-neutral, no re-baseline) and an **entity** catch-all (E, `enty`).
+  landed — byte-neutral, no re-baseline) and the **entity** catch-all (E, `enty`,
+  landed — byte-neutral, no re-baseline; the brief's quest-infra half was dead code).
   They are ordered cheap/byte-neutral-first; the
   calendar half of the day.c units (B) and `new_suffuse_ring` in A move a manifest
   (B moved the main manifest 204→205 — a mint shift adding `orders/204`), so they
