@@ -36,10 +36,15 @@
  *  cross-file caller, garr.c -> charge_maint_sup -> men_starve, draws inside
  *  men_starve here).
  *
- *  Left on the global rnd() as documented residuals: inn_income (per-structure
- *  income -> a future income subsystem, not per-noble upkeep) and the
- *  daily_events day-picks (curse_erode/faery/dog_bark). temple_income and the
- *  post_month gradual decays (relic/pillage/hide_mage/ghost_warrior/
+ *  inn_income (per-structure inn income) also draws from this upkeep stream now
+ *  (issue #25 endgame Unit C): it is per-structure, per-turn, upkeep-class income,
+ *  so up_income() is an income-tagged keyed leaf here rather than a new tag. It is
+ *  likewise unreached on both golden trees (neither tree contains an inn -- 0
+ *  draws, verified empirically), so folding it in stays byte-neutral. The
+ *  daily_events day-picks (curse_erode/faery/dog_bark) moved instead to their own
+ *  per-turn "caln" calendar stream (issue #25 endgame Unit B, defined below) --
+ *  they fire every turn so that migration is NOT byte-neutral. temple_income and
+ *  the post_month gradual decays (relic/pillage/hide_mage/ghost_warrior/
  *  dead_body_rot/collapsed_mine/link/quest) draw no rnd() at all.
  */
 static rng_stream upkeep_rng;
@@ -54,6 +59,7 @@ static int upkeep_rng_turn = -1;	/* seed upkeep_rng once per turn */
 #define	UTAG_SICKEN	0x73636b6eu	/* "sckn" -- starvation left-service/desert */
 #define	UTAG_ANIMAL	0x64696572u	/* "dier" -- per-animal death Bernoulli     */
 #define	UTAG_CORPSE	0x636f7270u	/* "corp" -- corpse decomposition           */
+#define	UTAG_INCOME	0x696e636fu	/* "inco" -- inn_income per-structure draws */
 
 /*
  *  Seed the per-turn upkeep stream once per turn. Self-seeded by every helper
@@ -120,6 +126,90 @@ up_corpse(int who, int low, int high)
 {
 	begin_upkeep();
 	return rng_keyed(&upkeep_rng, who, 0, UTAG_CORPSE, low, high);
+}
+
+/*
+ *  Per-inn income roll (issue #25 endgame Unit C). Keyed on the inn structure,
+ *  with the four inn_income draws disambiguated by sub: 0 = base income,
+ *  1 = rich-traveller gate, 2 = bonus amount, 3 = pillage-flavor message pick.
+ */
+static int
+up_income(int inn, int sub, int low, int high)
+{
+	begin_upkeep();
+	return rng_keyed(&upkeep_rng, inn, sub, UTAG_INCOME, low, high);
+}
+
+
+/*
+ *  issue #25 endgame Unit B: per-turn calendar RNG stream (tag "caln"), a
+ *  sibling of the upkeep/weather streams under the same turn root. The three
+ *  daily_events() day-picks -- which day of the month the noncreator curse
+ *  erodes, faery raids fire, and dogs bark at hidden chars -- draw from here
+ *  instead of the global rnd(), so an unrelated subsystem can no longer perturb
+ *  them and vice versa. This retires the day-picks' long-standing "deliberate
+ *  permanent residual" status: they finally have a home.
+ *
+ *  Like upkeep/weather (its siblings), calendar uses ONE per-turn stream seeded
+ *  once -- begin_calendar() is turn-guarded -- rather than the fresh per-scenario
+ *  reseed of combat/npc. The three picks are KEYED LEAVES (rng_keyed, which never
+ *  advances a counter) with the pick identity carried in the leaf key (which =
+ *  0/1/2), so each pick is independent and addressable and draw order among them
+ *  is irrelevant. The helper is self-seeding so the first pick of the turn cannot
+ *  read an unseeded stream. cal_day() is static: all three sites are local to
+ *  daily_events() in this file, so no proto.h export is needed.
+ *
+ *  NOT byte-neutral (the weather/economy profile, unlike upkeep): each pick fires
+ *  exactly once per turn on EVERY -r turn (daily_events runs on both golden
+ *  trees), so this migration moves both the main manifest and the guard-pillage
+ *  EXPECT -- a deliberate one-time re-baseline of both trees. It does NOT fire at
+ *  world-init (daily_events is not reached at -i/-s/-a -- 0 day-picks, verified
+ *  empirically), so the guard-pillage scenario.tgz needs no regen (EXPECT only).
+ *
+ *  noncreator_curse_erode()/dogs_bark_at_hidden_chars()/auto_faery() -- the
+ *  routines these picks schedule -- draw nothing themselves here (auto_faery's
+ *  internals are already on the "faer" region stream); only the scheduling pick
+ *  moves. The weather_days shuffle in daily_events() is already on the "wthr"
+ *  weather stream (wthr_shuffle) and is left untouched.
+ */
+static rng_stream calendar_rng;
+static int calendar_rng_turn = -1;	/* seed calendar_rng once per turn */
+
+#define	TAG_CALENDAR	0x63616c6eu	/* "caln" */
+#define	CTAG_DAY	0x64617920u	/* "day " -- daily_events day-of-month picks */
+
+/*
+ *  Seed the per-turn calendar stream once per turn. Self-seeded by cal_day()
+ *  below, so the first day-pick of the turn cannot read an unseeded stream
+ *  regardless of which pick fires first.
+ */
+static void
+begin_calendar(void)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	if (calendar_rng_turn == sysclock.turn)
+		return;			/* already seeded this turn */
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	calendar_rng = rng_stream_of(&turn, 0, TAG_CALENDAR);
+
+	calendar_rng_turn = sysclock.turn;
+}
+
+/*
+ *  A daily_events day-of-month pick in [low, high], keyed on the pick identity
+ *  (which: 0 = curse-erode, 1 = faery, 2 = dog-bark) so each is independent and
+ *  addressable regardless of draw order.
+ */
+static int
+cal_day(int which, int low, int high)
+{
+	begin_calendar();
+	return rng_keyed(&calendar_rng, which, 0, CTAG_DAY, low, high);
 }
 
 
@@ -1226,16 +1316,16 @@ inn_income(void)
 		where = subloc(i);
 		n_inns = count_loc_structures(where, sub_inn, 0);
 
-		base = rnd(50, 75);
+		base = up_income(i, 0, 50, 75);
 
 		if (pil = loc_pillage(where))
 			base /= (pil + 1);
 
 		base /= n_inns;
 
-		if (pil == 0 && rnd(1,8) == 1)
+		if (pil == 0 && up_income(i, 1, 1, 8) == 1)
 		{
-			int bonus = rnd(5,13) * 10;
+			int bonus = up_income(i, 2, 5, 13) * 10;
 
 			wout(owner, "A rich traveller stayed in %s this "
 					"month, spending %s.",
@@ -1251,7 +1341,7 @@ inn_income(void)
 
 		if (pil)
 		{
-			switch (rnd(1,3))
+			switch (up_income(i, 3, 1, 3))
 			{
 			case 1:
 				wout(owner, "Patrons were scared away by "
@@ -1936,13 +2026,13 @@ daily_events(void)
 	static int dog_bark_day = 0;
 
 	if (curse_erode_day == 0)
-		curse_erode_day = rnd(1, MONTH_DAYS);
+		curse_erode_day = cal_day(0, 1, MONTH_DAYS);
 
 	if (faery_day == 0)
-		faery_day = rnd(MONTH_DAYS/2, MONTH_DAYS);
+		faery_day = cal_day(1, MONTH_DAYS/2, MONTH_DAYS);
 
 	if (dog_bark_day == 0)
-		dog_bark_day = rnd(1, MONTH_DAYS);
+		dog_bark_day = cal_day(2, 1, MONTH_DAYS);
 
 	if (ilist_len(weather_days) == 0)
 	{

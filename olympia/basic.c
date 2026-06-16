@@ -38,8 +38,9 @@
  *  This is a DELIBERATE PARTIAL of the magic row (command core only). Deferred
  *  as named residuals (each would move a manifest or belongs to another system):
  *    - day.c curse_erode_day -- a turn-auto day-pick fired every turn via
- *      daily_events; migrating it would move the MAIN manifest (the
- *      economy/weather profile), breaking the byte-neutral goal. Stays global.
+ *      daily_events; migrating it moves the MAIN manifest (the economy/weather
+ *      profile), so it was deferred from this byte-neutral slice. SINCE LANDED as
+ *      endgame Unit B on the "caln" calendar stream (day.c begin_calendar/cal_day).
  *    - necro.c auto_undead -- autonomous summoned-undead behavior (reached only
  *      from npc.c's auto-behavior dispatch), not a player spell; an NPC residual.
  *    - necro undead summoning troop-count -- already on the npcs stream via
