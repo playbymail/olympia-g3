@@ -144,6 +144,8 @@ extern int v_repair(struct command *c);
 
 /* olympia/buy.c */
 extern void begin_economy(int where);			/* issue #25: per-market RNG stream */
+extern void init_trade_routes(void);			/* issue #46: per-game buyer secret */
+extern void save_trade_routes(void);
 extern int econ_pick(int item, int where, int low, int high);
 extern int econ_stock(int item, int where, int low, int high);
 extern int econ_qty(int item, int where, int low, int high);

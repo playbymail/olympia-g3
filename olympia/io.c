@@ -2738,6 +2738,7 @@ load_db(void)
 	assert(linehash("ab ") == 'ab');
 
 	load_seed(sout("%s/randseed", libdir));
+	init_trade_routes();		/* issue #46: per-game trade-route buyer secret */
 	load_system();
 
 	if (!fast_scan())	/* pass 1: call alloc_box for each entity */
@@ -2892,6 +2893,7 @@ save_db(void)
 	stage("save_db()");
 	cleanup_posts();
 	save_seed(sout("%s/randseed", libdir));
+	save_trade_routes();		/* issue #46: persist per-game seed if customized */
 	save_system();
 	write_all_boxes();
 	write_master();

@@ -1,3 +1,4 @@
+#include <stdint.h>	/* issue #46: uint64_t for the trade-route seed externs */
 /* BUGFIX (modernization): use varargs and forward declarations */
 #include "legacy.h"
 /* BUGFIX (modernization): update lists to use 64-bit pointers */
@@ -1171,6 +1172,10 @@ extern int sub_head[];			/* head of x_next_sub chain */
 #include "use.h"
 
 extern char *libdir;
+
+/* issue #46: -G <seed> stashed by main.c, consumed by init_trade_routes() */
+extern int trade_route_seed_pending;
+extern uint64_t trade_route_seed_value;
 
 /*
  *  Saved in libdir/system:

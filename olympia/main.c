@@ -685,7 +685,7 @@ main(int argc, char **argv)
 		argc = aj;
 	}
 
-	while ((c = getopt(argc, argv, "waeEfirl:pR?sStMTAh")) != EOF) {
+	while ((c = getopt(argc, argv, "waeEfirl:pR?sStMTAhG:")) != EOF) {
 		switch (c) {
 		case 'w':
 			win_flag = TRUE;
@@ -762,6 +762,12 @@ main(int argc, char **argv)
 			html_flag = TRUE;
 			break;
 
+		case 'G':			/* issue #46: per-game trade-route seed */
+			trade_route_seed_pending = TRUE;
+			trade_route_seed_value =
+				(uint64_t) strtoull(optarg, NULL, 0);
+			break;
+
 		default:
 			errflag++;
 		}
@@ -785,6 +791,7 @@ main(int argc, char **argv)
 		fprintf(stderr, "	-T		Print timing info\n");
 		fprintf(stderr, "	-M		Mail reports and order acks\n");
 		fprintf(stderr, "	-A		Charge player accounts\n");
+		fprintf(stderr, "	-G seed		Set per-game trade-route seed (game creation only)\n");
 		return 1;
 	}
 

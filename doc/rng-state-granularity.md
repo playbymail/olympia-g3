@@ -70,9 +70,10 @@ everything.
 int md5_int(int a, int b, int c, int d);   /* keyed hash; no global state */
 ```
 
-used e.g. at `buy.c:1442` (`md5_int(city_sold, where, item, 0xb05c0e) & 1`).
-This is exactly the "derive randomness from a key, not from stream position"
-model that the recommendation below generalizes.
+used e.g. in `d_find_buy()` (`md5_int(city_sold, where, item, SECRET) & 1`, where
+`SECRET` is the per-game trade-route secret — `0xb05c0e` by default; see #46
+below). This is exactly the "derive randomness from a key, not from stream
+position" model that the recommendation below generalizes.
 
 ## Options
 
@@ -253,6 +254,35 @@ landed** as endgame Unit A onto the `econ` stream via `econ_mine`/`econ_harvest`
 test stays as-is: it is already a keyed leaf and is intentionally
 turn-INDEPENDENT (the set of buyer cities must be stable across turns), so it
 must *not* move onto the turn-keyed `economy_rng`.
+
+#### #46 — the buyer test's 4th arg is now a per-game secret (settled)
+
+The `d_find_buy()` buyer test (`md5_int(city_sold, where, item, SECRET) & 1`) was
+investigated under issue #46. Findings: it is correctly turn-INDEPENDENT and is
+*already* the keyed-leaf pattern (stable key → stable draw), just rooted at a
+hardcoded constant rather than the per-turn stream. Re-rooting it on
+`rng_master_seed()` is the **wrong** fix — that digest is `save_seed()`-rewritten
+every turn (would drift the buyer map turn-to-turn) and is a *map* artifact
+(travels with a reused map, so it cannot distinguish two games on the same map).
+No other economy-path draw shares the immutable-input property; the `econ_*`
+leaves are all turn-keyed via `begin_economy`.
+
+The real defect was the hardcoded `0xb05c0e`: **zero per-game entropy** (two games
+on the same map share an identical route table) and **source-derivability** (the
+constant is not a real secret). Decision (implemented): the 4th arg is now a
+**per-game trade-route secret** derived from an optional GM seed
+(`splitmix64(seed)` folded 64→32). It stays turn-INDEPENDENT. With **no** seed the
+secret stays `0xb05c0e` *unmixed*, so the default golden flow is **byte-identical**
+and no file is written. A seed is taken at game creation from `-G <seed>` then
+`lib/trade-route-seed`; the **original seed** is persisted to `lib/trade_routes`
+(so the GM can recover it and rebuild the same game), and a persisted
+`lib/trade_routes` **always wins** on a continuing game (the secret can never
+change mid-game). Scope is routes only — the per-market `econ_*` stream is
+unaffected. See the `buy.c` header block (`init_trade_routes`/`save_trade_routes`).
+Verified at the code level: distinct seeds yield distinct folded secrets
+(`0xb05c0e` / `0x53036fb6` for `-G 19` / `0x50f08920` for `-G 34`), and md5
+avalanche flips ~half the buyer verdicts between games while keeping them fixed
+within a game.
 
 ### Why this one moved the manifest (combat/pillage did not)
 

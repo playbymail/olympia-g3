@@ -27,9 +27,135 @@
  *  The md5_int() buyer test in d_find_buy() (below) is already a keyed leaf and
  *  is intentionally turn-INDEPENDENT -- the set of buyer cities must be stable
  *  across turns -- so it stays as-is rather than moving onto the turn-keyed
- *  stream.
+ *  stream. Its 4th md5_int() arg (the buyer secret) is per-game; see issue #46
+ *  and the trade-route-secret block below.
  */
 static rng_stream economy_rng;
+
+/*
+ *  Issue #46: per-game trade-route buyer secret.
+ *
+ *  The FIND BUY buyer test in d_find_buy() picks which cities will buy a given
+ *  tradegood via md5_int(city_sold, where, item, SECRET) & 1. The set must stay
+ *  stable for the life of a game (a buyer this turn is a buyer next turn), so the
+ *  draw is turn-INDEPENDENT -- it is NOT on the per-turn economy_rng stream.
+ *
+ *  The legacy SECRET was a hardcoded 0xb05c0e, which gave the buyer map ZERO
+ *  per-game entropy: two games built on the same map (same city ids) shared an
+ *  identical route table, and anyone with the source + a city list could compute
+ *  every route offline. We now derive the secret from an optional per-game GM
+ *  seed (splitmix64, folded 64->32). With NO seed the secret stays 0xb05c0e
+ *  UNMIXED, so the default golden flow is byte-identical and no file is written.
+ *  When a seed is supplied (the -G flag or lib/trade-route-seed, consulted only
+ *  at game creation), the ORIGINAL seed is persisted to lib/trade_routes so the
+ *  GM can recover it and rebuild the same game; a persisted lib/trade_routes
+ *  always wins on a continuing game, so the secret can never change mid-game.
+ *  Scope is routes only -- the per-market econ_*() stream above is unaffected.
+ */
+#define	TRADE_ROUTE_DEFAULT_SECRET	0xb05c0eu
+
+static int trade_route_have_seed = FALSE;	/* a custom seed is in effect    */
+static uint64_t trade_route_seed = 0;		/* the original GM seed (recover) */
+static uint32_t trade_route_secret = TRADE_ROUTE_DEFAULT_SECRET;
+
+/*
+ *  main.c stashes a "-G <seed>" here (before load_db); init_trade_routes()
+ *  consumes it, subject to the persisted-file-wins precedence.
+ */
+int trade_route_seed_pending = FALSE;
+uint64_t trade_route_seed_value = 0;
+
+static uint64_t
+splitmix64(uint64_t x)
+{
+	x += 0x9e3779b97f4a7c15ULL;
+	x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9ULL;
+	x = (x ^ (x >> 27)) * 0x94d049bb133111ebULL;
+	x = x ^ (x >> 31);
+	return x;
+}
+
+static void
+apply_trade_route_seed(uint64_t seed)
+{
+	uint64_t s = splitmix64(seed);
+
+	trade_route_have_seed = TRUE;
+	trade_route_seed = seed;
+	trade_route_secret = (uint32_t)(s ^ (s >> 32));		/* fold 64 -> 32 */
+}
+
+/*
+ *  Establish the per-game buyer secret. Precedence:
+ *	1. a persisted lib/trade_routes (continuing game) -- always wins;
+ *	   -G / the input file are ignored with a warning.
+ *	2. -G <seed> (new game).
+ *	3. lib/trade-route-seed input file (new game).
+ *	4. the legacy default 0xb05c0e (no per-game entropy, no file written).
+ */
+void
+init_trade_routes(void)
+{
+	FILE *fp;
+	char *fnam;
+	unsigned long long seed;
+
+	fnam = sout("%s/trade_routes", libdir);
+	fp = fopen(fnam, "r");
+	if (fp)
+	{
+		if (fscanf(fp, "%llu", &seed) == 1)
+			apply_trade_route_seed((uint64_t) seed);
+		fclose(fp);
+
+		if (trade_route_seed_pending)
+			fprintf(stderr, "trade-route seed: %s already exists; "
+					"ignoring -G/lib/trade-route-seed\n", fnam);
+		return;
+	}
+
+	if (trade_route_seed_pending)
+	{
+		apply_trade_route_seed(trade_route_seed_value);
+		return;
+	}
+
+	fnam = sout("%s/trade-route-seed", libdir);
+	fp = fopen(fnam, "r");
+	if (fp)
+	{
+		if (fscanf(fp, "%llu", &seed) == 1)
+			apply_trade_route_seed((uint64_t) seed);
+		fclose(fp);
+	}
+}
+
+/*
+ *  Persist the original GM seed so the game's route table is reproducible.
+ *  Only written when a custom seed is in effect -- the default flow writes no
+ *  file, keeping the golden manifest unchanged.
+ */
+void
+save_trade_routes(void)
+{
+	FILE *fp;
+	char *fnam;
+
+	if (!trade_route_have_seed)
+		return;
+
+	fnam = sout("%s/trade_routes", libdir);
+	fp = fopen(fnam, "w");
+	if (fp == NULL)
+	{
+		fprintf(stderr, "couldn't write %s: ", fnam);
+		perror("");
+		return;
+	}
+
+	fprintf(fp, "%llu\n", (unsigned long long) trade_route_seed);
+	fclose(fp);
+}
 
 #define	TAG_TURN	0x7475726eu	/* "turn" */
 #define	TAG_ECONOMY	0x65636f6eu	/* "econ" */
@@ -1562,7 +1688,7 @@ d_find_buy(struct command *c)
  *  then the target city will purchase the tradegood.
  */
 
-	if (md5_int(city_sold, where, item, 0xb05c0e) & 1)
+	if (md5_int(city_sold, where, item, (int) trade_route_secret) & 1)
 	{
 		wout(c->who, "No buyer for %s can be found here.",
 				box_code(item));
