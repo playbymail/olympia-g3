@@ -29,13 +29,15 @@ grep -rnE '[^_a-zA-Z]rnd\(' olympia/*.c | grep -v 'olympia/rnd.c' \
 ## Full remaining surface (audited against current main — re-verify, line numbers shift)
 
 41 live gameplay draws in 7 buckets at the start (after excluding the dead code +
-the `-R` self-test). **Unit A is landed**, removing the 6 skills/magic residuals
-(bucket 4) → **35 live draws in 6 buckets** remain (B–F):
+the `-R` self-test). **Units A–C are landed**: Unit A removed the 6 skills/magic
+residuals (bucket 4); Units B+C (one PR) removed the 3 calendar day-picks (bucket
+1) and the 4 `inn_income` draws (bucket 2) → **28 live draws in 3 buckets** remain
+(D–F):
 
-1. **calendar** — `day.c` daily_events day-picks: `curse_erode_day:1939`,
-   `faery_day:1942`, `dog_bark_day:1945`.
-2. **income** — `day.c inn_income()`: `:1229` (base), `:1236` (`rnd(1,8)`),
-   `:1238` (`rnd(5,13)`), `:1254` (`switch rnd(1,3)`).
+1. **calendar** ✅ **LANDED (Unit B)** — `day.c` daily_events day-picks
+   (`curse_erode_day`, `faery_day`, `dog_bark_day`) → new per-turn `caln` stream.
+2. **income** ✅ **LANDED (Unit C)** — `day.c inn_income()` (base, `rnd(1,8)`
+   gate, `rnd(5,13)` bonus, `switch rnd(1,3)` flavor) → folded into upkeep `upkp`.
 3. **social** — `swear.c`: `:405`, `:488`, `:495`, `:713`, `:1022`, `:1039`,
    `:1110` (bribe / terrorize / persuade-oath / incite-riot); `beast.c`: `:314`,
    `:322`, `:330` (breeding accidents).
@@ -90,21 +92,32 @@ Both golden gates green on both presets; `tests/rng/check.sh` YES. What landed:
 Byte-neutrality: produce/auto_undead/quest-minters expected byte-neutral (verify);
 `new_suffuse_ring` forces the re-baseline the others fold into. Likely one PR.
 
-### Unit B — calendar scheduler (day-picks) → new `caln` stream  (tag 0x63616c6e)
+### Unit B — calendar scheduler (day-picks) → new `caln` stream  (tag 0x63616c6e)  ✅ LANDED
 The three `day.c` day-picks (`curse_erode_day`/`faery_day`/`dog_bark_day`). A
-**turn-guarded per-turn stream** (the weather/upkeep model: seeded once via
-`begin_calendar()`), keyed leaves with the pick identity in the key
-(`cal_day(which, lo, hi)` → `rng_keyed(cal_rng, which, 0, CTAG_DAY, lo, hi)`). They
-fire **every turn** → NOT byte-neutral → main-manifest re-baseline (the
-weather/economy profile; check world-init reach for a possible scenario.tgz regen).
-This is the unit that finally retires the "deliberate permanent residual" framing —
-the day-picks now have a home. (The `weather_days` shuffle is already on `wthr`.)
+**turn-guarded per-turn stream** (the weather/upkeep model: seeded once via the
+static `begin_calendar()`), keyed leaves with the pick identity in the key
+(`cal_day(which, lo, hi)` → `rng_keyed(&calendar_rng, which, 0, CTAG_DAY, lo, hi)`,
+`which` 0/1/2). All three sites are local to `daily_events()`, so `cal_day()` is
+**static in `day.c`** — no `proto.h` export (the simplification vs weather/explore).
+This retires the day-picks' "deliberate permanent residual" framing — they now have
+a home. (The `weather_days` shuffle stays on `wthr`/`wthr_shuffle`, untouched.)
 
-### Unit C — income (inn_income) → fold into upkeep (`upkp`)  [recommended]
-`day.c inn_income()` 4 draws. Income is upkeep-class (per-structure, per-turn), so
-add an `up_income(structure, …)` keyed leaf on the existing per-turn upkeep stream
-rather than minting a new tag. Verify reach on the bare map (inns present?) — if it
-fires, it shares Unit B's day.c re-baseline, so consider landing B+C together.
+Each pick fires **exactly once per turn on BOTH golden trees** (verified
+empirically) and **0 at world-init** (`daily_events` is not reached at `-i`/`-s`/
+`-a`) → NOT byte-neutral, but **EXPECT-only** (no `scenario.tgz` regen). The
+re-baseline (landed with Unit C, one PR) moved the **main manifest 204 → 205
+files** — not the predicted "content-only 204": dropping the 3 day-picks off the
+global stream shifted the still-global mint (entity-id allocator), and one
+wandering NPC now persists a residual move queue (`orders/204`). The output is
+deterministic across independent clean runs (verified), so it is a valid baseline.
+
+### Unit C — income (inn_income) → fold into upkeep (`upkp`)  ✅ LANDED (with Unit B)
+`day.c inn_income()` 4 draws → `up_income(inn, sub, …)` keyed leaf (sub 0=base,
+1=jackpot gate, 2=bonus, 3=pillage flavor; purpose tag `UTAG_INCOME` "inco") on the
+existing per-turn upkeep stream rather than a new tag. **Byte-neutral on both
+trees**: neither golden tree contains an inn (0 `inn_income` draws on either turn
+and at world-init, verified empirically), so it added nothing to Unit B's
+re-baseline. Bundled into Unit B's PR (both touch `day.c`).
 
 ### Unit D — social → new `socl` stream  (tag 0x736f636c)
 `swear.c` (bribe success, terrorize severity, persuade-oath, incite-riot

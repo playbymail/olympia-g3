@@ -16,11 +16,13 @@ The remaining global draws are now being driven to **zero** — the explicit exi
 criterion for #25 is **no gameplay `rnd()` left in the engine** (`rnd()` survives
 only as the low-level MD5 primitive the `rng` layer is built on). The audit of
 what is left and the sequenced units that retire it (skills/magic residuals →
-existing streams, then **calendar** day-picks, **income**, **social**, an **entity**
-catch-all, and **mint** last) live in the
+existing streams [Unit A, landed], then **calendar** day-picks → `caln` and
+**income** → `upkp` [Units B+C, landed], then **social** → `socl`, an **entity**
+catch-all → `enty`, and **mint** last) live in the
 [endgame plan](#endgame--driving-gameplay-rnd-to-zero) below and in
-[rng-endgame-to-zero.md](rng-endgame-to-zero.md). This retires the earlier
-"deliberate permanent residual" framing for the day-picks: they get a home too.
+[rng-endgame-to-zero.md](rng-endgame-to-zero.md). Units B+C retired the earlier
+"deliberate permanent residual" framing for the day-picks and `inn_income`: they
+have a home now (the `caln` calendar stream and the `upkp` upkeep stream).
 
 ## The problem
 
@@ -439,13 +441,14 @@ no `scenario.tgz` regeneration was needed.
 and its move uses a stored direction — so weather has no decay draw. The tag is
 left documented for symmetry but wired to nothing.
 
-**Deliberately left on the global `rnd()`** (documented residuals): the
-`daily_events` day-picks `curse_erode_day` (magic), `faery_day` (region:faery,
-step 12), `dog_bark_day` (detection/stealth); the **upkeep** routines
-(`heal_char_sup`, `loyalty_decay`, `men_starve`, `animal_deaths`, `corpse_decay`
-— step 6, `"upkp"`); `inn_income` (per-structure income → economy/upkeep); and the
-`post_month` gradual decays (link/relic/pillage/hide_mage/ghost_warrior/
-dead_body_rot/collapsed_mine). Storm *summoning* via `do_cookie_npc` already
+Later migrated off the global `rnd()`: the `daily_events` day-picks
+`curse_erode_day`/`faery_day`/`dog_bark_day` (endgame Unit B → `caln`); the
+**upkeep** routines (`heal_char_sup`, `loyalty_decay`, `men_starve`,
+`animal_deaths`, `corpse_decay` — step 6, `"upkp"`); and `inn_income`
+(per-structure income — endgame Unit C, folded into `upkp`). Still on the global
+`rnd()` (draw nothing): the `post_month` gradual decays
+(link/relic/pillage/hide_mage/ghost_warrior/dead_body_rot/collapsed_mine). Storm
+*summoning* via `do_cookie_npc` already
 passes through without a draw (storm cookies carry `man_kind == 0`), so there was
 no entanglement to unwind.
 
@@ -528,10 +531,10 @@ profile, not weather's): no re-baseline of the main manifest *or* the
 guard-pillage tree, and `scenario.tgz` is untouched (upkeep fires only during a
 turn). Its value is purely future Ultron-fixture addressability.
 
-**Deliberately left on the global `rnd()`** (documented residuals): `inn_income`
-(per-structure income — deferred to a future income subsystem, not per-noble
-upkeep) and the `daily_events` day-picks (`curse_erode`/`faery`/`dog_bark`).
-`temple_income` and the `post_month` gradual decays
+Later migrated off the global `rnd()` (endgame Units B+C): `inn_income`
+(per-structure income — folded into this upkeep stream as `up_income`, Unit C) and
+the `daily_events` day-picks (`curse_erode`/`faery`/`dog_bark` → the `caln`
+calendar stream, Unit B). `temple_income` and the `post_month` gradual decays
 (`relic`/`pillage`/`hide_mage`/`ghost_warrior`/`dead_body_rot`/
 `collapsed_mine`/`link`/`quest`/`storm_decay`/`storm_move`) draw **no `rnd()`**
 at all — nothing to migrate.
@@ -847,7 +850,7 @@ land here: scrying, religion gates, necromancy eat-dead/skill-transfer, the
 meditation/aura + heal spells, and the alchemy potion brew/use draws (the last
 two **inherited from the skills step-9 deferral**). The turn-auto curse-erode
 day-pick and the autonomous-undead draw were **explicitly deferred** so a small,
-byte-neutral slice lands cleanly — both are now **scheduled into the endgame**
+byte-neutral slice lands cleanly — both have since **landed in the endgame**
 (curse-erode → Unit B `caln`, auto_undead → Unit A `npcs`; see
 [Explicitly deferred](#explicitly-deferred-named-residuals--the-partial-boundary-1)
 below). It is a sibling of the others under the turn root:
@@ -932,8 +935,8 @@ the global `rnd()` at the time, and has since **landed or been scheduled** into 
 - **`day.c` `curse_erode_day`** (`daily_events`) — a turn-auto day-pick
   (`rnd(1,MONTH_DAYS)`) fired **every turn**; migrating it moves the **main
   manifest** (the economy/weather profile). Originally left global as a deliberate
-  decision, it is now **scheduled as endgame Unit B** (the `caln` calendar stream),
-  which retires its "permanent residual" status (`noncreator_curse_erode()` itself
+  decision, it **landed as endgame Unit B** (the `caln` calendar stream), which
+  retired its "permanent residual" status (`noncreator_curse_erode()` itself
   draws nothing, so only the day-pick is at issue).
 - **`necro.c` `auto_undead`** (`rnd(1,2)`) — autonomous summoned-undead behavior,
   reached only from `npc.c`'s auto-behavior dispatch (`auto_*` family), **not a
@@ -1179,9 +1182,10 @@ keyed on the actor.
 **Absorbed here** (previously documented residuals now resolved): the npc-deferred
 hades/faery **bandit** ambushes (`create_hades_bandit`/`create_faery_bandit` /
 `hades_attack_check`/`faery_attack_check`, `npc.c`) and the magic-deferred
-**`cloud.c`** gate-build draws. **Deliberately left global:** the `faery_day`
-day-pick (`day.c`, a turn-auto schedule pick like `curse_erode_day`) and the
-entity-id **mint** (step 13).
+**`cloud.c`** gate-build draws. The `faery_day` day-pick (`day.c`, a turn-auto
+schedule pick like `curse_erode_day`) has since **landed as endgame Unit B**
+(the `caln` calendar stream); **deliberately left global:** the entity-id **mint**
+(endgame Unit F).
 
 ## Recommended subsystem distribution
 
@@ -1220,8 +1224,8 @@ master seed                                  rng_seed(randseed bytes)
    │             one per-turn stream, seeded once; "decy" reserved/unused (storm_decay draws nothing)
    │
    ├─ upkeep     key(turn, 0,        "upkp")  [LANDED]   day.c (begin_upkeep/up_*: healing, loyalty/starve, animal/corpse decay)
-   │     └─ leaf key(noble, sub, "heal"/"loyl"/"sckn"/"dier"/"corp")  ← keyed leaves, one per-turn stream
-   │             entity in leaf key (no per-entity chokepoint); inn_income -> future income subsystem
+   │     └─ leaf key(noble, sub, "heal"/"loyl"/"sckn"/"dier"/"corp"); inn_income key(inn, sub 0-3, "inco")  ← keyed leaves, one per-turn stream
+   │             entity in leaf key (no per-entity chokepoint); inn_income folded in here as endgame Unit C (up_income, LANDED)
    │
    ├─ quest      key(turn, where|who, "qest")  [LANDED]   quest.c (begin_quest/qrnd), use.c
    │     └─ seq  monster/loot/artifact generation; fresh per-scenario stream (begin_battle model)
@@ -1237,7 +1241,7 @@ master seed                                  rng_seed(randseed bytes)
    │
    ├─ magic      key(turn, 0,        "magc")  [CORE LANDED]  basic.c (begin_magic/magc_*), scry.c, relig.c, necro.c, alchem.c, art.c
    │     └─ leaf key(who, ctx, "scry"/"piet"/"eatd"/"lern"/"medi"/"omen"/"heal"/"potn"/"forg"/"orb "/"ring")  ← keyed leaves, one per-turn stream, actor in k1
-   │             COMMAND CORE + art.c crafting commands landed; all deferrals resolved or scheduled: cloud.c -> region:cloud (12, LANDED); curse_erode day-pick -> endgame Unit B (caln, SCHEDULED); auto_undead -> Unit A (npcs, LANDED); art.c minters new_orb/create_npc_token -> Unit A (qest, LANDED), new_suffuse_ring -> Unit A (econ, LANDED)
+   │             COMMAND CORE + art.c crafting commands landed; all deferrals resolved or scheduled: cloud.c -> region:cloud (12, LANDED); curse_erode day-pick -> endgame Unit B (caln, LANDED); auto_undead -> Unit A (npcs, LANDED); art.c minters new_orb/create_npc_token -> Unit A (qest, LANDED), new_suffuse_ring -> Unit A (econ, LANDED)
    │
    ├─ worldgen   key(turn, 0|location, "wgen")  [LANDED]  seed.c (begin_worldgen/wgen_*: prominence/skill/garrison + tunnel gate), tunnel.c (begin_worldgen_loc/wseq_*: dungeon-gen, from explore)
    │     └─ seed.c keyed leaf key(where, sub, "prom"/"tech"/"garr"/"gate"); tunnel.c SEQ per-location (ordered recursive build)
@@ -1254,8 +1258,9 @@ master seed                                  rng_seed(randseed bytes)
    ├─ (residuals)   → existing econ/npcs/qest  [LANDED A]  produce.c mine/harvest, necro.c auto_undead, art.c minters (NO new tag; produce.c mage_menial -> E)
    │     └─ econ_mine/econ_harvest/econ_ring (buy.c keyed leaves), npc_behavior (auto_undead), qrnd (new_orb/create_npc_token)
    │             new_suffuse_ring restock fires every turn (faery/cloud) -> main-manifest re-baseline (204, content-only); guard-pillage byte-neutral
-   ├─ calendar   key(turn, 0,        "caln")  [planned B]  day.c day-picks (curse_erode/faery/dog_bark); leaf key(which, 0, "day")
-   ├─ income     → upkeep "upkp"               [planned C]  day.c inn_income (folds into upkeep; up_income leaf)
+   ├─ calendar   key(turn, 0,        "caln")  [LANDED B]   day.c day-picks (curse_erode/faery/dog_bark); leaf key(which, 0, "day"); cal_day static in day.c
+   │             fires every turn on both trees, 0 at world-init -> NOT byte-neutral, EXPECT-only: main manifest 204->205 (mint shift adds orders/204), guard-pillage EXPECT only
+   ├─ income     → upkeep "upkp"               [LANDED C]   day.c inn_income (folds into upkeep; up_income leaf, sub 0-3, "inco"); byte-neutral (no inn on either tree)
    ├─ social     key(turn, 0,        "socl")  [planned D]  swear.c (bribe/terrorize/persuade/incite), beast.c (breeding); leaf key(actor, target)
    ├─ entity     key(turn, 0,        "enty")  [planned E]  u.c/stack.c/build.c one-offs + produce.c mage_menial (catch-all); quest-infra -> qrnd
    │     └─ leaf key(who|where, purpose, "escp"/"land"/"grav"/"take"/"dmg"/"bark"/"bild")  ← keyed leaves, one per-turn stream
@@ -1276,12 +1281,12 @@ master seed                                  rng_seed(randseed bytes)
 | 7     | quest       | `qest`               | where / actor           | **landed**                                                                                                     | `quest.c`, `use.c`                                                                   |
 | 8     | explore     | `expl`               | turn (loc 0)            | **landed**                                                                                                     | `c1.c`, `stealth.c`                                                                  |
 | 9     | skills      | `skil`               | turn (loc 0)            | **landed (command core)** — `produce.c` mining/harvest landed as Unit A (econ)                                 | `use.c`, `c2.c`, `stealth.c` (residual: `produce.c` → A, landed)                      |
-| 10    | magic       | `magc`               | turn (loc 0)            | **landed (command core + art.c crafting commands)** — auto-undead/art.c-minters landed as Unit A; curse-erode → Unit B | `basic.c`, `scry.c`, `relig.c`, `necro.c`, `alchem.c`, `art.c`                       |
+| 10    | magic       | `magc`               | turn (loc 0)            | **landed (command core + art.c crafting commands)** — auto-undead/art.c-minters landed as Unit A; curse-erode landed as Unit B (`caln`) | `basic.c`, `scry.c`, `relig.c`, `necro.c`, `alchem.c`, `art.c`             |
 | 11    | worldgen    | `wgen`               | turn (loc 0) / location | **landed** — INIT-time, NOT byte-neutral (one-time re-baseline of both trees)                                  | `seed.c` (keyed leaves), `tunnel.c` (sequential dungeon-gen)                         |
 | 12    | regions     | `faer`/`hads`/`clud` | region (build) / actor (auto) | **landed** — INIT build + turn autonomous, NOT byte-neutral (one-time re-baseline of both trees)          | `faery.c`, `hades.c`, `cloud.c`, `npc.c`, `u.c`                                      |
 | A     | residuals   | `econ`/`npcs`/`qest` | (existing streams)      | **landed (endgame)** — skills/magic residuals onto landed streams; NO new tag; `new_suffuse_ring` restock → main-manifest re-baseline (204, content-only), guard-pillage byte-neutral | `produce.c`, `necro.c`, `art.c`, `buy.c`                                             |
-| B     | calendar    | `caln`               | turn (loc 0)            | **planned (endgame)** — day-picks; fires every turn → re-baseline                                              | `day.c`                                                                              |
-| C     | income      | `upkp`               | turn (loc 0)            | **planned (endgame)** — `inn_income` folds into upkeep (no new tag)                                            | `day.c`                                                                              |
+| B     | calendar    | `caln`               | turn (loc 0)            | **landed (endgame)** — day-picks; fires every turn, 0 at world-init → EXPECT-only re-baseline (main 204→205, mint shift adds `orders/204`); guard-pillage EXPECT only | `day.c`                                                          |
+| C     | income      | `upkp`               | turn (loc 0)            | **landed (endgame)** — `inn_income` folds into upkeep (`up_income`, no new tag); byte-neutral (no inn on either tree) | `day.c`                                                            |
 | D     | social      | `socl`               | actor                   | **planned (endgame)** — bribe/terrorize/persuade/incite/breeding; likely byte-neutral                         | `swear.c`, `beast.c`                                                                 |
 | E     | entity      | `enty`               | actor / location        | **planned (endgame)** — catch-all one-off behaviors (incl. `produce.c` mage-menial flavor); quest-infra → `qrnd` | `u.c`, `stack.c`, `build.c`, `quest.c`, `produce.c`                                  |
 | F     | mint        | `mint`               | entity id               | **last** — re-bakes every id; repoint `test_random`, flip on the no-gameplay-`rnd()` gate                      | `code.c`, `add.c`, `z.c`                                                             |
@@ -1315,14 +1320,14 @@ flavor, no item/where) stays on the global `rnd()` and is deferred to **Unit E**
 grep -rnE '[^_a-zA-Z]rnd\(' olympia/*.c | grep -v 'olympia/rnd.c' | grep -vE ':\s*\*|//'
 ```
 
-With Unit A landed this leaves **35 live draws in 6 buckets** (was 41 in 7): the
-now-landed **skills/magic residuals** (Unit A → existing `econ`/`npcs`/`qest`), the **calendar**
-day-picks (Unit B → `caln` — this retires the day-picks' "deliberate permanent
-residual" status), **income** (Unit C → folded into `upkp`), **social** (Unit D →
-`socl`), an **entity** catch-all for the `u.c`/`stack.c`/`build.c` one-offs plus
-`produce.c`'s mage-menial flavor pick (Unit E → `enty`, with the quest shared-infra
-folded into `qrnd`), and **mint** (Unit F,
-last — it re-bakes every entity id, so nothing may follow it). Excluded as
+With Units A–C landed this leaves **28 live draws in 3 buckets** (was 41 in 7): the
+now-landed **skills/magic residuals** (Unit A → existing `econ`/`npcs`/`qest`), the
+now-landed **calendar** day-picks (Unit B → `caln` — this retired the day-picks'
+"deliberate permanent residual" status) and **income** (Unit C → folded into
+`upkp`), and still ahead: **social** (Unit D → `socl`), an **entity** catch-all for
+the `u.c`/`stack.c`/`build.c` one-offs plus `produce.c`'s mage-menial flavor pick
+(Unit E → `enty`, with the quest shared-infra folded into `qrnd`), and **mint**
+(Unit F, last — it re-bakes every entity id, so nothing may follow it). Excluded as
 non-gameplay: the `#if 0 equip_new_noble` dead code, the commented
 `tunnel.c:506`/`buy.c:1547`, and `test_random()` (the `-R` self-test, repointed to
 an `rng_stream` in Unit F). Each unit is its own branch + squash PR (`Refs #25`),
@@ -1361,8 +1366,9 @@ presets.
   golden trees — every upkeep draw is unreached (the bare map has no player
   chars; the guard-pillage soldiers are inventory items, its nobles afford
   maintenance and stay at full health) — the combat/pillage profile, so no
-  re-baseline. `inn_income` (per-structure income) was left a global residual for
-  a future income subsystem — see [Sixth consumer](#sixth-consumer-upkeep).
+  re-baseline. `inn_income` (per-structure income) later folded into this same
+  upkeep stream as endgame Unit C (`up_income`) — also byte-neutral (no inn on
+  either tree) — see [Sixth consumer](#sixth-consumer-upkeep).
 - **quest came next** (now landed) — the QUEST command and its sublocation
   guardian/loot generation (`quest.c`) plus the skull-relic use (`use.c`). Unlike
   upkeep's keyed leaves it uses a **fresh per-scenario sequential stream** (the
@@ -1409,7 +1415,7 @@ presets.
   profile, so no re-baseline and no `scenario.tgz` regeneration. The slice **stopped
   at the command/auto boundary**, and every deferral has since resolved or been
   scheduled: `cloud.c` landed under region:cloud (step 12); the `day.c`
-  `curse_erode_day` day-pick is **scheduled as endgame Unit B** (`caln` — retiring
+  `curse_erode_day` day-pick **landed as endgame Unit B** (`caln` — retiring
   its "stays global" status), and `necro.c` `auto_undead` **landed as endgame Unit A**
   (npc autonomous behavior, onto `npcs`). The `art.c` **crafting commands** (FORGE
   AURACULUM / USE orb / USE suffuse-ring) landed on `magc` too (the crafting
@@ -1446,13 +1452,15 @@ presets.
   `tunnel.c`/`seed.c` were already off-stream, so only the still-global mint draws
   (+ saved `randseed`) shifted. It absorbs the npc-deferred bandit residuals and the
   magic-deferred `cloud.c`. See [Twelfth consumer](#twelfth-consumer-regions-faery--hades--cloud).
-- **the endgame units come next** (A–F, planned) — once the twelve roadmap
+- **the endgame units come next** (A–F) — once the twelve roadmap
   subsystems landed, the remaining global draws are driven to **zero** (see
   [Endgame](#endgame--driving-gameplay-rnd-to-zero)): the skills/magic residuals fold
-  onto existing streams (A), then the **calendar** day-picks (B, `caln`), **income**
-  (C, into `upkp`), **social** (D, `socl`), and an **entity** catch-all (E, `enty`).
-  They are ordered cheap/byte-neutral-first; the day.c units (B/C) and `new_suffuse_ring`
-  in A move a manifest, so they re-baseline deliberately.
+  onto existing streams (A, landed), then the **calendar** day-picks (B, `caln`,
+  landed) and **income** (C, into `upkp`, landed), then **social** (D, `socl`) and
+  an **entity** catch-all (E, `enty`). They are ordered cheap/byte-neutral-first; the
+  calendar half of the day.c units (B) and `new_suffuse_ring` in A move a manifest
+  (B moved the main manifest 204→205 — a mint shift adding `orders/204`), so they
+  re-baseline deliberately; the income half (C) is byte-neutral.
 - **mint is last** — `code.c`'s `rnd_alloc_num` (the entity-id allocator) and
   `add.c`'s id/password generation are *creation-order* sensitive today, so keying
   them on the minted id is what most directly enables small fixtures, but it
@@ -1491,8 +1499,12 @@ presets.
   consumer; scry/relig/necro/meditation/alchemy spell draws plus the `art.c`
   crafting commands (FORGE AURACULUM / USE orb / USE suffuse-ring via
   `magc_forge`/`magc_orb`/`magc_ring`) across six files, command-only (unreached on
-  both trees). `curse_erode`/`auto_undead` and the `art.c` shared-infra minters
-  (`new_orb`/`create_npc_token` → quest, `new_suffuse_ring` → economy) deferred.
+  both trees). `curse_erode` landed as endgame Unit B (`caln`), `auto_undead` and the
+  `art.c` shared-infra minters (`new_orb`/`create_npc_token` → quest,
+  `new_suffuse_ring` → economy) landed as endgame Unit A.
+- `olympia/day.c` — `begin_calendar()`/`cal_day` (calendar day-picks, endgame
+  Unit B, tag `caln`) and `up_income` (inn income, endgame Unit C, folded into
+  `upkp`); both static in `day.c`.
 - `tests/olympia/regress/guard-pillage/` — the combat golden tree (and the
   #4-unreachability write-up).
 - [agentic-project-ultron.md](agentic-project-ultron.md) — the coverage

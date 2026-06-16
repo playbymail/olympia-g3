@@ -147,16 +147,15 @@ evening if `poll` is set (`input.c:614-618`). State machine is
 Scheduled, day-conditioned effects. **First-call RNG draws** pick the random days
 for the month (these fire the first time `daily_events` runs, i.e. day 1):
 
-- `curse_erode_day = rnd(1, MONTH_DAYS)` (`day.c:1819`) — **global** (magic) — a
-  **deliberate magic residual**: the magic migration (#25, tag `magc`) keyed the
-  player-cast spell draws but left this turn-auto day-pick global, since it fires
-  every turn and would move the main manifest (`noncreator_curse_erode()` itself
-  draws nothing)
-- `faery_day = rnd(MONTH_DAYS/2, MONTH_DAYS)` (`day.c:1822`) — **global** (region:faery)
-  — the **day-pick stays global** (a turn-auto schedule pick that fires every turn,
-  like `curse_erode_day`); only `auto_faery`'s *behavior* draws moved onto the
-  keyed `faer` stream (#25 step 12, below)
-- `dog_bark_day = rnd(1, MONTH_DAYS)` (`day.c:1825`) — **global** (detection/stealth)
+- `curse_erode_day = cal_day(0, 1, MONTH_DAYS)` — **keyed** calendar (#25 endgame
+  Unit B, tag `caln`) — `cal_day(which, lo, hi)` draws from the per-turn calendar
+  stream (`begin_calendar()`, seeded once, static in `day.c`), keyed on the pick
+  identity `which=0`; `noncreator_curse_erode()` itself draws nothing
+- `faery_day = cal_day(1, MONTH_DAYS/2, MONTH_DAYS)` — **keyed** calendar (#25
+  endgame Unit B, `caln`, `which=1`); `auto_faery`'s *behavior* draws are on the
+  keyed `faer` region stream (#25 step 12, below)
+- `dog_bark_day = cal_day(2, 1, MONTH_DAYS)` — **keyed** calendar (#25 endgame
+  Unit B, `caln`, `which=2`)
 - `weather_days`: built `1..MONTH_DAYS`, shuffled, then the first 4 `qsort`ed
   (`day.c:1827-1838`) — the shuffle now draws from the **keyed** weather stream
   (`wthr_shuffle` → `ilist_shuffle_rng`, #25), not the global `rnd()`
@@ -183,11 +182,10 @@ if (day == faery_day)      auto_faery();   // create_elven_hunt -> keyed faer st
 > (the province shuffles + storm-strength rolls — the ~76.7k draws/turn that
 > dominate this phase). The weekly `heal_characters()` (`day % 7 == 0`) draws
 > from the keyed per-turn **upkeep** stream (seeded once via `begin_upkeep()`,
-> `up_heal`, #25) — unreached on the bare map (no wounded chars). The remaining
-> draws — the three day-picks (`curse_erode_day`/`faery_day`/`dog_bark_day`) —
-> stay on the **global serial stream** (`rnd()`) as documented residuals for the
-> magic / region:faery / stealth subsystems. Those global residuals are part of
-> why reordering or adding a global draw still re-bakes the rest of the manifest.
+> `up_heal`, #25) — unreached on the bare map (no wounded chars). The three
+> day-picks (`curse_erode_day`/`faery_day`/`dog_bark_day`) now draw from the keyed
+> per-turn **calendar** stream (tag `caln`, seeded once via `begin_calendar()`,
+> #25 endgame Unit B), keyed on the pick identity — no longer the global `rnd()`.
 > When `faery_day` arrives, `auto_faery()`'s `create_elven_hunt` spawns (15/turn)
 > draw from the keyed per-turn **region:faery** stream (tag `faer`, #25 step 12),
 > not the global `rnd()` — only the day-*pick* above stays global.
@@ -241,9 +239,11 @@ per-noble gradual-maintenance draws are on the keyed per-turn upkeep stream
 (seeded once via `begin_upkeep()`): `loyalty_decay` (`up_loyal`), `men_starve`
 via `charge_maint_costs`/`garrison_gold` (`up_starve`), `animal_deaths`
 (`up_animal`), and `corpse_decay` (`up_corpse`). All are **unreached on both
-golden trees** (no eligible chars), so the migration was byte-neutral. Still on
-the **global** stream as documented residuals: `inn_income` (per-structure
-income → a future income subsystem; `temple_income` draws nothing). Note
+golden trees** (no eligible chars), so the migration was byte-neutral.
+`inn_income` (per-structure income) now draws from this same keyed per-turn upkeep
+stream too — `up_income(inn, sub, …)` (#25 endgame Unit C, purpose tag `inco`),
+keyed on the inn structure — also byte-neutral (neither golden tree has an inn);
+`temple_income` draws nothing. Note
 `storm_decay()` / `storm_move()` draw **nothing** (pure strength decrement /
 stored-direction move), so the weather migration left `post_month` untouched.
 `quest_decay()` likewise draws **nothing** (a pure `quest_late` decrement loop),
@@ -266,7 +266,7 @@ stream they're on:
 | Each day, day 1 | `daily_events()` `weather_days` schedule shuffle | **keyed** per-turn weather — `begin_weather()` (#25) |
 | Each day, after commands | `daily_events()` `ship_coastal_damage` / `random_loc_damage` (acute) | **keyed** weather `wthr_wreck` (#25) — *not reached on the bare map* |
 | Weather-days | `daily_events()` → `natural_weather()` province shuffle + storm-strength rolls | **keyed** per-turn weather (#25) — the ~76.7k draws/turn that dominate the phase |
-| Each day, after commands | `daily_events()` day picks (`curse_erode`/`faery`/`dog_bark`) | **global** `rnd()` (magic / region:faery / detection residuals — the *day picks*, distinct from the keyed spell/EXPLORE/SEEK commands below; `curse_erode` is the deferred magic residual) |
+| Each day, after commands | `daily_events()` day picks (`curse_erode`/`faery`/`dog_bark`) | **keyed** per-turn calendar — `begin_calendar()` / `cal_day(which, …)` (#25 endgame Unit B, tag `caln`), keyed on the pick identity `which` 0/1/2 — fires every turn on both trees → EXPECT-only re-baseline (main 204→205) |
 | Per-pillage / undead / storm | `do_cookie_npc()` troop count when `man_kind` set | **keyed** per-location, `begin_npc(where)` (`npc.c:575`) — *not reached on the standard turn* |
 | Combat (only if a battle occurs) | `begin_battle()` / `crnd()` | **keyed** per-battle (combat migration) |
 | Command phase (only if issued) | EXPLORE (`d_explore`/`find_lost_items`) + SEEK (`d_seek`) detect rolls | **keyed** per-turn explore — `begin_explore()` / `expl_*` (#25, tag `expl`) — *not reached on either golden tree* |
@@ -274,7 +274,7 @@ stream they're on:
 | Command phase (only if issued) | scry/locate, religion gates, necro eat-dead/skill-transfer, MEDITATE/HEAL aura spells, alchemy potion brew/use, FORGE AURACULUM / USE orb / USE suffuse-ring crafting | **keyed** per-turn magic — `begin_magic()` / `magc_*` (#25, tag `magc`, command core + `art.c` crafting via `magc_forge`/`magc_orb`/`magc_ring`) — *not reached on either golden tree* |
 | Per-turn / quest loot (restock & loot minters) | `new_suffuse_ring` (`buy.c` `trade_suffuse_ring`, per-turn economy restock), `new_orb`/`create_npc_token` (`quest.c` loot) | **keyed** (#25 endgame Unit A) — `new_suffuse_ring` → `econ_ring` on `begin_economy(where)` (fires ~25×/turn over faery/cloud cities — forced a 204-file content-only main-manifest re-baseline); `new_orb`/`create_npc_token` → `qrnd` inside quest loot gen (byte-neutral) |
 | Each day (`day%7`) / end of month | `heal_characters`, `loyalty_decay`, `men_starve`, `animal_deaths`, `corpse_decay` | **keyed** per-turn upkeep — `begin_upkeep()` (#25) — *not reached on either golden tree* |
-| End of month | `inn_income()` (`temple_income` draws nothing) | **global** `rnd()` (future income subsystem residual) |
+| End of month | `inn_income()` (`temple_income` draws nothing) | **keyed** per-turn upkeep — `up_income(inn, sub, …)` on `begin_upkeep()` (#25 endgame Unit C, purpose tag `inco`) — byte-neutral (no inn on either tree) |
 
 Notes for #25 work:
 
@@ -331,8 +331,9 @@ Notes for #25 work:
   unreached on both golden trees and at world-init — byte-neutral, no re-baseline
   (the flagged world-init mint risk did not materialize: 0 `art.c` draws at
   `-s`/`-a`/`-i`). Another **deliberate partial**: the turn-auto `curse_erode`
-  day-pick (`day.c`) stays global (it fires every turn and would move the main
-  manifest), and `cloud.c` defers to region:cloud — **now landed** (regions, below).
+  day-pick (`day.c`) has **since landed** as endgame Unit B (the `caln` calendar
+  stream — it fires every turn, so it moved the main manifest 204→205), and
+  `cloud.c` defers to region:cloud — **now landed** (regions, below).
   `auto_undead` (npc autonomous behavior) and the `art.c` shared-infra minters
   (`new_orb`/`create_npc_token` → quest, `new_suffuse_ring` → economy — the last
   fires ~25×/turn) have **since landed** as endgame **Unit A** (`auto_undead` →
