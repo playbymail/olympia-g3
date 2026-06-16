@@ -3,6 +3,7 @@
 #include	<stdlib.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
 
 
 struct use_tbl_ent {
@@ -1550,6 +1551,151 @@ correct_study_item(struct command *c)
  *		deduct money
  */
 
+/*
+ *  issue #25 (step 9): skills RNG stream (command core).
+ *
+ *  The mundane, command-only skill draws -- weapon training (c2.c
+ *  archery/defense/swordplay), STUDY scroll-consume + RESEARCH pick/gate
+ *  (use.c), and the TORTURE / PETTY THIEF skill commands (stealth.c) -- draw
+ *  from a per-turn `skills_rng` stream keyed off the turn root, tag "skil",
+ *  instead of the global rnd(). Like explore/upkeep (and unlike combat/quest's
+ *  fresh per-scenario sequential stream), this is ONE per-turn stream seeded
+ *  once via the turn-guarded begin_skills(), with all draws being KEYED LEAVES
+ *  (rng_keyed, which never advances a counter). The actor goes in the leaf key
+ *  k1 -- not the map's literal "scenario key = actor" -- because the draws are
+ *  scattered across several independent skill commands in three files (c2.c,
+ *  use.c, stealth.c) with no single per-actor chokepoint, and one actor may
+ *  issue several skill commands in a turn. Carrying the actor in the leaf key
+ *  gives identical per-(actor, context) addressability for free and is
+ *  collision-free across commands (the explore precedent). Every draw is
+ *  command-only, so this migration is byte-neutral on both golden trees (no
+ *  skill order is issued on the bare-map or guard-pillage turns, and none fire
+ *  at world-init).
+ *
+ *  This is a DELIBERATE PARTIAL of the skills row: only the unambiguous
+ *  command-core draws land here. Deferred as named residuals (each straddles a
+ *  not-yet-migrated subsystem):
+ *    - basic.c meditation/aura (d_meditate/d_adv_med/hinder_med_omen) and
+ *      d_heal -- aura/spell draws; deferred to magic (step 10).
+ *    - alchem.c potion brew/use -- alchemy/magic-adjacent; deferred to magic.
+ *    - art.c artifact/orb/ring crafting -- overlaps quest shared-infra
+ *      (new_orb/create_npc_token), economy (trade_suffuse_ring), and carries a
+ *      world-init mint risk; deferred to a follow-up after magic.
+ *    - produce.c mining/harvest/mage-menial -- left global by economy; an
+ *      economy residual.
+ *
+ *  Hosted here (the skill-command hub, use_tbl above); begin_skills() and the
+ *  use.c-local helpers (skil_study/skil_research/skil_research_pick) are static,
+ *  while skil_crit/skil_bonus (c2.c) and skil_torture/skil_petty (stealth.c) are
+ *  exposed via proto.h so those files draw from the same stream (the
+ *  begin_economy/expl_seek cross-file convention).
+ */
+#define	TAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_SKILLS	0x736b696cu	/* "skil" */
+
+/* skill-command leaf-draw purpose tags (private, like c1.c's XTAG_* / day.c's up_*) */
+#define	STAG_CRIT	0x63726974u	/* "crit" -- weapon-training 5% crit gate      */
+#define	STAG_YIELD	0x7969656cu	/* "yiel" -- weapon-training bonus amount      */
+#define	STAG_STUDY	0x73746479u	/* "stdy" -- STUDY scroll-consume check        */
+#define	STAG_RESCH	0x72736368u	/* "rsch" -- RESEARCH success gate             */
+#define	STAG_RPICK	0x7270696bu	/* "rpik" -- RESEARCH new-skill pick           */
+#define	STAG_TORT	0x746f7274u	/* "tort" -- TORTURE talk-chance               */
+#define	STAG_PETTY	0x70747479u	/* "ptty" -- PETTY THIEF draws (sub-keyed)     */
+
+static rng_stream skills_rng;
+static int skills_rng_turn = -1;	/* seed skills_rng once per turn */
+
+/*
+ *  Seed the per-turn skills stream once per turn. Self-seeded by every helper
+ *  below (including the cross-file skil_crit/skil_bonus/skil_torture/skil_petty),
+ *  so the first skill draw of the turn cannot read an unseeded stream regardless
+ *  of which command fires first.
+ */
+static void
+begin_skills(void)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	if (skills_rng_turn == sysclock.turn)
+		return;			/* already seeded this turn */
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	skills_rng = rng_stream_of(&turn, 0, TAG_SKILLS);
+
+	skills_rng_turn = sysclock.turn;
+}
+
+/* c2.c weapon training: 5% crit gate rnd(1,100), keyed on (who, weapon skill). */
+int
+skil_crit(int who, int wsk)
+{
+	begin_skills();
+	return rng_keyed(&skills_rng, who, wsk, STAG_CRIT, 1, 100);
+}
+
+/* c2.c weapon training: rating bonus amount, keyed on (who, weapon skill). */
+int
+skil_bonus(int who, int wsk, int low, int high)
+{
+	begin_skills();
+	return rng_keyed(&skills_rng, who, wsk, STAG_YIELD, low, high);
+}
+
+/* STUDY: 1-in-4 scroll/book consume check rnd(1,4), keyed on (who, skill). */
+static int
+skil_study(int who, int sk)
+{
+	begin_skills();
+	return rng_keyed(&skills_rng, who, sk, STAG_STUDY, 1, 4);
+}
+
+/* RESEARCH: success gate rnd(1,100), keyed on (who, skill). */
+static int
+skil_research(int who, int sk)
+{
+	begin_skills();
+	return rng_keyed(&skills_rng, who, sk, STAG_RESCH, 1, 100);
+}
+
+/* RESEARCH: pick an unknown researchable skill rnd(0,high), keyed on (who, skill). */
+static int
+skil_research_pick(int who, int sk, int high)
+{
+	begin_skills();
+	return rng_keyed(&skills_rng, who, sk, STAG_RPICK, 0, high);
+}
+
+/* stealth.c TORTURE: prisoner talk-chance rnd(1,100), keyed on (who, target). */
+int
+skil_torture(int who, int target)
+{
+	begin_skills();
+	return rng_keyed(&skills_rng, who, target, STAG_TORT, 1, 100);
+}
+
+/*
+ *  stealth.c PETTY THIEF: the d_petty_thief draw run, keyed on (who, where) with
+ *  a per-site `sub` folded into the leaf key (where*16 + sub) so each of the
+ *  command's draws is an independent keyed leaf (the weather day*16+slot / upkeep
+ *  animal-index precedent). Sub enumeration:
+ *    0 caught check rnd(1,100)        4 report flavor rnd(1,3)
+ *    1 caught-beating flavor rnd(1,3) 5 "Several?" select rnd(0,1)
+ *    2 caught damage rnd(5,15)        6 numeral count rnd(2,3)
+ *    3 amount stolen rnd(50,150)      7 rumor flavor rnd(1,3)
+ *  The report sub-cases (5/6) recur in two mutually-exclusive branches, so a
+ *  shared sub never double-draws within one invocation.
+ */
+int
+skil_petty(int who, int where, int sub, int low, int high)
+{
+	begin_skills();
+	return rng_keyed(&skills_rng, who, where * 16 + sub, STAG_PETTY, low, high);
+}
+
+
 int
 v_study(struct command *c)
 {
@@ -1642,7 +1788,7 @@ v_study(struct command *c)
 		c->wait = 0;
 		c->inhibit_finish = TRUE;	/* don't call d_wait */
 
-		if (basis && rnd(1,4) == 4)
+		if (basis && skil_study(c->who, sk) == 4)	/* issue #25: skills stream */
 			consume_scroll(c->who, basis);
 
 		return TRUE;
@@ -1652,7 +1798,7 @@ v_study(struct command *c)
 					just_name(sk),
 					nice_num(c->wait), add_s(c->wait));
 
-	if (basis && rnd(1,4) == 4)
+	if (basis && skil_study(c->who, sk) == 4)	/* issue #25: skills stream */
 		consume_scroll(c->who, basis);
 
 	return TRUE;
@@ -1774,7 +1920,7 @@ research_notknown(int who, int sk)
 	if (ilist_len(l) <= 0)
 		return 0;
 
-	i = rnd(0, ilist_len(l)-1);
+	i = skil_research_pick(who, sk, ilist_len(l)-1);	/* issue #25: skills stream */
 
 	return l[i];
 }
@@ -1889,7 +2035,7 @@ d_research(struct command *c)
 
 	ch = p_char(c->who);
 
-	if (rnd(1,100) > chance)
+	if (skil_research(c->who, sk) > chance)	/* issue #25: skills stream */
 	{
 		wout(c->who, "Research uncovers no new skills.");
 		return FALSE;

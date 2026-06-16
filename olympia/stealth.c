@@ -598,7 +598,7 @@ d_torture(struct command *c)
 		chance = 0;
 	}
 
-	if (rnd(1,100) > chance)
+	if (skil_torture(c->who, target) > chance)	/* issue #25: skills stream */
 	{
 		wout(c->who, "The prisoner refused to talk.");
 		return FALSE;
@@ -670,14 +670,14 @@ d_petty_thief(struct command *c)
 		return FALSE;
 	}
 
-	if (rnd(1,100) <= 5)
+	if (skil_petty(c->who, where, 0, 1, 100) <= 5)	/* issue #25: skills stream */
 	{
 		show_to_garrison = TRUE;
 		vector_clear();
 		vector_add(where);
 		vector_add(c->who);
 
-		switch (rnd(1,3))
+		switch (skil_petty(c->who, where, 1, 1, 3))	/* issue #25: skills stream */
 		{
 		case 1:
 			wout(VECT, "%s was caught trying to steal from the "
@@ -702,36 +702,36 @@ d_petty_thief(struct command *c)
 
 		show_to_garrison = FALSE;
 
-		add_char_damage(c->who, rnd(5,15), MATES);
+		add_char_damage(c->who, skil_petty(c->who, where, 2, 5, 15), MATES);	/* issue #25: skills stream */
 		return FALSE;
 	}
 
-	amount = rnd(50,150);
+	amount = skil_petty(c->who, where, 3, 50, 150);	/* issue #25: skills stream */
 	consume_item(where, item_tax_cookie, amount);
 	gen_item(c->who, item_gold, amount);
 	gold_petty_thief += amount;
 
-	switch (rnd(1,3))
+	switch (skil_petty(c->who, where, 4, 1, 3))	/* issue #25: skills stream */
 	{
 	case 1:
 		self = " stealing from merchants";
 		third = sout("%s merchants complain that they were robbed "
 					"by a thief.",
-					rnd(0,1) ? "Several" :
-					cap(nice_num(rnd(2,3))));
+					skil_petty(c->who, where, 5, 0, 1) ? "Several" :
+					cap(nice_num(skil_petty(c->who, where, 6, 2, 3))));
 		break;
 
 	case 2:
 		self = " picking pockets";
 		third = sout("%s townspeople complain that their pockets were "
 				"picked in the town square.",
-					rnd(0,1) ? "Several" :
-					cap(nice_num(rnd(2,3))));
+					skil_petty(c->who, where, 5, 0, 1) ? "Several" :
+					cap(nice_num(skil_petty(c->who, where, 6, 2, 3))));
 		break;
 
 	case 3:
 		self = "";
-		switch (rnd(1,3))
+		switch (skil_petty(c->who, where, 7, 1, 3))	/* issue #25: skills stream */
 		{
 		case 1:
 			third = "There are rumors that a thief is loose in "
