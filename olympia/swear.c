@@ -3,6 +3,7 @@
 #include	<stdlib.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
 
 
 
@@ -398,11 +399,126 @@ v_bribe(struct command *c)
 }
 
 
+/*
+ *  issue #25 (endgame Unit D): social RNG stream (tag "socl").
+ *
+ *  The player social-command draws -- BRIBE (gift flavor + outcome rolls),
+ *  TERRORIZE (severity gate), INCITE (rumor flavor + failure gate), PERSUADE
+ *  oath, and beast.c BREED (breeding accidents + no-offspring gate) -- draw
+ *  from a per-turn `social_rng` stream keyed off the turn root, tag "socl",
+ *  instead of the global rnd(). Like explore/skills/magic (and unlike
+ *  combat/quest's fresh per-scenario sequential stream), this is ONE per-turn
+ *  stream seeded once via the turn-guarded begin_social(), with all draws being
+ *  KEYED LEAVES (rng_keyed, which never advances a counter). The actor goes in
+ *  the leaf key k1 -- because the draws are scattered across several
+ *  independent social commands in two files (swear.c, beast.c) with no single
+ *  per-actor chokepoint, and one actor may issue several social commands in a
+ *  turn. Carrying the actor in the leaf key gives identical per-(actor, target)
+ *  addressability for free and is collision-free across commands (the
+ *  explore/skills/magic precedent). Every draw is command-only, so this
+ *  migration is byte-neutral on both golden trees (no social order is issued on
+ *  the bare-map or guard-pillage turns, and none fire at world-init).
+ *
+ *  Hosted here (swear.c, 7 of the 10 sites); begin_social() and the swear.c
+ *  helpers (soc_gift/soc_bribe/soc_terror/soc_incite/soc_persuade) are static,
+ *  while soc_breed (beast.c, 3 sites) is exposed via proto.h so it draws from
+ *  the same stream (the begin_economy/skil_crit/magc_scry cross-file
+ *  convention).
+ */
+#define	TAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_SOCIAL	0x736f636cu	/* "socl" */
+
+/* social-command leaf-draw purpose tags (private, like use.c's STAG_* / basic.c's MTAG_*) */
+#define	SOTAG_GIFT	0x67696674u	/* "gift" -- bribe gift-acknowledgement flavor */
+#define	SOTAG_BRIBE	0x62726962u	/* "brib" -- bribe pre-gate + success roll      */
+#define	SOTAG_TERROR	0x74657272u	/* "terr" -- terrorize-prisoner severity gate   */
+#define	SOTAG_INCITE	0x696e6369u	/* "inci" -- incite rumor flavor + failure gate */
+#define	SOTAG_OATH	0x6f617468u	/* "oath" -- persuade-oath success gate         */
+#define	SOTAG_BREED	0x62726564u	/* "bred" -- breeding accidents + no-offspring  */
+
+static rng_stream social_rng;
+static int social_rng_turn = -1;	/* seed social_rng once per turn */
+
+/*
+ *  Seed the per-turn social stream once per turn. Self-seeded by every helper
+ *  below (including the cross-file soc_breed), so the first social draw of the
+ *  turn cannot read an unseeded stream regardless of which command fires first.
+ */
+static void
+begin_social(void)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	if (social_rng_turn == sysclock.turn)
+		return;			/* already seeded this turn */
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	social_rng = rng_stream_of(&turn, 0, TAG_SOCIAL);
+
+	social_rng_turn = sysclock.turn;
+}
+
+/* BRIBE: gift-acknowledgement flavor [1,3], keyed on (who, target). */
+static int
+soc_gift(int who, int target)
+{
+	begin_social();
+	return rng_keyed(&social_rng, who, target, SOTAG_GIFT, 1, 3);
+}
+
+/* BRIBE: pre-gate (sub 0, 1..2) + success roll (sub 1, 1..100), keyed (who, target). */
+static int
+soc_bribe(int who, int target, int sub, int low, int high)
+{
+	begin_social();
+	return rng_keyed(&social_rng, who, target * 2 + sub, SOTAG_BRIBE, low, high);
+}
+
+/* TERRORIZE: severity gate [1,100], keyed on (who, target). */
+static int
+soc_terror(int who, int target)
+{
+	begin_social();
+	return rng_keyed(&social_rng, who, target, SOTAG_TERROR, 1, 100);
+}
+
+/* INCITE: rumor flavor (sub 0, 1..3) + failure gate (sub 1, 1..2), keyed (who, target). */
+static int
+soc_incite(int who, int target, int sub, int low, int high)
+{
+	begin_social();
+	return rng_keyed(&social_rng, who, target * 2 + sub, SOTAG_INCITE, low, high);
+}
+
+/* PERSUADE oath: success gate [1,100], keyed on (who, target). */
+static int
+soc_persuade(int who, int target)
+{
+	begin_social();
+	return rng_keyed(&social_rng, who, target, SOTAG_OATH, 1, 100);
+}
+
+/*
+ *  BREED (beast.c): breeding-accident gates (sub 0, keyed on the dying item) +
+ *  the no-offspring gate (sub 1). Exposed via proto.h so beast.c's d_breed
+ *  draws from this same `socl` stream (the skil_crit/magc_scry convention).
+ */
+int
+soc_breed(int who, int item, int sub, int low, int high)
+{
+	begin_social();
+	return rng_keyed(&social_rng, who, item * 2 + sub, SOTAG_BREED, low, high);
+}
+
+
 static void
 thanks_for_gift(int who, int target)
 {
 
-	switch (rnd(1,3))
+	switch (soc_gift(who, target))
 	{
 	case 1:
 		wout(who, "%s graciously accepts our gift.",
@@ -485,14 +601,14 @@ d_bribe(struct command *c)
 
 	if (bribe_thresh <= 0 || amount < bribe_thresh)
 	{
-		if (rnd(1,2) == 1)
+		if (soc_bribe(c->who, target, 0, 1, 2) == 1)	/* issue #25: social stream */
 			outcome = POCKET;
 		else
 			outcome = REPORT;
 	}
 	else
 	{
-		int n = rnd(1,100);
+		int n = soc_bribe(c->who, target, 1, 1, 100);	/* issue #25: social stream */
 
 		if (n <= 35)
 			outcome = SWITCH;
@@ -710,7 +826,7 @@ terrorize_prisoner(struct command *c)
 			 char_health(target));
 
 	if (loyal_kind(target) != LOY_oath &&
-	    rnd(1, 100) <= severity)
+	    soc_terror(c->who, target) <= severity)	/* issue #25: social stream */
 	{
 		if (!enough_np_to_acquire(c->who, target))
 			return FALSE;
@@ -1019,7 +1135,7 @@ d_incite(struct command *c)
 
 	add_skill_experience(c->who, sk_incite_mob);
 
-	if (rnd(1,3) == 1)
+	if (soc_incite(c->who, target, 0, 1, 3) == 1)	/* issue #25: social stream */
 	{
 		int i;
 
@@ -1036,7 +1152,7 @@ d_incite(struct command *c)
 		next_here;
 	}
 
-	if (rnd(1,2) == 1)
+	if (soc_incite(c->who, target, 1, 1, 2) == 1)	/* issue #25: social stream */
 	{
 		wout(c->who, "Failed to incite the mob to violence.");
 		return FALSE;
@@ -1107,7 +1223,7 @@ d_persuade_oath(struct command *c)
 		return FALSE;
 	}
 
-	if (loyal_rate(target) != 1 || rnd(1,100) > 2)
+	if (loyal_rate(target) != 1 || soc_persuade(c->who, target) > 2)	/* issue #25: social stream */
 	{
 		wout(c->who, "Failed to convince %s to join us.",
 						box_name(target));

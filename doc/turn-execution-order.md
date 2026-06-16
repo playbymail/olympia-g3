@@ -272,6 +272,7 @@ stream they're on:
 | Command phase (only if issued) | EXPLORE (`d_explore`/`find_lost_items`) + SEEK (`d_seek`) detect rolls | **keyed** per-turn explore — `begin_explore()` / `expl_*` (#25, tag `expl`) — *not reached on either golden tree* |
 | Command phase (only if issued) | weapon training (ARCHERY/DEFENSE/SWORDPLAY), STUDY scroll-consume, RESEARCH pick/gate, TORTURE, PETTY THIEF | **keyed** per-turn skills — `begin_skills()` / `skil_*` (#25, tag `skil`, command core) — *not reached on either golden tree* |
 | Command phase (only if issued) | scry/locate, religion gates, necro eat-dead/skill-transfer, MEDITATE/HEAL aura spells, alchemy potion brew/use, FORGE AURACULUM / USE orb / USE suffuse-ring crafting | **keyed** per-turn magic — `begin_magic()` / `magc_*` (#25, tag `magc`, command core + `art.c` crafting via `magc_forge`/`magc_orb`/`magc_ring`) — *not reached on either golden tree* |
+| Command phase (only if issued) | BRIBE (gift flavor + outcome), TERRORIZE severity, INCITE rumor/failure, PERSUADE oath, BREED breeding-accident rolls | **keyed** per-turn social — `begin_social()` / `soc_*` (#25 endgame Unit D, tag `socl`, actor in leaf key k1; `soc_breed` via `proto.h` for `beast.c`) — *not reached on either golden tree* |
 | Per-turn / quest loot (restock & loot minters) | `new_suffuse_ring` (`buy.c` `trade_suffuse_ring`, per-turn economy restock), `new_orb`/`create_npc_token` (`quest.c` loot) | **keyed** (#25 endgame Unit A) — `new_suffuse_ring` → `econ_ring` on `begin_economy(where)` (fires ~25×/turn over faery/cloud cities — forced a 204-file content-only main-manifest re-baseline); `new_orb`/`create_npc_token` → `qrnd` inside quest loot gen (byte-neutral) |
 | Each day (`day%7`) / end of month | `heal_characters`, `loyalty_decay`, `men_starve`, `animal_deaths`, `corpse_decay` | **keyed** per-turn upkeep — `begin_upkeep()` (#25) — *not reached on either golden tree* |
 | End of month | `inn_income()` (`temple_income` draws nothing) | **keyed** per-turn upkeep — `up_income(inn, sub, …)` on `begin_upkeep()` (#25 endgame Unit C, purpose tag `inco`) — byte-neutral (no inn on either tree) |
@@ -381,5 +382,20 @@ Notes for #25 work:
   halves give future fixture addressability (a hades-ambush / faery-bandit
   fixture); the build halves yield no command fixture. After this only **mint**
   (step 13) remains.
+- **Social (endgame Unit D) is command-only too** (the quest/explore/skills/magic
+  profile): the player social-command draws across two files — BRIBE
+  (gift-acknowledgement flavor + the pre-gate/success outcome rolls), TERRORIZE
+  severity, INCITE rumor-spread/failure, PERSUADE oath (`swear.c`), and the BREED
+  breeding-accident + no-offspring rolls (`beast.c`) — draw from the keyed per-turn
+  social stream (`begin_social()` / `soc_*`, tag `socl`, actor in the leaf key k1;
+  `begin_social()` + the `soc_gift`/`soc_bribe`/`soc_terror`/`soc_incite`/
+  `soc_persuade` helpers static in `swear.c`, `soc_breed` exposed via `proto.h`).
+  Neither golden tree issues BRIBE/TERRORIZE/INCITE/PERSUADE/BREED and none fire at
+  world-init, so the stream is unreached on both trees and at `-s`/`-a`/`-i`
+  (verified empirically: 0 draws everywhere via instrument/count/revert) —
+  byte-neutral, no re-baseline. This retires the `swear.c`/`beast.c`
+  "residual on global" status. The one incite-mob *spawn* (`swear.c:863`
+  `do_cookie_npc`) already rides the `npcs` troop-count and is left untouched.
+  After this only the **entity** catch-all (Unit E) and **mint** (Unit F) remain.
 - The keyed-stream seam is `lib/rng.{c,h}`; the per-subsystem migration order is
   in [rng-state-granularity.md](rng-state-granularity.md).

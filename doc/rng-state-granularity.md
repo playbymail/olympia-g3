@@ -17,8 +17,8 @@ criterion for #25 is **no gameplay `rnd()` left in the engine** (`rnd()` survive
 only as the low-level MD5 primitive the `rng` layer is built on). The audit of
 what is left and the sequenced units that retire it (skills/magic residuals →
 existing streams [Unit A, landed], then **calendar** day-picks → `caln` and
-**income** → `upkp` [Units B+C, landed], then **social** → `socl`, an **entity**
-catch-all → `enty`, and **mint** last) live in the
+**income** → `upkp` [Units B+C, landed], then **social** → `socl` [Unit D, landed],
+an **entity** catch-all → `enty`, and **mint** last) live in the
 [endgame plan](#endgame--driving-gameplay-rnd-to-zero) below and in
 [rng-endgame-to-zero.md](rng-endgame-to-zero.md). Units B+C retired the earlier
 "deliberate permanent residual" framing for the day-picks and `inn_income`: they
@@ -350,8 +350,9 @@ or cookie consumption, never during the `-s`/`-a`/`-i` world-init that
 - **`swear.c`** social/loyalty rolls (bribe success, terrorize severity,
   persuade-oath, gift-thanks, incite-riot rumor/failure) and **`beast.c`**
   breeding-accident rolls — these are player-command social/skill draws, not NPC
-  spawn/behavior. The one spawn coupling in `swear.c` (an incited mob is *created*
-  via `do_cookie_npc`) already rides the migrated troop-count draw.
+  spawn/behavior. **Now landed** (endgame Unit D) on the keyed `socl` stream
+  (actor-in-k1 leaves). The one spawn coupling in `swear.c` (an incited mob is
+  *created* via `do_cookie_npc`) already rides the migrated troop-count draw.
 
 ## Fifth consumer: weather
 
@@ -1217,7 +1218,7 @@ master seed                                  rng_seed(randseed bytes)
    │
    ├─ npc        key(turn, location, "npcs")  [LANDED]   npc.c (begin_npc/npc_*), savage.c
    │     └─ leaf key(cookie/fort, entity, "spwn"/"qnty"/"bhvr")  ← absorbed the pillage residual
-   │             (hades/faery bandits -> region; swear/beast social -> residual on global)
+   │             (hades/faery bandits -> region, LANDED; swear/beast social -> endgame Unit D, socl, LANDED)
    │
    ├─ weather    key(turn, 0,        "wthr")  [LANDED]   storm.c (begin_weather/wthr_*), day.c (environmental damage)
    │     └─ seq  shuffle+aura (generation); leaf key(where, day*16+slot, "wrck") (acute, unreached)
@@ -1261,7 +1262,8 @@ master seed                                  rng_seed(randseed bytes)
    ├─ calendar   key(turn, 0,        "caln")  [LANDED B]   day.c day-picks (curse_erode/faery/dog_bark); leaf key(which, 0, "day"); cal_day static in day.c
    │             fires every turn on both trees, 0 at world-init -> NOT byte-neutral, EXPECT-only: main manifest 204->205 (mint shift adds orders/204), guard-pillage EXPECT only
    ├─ income     → upkeep "upkp"               [LANDED C]   day.c inn_income (folds into upkeep; up_income leaf, sub 0-3, "inco"); byte-neutral (no inn on either tree)
-   ├─ social     key(turn, 0,        "socl")  [planned D]  swear.c (bribe/terrorize/persuade/incite), beast.c (breeding); leaf key(actor, target)
+   ├─ social     key(turn, 0,        "socl")  [LANDED D]   swear.c (gift/bribe/terrorize/incite/persuade), beast.c (breeding); leaf key(who, target|item, "gift"/"brib"/"terr"/"inci"/"oath"/"bred")
+   │     └─ keyed leaves, one per-turn stream, actor in k1 (begin_social, static helpers in swear.c; soc_breed via proto.h); byte-neutral both trees
    ├─ entity     key(turn, 0,        "enty")  [planned E]  u.c/stack.c/build.c one-offs + produce.c mage_menial (catch-all); quest-infra -> qrnd
    │     └─ leaf key(who|where, purpose, "escp"/"land"/"grav"/"take"/"dmg"/"bark"/"bild")  ← keyed leaves, one per-turn stream
    │
@@ -1270,26 +1272,26 @@ master seed                                  rng_seed(randseed bytes)
                  same PR: repoint test_random() to an rng_stream + flip on the "no gameplay rnd()" audit gate
 ```
 
-| Order | Root system | Tag                  | Scenario key            | Status                                                                                                         | Primary files                                                                        |
-|-------|-------------|----------------------|-------------------------|----------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| 1     | combat      | `comb`               | location                | **landed**                                                                                                     | `combat.c`                                                                           |
-| 2     | pillage     | `pill`               | location                | **landed**                                                                                                     | `combat.c`, `npc.c`                                                                  |
-| 3     | economy     | `econ`               | market                  | **landed**                                                                                                     | `buy.c`, `seed.c`                                                                    |
-| 4     | npc         | `npcs`               | location                | **landed**                                                                                                     | `npc.c`, `savage.c`                                                                  |
-| 5     | weather     | `wthr`               | turn (loc 0)            | **landed**                                                                                                     | `storm.c`, `day.c`                                                                   |
-| 6     | upkeep      | `upkp`               | turn (loc 0)            | **landed**                                                                                                     | `day.c`                                                                              |
-| 7     | quest       | `qest`               | where / actor           | **landed**                                                                                                     | `quest.c`, `use.c`                                                                   |
-| 8     | explore     | `expl`               | turn (loc 0)            | **landed**                                                                                                     | `c1.c`, `stealth.c`                                                                  |
-| 9     | skills      | `skil`               | turn (loc 0)            | **landed (command core)** — `produce.c` mining/harvest landed as Unit A (econ)                                 | `use.c`, `c2.c`, `stealth.c` (residual: `produce.c` → A, landed)                      |
-| 10    | magic       | `magc`               | turn (loc 0)            | **landed (command core + art.c crafting commands)** — auto-undead/art.c-minters landed as Unit A; curse-erode landed as Unit B (`caln`) | `basic.c`, `scry.c`, `relig.c`, `necro.c`, `alchem.c`, `art.c`             |
-| 11    | worldgen    | `wgen`               | turn (loc 0) / location | **landed** — INIT-time, NOT byte-neutral (one-time re-baseline of both trees)                                  | `seed.c` (keyed leaves), `tunnel.c` (sequential dungeon-gen)                         |
-| 12    | regions     | `faer`/`hads`/`clud` | region (build) / actor (auto) | **landed** — INIT build + turn autonomous, NOT byte-neutral (one-time re-baseline of both trees)          | `faery.c`, `hades.c`, `cloud.c`, `npc.c`, `u.c`                                      |
-| A     | residuals   | `econ`/`npcs`/`qest` | (existing streams)      | **landed (endgame)** — skills/magic residuals onto landed streams; NO new tag; `new_suffuse_ring` restock → main-manifest re-baseline (204, content-only), guard-pillage byte-neutral | `produce.c`, `necro.c`, `art.c`, `buy.c`                                             |
-| B     | calendar    | `caln`               | turn (loc 0)            | **landed (endgame)** — day-picks; fires every turn, 0 at world-init → EXPECT-only re-baseline (main 204→205, mint shift adds `orders/204`); guard-pillage EXPECT only | `day.c`                                                          |
-| C     | income      | `upkp`               | turn (loc 0)            | **landed (endgame)** — `inn_income` folds into upkeep (`up_income`, no new tag); byte-neutral (no inn on either tree) | `day.c`                                                            |
-| D     | social      | `socl`               | actor                   | **planned (endgame)** — bribe/terrorize/persuade/incite/breeding; likely byte-neutral                         | `swear.c`, `beast.c`                                                                 |
-| E     | entity      | `enty`               | actor / location        | **planned (endgame)** — catch-all one-off behaviors (incl. `produce.c` mage-menial flavor); quest-infra → `qrnd` | `u.c`, `stack.c`, `build.c`, `quest.c`, `produce.c`                                  |
-| F     | mint        | `mint`               | entity id               | **last** — re-bakes every id; repoint `test_random`, flip on the no-gameplay-`rnd()` gate                      | `code.c`, `add.c`, `z.c`                                                             |
+| Order | Root system | Tag                  | Scenario key                  | Status                                                                                                                                                                                | Primary files                                                    |
+|-------|-------------|----------------------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------|
+| 1     | combat      | `comb`               | location                      | **landed**                                                                                                                                                                            | `combat.c`                                                       |
+| 2     | pillage     | `pill`               | location                      | **landed**                                                                                                                                                                            | `combat.c`, `npc.c`                                              |
+| 3     | economy     | `econ`               | market                        | **landed**                                                                                                                                                                            | `buy.c`, `seed.c`                                                |
+| 4     | npc         | `npcs`               | location                      | **landed**                                                                                                                                                                            | `npc.c`, `savage.c`                                              |
+| 5     | weather     | `wthr`               | turn (loc 0)                  | **landed**                                                                                                                                                                            | `storm.c`, `day.c`                                               |
+| 6     | upkeep      | `upkp`               | turn (loc 0)                  | **landed**                                                                                                                                                                            | `day.c`                                                          |
+| 7     | quest       | `qest`               | where / actor                 | **landed**                                                                                                                                                                            | `quest.c`, `use.c`                                               |
+| 8     | explore     | `expl`               | turn (loc 0)                  | **landed**                                                                                                                                                                            | `c1.c`, `stealth.c`                                              |
+| 9     | skills      | `skil`               | turn (loc 0)                  | **landed (command core)** — `produce.c` mining/harvest landed as Unit A (econ)                                                                                                        | `use.c`, `c2.c`, `stealth.c` (residual: `produce.c` → A, landed) |
+| 10    | magic       | `magc`               | turn (loc 0)                  | **landed (command core + art.c crafting commands)** — auto-undead/art.c-minters landed as Unit A; curse-erode landed as Unit B (`caln`)                                               | `basic.c`, `scry.c`, `relig.c`, `necro.c`, `alchem.c`, `art.c`   |
+| 11    | worldgen    | `wgen`               | turn (loc 0) / location       | **landed** — INIT-time, NOT byte-neutral (one-time re-baseline of both trees)                                                                                                         | `seed.c` (keyed leaves), `tunnel.c` (sequential dungeon-gen)     |
+| 12    | regions     | `faer`/`hads`/`clud` | region (build) / actor (auto) | **landed** — INIT build + turn autonomous, NOT byte-neutral (one-time re-baseline of both trees)                                                                                      | `faery.c`, `hades.c`, `cloud.c`, `npc.c`, `u.c`                  |
+| A     | residuals   | `econ`/`npcs`/`qest` | (existing streams)            | **landed (endgame)** — skills/magic residuals onto landed streams; NO new tag; `new_suffuse_ring` restock → main-manifest re-baseline (204, content-only), guard-pillage byte-neutral | `produce.c`, `necro.c`, `art.c`, `buy.c`                         |
+| B     | calendar    | `caln`               | turn (loc 0)                  | **landed (endgame)** — day-picks; fires every turn, 0 at world-init → EXPECT-only re-baseline (main 204→205, mint shift adds `orders/204`); guard-pillage EXPECT only                 | `day.c`                                                          |
+| C     | income      | `upkp`               | turn (loc 0)                  | **landed (endgame)** — `inn_income` folds into upkeep (`up_income`, no new tag); byte-neutral (no inn on either tree)                                                                 | `day.c`                                                          |
+| D     | social      | `socl`               | actor                         | **landed (endgame)** — gift/bribe/terrorize/incite/persuade/breeding; actor in k1, `soc_breed` via `proto.h`; byte-neutral both trees (no re-baseline)                                | `swear.c`, `beast.c`                                             |
+| E     | entity      | `enty`               | actor / location              | **planned (endgame)** — catch-all one-off behaviors (incl. `produce.c` mage-menial flavor); quest-infra → `qrnd`                                                                      | `u.c`, `stack.c`, `build.c`, `quest.c`, `produce.c`              |
+| F     | mint        | `mint`               | entity id                     | **last** — re-bakes every id; repoint `test_random`, flip on the no-gameplay-`rnd()` gate                                                                                             | `code.c`, `add.c`, `z.c`                                         |
 
 ### Endgame — driving gameplay `rnd()` to zero
 
@@ -1320,14 +1322,15 @@ flavor, no item/where) stays on the global `rnd()` and is deferred to **Unit E**
 grep -rnE '[^_a-zA-Z]rnd\(' olympia/*.c | grep -v 'olympia/rnd.c' | grep -vE ':\s*\*|//'
 ```
 
-With Units A–C landed this leaves **28 live draws in 3 buckets** (was 41 in 7): the
+With Units A–D landed this leaves **18 live draws in 2 buckets** (was 41 in 7): the
 now-landed **skills/magic residuals** (Unit A → existing `econ`/`npcs`/`qest`), the
 now-landed **calendar** day-picks (Unit B → `caln` — this retired the day-picks'
-"deliberate permanent residual" status) and **income** (Unit C → folded into
-`upkp`), and still ahead: **social** (Unit D → `socl`), an **entity** catch-all for
-the `u.c`/`stack.c`/`build.c` one-offs plus `produce.c`'s mage-menial flavor pick
-(Unit E → `enty`, with the quest shared-infra folded into `qrnd`), and **mint**
-(Unit F, last — it re-bakes every entity id, so nothing may follow it). Excluded as
+"deliberate permanent residual" status), **income** (Unit C → folded into `upkp`),
+and the now-landed **social** commands (Unit D → `socl` — this retired the
+`swear.c`/`beast.c` "residual on global" status), and still ahead: an **entity**
+catch-all for the `u.c`/`stack.c`/`build.c` one-offs plus `produce.c`'s mage-menial
+flavor pick (Unit E → `enty`, with the quest shared-infra folded into `qrnd`), and
+**mint** (Unit F, last — it re-bakes every entity id, so nothing may follow it). Excluded as
 non-gameplay: the `#if 0 equip_new_noble` dead code, the commented
 `tunnel.c:506`/`buy.c:1547`, and `test_random()` (the `-R` self-test, repointed to
 an `rng_stream` in Unit F). Each unit is its own branch + squash PR (`Refs #25`),
@@ -1347,7 +1350,8 @@ presets.
   spawning), so it belonged under `npc`, not `pillage`. Migrating this one stream
   cleared the residual *and* the same coupling at once; the region-flavored
   hades/faery bandit spawns and the `swear.c`/`beast.c` social rolls were left as
-  documented residuals (region / social subsystems). Like economy it ran on the
+  documented residuals (region / social subsystems) — both now landed (regions,
+  step 12; social, endgame Unit D → `socl`). Like economy it ran on the
   standard turn (`init_savage_attacks`), so it took a one-time main-manifest
   re-baseline — see [Fourth consumer](#fourth-consumer-npc-spawning).
 - **weather came next** (now landed) — `day.c` + `storm.c` are split across
@@ -1456,8 +1460,9 @@ presets.
   subsystems landed, the remaining global draws are driven to **zero** (see
   [Endgame](#endgame--driving-gameplay-rnd-to-zero)): the skills/magic residuals fold
   onto existing streams (A, landed), then the **calendar** day-picks (B, `caln`,
-  landed) and **income** (C, into `upkp`, landed), then **social** (D, `socl`) and
-  an **entity** catch-all (E, `enty`). They are ordered cheap/byte-neutral-first; the
+  landed) and **income** (C, into `upkp`, landed), then **social** (D, `socl`,
+  landed — byte-neutral, no re-baseline) and an **entity** catch-all (E, `enty`).
+  They are ordered cheap/byte-neutral-first; the
   calendar half of the day.c units (B) and `new_suffuse_ring` in A move a manifest
   (B moved the main manifest 204→205 — a mint shift adding `orders/204`), so they
   re-baseline deliberately; the income half (C) is byte-neutral.
