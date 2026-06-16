@@ -188,7 +188,11 @@ if (day == faery_day)      auto_faery();   // create_elven_hunt -> keyed faer st
 > #25 endgame Unit B), keyed on the pick identity — no longer the global `rnd()`.
 > When `faery_day` arrives, `auto_faery()`'s `create_elven_hunt` spawns (15/turn)
 > draw from the keyed per-turn **region:faery** stream (tag `faer`, #25 step 12),
-> not the global `rnd()` — only the day-*pick* above stays global.
+> not the global `rnd()`. The day-*picks* themselves are on `caln` (above); the
+> behaviors they gate are now keyed too: `weekly_prisoner_escape_check()`
+> (`check_prisoner_escape`) and `dogs_bark_at_hidden_chars()` (`bark_dogs`) draw
+> from the keyed per-turn **entity** stream (tag `enty`, seeded via `begin_entity()`,
+> #25 endgame Unit E) — nothing in this daily block stays on the global `rnd()`.
 
 ---
 
@@ -276,6 +280,7 @@ stream they're on:
 | Per-turn / quest loot (restock & loot minters) | `new_suffuse_ring` (`buy.c` `trade_suffuse_ring`, per-turn economy restock), `new_orb`/`create_npc_token` (`quest.c` loot) | **keyed** (#25 endgame Unit A) — `new_suffuse_ring` → `econ_ring` on `begin_economy(where)` (fires ~25×/turn over faery/cloud cities — forced a 204-file content-only main-manifest re-baseline); `new_orb`/`create_npc_token` → `qrnd` inside quest loot gen (byte-neutral) |
 | Each day (`day%7`) / end of month | `heal_characters`, `loyalty_decay`, `men_starve`, `animal_deaths`, `corpse_decay` | **keyed** per-turn upkeep — `begin_upkeep()` (#25) — *not reached on either golden tree* |
 | End of month | `inn_income()` (`temple_income` draws nothing) | **keyed** per-turn upkeep — `up_income(inn, sub, …)` on `begin_upkeep()` (#25 endgame Unit C, purpose tag `inco`) — byte-neutral (no inn on either tree) |
+| Each day (`day%7`) / command phase | `weekly_prisoner_escape_check` (`check_prisoner_escape`), `dogs_bark_at_hidden_chars` (`bark_dogs`); TAKE-SOME qty, drop-stack scatter, sick-onset gate (combat damage), find-nearest-land, new-mine gate-crystal, mage-menial flavor | **keyed** per-turn entity — `begin_entity()` / `ent_*` (#25 endgame Unit E, tag `enty`, actor/location in leaf key k1; `ent_prisoner`/`ent_drop`/`ent_build`/`ent_menial` via `proto.h`) — 0 on the bare-map turn & all world-init; the guard-pillage turn fires 4 `ent_prisoner` but byte-neutral (manifest unchanged) |
 
 Notes for #25 work:
 
@@ -316,9 +321,9 @@ Notes for #25 work:
   deferred to magic — **now landed** (below) — while the `art.c` artifact-crafting
   **commands** also landed on magic (the crafting follow-up, below). The
   `art.c` shared-infra **minters** and the `produce.c` mining/harvest residual
-  have **since landed** as endgame **Unit A** (onto `qest`/`econ`); only the
-  cosmetic `produce.c mage_menial_how` flavor pick stays global (deferred to
-  Unit E).
+  have **since landed** as endgame **Unit A** (onto `qest`/`econ`); the cosmetic
+  `produce.c mage_menial_how` flavor pick **landed** as endgame **Unit E** (onto
+  `enty`/`ent_menial`).
 - **Magic (command core) is command-only too** (the quest/explore/skills profile):
   the player-cast spell draws across six files — scrying (`scry.c`), religion
   gates (`relig.c`), necromancy eat-dead/skill-transfer (`necro.c`), the
@@ -396,6 +401,15 @@ Notes for #25 work:
   byte-neutral, no re-baseline. This retires the `swear.c`/`beast.c`
   "residual on global" status. The one incite-mob *spawn* (`swear.c:863`
   `do_cookie_npc`) already rides the `npcs` troop-count and is left untouched.
-  After this only the **entity** catch-all (Unit E) and **mint** (Unit F) remain.
+- **Entity** (`begin_entity()` / `ent_*`, tag `enty`, #25 endgame Unit E) — the
+  11 catch-all one-offs in `stack.c`/`u.c`/`build.c`/`produce.c` (prisoner escape,
+  drop-stack scatter, TAKE-SOME qty, sick-onset gate, find-nearest-land, bark-dogs,
+  new-mine gate-crystal, mage-menial flavor), actor/location in the leaf key k1.
+  **Byte-neutral on both trees**: 0 draws on the bare-map turn and at all world-init;
+  the guard-pillage turn fires 4 `ent_prisoner` rolls but they do not perturb the
+  hashed faction records (both twins still match `EXPECT` unchanged) — no re-baseline.
+  The brief's quest shared-infra half (`free_artifact`/`make_subloc_monster` `#if 0`)
+  and `u.c nearby_grave` were dead code (see [dead-code.md](dead-code.md)), a no-op.
+  **After this only mint (Unit F) remains.**
 - The keyed-stream seam is `lib/rng.{c,h}`; the per-subsystem migration order is
   in [rng-state-granularity.md](rng-state-granularity.md).

@@ -29,10 +29,13 @@ grep -rnE '[^_a-zA-Z]rnd\(' olympia/*.c | grep -v 'olympia/rnd.c' \
 ## Full remaining surface (audited against current main — re-verify, line numbers shift)
 
 41 live gameplay draws in 7 buckets at the start (after excluding the dead code +
-the `-R` self-test). **Units A–D are landed**: Unit A removed the 6 skills/magic
+the `-R` self-test). **Units A–E are landed**: Unit A removed the 6 skills/magic
 residuals (bucket 4); Units B+C (one PR) removed the 3 calendar day-picks (bucket
 1) and the 4 `inn_income` draws (bucket 2); Unit D removed the 10 social-command
-draws (bucket 3) → **18 live draws in 2 buckets** remain (E–F):
+draws (bucket 3); Unit E removed the 11 entity catch-all draws (bucket 6) — and
+the original tally over-counted: bucket 5 ("quest shared-infra") and one bucket-6
+site (`u.c nearby_grave`) turned out to be **dead `#if 0` code**, not live draws —
+→ **only the mint bucket (7) remains** (F):
 
 1. **calendar** ✅ **LANDED (Unit B)** — `day.c` daily_events day-picks
    (`curse_erode_day`, `faery_day`, `dog_bark_day`) → new per-turn `caln` stream.
@@ -48,12 +51,17 @@ draws (bucket 3) → **18 live draws in 2 buckets** remain (E–F):
    (`create_npc_token:1102` is `#if 0` **dead code** in `add_token_unit`, never a
    live draw. `produce.c mage_menial_how:702`, a cosmetic actor-keyed flavor pick,
    stays global → bucket 6 / Unit E instead.)
-5. **quest shared-infra** — `quest.c free_artifact:288`,
-   `make_subloc_monster:598`.
-6. **entity catch-all** — `stack.c check_prisoner_escape:267` / `drop_stack:409`+`420`;
-   `u.c take_unit_items:291`+`292` / `add_char_damage:402` / `nearby_grave:451` /
-   `find_nearest_land:1882`+`1945` / `bark_dogs:2458`; `build.c create_new_building:447`;
-   `produce.c mage_menial_how:702` (cosmetic labor-flavor pick, actor-keyed).
+5. **quest shared-infra** — ✅ **LANDED (Unit E): a no-op.** Both listed sites are
+   **dead `#if 0` code**: `quest.c free_artifact:288` (its only caller, the
+   `make_subloc_monster` `#if 0` block at `:598`, is also dead). The **live**
+   `make_subloc_monster` body already draws entirely from `qrnd()` — there was
+   nothing live to route. (Documented in [dead-code.md](dead-code.md).)
+6. **entity catch-all** ✅ **LANDED (Unit E)** — `stack.c check_prisoner_escape:267`
+   / `drop_stack` gate+dir; `u.c take_unit_items` gate+amount / `add_char_damage`
+   sick / `find_nearest_land` dir+pick / `bark_dogs`; `build.c create_new_building`
+   mine-gate; `produce.c mage_menial_how` → new per-turn `enty` stream (tag
+   0x656e7479). **11 live sites, not 12** — `u.c nearby_grave:451` was also dead
+   `#if 0` code (documented in [dead-code.md](dead-code.md)).
 7. **mint** — `code.c rnd_alloc_num:706` (THE entity-id allocator, reached by every
    random-id `new_ent`/`alloc_box`), `add.c get_city_id:73` / password gen `:201`.
 
@@ -140,18 +148,40 @@ bare-map turn, both guard-pillage twins, and `-s`/`-a`/`-i` world-init via an
 instrument/count/revert pass). So **no re-baseline, no `scenario.tgz` regen**; both
 golden gates green on both presets, `tests/rng/check.sh` YES, audit grep zero.
 
-### Unit E — entity catch-all → new `enty` stream  (tag 0x656e7479) + quest-infra to qrnd
+### Unit E — entity catch-all → new `enty` stream  (tag 0x656e7479)  ✅ LANDED
 The one-off entity/command behaviors with no natural subsystem: `stack.c`
-(prisoner escape, drop-stack), `u.c` (TAKE qty, char damage, nearby_grave,
-find_nearest_land, bark_dogs), `build.c` (build outcome), and `produce.c`
-`mage_menial_how:702` (the cosmetic mage labor-flavor pick, deferred here from
-Unit A because it is actor-keyed flavor, not an economic draw). One turn-guarded
-per-turn stream, keyed leaves keyed on the actor/location + a purpose sub-tag per
-site. Fold
-the **quest shared-infra** (`free_artifact`, `make_subloc_monster`) into quest's
-`qrnd()` instead (they run inside quest gen — confirm they're under a `begin_quest`
-scope; if not, they join `enty`). Mixed byte-neutrality (prisoner-escape / damage
-may fire on the bare turn) — instrument/count, re-baseline only if it moves.
+(prisoner escape, drop-stack scatter), `u.c` (TAKE-SOME qty, sick-onset gate,
+find_nearest_land dir+pick, bark_dogs), `build.c` (new-mine gate-crystal gate), and
+`produce.c mage_menial_how` (the cosmetic mage labor-flavor pick, deferred here from
+Unit A because it is actor-keyed flavor, not an economic draw). **11 live sites** on
+ONE turn-guarded per-turn `enty` stream seeded once via `begin_entity()` (the
+explore/skills/magic/social model: keyed leaves, the actor/location in the leaf key
+k1, a distinct purpose tag per site — `ENTAG_PRISON`/`DROP`/`TAKE`/`SICK`/`LANDDIR`/
+`LANDPICK`/`BARK`/`BUILD`/`MENIAL`). Hosted in `u.c` (the hub, 6 of 11 sites);
+`begin_entity()` + the u.c-local helpers (`ent_take`/`ent_sick`/`ent_land_dir`/
+`ent_land_pick`/`ent_bark`) are static, while `ent_prisoner`/`ent_drop` (stack.c),
+`ent_build` (build.c), and `ent_menial` (produce.c) are exposed via `proto.h` so
+their draws share the one stream (the `begin_economy`/`skil_crit`/`magc_scry`/
+`soc_breed` cross-file convention). Two keying nuances: `find_nearest_land`'s dir
+draw carries the bounded-retry counter in k2 (a fixed key would make every retry
+walk the same way); `add_char_damage`'s sick gate carries the post-hit health in k2
+(a char may be hit several times per turn before the sick flag latches).
+
+**The quest shared-infra half was a no-op.** Both `quest.c` sites the brief listed
+(`free_artifact:288`, the `make_subloc_monster:598` caller) are **dead `#if 0`
+code**; the live `make_subloc_monster` already draws from `qrnd()`. Same for
+`u.c nearby_grave:451` (listed as a 12th entity site) — also dead `#if 0`. All three
+are documented in [dead-code.md](dead-code.md) and left in place as Unit-F-era
+cleanup.
+
+**Byte-neutral on BOTH trees** (the social/Unit-D profile, despite the mixed
+prediction). Instrument/count/revert showed: **0** entity draws on the bare-map turn
+and at every world-init (`-i`/`-s`/`-a`) → main manifest byte-identical; the
+guard-pillage turn fires **4** `ent_prisoner` rolls (prisoners taken in the pillage)
+but they do not perturb the four hashed faction records — both twins (`check.sh`
+frozen + `check-lua.sh` lua-built) still match `EXPECT.sha256` unchanged. So **no
+re-baseline and no `scenario.tgz` regen**. `add_char_damage` (the flagged likely
+mover) does not fire — the pillage nobles die outright rather than survive wounded.
 
 ### Unit F — mint (LAST) → `mint` stream  (tag 0x6d696e74)
 `code.c rnd_alloc_num:706` (the entity-id allocator) + `add.c` id/password gen.

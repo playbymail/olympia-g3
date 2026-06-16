@@ -699,10 +699,10 @@ d_generic_harvest(struct command *c, struct harvest *t)
 
 
 static char *
-mage_menial_how(void)
+mage_menial_how(int who)
 {
 
-	switch (rnd(1,9))
+	switch (ent_menial(who))
 	{
 	case 1:		return " curing runny noses";
 	case 2:		return " dowsing for water";
@@ -745,7 +745,7 @@ i_generic_harvest(struct command *c, struct harvest *t)
 
 		if (t->item == item_mage_menial)
 			wout(c->who, "Earned %s%s.", gold_s(c->d),
-						mage_menial_how());
+						mage_menial_how(c->who));
 		else
 			out(c->who, "%s %s.", cap(t->got_em),
 				just_name_qty(item, c->d));

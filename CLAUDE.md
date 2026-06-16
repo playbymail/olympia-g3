@@ -407,11 +407,24 @@ skills/magic model — `begin_social()` + `soc_gift`/`soc_bribe`/`soc_terror`/
 for `beast.c`; the `swear.c:863` incite-mob spawn already rides `npcs`, left alone;
 this retired the `swear.c`/`beast.c` "residual on global" framing — byte-neutral on
 both trees, verified empirically 0 draws on the bare-map turn / both guard-pillage
-twins / `-s`/`-a`/`-i`, so NO re-baseline and NO `scenario.tgz` regen); **E** an entity catch-all
-for the `u.c`/`stack.c`/`build.c` one-offs plus `produce.c mage_menial_how` (→ new
-`enty`, quest-infra → `qrnd`), and
-**F** mint last (`code.c rnd_alloc_num` + `add.c` ids/passwords → `mint`; same PR
-repoints `test_random()` and flips on a standing "no gameplay `rnd()`" audit gate).
+twins / `-s`/`-a`/`-i`, so NO re-baseline and NO `scenario.tgz` regen); **E (LANDED)**
+the entity catch-all (`stack.c` prisoner-escape/drop-stack + `u.c` TAKE-SOME/
+sick-onset/find-nearest-land/bark-dogs + `build.c` new-mine gate + `produce.c
+mage_menial_how` — **11 live sites** → new `enty` per-turn stream via the
+turn-guarded `begin_entity()` + keyed-leaf helpers, actor/location in the leaf key
+k1, a distinct purpose tag per site; the cross-file skills/magic/social model —
+host `begin_entity()` + the u.c-local `ent_take`/`ent_sick`/`ent_land_dir`/
+`ent_land_pick`/`ent_bark` static in `u.c`, `ent_prisoner`/`ent_drop`/`ent_build`/
+`ent_menial` exposed via `proto.h` for `stack.c`/`build.c`/`produce.c`. The brief's
+quest shared-infra half (`free_artifact`/`make_subloc_monster` rolls) and a 12th
+entity site (`u.c nearby_grave`) turned out to be **dead `#if 0` code**, a no-op —
+the live `make_subloc_monster` already draws from `qrnd` (documented in
+`doc/dead-code.md`). **Byte-neutral on both trees**: 0 draws on the bare-map turn
+and at all world-init, and the 4 `ent_prisoner` rolls the guard-pillage turn fires
+do not perturb the hashed faction records — both twins match `EXPECT` unchanged, so
+NO re-baseline and NO `scenario.tgz` regen); and **F** mint last (`code.c
+rnd_alloc_num` + `add.c` ids/passwords → `mint`; same PR repoints `test_random()`
+and flips on a standing "no gameplay `rnd()`" audit gate).
 The full per-unit plan is [doc/rng-endgame-to-zero.md](doc/rng-endgame-to-zero.md);
 the migration order and per-subsystem keying live in
 [doc/rng-state-granularity.md](doc/rng-state-granularity.md). A PCG32 generator swap

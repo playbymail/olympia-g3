@@ -4,11 +4,162 @@
 #include	<time.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
 
 
 /*
  *  u.c -- the useful function junkyard
  */
+
+
+/*
+ *  issue #25 (Unit E): the entity catch-all RNG stream.
+ *
+ *  The one-off entity/command behaviors that have no natural subsystem --
+ *  prisoner escape and drop-stack scatter (stack.c), TAKE-SOME quantity, the
+ *  sick-onset gate, the find_nearest_land direction/land picks, the bark-dogs
+ *  flavor gate (u.c), the new-mine gate-crystal gate (build.c), and the cosmetic
+ *  mage-menial labor-flavor pick (produce.c) -- draw from a per-turn `enty`
+ *  stream keyed off the turn root, tag "enty", instead of the global rnd().
+ *  Like explore/skills/magic/social (and unlike combat/quest's fresh
+ *  per-scenario sequential stream), this is ONE per-turn stream seeded once via
+ *  the turn-guarded begin_entity(), with all draws being KEYED LEAVES
+ *  (rng_keyed, which never advances a counter). The actor/location goes in the
+ *  leaf key k1 -- because the draws are scattered across four files
+ *  (stack.c, u.c, build.c, produce.c) with no single per-entity chokepoint, and
+ *  one actor may reach several of these sites in a turn. Carrying the actor in
+ *  the leaf key gives per-(actor, purpose) addressability for free and is
+ *  collision-free across sites (the explore/skills/magic/social precedent).
+ *
+ *  Hosted here (u.c, the hub -- 6 of the 11 sites); begin_entity() and the
+ *  u.c-local helpers (ent_take/ent_sick/ent_land_dir/ent_land_pick/ent_bark) are
+ *  static, while ent_prisoner/ent_drop (stack.c), ent_build (build.c), and
+ *  ent_menial (produce.c) are exposed via proto.h so their draws share the same
+ *  `enty` stream (the begin_economy/skil_crit/magc_scry/soc_breed cross-file
+ *  convention -- NOT a separate stream per file).
+ */
+#define	ETAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_ENTITY	0x656e7479u	/* "enty" */
+
+/* entity-catch-all leaf-draw purpose tags (private, like swear.c's SOTAG_*) */
+#define	ENTAG_PRISON	0x70726973u	/* "pris" -- stack.c prisoner-escape roll        */
+#define	ENTAG_DROP	0x64726f70u	/* "drop" -- stack.c drop-stack scatter gate/dir */
+#define	ENTAG_TAKE	0x74616b65u	/* "take" -- u.c TAKE-SOME quantity gate/amount  */
+#define	ENTAG_SICK	0x7369636bu	/* "sick" -- u.c add_char_damage sick-onset gate */
+#define	ENTAG_LANDDIR	0x6c646972u	/* "ldir" -- u.c find_nearest_land direction     */
+#define	ENTAG_LANDPICK	0x6c706b6bu	/* "lpkk" -- u.c find_nearest_land province pick */
+#define	ENTAG_BARK	0x6261726bu	/* "bark" -- u.c bark_dogs per-hound flavor gate */
+#define	ENTAG_BUILD	0x626c6467u	/* "bldg" -- build.c new-mine gate-crystal gate  */
+#define	ENTAG_MENIAL	0x6d656e69u	/* "meni" -- produce.c mage-menial labor flavor  */
+
+static rng_stream entity_rng;
+static int entity_rng_turn = -1;	/* seed entity_rng once per turn */
+
+/*
+ *  Seed the per-turn entity stream once per turn. Self-seeded by every helper
+ *  below (including the cross-file ent_prisoner/ent_drop/ent_build/ent_menial),
+ *  so the first entity draw of the turn cannot read an unseeded stream
+ *  regardless of which site fires first.
+ */
+static void
+begin_entity(void)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	if (entity_rng_turn == sysclock.turn)
+		return;			/* already seeded this turn */
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, ETAG_TURN);
+	entity_rng = rng_stream_of(&turn, 0, TAG_ENTITY);
+
+	entity_rng_turn = sysclock.turn;
+}
+
+/* stack.c: prisoner-escape roll [1,1000], keyed on the prisoner-holder. */
+int
+ent_prisoner(int who)
+{
+	begin_entity();
+	return rng_keyed(&entity_rng, who, 0, ENTAG_PRISON, 1, 1000);
+}
+
+/* stack.c: drop-stack item-scatter gate (sub 0, [1,5]) + direction (sub 1, [1,3]), keyed on who. */
+int
+ent_drop(int who, int sub, int low, int high)
+{
+	begin_entity();
+	return rng_keyed(&entity_rng, who, sub, ENTAG_DROP, low, high);
+}
+
+/* u.c TAKE SOME: quantity gate (sub 0, [1,2]) + amount (sub 1, [0,qty]), keyed on (from, item). */
+static int
+ent_take(int from, int item, int sub, int low, int high)
+{
+	begin_entity();
+	return rng_keyed(&entity_rng, from, item * 2 + sub, ENTAG_TAKE, low, high);
+}
+
+/*
+ *  u.c add_char_damage sick-onset gate [1,100], keyed on (who, current health).
+ *  A char may be damaged several times in a turn before the sick flag latches;
+ *  carrying the post-damage health in k2 gives each hit a fresh roll (the roll
+ *  is compared against that same health), so repeated hits do not all read one
+ *  leaf.
+ */
+static int
+ent_sick(int who, int health)
+{
+	begin_entity();
+	return rng_keyed(&entity_rng, who, health, ENTAG_SICK, 1, 100);
+}
+
+/*
+ *  u.c find_nearest_land direction [1,4], keyed on (orig_where, retry). The draw
+ *  fires once per outer retry of a bounded search loop; carrying the retry
+ *  counter in k2 gives each retry a distinct direction (a fixed key would make
+ *  every retry walk the same way).
+ */
+static int
+ent_land_dir(int orig_where, int retry)
+{
+	begin_entity();
+	return rng_keyed(&entity_rng, orig_where, retry, ENTAG_LANDDIR, 1, 4);
+}
+
+/* u.c find_nearest_land province pick [0,len-1], keyed on the originating loc. */
+static int
+ent_land_pick(int orig_where, int len)
+{
+	begin_entity();
+	return rng_keyed(&entity_rng, orig_where, 0, ENTAG_LANDPICK, 0, len - 1);
+}
+
+/* u.c bark_dogs per-hound flavor gate [1,2], keyed on (owner, hound index). */
+static int
+ent_bark(int who, int hound)
+{
+	begin_entity();
+	return rng_keyed(&entity_rng, who, hound, ENTAG_BARK, 1, 2);
+}
+
+/* build.c create_new_building new-mine gate-crystal gate [1,5], keyed on the mine loc. */
+int
+ent_build(int where)
+{
+	begin_entity();
+	return rng_keyed(&entity_rng, where, 0, ENTAG_BUILD, 1, 5);
+}
+
+/* produce.c mage_menial_how cosmetic labor-flavor pick [1,9], keyed on the mage. */
+int
+ent_menial(int who)
+{
+	begin_entity();
+	return rng_keyed(&entity_rng, who, 0, ENTAG_MENIAL, 1, 9);
+}
 
 
 void
@@ -288,8 +439,8 @@ take_unit_items(int from, int inherit, int how_many)
 	{
 		qty = e->qty;
 
-		if (e->qty && how_many == TAKE_SOME && rnd(1,2) == 1)
-			qty = rnd(0, e->qty);
+		if (e->qty && how_many == TAKE_SOME && ent_take(from, e->item, 0, 1, 2) == 1)
+			qty = ent_take(from, e->item, 1, 0, e->qty);
 
 #if 0
 /*
@@ -399,7 +550,7 @@ add_char_damage(int who, int amount, int inherit)
 	{
 		kill_char(who, inherit);
 	}
-	else if (!p->sick && rnd(1,100) > p->health)
+	else if (!p->sick && ent_sick(who, p->health) > p->health)
 	{
 		p->sick = TRUE;
 		wout(who, "%s has fallen ill.", box_name(who));
@@ -1879,7 +2030,7 @@ find_nearest_land(int where)
 
 	try_two = 100;
 	while (try_two-- > 0) {
-		dir = rnd(1,4);
+		dir = ent_land_dir(orig_where, try_two);
 
 		try_one = 1000;
 		while (try_one-- > 0)
@@ -1942,7 +2093,7 @@ find_nearest_land(int where)
 		if (ilist_len(l) < 1)
 			return 0;
 
-		ret = l[rnd(0,ilist_len(l)-1)];
+		ret = l[ent_land_pick(orig_where, ilist_len(l))];
 
 		ilist_reclaim(&l);
 		return ret;
@@ -2455,7 +2606,7 @@ bark_dogs(int where)
 		n = stack_has_item(who, item_hound);
 		sum += n;
 		for (i = 1; i <= n; i++)
-			if (rnd(1,2) == 1)
+			if (ent_bark(who, i) == 1)
 				bark++;
 	}
 	next_here;

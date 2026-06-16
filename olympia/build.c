@@ -444,7 +444,7 @@ create_new_building(struct command *c, struct build_ent *bi, int where)
 	if (bi->finished_subkind == sub_mine)
 	{
 		p->shaft_depth = 3;
-		if (rnd(1,5) == 1)
+		if (ent_build(where) == 1)
 			gen_item(where, item_gate_crystal, 1);
 		mine_production(where);
 	}
