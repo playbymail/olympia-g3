@@ -503,3 +503,18 @@ test_random(void)
 	}
 }
 
+
+/*
+ *  NULL-tolerant qsort wrapper (issue #69).  An empty olympia list is a NULL
+ *  base with nmemb 0; glibc declares qsort's base nonnull, so passing it trips
+ *  UBSan (nonnull-attribute) even though sorting 0 elements is a no-op.  Skip
+ *  nmemb < 2 (0 or 1 elements are already sorted) to sidestep it; byte-neutral.
+ */
+void
+safe_qsort(void *base, size_t nmemb, size_t size,
+	int (*comp)(const void *av, const void *bv))
+{
+	if (nmemb > 1)
+		qsort(base, nmemb, size, comp);
+}
+

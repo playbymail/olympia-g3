@@ -447,7 +447,7 @@ sort_load_queue(ilist l)
 	for (i = 0; i < ilist_len(l); i++)
 		bx[l[i]]->temp = exec_precedence(l[i]);
 
-	qsort(l, (size_t)ilist_len(l), sizeof(*l), exec_comp);
+	safe_qsort(l, (size_t)ilist_len(l), sizeof(*l), exec_comp);
 }
 
 
@@ -474,7 +474,7 @@ sort_run_queue(ilist l)
 		bx[l[i]]->temp = pri * 1000000 + exec_precedence(l[i]);
 	}
 
-	qsort(l, (size_t)ilist_len(l), sizeof(*l), exec_comp);
+	safe_qsort(l, (size_t)ilist_len(l), sizeof(*l), exec_comp);
 }
 
 

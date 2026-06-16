@@ -105,7 +105,7 @@ out_ranking(char *title, int total)
 	}
 	next_player;
 
-	qsort(ranks, (unsigned) ilist_len(ranks), sizeof(int), rank_comp);
+	safe_qsort(ranks, (unsigned) ilist_len(ranks), sizeof(int), rank_comp);
 
 	for (i = 0; i < ilist_len(ranks); i++)
 		out_rank_mine_top(ranks[i], i, title, total);

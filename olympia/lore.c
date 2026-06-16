@@ -273,7 +273,7 @@ show_lore_sheets(void)
 		if (p == NULL || ilist_len(p->deliver_lore) <= 0)
 			continue;
 
-		qsort(p->deliver_lore, (unsigned) ilist_len(p->deliver_lore),
+		safe_qsort(p->deliver_lore, (unsigned) ilist_len(p->deliver_lore),
 				sizeof(int), lore_comp);
 
 		for (i = 0; i < ilist_len(p->deliver_lore); i++)

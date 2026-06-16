@@ -85,7 +85,7 @@
 #define	loop_known(kn, i) \
 { int ll_i; \
   int ll_check = 3; \
-	qsort(kn, (size_t)ilist_len(kn), sizeof(int), int_comp); \
+	safe_qsort(kn, (size_t)ilist_len(kn), sizeof(int), int_comp); \
 	for (ll_i = 0; ll_i < ilist_len(kn); ll_i++) { \
 	    i = kn[ll_i];
 

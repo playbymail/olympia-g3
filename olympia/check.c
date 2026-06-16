@@ -93,7 +93,7 @@ check_swear(void)
 						"to player [%d]\n", i, over);
 		ilist_append(&p_player(over)->units, i);
 
-		qsort(p_player(over)->units,
+		safe_qsort(p_player(over)->units,
 				(size_t)ilist_len(p_player(over)->units),
 				sizeof(int),
 				int_comp);
