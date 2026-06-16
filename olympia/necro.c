@@ -402,7 +402,8 @@ auto_undead(int who)
 		return;
 	}
 
-	if (loc_depth(where) != LOC_province || rnd(1,2) == 1)
+	begin_npc(where);		/* issue #25 Unit A: per-location NPC stream */
+	if (loc_depth(where) != LOC_province || npc_behavior(who, 0, 1, 2) == 1)
 	{
 		npc_move(who);
 		return;

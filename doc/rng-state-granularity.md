@@ -5,8 +5,9 @@ Status: **in progress.** Groundwork for Project Ultron
 (`lib/rng.{c,h}`) is wired into twelve subsystems so far — combat, pillage,
 economy/market, NPC spawning, weather, upkeep, quest, explore, skills, magic
 (the latter two **command core only** — their crafting/aura/alchemy deferrals have
-since landed under magic, and their remaining residuals are scheduled into the
-endgame units below), worldgen (INIT-time city seeding + dungeon generation — the
+since landed under magic, and their remaining residuals landed as endgame
+**Unit A** onto the existing `econ`/`npcs`/`qest` streams), worldgen (INIT-time city
+seeding + dungeon generation — the
 engine's largest draw set, the first consumer that fires at INIT rather than during
 the turn), and regions (faery/hades/cloud — each a worldgen-style hybrid: an INIT
 world build *and* turn-time autonomous behavior, on tags `faer`/`hads`/`clud`).
@@ -244,7 +245,9 @@ draws (`new_tradegood`, `d_find_sell`, `d_find_buy`).
 `do_cookie_npc` precedent): the city *skill*-teaching and *prominence* seeding
 (`seed_city_skill` / `choose_city_prominence`), the city *garrison* count
 (`add_city_garrisons`), and the production/skill player commands in
-`produce.c` (mining, harvest, mage-menial flavor). `buy.c`'s `md5_int()` buyer
+`produce.c` (mining, harvest, mage-menial flavor — mining/harvest have **since
+landed** as endgame Unit A onto the `econ` stream via `econ_mine`/`econ_harvest`;
+`mage_menial_how` is deferred to Unit E). `buy.c`'s `md5_int()` buyer
 test stays as-is: it is already a keyed leaf and is intentionally
 turn-INDEPENDENT (the set of buyer cities must be stable across turns), so it
 must *not* move onto the turn-keyed `economy_rng`.
@@ -819,16 +822,19 @@ not-yet-migrated subsystem and stays on the global `rnd()`:
   the expensive economy profile with a `scenario.tgz` regen). **Now partly landed**
   under magic (the crafting follow-up below): the three **command-path** draws
   (`d_forge_aura` kind+weight, `v_use_orb`, `v_suffuse_ring`) draw from `magc` via
-  `magc_forge`/`magc_orb`/`magc_ring`; the three **shared-infra minters** stay
-  deferred (i = quest, ii = economy). The empirical world-init check came back **0
-  art.c draws** at `-s`/`-a`/`-i` — overlap (iii) did not materialize.
-- **`produce.c`** mining/harvest/mage-menial — left global by the economy
-  migration; an **economy** residual. **Scheduled** as endgame **Unit A** (onto the
-  existing `econ` stream) — see the
-  [Endgame](#endgame--driving-gameplay-rnd-to-zero) and
-  [rng-endgame-to-zero.md](rng-endgame-to-zero.md). This is the **only** skills
-  deferral not yet landed; the three magic-adjacent ones above all landed under
-  magic (step 10 + the crafting follow-up).
+  `magc_forge`/`magc_orb`/`magc_ring`; the three **shared-infra minters** then
+  **landed as endgame Unit A** (i = quest via `qrnd`, ii = economy via `econ_ring`).
+  The empirical world-init check came back **0 art.c draws** at `-s`/`-a`/`-i` —
+  overlap (iii) did not materialize.
+- **`produce.c`** mining/harvest — left global by the economy migration; an
+  **economy** residual. **Landed** as endgame **Unit A**: `finish_generic_mine`/
+  `d_generic_harvest` now draw from the per-market `econ` stream via the
+  `econ_mine`/`econ_harvest` keyed leaves (on `begin_economy(where)`, keyed on
+  `(item, where)`) — see the [Endgame](#endgame--driving-gameplay-rnd-to-zero) and
+  [rng-endgame-to-zero.md](rng-endgame-to-zero.md). The cosmetic `mage_menial_how`
+  flavor pick (no item/where) was **split out to Unit E** (`enty`, actor-keyed) and
+  stays on the global `rnd()` for now. All other skills deferrals landed under magic
+  (step 10 + the crafting follow-up).
 
 `d_hide`/`d_sneak`/`spy_*` draw nothing; `equip_new_noble` (`c1.c`) is `#if 0`
 dead code — nothing to migrate either way.
@@ -931,14 +937,21 @@ the global `rnd()` at the time, and has since **landed or been scheduled** into 
   draws nothing, so only the day-pick is at issue).
 - **`necro.c` `auto_undead`** (`rnd(1,2)`) — autonomous summoned-undead behavior,
   reached only from `npc.c`'s auto-behavior dispatch (`auto_*` family), **not a
-  player spell**; an NPC autonomous-behavior residual. **Scheduled as endgame
-  Unit A** (onto the `npcs` stream via `npc_behavior`).
+  player spell**; an NPC autonomous-behavior residual. **Landed as endgame Unit A**
+  onto the `npcs` stream via `begin_npc(where)` + `npc_behavior(who, 0, 1, 2)` (the
+  auto_savage/npc_move precedent, actor in the leaf key). Byte-neutral (0 draws on
+  both trees — no summoned undead present).
 - **necro undead summoning troop-count** — already on the `npcs` stream via
   `do_cookie_npc` (the npc migration); not touched here.
 - **`art.c`** — artifact/orb/ring crafting; the **command-path** draws landed
-  here (see the crafting follow-up below). The three shared-infra **minters** are
-  **scheduled as endgame Unit A**: `new_orb`/`create_npc_token` (quest loot → `qest`
-  via `qrnd`) and `new_suffuse_ring` (economy per-turn restock → `econ`).
+  here (see the crafting follow-up below). The three shared-infra **minters**
+  **landed as endgame Unit A**: `new_orb`/`create_npc_token` (quest loot → `qest`
+  via `qrnd` — they run inside quest gen after `begin_quest`; `create_relics` at
+  world-init does not reach them) and `new_suffuse_ring` (economy per-turn restock →
+  `econ` via the new `econ_ring` leaf, on the `begin_economy(where)` its only caller
+  `trade_suffuse_ring` already seeds). The suffuse restock fires ~25×/turn → a
+  main-manifest re-baseline (still 204 files); the two quest minters are
+  byte-neutral.
 - **`cloud.c`** (the gate seal-key + ring shuffle build draws) — `region:cloud`
   (step 12). **Now landed** on the sequential `clud` build stream.
 
@@ -965,16 +978,18 @@ empirically by instrumenting all seven live `art.c` `rnd()` sites:
   guard-pillage twins (`check.sh` + `check-lua.sh`), and `-s`/`-a`/`-i`
   world-init. No re-baseline, no `scenario.tgz` regen. The **world-init mint
   risk did not materialize** (0 art.c draws at `-s`/`-a`/`-i`).
-- **Deferred minters stay global**, by design:
+- **The shared-infra minters then landed as endgame Unit A** (see the endgame
+  record above):
   - `new_orb` (`rnd(1,4)*2+1` orb_use_count) and `create_npc_token`
-    (`switch(rnd(1,5))`) are reached **only** from `quest.c` loot generation —
-    **quest** shared-infra residuals (the quest step already left them global).
+    (`switch(rnd(1,5))`) are reached **only** from `quest.c` loot generation, so
+    they route to the **quest** stream via `qrnd` (byte-neutral).
   - `new_suffuse_ring` (`switch(rnd(1,5))`) is reached from `buy.c`
-    `trade_suffuse_ring`, the **per-turn economy restock** — it fires ~22–42×
-    on the standard turn (measured), so migrating it **would move the main
-    manifest**. An **economy** residual.
+    `trade_suffuse_ring`, the **per-turn economy restock** — measured ~25×/turn on
+    the bare-map turn, so it routes to the **economy** stream via the new
+    `econ_ring` leaf and **moved the main manifest** (the Unit A re-baseline, 204
+    files content-only).
   - `add_token_unit_sup`'s `gen_item(..., rnd(3,15))` is **dead code** (`#if 0`);
-    nothing to migrate.
+    nothing to migrate (still on `rnd()` in source, but never compiled).
 
 ## Eleventh consumer: worldgen
 
@@ -1068,8 +1083,9 @@ worldgen takes the city-seeding + dungeon half).
 **mint** draws (step 13 — the coupling above); the region-specific flavor in
 `faery.c`/`hades.c`/`cloud.c` (step 12, their own tags — only the shared
 `seed_city` infra they call moved here); and `produce.c` mining/harvest (an
-economy residual). The dead `rnd(1,2)` inside `create_tunnel_set`'s `#if 0`/`/* */`
-hades block draws nothing.
+economy residual — **since landed** as endgame Unit A onto the `econ` stream). The
+dead `rnd(1,2)` inside `create_tunnel_set`'s `#if 0`/`/* */` hades block draws
+nothing.
 
 ## Twelfth consumer: regions (faery / hades / cloud)
 
@@ -1217,11 +1233,11 @@ master seed                                  rng_seed(randseed bytes)
    │
    ├─ skills     key(turn, 0,        "skil")  [CORE LANDED]  use.c (begin_skills/skil_*), c2.c (weapon), stealth.c (torture/petty)
    │     └─ leaf key(who, ctx, "crit"/"yiel"/"stdy"/"rsch"/"rpik"/"tort"/"ptty")  ← keyed leaves, one per-turn stream, actor in k1
-   │             COMMAND CORE landed; all deferrals resolved or scheduled: basic.c aura/heal + alchem.c -> magic (10, LANDED); art.c crafting -> magic follow-up (LANDED); produce.c mining/harvest -> endgame Unit A (econ, SCHEDULED)
+   │             COMMAND CORE landed; all deferrals resolved: basic.c aura/heal + alchem.c -> magic (10, LANDED); art.c crafting -> magic follow-up (LANDED); produce.c mining/harvest -> endgame Unit A (econ, LANDED; mage_menial -> E)
    │
    ├─ magic      key(turn, 0,        "magc")  [CORE LANDED]  basic.c (begin_magic/magc_*), scry.c, relig.c, necro.c, alchem.c, art.c
    │     └─ leaf key(who, ctx, "scry"/"piet"/"eatd"/"lern"/"medi"/"omen"/"heal"/"potn"/"forg"/"orb "/"ring")  ← keyed leaves, one per-turn stream, actor in k1
-   │             COMMAND CORE + art.c crafting commands landed; all deferrals resolved or scheduled: cloud.c -> region:cloud (12, LANDED); curse_erode day-pick -> endgame Unit B (caln, SCHEDULED); auto_undead -> Unit A (npcs); art.c minters new_orb/create_npc_token -> Unit A (qest), new_suffuse_ring -> Unit A (econ)
+   │             COMMAND CORE + art.c crafting commands landed; all deferrals resolved or scheduled: cloud.c -> region:cloud (12, LANDED); curse_erode day-pick -> endgame Unit B (caln, SCHEDULED); auto_undead -> Unit A (npcs, LANDED); art.c minters new_orb/create_npc_token -> Unit A (qest, LANDED), new_suffuse_ring -> Unit A (econ, LANDED)
    │
    ├─ worldgen   key(turn, 0|location, "wgen")  [LANDED]  seed.c (begin_worldgen/wgen_*: prominence/skill/garrison + tunnel gate), tunnel.c (begin_worldgen_loc/wseq_*: dungeon-gen, from explore)
    │     └─ seed.c keyed leaf key(where, sub, "prom"/"tech"/"garr"/"gate"); tunnel.c SEQ per-location (ordered recursive build)
@@ -1235,7 +1251,9 @@ master seed                                  rng_seed(randseed bytes)
    │
    │   ── endgame: drive gameplay rnd() to zero (each its own PR; see rng-endgame-to-zero.md) ──
    │
-   ├─ (residuals)   → existing econ/npcs/qest  [planned A]  produce.c mine/harvest, necro.c auto_undead, art.c minters (NO new tag; produce.c mage_menial -> E)
+   ├─ (residuals)   → existing econ/npcs/qest  [LANDED A]  produce.c mine/harvest, necro.c auto_undead, art.c minters (NO new tag; produce.c mage_menial -> E)
+   │     └─ econ_mine/econ_harvest/econ_ring (buy.c keyed leaves), npc_behavior (auto_undead), qrnd (new_orb/create_npc_token)
+   │             new_suffuse_ring restock fires every turn (faery/cloud) -> main-manifest re-baseline (204, content-only); guard-pillage byte-neutral
    ├─ calendar   key(turn, 0,        "caln")  [planned B]  day.c day-picks (curse_erode/faery/dog_bark); leaf key(which, 0, "day")
    ├─ income     → upkeep "upkp"               [planned C]  day.c inn_income (folds into upkeep; up_income leaf)
    ├─ social     key(turn, 0,        "socl")  [planned D]  swear.c (bribe/terrorize/persuade/incite), beast.c (breeding); leaf key(actor, target)
@@ -1257,11 +1275,11 @@ master seed                                  rng_seed(randseed bytes)
 | 6     | upkeep      | `upkp`               | turn (loc 0)            | **landed**                                                                                                     | `day.c`                                                                              |
 | 7     | quest       | `qest`               | where / actor           | **landed**                                                                                                     | `quest.c`, `use.c`                                                                   |
 | 8     | explore     | `expl`               | turn (loc 0)            | **landed**                                                                                                     | `c1.c`, `stealth.c`                                                                  |
-| 9     | skills      | `skil`               | turn (loc 0)            | **landed (command core)** — `produce.c` mining/harvest → Unit A (econ)                                         | `use.c`, `c2.c`, `stealth.c` (residual: `produce.c` → A)                              |
-| 10    | magic       | `magc`               | turn (loc 0)            | **landed (command core + art.c crafting commands)** — curse-erode → Unit B; auto-undead/art.c-minters → Unit A | `basic.c`, `scry.c`, `relig.c`, `necro.c`, `alchem.c`, `art.c`                       |
+| 9     | skills      | `skil`               | turn (loc 0)            | **landed (command core)** — `produce.c` mining/harvest landed as Unit A (econ)                                 | `use.c`, `c2.c`, `stealth.c` (residual: `produce.c` → A, landed)                      |
+| 10    | magic       | `magc`               | turn (loc 0)            | **landed (command core + art.c crafting commands)** — auto-undead/art.c-minters landed as Unit A; curse-erode → Unit B | `basic.c`, `scry.c`, `relig.c`, `necro.c`, `alchem.c`, `art.c`                       |
 | 11    | worldgen    | `wgen`               | turn (loc 0) / location | **landed** — INIT-time, NOT byte-neutral (one-time re-baseline of both trees)                                  | `seed.c` (keyed leaves), `tunnel.c` (sequential dungeon-gen)                         |
 | 12    | regions     | `faer`/`hads`/`clud` | region (build) / actor (auto) | **landed** — INIT build + turn autonomous, NOT byte-neutral (one-time re-baseline of both trees)          | `faery.c`, `hades.c`, `cloud.c`, `npc.c`, `u.c`                                      |
-| A     | residuals   | `econ`/`npcs`/`qest` | (existing streams)      | **planned (endgame)** — skills/magic residuals onto landed streams; NO new tag                                 | `produce.c`, `necro.c`, `art.c`, `buy.c`                                             |
+| A     | residuals   | `econ`/`npcs`/`qest` | (existing streams)      | **landed (endgame)** — skills/magic residuals onto landed streams; NO new tag; `new_suffuse_ring` restock → main-manifest re-baseline (204, content-only), guard-pillage byte-neutral | `produce.c`, `necro.c`, `art.c`, `buy.c`                                             |
 | B     | calendar    | `caln`               | turn (loc 0)            | **planned (endgame)** — day-picks; fires every turn → re-baseline                                              | `day.c`                                                                              |
 | C     | income      | `upkp`               | turn (loc 0)            | **planned (endgame)** — `inn_income` folds into upkeep (no new tag)                                            | `day.c`                                                                              |
 | D     | social      | `socl`               | actor                   | **planned (endgame)** — bribe/terrorize/persuade/incite/breeding; likely byte-neutral                         | `swear.c`, `beast.c`                                                                 |
@@ -1270,20 +1288,35 @@ master seed                                  rng_seed(randseed bytes)
 
 ### Endgame — driving gameplay `rnd()` to zero
 
-Steps 1–12 are landed. The remaining units (A–F above) finish #25 against an
-explicit exit criterion: **no gameplay or world-build draw may call the global
+Steps 1–12 are landed, and **Unit A is now landed** (the skills/magic residuals,
+below). The remaining units (B–F above) finish #25 against an explicit exit
+criterion: **no gameplay or world-build draw may call the global
 `rnd()`** — it survives only as the low-level MD5 primitive the `rng` layer is
 itself built on. The full per-unit plan (sites, routing, keying, byte-neutrality,
 gates) is in [rng-endgame-to-zero.md](rng-endgame-to-zero.md); the audit that
 defines "done" is:
+
+**Unit A landed** (skills/magic residuals → existing `econ`/`npcs`/`qest`, NO new
+tag): six live draws migrated — `produce.c finish_generic_mine`/`d_generic_harvest`
+→ `econ_mine`/`econ_harvest` keyed leaves (new purpose tags on `begin_economy(where)`),
+`necro.c auto_undead` → `npc_behavior(who,…)` on the `npcs` stream, `art.c new_orb`/
+`create_npc_token` → `qrnd` (they run inside quest loot gen, after `begin_quest`),
+and `art.c new_suffuse_ring` → `econ_ring` (its only caller, `trade_suffuse_ring`,
+already seeds `begin_economy(where)`). `new_suffuse_ring` fires ~25×/turn via the
+faery/cloud restock (`location_trades`), so it forced a **main-manifest re-baseline**
+(still **204 files**, content-only: `loc`/`item`/`master`/`randseed`/`save/1/202`
+shifted as the 25 draws left the global stream); the other five sites draw **0** on
+both trees and at world-init, so **guard-pillage is byte-neutral** (no `scenario.tgz`
+regen, no `EXPECT` change). `produce.c mage_menial_how` (cosmetic actor-keyed labor
+flavor, no item/where) stays on the global `rnd()` and is deferred to **Unit E**.
 
 ```
 # live gameplay rnd() call sites — must reduce to ZERO game-logic lines
 grep -rnE '[^_a-zA-Z]rnd\(' olympia/*.c | grep -v 'olympia/rnd.c' | grep -vE ':\s*\*|//'
 ```
 
-At the time of writing this leaves **41 live draws in 7 buckets**: the
-**skills/magic residuals** (Unit A → existing `econ`/`npcs`/`qest`), the **calendar**
+With Unit A landed this leaves **35 live draws in 6 buckets** (was 41 in 7): the
+now-landed **skills/magic residuals** (Unit A → existing `econ`/`npcs`/`qest`), the **calendar**
 day-picks (Unit B → `caln` — this retires the day-picks' "deliberate permanent
 residual" status), **income** (Unit C → folded into `upkp`), **social** (Unit D →
 `socl`), an **entity** catch-all for the `u.c`/`stack.c`/`build.c` one-offs plus
@@ -1362,8 +1395,9 @@ presets.
   regeneration. The slice **stopped at the magic boundary**, and every deferral has
   since resolved or been scheduled: `basic.c` aura/heal and `alchem.c` potions
   landed under magic (step 10), `art.c` artifact crafting landed as the post-magic
-  crafting follow-up, and `produce.c` is **scheduled as endgame Unit A** (onto
-  `econ`). See [Ninth consumer](#ninth-consumer-skills-command-core).
+  crafting follow-up, and `produce.c` mining/harvest **landed as endgame Unit A**
+  (onto `econ`; `mage_menial_how` split to Unit E). See
+  [Ninth consumer](#ninth-consumer-skills-command-core).
 - **magic came next, as a deliberate partial** (command core now landed) — the
   player-cast spell draws across `scry.c`/`relig.c`/`necro.c`/`basic.c`/`alchem.c`
   (scrying, religion gates, necromancy eat-dead/skill-transfer, the meditation/aura
@@ -1376,12 +1410,13 @@ presets.
   at the command/auto boundary**, and every deferral has since resolved or been
   scheduled: `cloud.c` landed under region:cloud (step 12); the `day.c`
   `curse_erode_day` day-pick is **scheduled as endgame Unit B** (`caln` — retiring
-  its "stays global" status), and `necro.c` `auto_undead` is **scheduled as Unit A**
-  (npc autonomous behavior). The `art.c` **crafting commands** (FORGE AURACULUM /
-  USE orb / USE suffuse-ring) landed on `magc` too (the crafting follow-up — also
-  byte-neutral, also 0 at world-init); the `art.c` **shared-infra minters**
-  (`new_orb`/`create_npc_token` → quest, `new_suffuse_ring` → economy) are
-  **scheduled as Unit A**. See [Tenth consumer](#tenth-consumer-magic-command-core).
+  its "stays global" status), and `necro.c` `auto_undead` **landed as endgame Unit A**
+  (npc autonomous behavior, onto `npcs`). The `art.c` **crafting commands** (FORGE
+  AURACULUM / USE orb / USE suffuse-ring) landed on `magc` too (the crafting
+  follow-up — also byte-neutral, also 0 at world-init); the `art.c` **shared-infra
+  minters** (`new_orb`/`create_npc_token` → quest, `new_suffuse_ring` → economy)
+  **landed as Unit A** (the suffuse restock forced a 204-file content-only
+  re-baseline). See [Tenth consumer](#tenth-consumer-magic-command-core).
 - **worldgen came next** (now landed) — the non-economy INIT city seeding (`seed.c`:
   prominence, skill teaching, garrison size) and the dungeon/subworld generation
   (`tunnel.c`, deferred from explore — the engine's largest draw set,

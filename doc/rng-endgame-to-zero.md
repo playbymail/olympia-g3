@@ -28,8 +28,9 @@ grep -rnE '[^_a-zA-Z]rnd\(' olympia/*.c | grep -v 'olympia/rnd.c' \
 
 ## Full remaining surface (audited against current main — re-verify, line numbers shift)
 
-41 live gameplay draws in 7 buckets (after excluding the dead code + the `-R`
-self-test):
+41 live gameplay draws in 7 buckets at the start (after excluding the dead code +
+the `-R` self-test). **Unit A is landed**, removing the 6 skills/magic residuals
+(bucket 4) → **35 live draws in 6 buckets** remain (B–F):
 
 1. **calendar** — `day.c` daily_events day-picks: `curse_erode_day:1939`,
    `faery_day:1942`, `dog_bark_day:1945`.
@@ -38,11 +39,13 @@ self-test):
 3. **social** — `swear.c`: `:405`, `:488`, `:495`, `:713`, `:1022`, `:1039`,
    `:1110` (bribe / terrorize / persuade-oath / incite-riot); `beast.c`: `:314`,
    `:322`, `:330` (breeding accidents).
-4. **skills/magic residuals** — `produce.c` `finish_generic_mine:242` /
-   `d_generic_harvest:654`; `necro.c auto_undead:405`; `art.c` minters
-   `new_orb:895` / `create_npc_token:1102`+`1253` / `new_suffuse_ring:1427`.
-   (`produce.c mage_menial_how:702`, a cosmetic actor-keyed flavor pick, is in
-   bucket 6 / Unit E instead.)
+4. **skills/magic residuals** ✅ **LANDED (Unit A)** — `produce.c`
+   `finish_generic_mine:242` / `d_generic_harvest:654` → `econ_mine`/`econ_harvest`;
+   `necro.c auto_undead:405` → `npc_behavior`; `art.c` minters `new_orb:895` /
+   `create_npc_token:1253` → `qrnd`, `new_suffuse_ring:1427` → `econ_ring`.
+   (`create_npc_token:1102` is `#if 0` **dead code** in `add_token_unit`, never a
+   live draw. `produce.c mage_menial_how:702`, a cosmetic actor-keyed flavor pick,
+   stays global → bucket 6 / Unit E instead.)
 5. **quest shared-infra** — `quest.c free_artifact:288`,
    `make_subloc_monster:598`.
 6. **entity catch-all** — `stack.c check_prisoner_escape:267` / `drop_stack:409`+`420`;
@@ -62,8 +65,13 @@ sequential stream via `rng_draw` for ordered runs). Cross-file helpers exposed v
 to confirm reachability, re-baseline deliberately only if it moves a manifest, and
 keep both golden gates green on both presets (debug + asan-ubsan).
 
-### Unit A — skills/magic residuals → existing econ / npcs / qest streams
-Route onto **already-landed** subsystems (NO new tags):
+### Unit A — skills/magic residuals → existing econ / npcs / qest streams  ✅ LANDED
+Routed onto **already-landed** subsystems (NO new tags). Six live draws migrated;
+`new_suffuse_ring` forced a main-manifest re-baseline (still **204 files**,
+content-only: `loc`/`item`/`master`/`randseed`/`save/1/202` shifted as 25 draws/turn
+left the global stream), the other five draw **0** on both trees and at world-init so
+**guard-pillage stayed byte-neutral** (no `scenario.tgz` regen, no `EXPECT` change).
+Both golden gates green on both presets; `tests/rng/check.sh` YES. What landed:
 - `produce.c` mining/harvest → **economy** (`econ`): `begin_economy(where)` +
   new `econ_*` keyed leaves on `(item, where)` for `finish_generic_mine:242` and
   `d_generic_harvest:654`. (`mage_menial_how:702` is **not** in this unit — it is a

@@ -40,6 +40,9 @@ static rng_stream economy_rng;
 #define	ETAG_QTY	0x716e7479u	/* "qnty" -- quantity offered             */
 #define	ETAG_COST	0x636f7374u	/* "cost" -- price                        */
 #define	ETAG_EXPIRE	0x65787072u	/* "expr" -- expiry countdown             */
+#define	ETAG_MINE	0x6d696e65u	/* "mine" -- mine gate-crystal find       */
+#define	ETAG_HARVEST	0x68617276u	/* "harv" -- per-harvest yield chance     */
+#define	ETAG_RING	0x72696e67u	/* "ring" -- suffuse-ring kind on restock */
 
 void
 begin_economy(int where)
@@ -81,6 +84,40 @@ int
 econ_expire(int item, int where, int low, int high)
 {
 	return rng_keyed(&economy_rng, item, where, ETAG_EXPIRE, low, high);
+}
+
+/*
+ *  Issue #25 Unit A: skills/magic economy residuals routed onto the existing
+ *  per-market stream. Each is a keyed leaf on (item, where) with its own purpose
+ *  tag, so it shares begin_economy(where) with the city-trade rolls but cannot
+ *  perturb (or be perturbed by) them.
+ *
+ *    econ_mine    -- produce.c finish_generic_mine gate-crystal find (MINE)
+ *    econ_harvest -- produce.c d_generic_harvest per-harvest yield chance
+ *    econ_ring    -- art.c new_suffuse_ring kind pick (per-turn faery/cloud restock)
+ *
+ *  Because these are keyed leaves (not stream-position draws), the mine/harvest
+ *  yield is deterministic per (item, where, turn): a multi-day MINE/HARVEST now
+ *  draws the same roll each day rather than an independent roll per day. This is
+ *  the documented keyed-leaf consequence and is byte-neutral on both golden trees
+ *  (neither issues a MINE/HARVEST command). See doc/rng-state-granularity.md.
+ */
+int
+econ_mine(int item, int where, int low, int high)
+{
+	return rng_keyed(&economy_rng, item, where, ETAG_MINE, low, high);
+}
+
+int
+econ_harvest(int item, int where, int low, int high)
+{
+	return rng_keyed(&economy_rng, item, where, ETAG_HARVEST, low, high);
+}
+
+int
+econ_ring(int item, int where, int low, int high)
+{
+	return rng_keyed(&economy_rng, item, where, ETAG_RING, low, high);
 }
 
 

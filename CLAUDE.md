@@ -382,14 +382,19 @@ Combat/pillage/npc/weather/upkeep behavior is pinned by its own golden tree,
 **Endgame — drive gameplay `rnd()` to zero.** The twelve roadmap subsystems are
 landed; the explicit exit criterion for #25 is now **no gameplay/world-build draw
 left on the global `rnd()`** (it survives only as the low-level MD5 primitive the
-`rng` layer is built on). The remaining ~41 draws are sequenced into units A–F (each
+`rng` layer is built on). The ~41 draws are sequenced into units A–F (each
 its own branch + squash PR, surface-scope-first, both golden gates green on both
-presets): **A** skills/magic residuals (`produce.c`/`necro.c auto_undead`/`art.c`
-minters → existing `econ`/`npcs`/`qest`), **B** the calendar day-picks
+presets): **A (LANDED)** skills/magic residuals — `produce.c` mine/harvest →
+`econ_mine`/`econ_harvest`, `necro.c auto_undead` → `npc_behavior`, `art.c`
+minters `new_orb`/`create_npc_token` → `qrnd` and `new_suffuse_ring` → `econ_ring`
+(all onto existing `econ`/`npcs`/`qest`, NO new tag; the per-turn suffuse restock
+forced a 204-file content-only main-manifest re-baseline, guard-pillage byte-neutral;
+`produce.c mage_menial_how` split out to Unit E); **B** the calendar day-picks
 (`curse_erode`/`faery`/`dog_bark` → new `caln` stream — this retires the
 "deliberate permanent residual" framing), **C** `inn_income` (→ folded into
 `upkp`), **D** social (`swear.c`/`beast.c` → new `socl`), **E** an entity catch-all
-for the `u.c`/`stack.c`/`build.c` one-offs (→ new `enty`, quest-infra → `qrnd`), and
+for the `u.c`/`stack.c`/`build.c` one-offs plus `produce.c mage_menial_how` (→ new
+`enty`, quest-infra → `qrnd`), and
 **F** mint last (`code.c rnd_alloc_num` + `add.c` ids/passwords → `mint`; same PR
 repoints `test_random()` and flips on a standing "no gameplay `rnd()`" audit gate).
 The full per-unit plan is [doc/rng-endgame-to-zero.md](doc/rng-endgame-to-zero.md);
