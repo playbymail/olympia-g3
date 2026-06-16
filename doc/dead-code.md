@@ -3,6 +3,15 @@ Samples of code that was dead in the G3 sources.
 Kept for history and possible revival.
 (Even with Git, we can't resist the temptation.)
 
+> **Removed from source in issue #25 Unit F (mint).** The samples below were all
+> dead (`#if 0`, commented out, or uncalled statics). The #25 exit gate audits
+> the engine sources for *any* `rnd(` call site (`tests/rng/check.sh`), and that
+> grep is pure text — it cannot skip `#if 0` or comments — so the dead `rnd()`
+> sites had to be physically deleted for the gate to read zero. They are archived
+> here instead. The four added by Unit F (Okay Entity Code, Add Token Unit,
+> Swap Region Locs, Random Body Here) join the five that predate it (Equip Noble,
+> Tunnels to Hades, Trade Expire Jitter, Nearby Grave, Free Artifact).
+
 ## Equip Noble
 From `c1.c`.
 
@@ -268,5 +277,129 @@ Its only caller is also dead — a `#if 0` block in `make_subloc_monster()`
 		else
 			rp_misc(monster)->only_vulnerable = 0;
 	}
+#endif
+```
+
+## Random Body Here
+From `necro.c`.
+
+```c++
+static int
+random_body_here(int where)
+{
+	struct item_ent *e;
+	static ilist l = NULL;
+
+	ilist_clear(&l);
+
+	loop_inv(where, e)
+	{
+		if (subkind(e->item) == sub_dead_body &&
+		    sysclock.turn > p_char(e->item)->death_time.turn)
+		{
+			ilist_append(&l, e->item);
+		}
+	}
+	next_inv;
+
+	if (ilist_len(l) == 0)
+		return 0;
+
+	ilist_scramble(l);
+
+	return l[0];
+}
+```
+
+Uncalled static. Its `ilist_scramble()` was the necromancer half of the
+indirect global-`rnd()` draws Unit F swept up; the function had no live caller,
+so it was deleted rather than migrated.
+
+## Okay Entity Code
+From `code.c`, a `#if 0` helper inside the entity-id allocator (`rnd_alloc_num`)
+that skipped visually ambiguous box codes (`o`/`0`/`l`/`1`/`i`). The allocator's
+two `#if 0` scan-with-`okay_entity_code` loops and the failure `fprintf` went
+with it when the allocator moved onto the `mint` stream.
+
+```c++
+#if 0
+static int
+okay_entity_code(int n)
+{
+	char *s, *p;
+
+	s = box_code_less(n);
+
+	for (p = s; *p; p++)
+		if (*p == 'o' || *p == '0' ||
+		    *p == 'l' || *p == '1' || *p == 'i')
+		return FALSE;
+
+	return TRUE;
+}
+#endif
+```
+
+## Add Token Unit
+From `art.c`, a `#if 0` line in `add_token_unit()` that would have stocked a new
+token-summoned unit with `rnd(3,15)` of its native item.
+
+```c++
+#if 0
+	gen_item(new, item_token_ni(item), rnd(3,15));
+#endif
+```
+
+## Swap Region Locs
+From `faery.c`, an entire `#if 0` function (`swap_region_locs`) — region
+"weirdness" that randomly swapped two province locations' exits. Its only caller
+was itself a `#if 0` block in `day.c`'s `post_month()`. Both were deleted in
+Unit F (the function's `ilist_scramble()` was one of the indirect global-`rnd()`
+draws, but unreachable).
+
+```c++
+#if 0
+void
+swap_region_locs(int reg)
+{
+	ilist l = NULL;
+	int i;
+	int j;
+	int who;
+	int skip;
+
+	loop_loc(i)
+	{
+		if (region(i) != reg)
+			continue;
+		if (loc_depth(i) != LOC_province)
+			continue;
+
+		skip = FALSE;
+		loop_char_here(i, who)
+		{
+			if (char_moving(who) && player(who) == sub_pl_regular)
+				skip = TRUE;
+		}
+		next_char_here;
+
+		if (skip)
+			continue;
+
+		ilist_append(&l, i);
+	}
+	next_loc;
+
+	if (ilist_len(l) < 2)
+	{
+		fprintf(stderr, "can't find two swappable locs for %s\n", box_name(reg));
+		ilist_reclaim(&l);
+		return;
+	}
+
+	ilist_scramble(l);
+
+	/* ... swap the prov_dest exits of l[0] and l[1] across the region ... */
+}
 #endif
 ```

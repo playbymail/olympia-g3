@@ -1098,9 +1098,6 @@ add_token_unit_sup(int item)
 		p_char(new)->break_point = 0;
 	p_misc(new)->cmd_allow = 'r';
 	p_magic(new)->token = item;
-#if 0
-	gen_item(new, item_token_ni(item), rnd(3,15));
-#endif
 
 	p = p_player(item);
 	ilist_append(&p->units, new);

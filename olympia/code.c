@@ -3,6 +3,7 @@
 #include 	<string.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
 
 
 /*
@@ -679,22 +680,97 @@ alloc_box(int n, int kind, int sk)
 }
  
 
-#if 0
-static int
-okay_entity_code(int n)
+/*
+ *  issue #25 (Unit F -- mint, the LAST consumer): the entity-id allocator and
+ *  the add-player id/password draws move off the process-global rnd() onto a
+ *  per-turn `mint` stream (tag "mint") rooted at the turn. rnd_alloc_num() is
+ *  THE chokepoint -- it picks a random start point in [low,high] and scans for
+ *  a free box -- reached by every random-id new_ent()/alloc_box from ~every
+ *  file, both at the -i/-s/-a world build AND during the turn. There is no
+ *  entity in hand (we are minting its id) and no natural leaf key, so per-id
+ *  addressability is impossible and unnecessary: the win is ISOLATION. A fresh
+ *  per-turn SEQUENTIAL stream (rng_draw) keeps mint draws from interleaving with
+ *  gameplay draws on the global stream, so a future reordered/added gameplay
+ *  draw no longer re-bakes every id. This is the worldgen-tunnel / quest-qrnd
+ *  sequential-stream precedent, seeded once via the turn-guarded begin_mint().
+ *  Mint fires at INIT before turn 1, so begin_mint() seeds at INIT too (the
+ *  worldgen begin_worldgen() sysclock.turn-at-INIT idiom).
+ *
+ *  Hosted here (code.c, the allocator hub). The add.c id/password draws share
+ *  this same stream via mint_password()/mint_city() (exposed through proto.h) --
+ *  NOT a second tag: password is a KEYED leaf on (pl, i) (it has a natural key),
+ *  while get_city_id's start-line pick is SEQUENTIAL like the allocator. After
+ *  this unit no gameplay or world-build draw remains on the global rnd() -- it
+ *  survives only as the low-level MD5 primitive the rng layer is built on.
+ */
+#define	MTAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_MINT	0x6d696e74u	/* "mint" */
+#define	MTAG_PW		0x70617373u	/* "pass" -- add.c per-player password leaf */
+
+static rng_stream mint_rng;
+static int mint_rng_turn = -1;		/* seed mint_rng once per turn */
+
+/*
+ *  Turn-guarded: seed the per-turn mint stream once. Re-seeds when sysclock.turn
+ *  changes (a new turn resets the sequential counter); a no-op within a turn, so
+ *  the allocator's counter advances monotonically across all mints in that turn.
+ *  Seeded by every helper below, so the first mint of the turn -- whether the
+ *  allocator (code.c) or an add-player draw (add.c) -- cannot read an unseeded
+ *  stream regardless of which site fires first.
+ */
+static void
+begin_mint(void)
 {
-	char *s, *p;
+	uint32_t m[4];
+	rng_stream root, turn;
 
-	s = box_code_less(n);
+	if (mint_rng_turn == sysclock.turn)
+		return;			/* already seeded this turn */
 
-	for (p = s; *p; p++)
-		if (*p == 'o' || *p == '0' ||
-		    *p == 'l' || *p == '1' || *p == 'i')
-		return FALSE;
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, MTAG_TURN);
+	mint_rng = rng_stream_of(&turn, 0, TAG_MINT);
 
-	return TRUE;
+	mint_rng_turn = sysclock.turn;
 }
-#endif
+
+/* Sequential mint draw in [low,high]; the allocator's random start point. */
+static int
+mint_alloc(int low, int high)
+{
+	begin_mint();
+	return rng_draw(&mint_rng, low, high);
+}
+
+/* exposed via proto.h: add.c add_new_player password char [1,n], keyed on (pl, i). */
+int
+mint_password(int pl, int i, int n)
+{
+	begin_mint();
+	return rng_keyed(&mint_rng, pl, i, MTAG_PW, 1, n);
+}
+
+/* exposed via proto.h: add.c get_city_id start-line pick [1,6], sequential. */
+int
+mint_city(void)
+{
+	begin_mint();
+	return rng_draw(&mint_rng, 1, 6);
+}
+
+/*
+ *  exposed via proto.h: add.c pick_starting_city "empty" candidate shuffle.
+ *  An add-player world-setup draw; shuffles off the mint stream (sequential)
+ *  instead of ilist_scramble()'s global rnd(). Unreached on both golden trees
+ *  (they start players at an explicit city index, not "empty").
+ */
+void
+mint_shuffle(ilist l)
+{
+	begin_mint();
+	ilist_shuffle_rng(l, &mint_rng);
+}
  
 
 static int
@@ -703,17 +779,7 @@ rnd_alloc_num(int low, int high)
 	int n;
 	int i;
 
-	n = rnd(low, high);
-
-#if 0
-	for (i = n; i <= high; i++)
-		if (bx[i] == NULL && okay_entity_code(i))
-			return i;
-
-	for (i = low; i < n; i++)
-		if (bx[i] == NULL && okay_entity_code(i))
-			return i;
-#endif
+	n = mint_alloc(low, high);
 
 	for (i = n; i <= high; i++)
 		if (bx[i] == NULL)
@@ -722,10 +788,6 @@ rnd_alloc_num(int low, int high)
 	for (i = low; i < n; i++)
 		if (bx[i] == NULL)
 			return i;
-
-#if 0
-	fprintf(stderr, "rnd_alloc_num(%d,%d) failed\n", low, high);
-#endif
 
 	return -1;
 }

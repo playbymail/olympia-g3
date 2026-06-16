@@ -186,28 +186,36 @@ is correct-on-principle hardening of dead code and **no black-box fixture can
 pin it** (write-up in
 [tests/olympia/regress/guard-pillage/README.md](tests/olympia/regress/guard-pillage/README.md)).
 
-### Next track: Ultron groundwork (#25)
+### Next track: Ultron groundwork (#25 — ✅ COMPLETE)
 
-The next forward track is the [Project Ultron](doc/agentic-project-ultron.md)
-test-coverage initiative, gated by **#25 — RNG-state granularity**. The engine
-draws from one process-global serial stream (`lib/rnd.c` / `olympia/rnd.c`), so
-any reordered/added `rnd()` call re-bakes the whole 206-file manifest — which
-makes the small, per-subsystem fixtures Ultron needs impossible. The design
-survey lives in [doc/rng-state-granularity.md](doc/rng-state-granularity.md);
-the addressable seam is `lib/rng.{c,h}`
-(`rng_seed`/`rng_stream_of`/`rng_draw`/`rng_keyed`), with a self-check at
-`tests/rng/check.sh`. For **when** each draw fires during a turn — the fixed
-phase order the driver walks, and which draws are keyed vs still on the global
-stream — see [doc/turn-execution-order.md](doc/turn-execution-order.md).
+The forward track is the [Project Ultron](doc/agentic-project-ultron.md)
+test-coverage initiative, which was gated by **#25 — RNG-state granularity**.
+**#25 is now complete**: the engine no longer draws from the process-global serial
+stream for any gameplay or world-build randomness — every subsystem reseeds its own
+addressable stream off the turn root, so a reordered/added draw no longer re-bakes
+the whole manifest, unblocking the small per-subsystem fixtures Ultron needs. The
+global `rnd()` (`lib/rnd.c` / `olympia/rnd.c`) survives only as the low-level MD5
+primitive the `rng` layer is built on, and a standing audit gate in
+`tests/rng/check.sh` keeps it that way. The design survey lives in
+[doc/rng-state-granularity.md](doc/rng-state-granularity.md); the addressable seam is
+`lib/rng.{c,h}` (`rng_seed`/`rng_stream_of`/`rng_draw`/`rng_keyed`). For **when** each
+draw fires during a turn — the fixed phase order the driver walks, and which stream
+each draw is on — see [doc/turn-execution-order.md](doc/turn-execution-order.md).
+**#46 is the next stream ticket** (begins now that #25 has landed).
 
-**Twelve consumers landed so far: combat, pillage, economy/market, npc, weather,
-upkeep, quest, explore, skills (command core only), magic (command core
-plus the `art.c` crafting commands), worldgen (INIT-time city seeding +
-dungeon generation — the engine's largest draw set, the first consumer that fires
-at INIT and required a mandatory re-baseline of both golden trees), and regions
-(faery/hades/cloud — a worldgen-style hybrid carrying an INIT world build *and*
-turn-time autonomous behavior, on tags `faer`/`hads`/`clud`; also required a
-re-baseline of both trees).** Each
+**#25 is COMPLETE — the engine has ZERO gameplay/world-build draws on the global
+`rnd()`** (it survives only as the low-level MD5 primitive the `rng` layer is built
+on), enforced by a standing audit gate in `tests/rng/check.sh`. The consumers landed
+across the roadmap (1–12) and the endgame (units A–F): combat, pillage,
+economy/market, npc, weather, upkeep, quest, explore, skills (command core), magic
+(command core + `art.c` crafting), worldgen (INIT-time city seeding + dungeon
+generation — the engine's largest draw set, first consumer at INIT, mandatory
+re-baseline of both trees), regions (faery/hades/cloud — INIT build + turn-time
+autonomous, tags `faer`/`hads`/`clud`), and finally **mint** (endgame Unit F —
+the entity-id allocator + add-player draws, a per-turn sequential stream that
+re-baked every id, the biggest re-baseline; closed #25). The endgame units A–E
+(skills/magic residuals, calendar, income, social, entity catch-all) routed the
+remaining one-off draws onto existing or small new per-turn streams. Each consumer
 reseeds a stream off the turn root (`rng_master_seed()` → turn → its own 4-char
 tag) and draws from it instead of the global `rnd()`:
 
@@ -380,12 +388,13 @@ Combat/pillage/npc/weather/upkeep behavior is pinned by its own golden tree,
 [tests/olympia/regress/guard-pillage](tests/olympia/regress/guard-pillage)
 (the **second** standing regress alongside secret-sea-route).
 
-**Endgame — drive gameplay `rnd()` to zero.** The twelve roadmap subsystems are
-landed; the explicit exit criterion for #25 is now **no gameplay/world-build draw
-left on the global `rnd()`** (it survives only as the low-level MD5 primitive the
-`rng` layer is built on). The ~41 draws are sequenced into units A–F (each
-its own branch + squash PR, surface-scope-first, both golden gates green on both
-presets): **A (LANDED)** skills/magic residuals — `produce.c` mine/harvest →
+**Endgame — drive gameplay `rnd()` to zero — ✅ DONE (#25 CLOSED).** The twelve
+roadmap subsystems plus endgame units A–F are all landed; the explicit exit
+criterion for #25 was **no gameplay/world-build draw left on the global `rnd()`**
+(it survives only as the low-level MD5 primitive the `rng` layer is built on) — now
+**achieved and gated** (`tests/rng/check.sh`). The ~41 draws were sequenced into
+units A–F (each its own branch + squash PR, surface-scope-first, both golden gates
+green on both presets): **A (LANDED)** skills/magic residuals — `produce.c` mine/harvest →
 `econ_mine`/`econ_harvest`, `necro.c auto_undead` → `npc_behavior`, `art.c`
 minters `new_orb`/`create_npc_token` → `qrnd` and `new_suffuse_ring` → `econ_ring`
 (all onto existing `econ`/`npcs`/`qest`, NO new tag; the per-turn suffuse restock
@@ -422,10 +431,41 @@ the live `make_subloc_monster` already draws from `qrnd` (documented in
 `doc/dead-code.md`). **Byte-neutral on both trees**: 0 draws on the bare-map turn
 and at all world-init, and the 4 `ent_prisoner` rolls the guard-pillage turn fires
 do not perturb the hashed faction records — both twins match `EXPECT` unchanged, so
-NO re-baseline and NO `scenario.tgz` regen); and **F** mint last (`code.c
-rnd_alloc_num` + `add.c` ids/passwords → `mint`; same PR repoints `test_random()`
-and flips on a standing "no gameplay `rnd()`" audit gate).
+NO re-baseline and NO `scenario.tgz` regen); and **F (LANDED) — #25 CLOSED** mint,
+the last consumer (`code.c rnd_alloc_num`, THE entity-id allocator, + `add.c`
+ids/passwords → new per-turn **`mint`** stream, tag `mint`). Unlike A–E this is a
+**fresh per-turn SEQUENTIAL stream** (`rng_draw` via the turn-guarded `begin_mint()`,
+which also seeds at INIT — the `begin_worldgen()` idiom — because the allocator mints
+at the `-i`/`-s`/`-a` world build *and* during the turn), NOT keyed leaves: there is
+no entity in hand when minting its id and no natural leaf key, so the win is
+**isolation** (the worldgen-tunnel / quest-`qrnd` precedent). Hosted in `code.c`
+(`mint_alloc` static); the `add.c` draws share the stream via `mint_password(pl,i,n)`
+(keyed leaf on `(pl,i)`) and `mint_city()` (sequential), exposed via `proto.h`.
+**This re-baked every entity id → the biggest re-baseline of the project, on BOTH
+trees** (the reason mint is last): main manifest stayed **205 files** (content-only —
+`loc`/`item`/`master`/`unform`/`gate` + renumbered `fact/*` shifted as ~8189 INIT +
+~18124 turn allocator draws left the global stream), and guard-pillage took a
+`scenario.tgz` regen + `EXPECT` re-baseline (noble ids settled at pillager 4126 /
+guard 8651), with both `check.sh` and `check-lua.sh` agreeing — confirming the
+**saved-`randseed` → master-seed coupling is now gone** (no gameplay `rnd()` advances
+`digest` during a turn). The same PR repointed `test_random()` (the `-R` self-test)
+to a local `rng_stream`, **deleted** the remaining dead `rnd()` sites (`equip_new_noble`/
+`okay_entity_code`/`art.c:1102`/`buy.c` jitter/`tunnel.c` hades-sewer/`nearby_grave`/
+`free_artifact` + caller, archived in `doc/dead-code.md`), and **flipped on the
+standing "no gameplay `rnd()`" audit gate** in `tests/rng/check.sh` (the `rnd(`-grep
+over `olympia/*.c` must stay empty — **this passing IS the definition of #25 done**).
+Beyond the call-site grep, Unit F also migrated the **indirect** draws it could not
+see (`ilist_scramble`/`exit_views_scramble` via `lib/`): `dir.c`'s randomized
+exit-direction pick (~117 draws/turn from NPC/savage movement) → a new per-turn
+**`exitdir`** stream (tag `exdr`, weather model) via the new `exit_views_shuffle_rng`;
+`npc.c auto_bandit`'s victim pick → `npcs` (`NTAG_VICTIM`); `add.c`'s "empty"-start
+shuffle → `mint` (`mint_shuffle`); the two dead `ilist_scramble` sites
+(`faery.c swap_region_locs`, `necro.c random_body_here`) deleted. **#25 exits with
+ZERO gameplay/world-build `rnd()`** — verified empirically (an instrumented `rnd()`
+counts 0 on `-i`/`-r`/`-s`/`-a`/`-R` and both guard-pillage twins); the global
+`rnd()` survives only as the MD5 primitive under the `rng` layer.
 The full per-unit plan is [doc/rng-endgame-to-zero.md](doc/rng-endgame-to-zero.md);
 the migration order and per-subsystem keying live in
 [doc/rng-state-granularity.md](doc/rng-state-granularity.md). A PCG32 generator swap
-stays deferred behind the TAG 64-bit work.
+stays deferred behind the TAG 64-bit work; **#46 is the next stream ticket** (begins
+only after #25).

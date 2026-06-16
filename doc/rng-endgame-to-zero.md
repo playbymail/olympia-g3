@@ -6,11 +6,14 @@ exits #25 with no `rnd()` in any game logic. Each unit below becomes its own
 session → branch → squash PR (`Refs #25`), in order. Surface scope + re-baseline
 plan and get confirmation BEFORE implementing each unit; ask before pushing.
 
-## Finish line (decided)
+## Finish line (decided) — ✅ ACHIEVED (Unit F, #25 closed)
 
 - **Zero gameplay draws on global `rnd()`.** `rnd()` (lib/rnd.c) stays only as the
   low-level MD5 primitive that the `rng` layer itself is built on; no game logic or
-  world build may call it.
+  world build may call it. **Verified empirically**: an instrumented `rnd()` counts
+  0 on `-i`/`-r`/`-s`/`-a`/`-R` and both guard-pillage twins. This includes the
+  *indirect* draws (`ilist_scramble`/`exit_views_scramble` via `lib/`), which the
+  call-site grep below cannot see — Unit F migrated those onto streams too.
 - `test_random()` (`olympia/z.c:456`, the `-R` self-test, `main.c:738`) is
   **repointed to draw from an `rng_stream`** (or kept strictly as the generator's
   own unit test) — it no longer counts as a gameplay draw either way.
@@ -29,13 +32,18 @@ grep -rnE '[^_a-zA-Z]rnd\(' olympia/*.c | grep -v 'olympia/rnd.c' \
 ## Full remaining surface (audited against current main — re-verify, line numbers shift)
 
 41 live gameplay draws in 7 buckets at the start (after excluding the dead code +
-the `-R` self-test). **Units A–E are landed**: Unit A removed the 6 skills/magic
-residuals (bucket 4); Units B+C (one PR) removed the 3 calendar day-picks (bucket
-1) and the 4 `inn_income` draws (bucket 2); Unit D removed the 10 social-command
-draws (bucket 3); Unit E removed the 11 entity catch-all draws (bucket 6) — and
-the original tally over-counted: bucket 5 ("quest shared-infra") and one bucket-6
-site (`u.c nearby_grave`) turned out to be **dead `#if 0` code**, not live draws —
-→ **only the mint bucket (7) remains** (F):
+the `-R` self-test). **ALL SEVEN BUCKETS ARE NOW LANDED — #25 is DONE.** Unit A
+removed the 6 skills/magic residuals (bucket 4); Units B+C (one PR) removed the 3
+calendar day-picks (bucket 1) and the 4 `inn_income` draws (bucket 2); Unit D
+removed the 10 social-command draws (bucket 3); Unit E removed the 11 entity
+catch-all draws (bucket 6) — and the original tally over-counted: bucket 5 ("quest
+shared-infra") and one bucket-6 site (`u.c nearby_grave`) turned out to be **dead
+`#if 0` code**, not live draws; **Unit F removed the mint bucket (7)** — the
+entity-id allocator + add-player draws — and, beyond the literal audit, the
+indirect `ilist_scramble`/`exit_views_scramble` draws the `rnd(`-grep never saw
+(`dir.c` exit-direction shuffles, ~117/turn → the new `exitdir` stream; plus
+`npc`/`add` sites). The standing audit gate is live and the global `rnd()` is now
+**zero** on every flow:
 
 1. **calendar** ✅ **LANDED (Unit B)** — `day.c` daily_events day-picks
    (`curse_erode_day`, `faery_day`, `dog_bark_day`) → new per-turn `caln` stream.
@@ -62,8 +70,9 @@ site (`u.c nearby_grave`) turned out to be **dead `#if 0` code**, not live draws
    mine-gate; `produce.c mage_menial_how` → new per-turn `enty` stream (tag
    0x656e7479). **11 live sites, not 12** — `u.c nearby_grave:451` was also dead
    `#if 0` code (documented in [dead-code.md](dead-code.md)).
-7. **mint** — `code.c rnd_alloc_num:706` (THE entity-id allocator, reached by every
-   random-id `new_ent`/`alloc_box`), `add.c get_city_id:73` / password gen `:201`.
+7. **mint** ✅ **LANDED (Unit F)** — `code.c rnd_alloc_num` (THE entity-id
+   allocator, reached by every random-id `new_ent`/`alloc_box`), `add.c
+   get_city_id` / password gen → new per-turn `mint` stream (tag 0x6d696e74).
 
 ## Units, in order (cheapest / most byte-neutral first; mint last — it re-bakes every id)
 
@@ -183,15 +192,66 @@ frozen + `check-lua.sh` lua-built) still match `EXPECT.sha256` unchanged. So **n
 re-baseline and no `scenario.tgz` regen**. `add_char_damage` (the flagged likely
 mover) does not fire — the pillage nobles die outright rather than survive wounded.
 
-### Unit F — mint (LAST) → `mint` stream  (tag 0x6d696e74)
-`code.c rnd_alloc_num:706` (the entity-id allocator) + `add.c` id/password gen.
-Key on the requesting context so a new id is a keyed leaf rather than a stream
-position. This **re-bakes every entity id** → the largest re-baseline (both trees);
-do it absolutely last so no later unit perturbs it. In the same PR: repoint
-`test_random()` to an `rng_stream`, delete the remaining dead `rnd()` sites, and
-flip the exit-gate grep on in `tests/rng/check.sh`. Once mint lands the
-`scenario.tgz` saved-`randseed` coupling disappears and the engine has **zero
-gameplay `rnd()`**.
+### Unit F — mint (LAST) → `mint` stream  (tag 0x6d696e74)  ✅ LANDED — #25 DONE
+`code.c rnd_alloc_num` (the entity-id allocator) + `add.c` id/password gen, onto a
+fresh per-turn **SEQUENTIAL** `mint` stream (NOT keyed leaves — there is no entity
+in hand when minting its id, and no natural leaf key; the win is **isolation**, the
+worldgen-tunnel / quest-`qrnd` sequential-stream precedent). Seeded once via the
+turn-guarded `begin_mint()`, which fires at INIT too (the `begin_worldgen()`
+`sysclock.turn`-at-INIT idiom) because the allocator mints at the `-i`/`-s`/`-a`
+world build *and* during the turn. Hosted in `code.c` (the allocator hub); the
+`add.c` draws share the same stream via `mint_password(pl, i, n)` (a **keyed** leaf
+on `(pl, i)` — passwords have a natural key) and `mint_city()` (sequential, like the
+allocator), exposed via `proto.h`. `rnd_alloc_num` calls the file-static
+`mint_alloc(low, high)`.
+
+**Empirical mint counts** (instrument/count/revert): main `-i` 8189, main `-r`
+18124, guard-pillage frozen turn 8320 — all `rnd_alloc_num`; the `add.c` draws (2
+`mint_city` + 2×8 `mint_password`) fire **only** when the scenario build's `-a`
+pass mints the two nobles, re-baking their ids (now **pillager 4126 / guard 8651**)
+and passwords.
+
+**This re-bakes every entity id → the biggest re-baseline of the project**, on
+BOTH trees (the reason mint is last): the main manifest stayed **205 files**
+(content-only — `loc`/`item`/`master`/`unform`/`gate` + the renumbered `fact/*`
+shifted as ~26k allocator draws/turn left the global stream), and the
+guard-pillage tree took a `scenario.tgz` regen (`build-scenario.sh`) +
+`EXPECT.sha256` re-baseline (`check.sh --update`), with **both `check.sh` and
+`check-lua.sh` agreeing** — confirming the saved-`randseed` → master-seed coupling
+the economy/worldgen/regions docs flagged has now **settled and disappeared** (no
+gameplay `rnd()` advances `digest` during a turn, so the saved `randseed` is
+stable turn-to-turn).
+
+Also in the PR (the exit-criterion cleanup):
+- **`test_random()` (`z.c`, the `-R` self-test) repointed** to a local
+  `rng_stream` rooted at the master seed — the generator's own smoke test, no
+  longer a gameplay draw (its format string and `ilist_scramble` were retired too).
+- **Dead `rnd()` sites deleted** (the audit grep is pure text — it cannot skip
+  `#if 0`/comments): `c1.c equip_new_noble` + its call, `code.c okay_entity_code`,
+  `art.c:1102`, `buy.c` expire-jitter comment, `tunnel.c` hades-from-sewer comment,
+  `u.c nearby_grave`, `quest.c free_artifact` + its dead caller. Archived in
+  [dead-code.md](dead-code.md). Descriptive comments that mentioned a literal
+  `rnd(` (basic.c, use.c, day.c) were reworded.
+- **The standing audit gate** wired into `tests/rng/check.sh`: the endgame grep
+  over `olympia/*.c` must return **zero**. It passes — **this is the definition of
+  #25 done.**
+
+**Indirect draws too (scope expansion — surfaced by instrumentation).** The
+literal-`rnd(` audit never caught draws made *through* the `lib/` list helpers
+`ilist_scramble()`/`exit_views_scramble()` (which call `rnd()` internally). The
+bare-map turn still made **117** such draws — all from `dir.c`'s randomized
+exit-direction pick (`exits_from_loc_nsew_select` with `rand` set, reached from
+NPC/savage movement in `npc.c`/`savage.c`). To make "zero gameplay draws"
+literally true (not just zero call *sites*), Unit F also: added
+`exit_views_shuffle_rng()` to `lib` (the `ilist_shuffle_rng` precedent) and routed
+`dir.c` onto a new per-turn **`exitdir`** stream (tag 0x65786472, the weather
+model — one per-turn sequential stream, `begin_exitdir()`); routed `npc.c
+auto_bandit`'s victim pick onto the `npcs` stream (keyed `NTAG_VICTIM`); and routed
+`add.c`'s "empty"-start candidate shuffle onto the `mint` stream (`mint_shuffle`).
+The two remaining gameplay `ilist_scramble` sites (`faery.c swap_region_locs`,
+`necro.c random_body_here`) were **dead** and deleted. After this, an instrumented
+`rnd()` counts **0** on `-i`/`-r`/`-s`/`-a`/`-R` and both guard-pillage twins —
+the global `rnd()` survives only as the MD5 primitive under the `rng` layer.
 
 ## Per-unit gates (every unit, both presets debug + OLYMPIA_PRESET=asan-ubsan, zero diagnostics)
 - `./tests/olympia/golden_check.sh` after `./run/mapgen/mapgen.sh` + `./run/olympia-g3.sh`

@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "lists.h"
+#include "rng.h"		/* issue #25 (Unit F): rng_draw() for exit_views_shuffle_rng() */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -264,6 +265,33 @@ exit_views_shuffle(exit_views_list l)
     for (i = 0; i < len; i++)
     {
         int r = rnd(i, len);
+        if (r != i)
+        {
+            struct exit_view *tmp = l[i];
+            l[i] = l[r];
+            l[r] = tmp;
+        }
+    }
+}
+
+
+/*
+ *  issue #25 (Unit F): same Knuth shuffle as exit_views_shuffle(), but every
+ *  swap draws from a caller-supplied rng_stream instead of the process-global
+ *  rnd() (the ilist_shuffle_rng() precedent). Used by dir.c's randomized
+ *  exit-direction pick (exits_from_loc_nsew_select with rand set) so NPC/savage
+ *  movement no longer perturbs the global serial stream -- the last gameplay
+ *  draw that did. Sequential within the stream (a shuffle is inherently
+ *  order-dependent), but isolated from every other subsystem.
+ */
+void
+exit_views_shuffle_rng(exit_views_list l, struct rng_stream *s)
+{
+    int len = exit_views_len(l) - 1;
+    int i;
+    for (i = 0; i < len; i++)
+    {
+        int r = rng_draw(s, i, len);
         if (r != i)
         {
             struct exit_view *tmp = l[i];

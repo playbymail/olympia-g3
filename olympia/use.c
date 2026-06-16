@@ -1628,7 +1628,7 @@ begin_skills(void)
 	skills_rng_turn = sysclock.turn;
 }
 
-/* c2.c weapon training: 5% crit gate rnd(1,100), keyed on (who, weapon skill). */
+/* c2.c weapon training: 5% crit gate [1,100], keyed on (who, weapon skill). */
 int
 skil_crit(int who, int wsk)
 {
@@ -1644,7 +1644,7 @@ skil_bonus(int who, int wsk, int low, int high)
 	return rng_keyed(&skills_rng, who, wsk, STAG_YIELD, low, high);
 }
 
-/* STUDY: 1-in-4 scroll/book consume check rnd(1,4), keyed on (who, skill). */
+/* STUDY: 1-in-4 scroll/book consume check [1,4], keyed on (who, skill). */
 static int
 skil_study(int who, int sk)
 {
@@ -1652,7 +1652,7 @@ skil_study(int who, int sk)
 	return rng_keyed(&skills_rng, who, sk, STAG_STUDY, 1, 4);
 }
 
-/* RESEARCH: success gate rnd(1,100), keyed on (who, skill). */
+/* RESEARCH: success gate [1,100], keyed on (who, skill). */
 static int
 skil_research(int who, int sk)
 {
@@ -1660,7 +1660,7 @@ skil_research(int who, int sk)
 	return rng_keyed(&skills_rng, who, sk, STAG_RESCH, 1, 100);
 }
 
-/* RESEARCH: pick an unknown researchable skill rnd(0,high), keyed on (who, skill). */
+/* RESEARCH: pick an unknown researchable skill [0,high], keyed on (who, skill). */
 static int
 skil_research_pick(int who, int sk, int high)
 {
@@ -1668,7 +1668,7 @@ skil_research_pick(int who, int sk, int high)
 	return rng_keyed(&skills_rng, who, sk, STAG_RPICK, 0, high);
 }
 
-/* stealth.c TORTURE: prisoner talk-chance rnd(1,100), keyed on (who, target). */
+/* stealth.c TORTURE: prisoner talk-chance [1,100], keyed on (who, target). */
 int
 skil_torture(int who, int target)
 {

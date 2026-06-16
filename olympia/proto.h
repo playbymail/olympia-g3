@@ -254,6 +254,10 @@ extern int letter_val(char c, char *let);
 extern void change_box_subkind(int n, int sk);
 extern void print_box_usage(void);
 extern void print_box_usage_sup(int low, int high, char *s);
+/* issue #25 (Unit F): per-turn mint RNG stream; hosted in code.c, called from add.c */
+extern int mint_password(int pl, int i, int n);			/* add.c: per-player password char, keyed on (pl, i) */
+extern int mint_city(void);					/* add.c: get_city_id start-line pick, sequential */
+extern void mint_shuffle(ilist l);				/* add.c: pick_starting_city "empty" candidate shuffle */
 
 /* olympia/combat.c */
 extern int cannot_take_booty(int who);

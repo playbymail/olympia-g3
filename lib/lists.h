@@ -67,6 +67,8 @@ extern void exit_views_reclaim(exit_views_list *l);
 extern void exit_views_rem_value(exit_views_list *l, struct exit_view *n);
 extern void exit_views_scramble(exit_views_list l);
 extern void exit_views_shuffle(exit_views_list l);
+struct rng_stream;					/* issue #25: pointer-only, defined in rng.h */
+extern void exit_views_shuffle_rng(exit_views_list l, struct rng_stream *s);
 extern void exit_views_test(void);
 
 // 'fights_list' reallocing array definitions

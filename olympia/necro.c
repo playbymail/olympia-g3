@@ -360,33 +360,6 @@ d_eat_dead(struct command *c)
 }
 
 
-static int
-random_body_here(int where)
-{
-	struct item_ent *e;
-	static ilist l = NULL;
-
-	ilist_clear(&l);
-
-	loop_inv(where, e)
-	{
-		if (subkind(e->item) == sub_dead_body &&
-		    sysclock.turn > p_char(e->item)->death_time.turn)
-		{
-			ilist_append(&l, e->item);
-		}
-	}
-	next_inv;
-
-	if (ilist_len(l) == 0)
-		return 0;
-
-	ilist_scramble(l);
-
-	return l[0];
-}
-
-
 void
 auto_undead(int who)
 {

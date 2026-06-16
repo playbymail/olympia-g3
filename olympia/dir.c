@@ -3,6 +3,43 @@
 #include	<stdlib.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
+
+
+/*
+ *  issue #25 (Unit F): the randomized exit-direction pick
+ *  (exits_from_loc_nsew_select with rand set, reached from NPC/savage movement
+ *  in npc.c/savage.c) was the last gameplay draw still on the process-global
+ *  rnd() -- via exit_views_scramble(). It now shuffles from a per-turn `exitdir`
+ *  stream (tag "exdr") instead. This is the weather model: ONE per-turn stream
+ *  seeded once via the turn-guarded begin_exitdir(), drawn SEQUENTIALLY (each
+ *  movement shuffle is an ordered run, and several fire across the turn), so the
+ *  movement shuffles are isolated from every other subsystem and no longer
+ *  perturb the global serial stream. begin_exitdir() seeds off (master, turn),
+ *  so it is order-independent across turns.
+ */
+#define	EXTAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_EXITDIR	0x65786472u	/* "exdr" */
+
+static rng_stream exitdir_rng;
+static int exitdir_rng_turn = -1;	/* seed exitdir_rng once per turn */
+
+static void
+begin_exitdir(void)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	if (exitdir_rng_turn == sysclock.turn)
+		return;			/* already seeded this turn */
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, EXTAG_TURN);
+	exitdir_rng = rng_stream_of(&turn, 0, TAG_EXITDIR);
+
+	exitdir_rng_turn = sysclock.turn;
+}
 
 
 int max_map_row = 0;
@@ -756,7 +793,10 @@ exits_from_loc_nsew_select(int who, int where, int land, int rand)
 	}
 
 	if (rand)
-		exit_views_scramble(ret);
+	{
+		begin_exitdir();
+		exit_views_shuffle_rng(ret, &exitdir_rng);	/* issue #25 (Unit F): exitdir stream, not the global generator */
+	}
 
 	return ret;
 }

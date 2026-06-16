@@ -8,6 +8,7 @@
 #include	<unistd.h>
 #endif
 #include	"z.h"
+#include	"rng.h"		/* issue #25 (Unit F): -R self-test draws from a local rng_stream */
 
 
 
@@ -456,22 +457,35 @@ void
 test_random(void)
 {
 	int i;
+	uint32_t m[4];
+	rng_stream s;
+
+	/*
+	 *  issue #25 (Unit F): the -R self-test no longer draws from the global
+	 *  rnd(). It exercises a local rng_stream rooted at the master seed, so
+	 *  it is the rng layer's own smoke test, NOT a gameplay draw -- which is
+	 *  what lets the standing no-gameplay-rnd() audit gate (tests/rng/check.sh)
+	 *  see zero call sites in the olympia engine sources.
+	 */
+	rng_master_seed(m);
+	s = rng_seed(m);
 
 	if (isatty(1))
 	    for (i = 0; i < 10; i++)
 		printf("%3d  %3d  %3d  %3d  %3d  %3d  %3d  %3d  %3d  %3d\n",
-			rnd(1, 10), rnd(1, 10), rnd(1, 10), rnd(1, 10),
-			rnd(1, 10), rnd(1, 10), rnd(1, 10), rnd(1, 10),
-			rnd(1, 10), rnd(1, 10));
+			rng_draw(&s, 1, 10), rng_draw(&s, 1, 10), rng_draw(&s, 1, 10),
+			rng_draw(&s, 1, 10), rng_draw(&s, 1, 10), rng_draw(&s, 1, 10),
+			rng_draw(&s, 1, 10), rng_draw(&s, 1, 10), rng_draw(&s, 1, 10),
+			rng_draw(&s, 1, 10));
 	else
 	    for (i = 0; i < 100; i++)
-		printf("%d\n", rnd(1, 10));
+		printf("%d\n", rng_draw(&s, 1, 10));
 
 	for (i = -10; i >= -16; i--)
-		printf("rnd(%d, %d) == %d\n", i, -3, rnd(i, -3));
+		printf("rng_draw(%d, %d) == %d\n", i, -3, rng_draw(&s, i, -3));
 
 	for (i = 0; i < 100; i++)
-		printf("%d\n", rnd(1000,9999));
+		printf("%d\n", rng_draw(&s, 1000, 9999));
 
 	{
 		ilist l = NULL;
@@ -480,7 +494,7 @@ test_random(void)
 		for (i = 1; i <= 10; i++)
 			ilist_append(&l, i);
 
-		ilist_scramble(l);
+		ilist_shuffle_rng(l, &s);	/* issue #25 (Unit F): local stream, not the global generator */
 
 		printf("Scramble:\n");
 

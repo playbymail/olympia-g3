@@ -2007,10 +2007,6 @@ post_month(void)
 	check_token_units();
 	determine_noble_ranks();
 
-#if 0
-	swap_region_locs(hades_region);
-	swap_region_locs(faery_region);
-#endif
 
 	post_has_been_run = TRUE;
 }
@@ -2043,7 +2039,7 @@ daily_events(void)
 
 		assert(4 <= MONTH_DAYS);
 
-		wthr_shuffle(weather_days);	/* issue #25: weather stream, not global rnd() */
+		wthr_shuffle(weather_days);	/* issue #25: weather stream, not the global generator */
 		qsort(weather_days, 4, sizeof(int), int_comp);
 	}
 
