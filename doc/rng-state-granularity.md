@@ -823,7 +823,12 @@ not-yet-migrated subsystem and stays on the global `rnd()`:
   deferred (i = quest, ii = economy). The empirical world-init check came back **0
   art.c draws** at `-s`/`-a`/`-i` — overlap (iii) did not materialize.
 - **`produce.c`** mining/harvest/mage-menial — left global by the economy
-  migration; an **economy** residual.
+  migration; an **economy** residual. **Scheduled** as endgame **Unit A** (onto the
+  existing `econ` stream) — see the
+  [Endgame](#endgame--driving-gameplay-rnd-to-zero) and
+  [rng-endgame-to-zero.md](rng-endgame-to-zero.md). This is the **only** skills
+  deferral not yet landed; the three magic-adjacent ones above all landed under
+  magic (step 10 + the crafting follow-up).
 
 `d_hide`/`d_sneak`/`spy_*` draw nothing; `equip_new_noble` (`c1.c`) is `#if 0`
 dead code — nothing to migrate either way.
@@ -1205,9 +1210,9 @@ master seed                                  rng_seed(randseed bytes)
    │     └─ leaf key(who, where|target, "find"/"gate"/"flav"/"pick"/"seek"/"dtct")  ← keyed leaves, one per-turn stream
    │             actor in leaf key (no chokepoint); tunnel.c dungeon-gen -> worldgen (11), torture/petty -> skills (9, landed)
    │
-   ├─ skills     key(turn, 0,        "skil")  [PARTIAL]  use.c (begin_skills/skil_*), c2.c (weapon), stealth.c (torture/petty)
+   ├─ skills     key(turn, 0,        "skil")  [CORE LANDED]  use.c (begin_skills/skil_*), c2.c (weapon), stealth.c (torture/petty)
    │     └─ leaf key(who, ctx, "crit"/"yiel"/"stdy"/"rsch"/"rpik"/"tort"/"ptty")  ← keyed leaves, one per-turn stream, actor in k1
-   │             COMMAND CORE landed; deferred: basic.c aura/heal + alchem.c -> magic (10); art.c crafting -> follow-up; produce.c -> economy residual
+   │             COMMAND CORE landed; all deferrals resolved or scheduled: basic.c aura/heal + alchem.c -> magic (10, LANDED); art.c crafting -> magic follow-up (LANDED); produce.c mining/harvest -> endgame Unit A (econ, SCHEDULED)
    │
    ├─ magic      key(turn, 0,        "magc")  [PARTIAL]  basic.c (begin_magic/magc_*), scry.c, relig.c, necro.c, alchem.c, art.c
    │     └─ leaf key(who, ctx, "scry"/"piet"/"eatd"/"lern"/"medi"/"omen"/"heal"/"potn"/"forg"/"orb "/"ring")  ← keyed leaves, one per-turn stream, actor in k1
@@ -1348,11 +1353,11 @@ presets.
   actor in the leaf key). Byte-neutral on **both** golden trees (every skill draw
   is command-only, unreached on the bare map and guard-pillage, and none fire at
   world-init) — the quest/explore profile, so no re-baseline and no `scenario.tgz`
-  regeneration. The slice **stops at the magic boundary**: `basic.c` aura/heal and
-  `alchem.c` potions defer to magic (step 10), `art.c` artifact crafting to a
-  post-magic follow-up (three overlaps incl. a world-init mint risk), and
-  `produce.c` stays an economy residual. See
-  [Ninth consumer](#ninth-consumer-skills-command-core).
+  regeneration. The slice **stopped at the magic boundary**, and every deferral has
+  since resolved or been scheduled: `basic.c` aura/heal and `alchem.c` potions
+  landed under magic (step 10), `art.c` artifact crafting landed as the post-magic
+  crafting follow-up, and `produce.c` is **scheduled as endgame Unit A** (onto
+  `econ`). See [Ninth consumer](#ninth-consumer-skills-command-core).
 - **magic came next, as a deliberate partial** (command core now landed) — the
   player-cast spell draws across `scry.c`/`relig.c`/`necro.c`/`basic.c`/`alchem.c`
   (scrying, religion gates, necromancy eat-dead/skill-transfer, the meditation/aura
