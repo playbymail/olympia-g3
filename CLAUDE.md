@@ -377,12 +377,22 @@ tree disappears once **mint** (step 13) lands.
 
 Combat/pillage/npc/weather/upkeep behavior is pinned by its own golden tree,
 [tests/olympia/regress/guard-pillage](tests/olympia/regress/guard-pillage)
-(the **second** standing regress alongside secret-sea-route). The **deferred**
-`art.c` shared-infra minters (`new_orb`/`create_npc_token` → quest loot,
-`new_suffuse_ring` → economy per-turn restock), the magic turn-auto residuals
-(`curse_erode` day-pick, `auto_undead`), the `faery_day` day-pick, and the last
-remaining subsystem (**mint** — entity-id / password generation) stay on the
-global `rnd()`; the migration
-order and per-subsystem keying live in
-[doc/rng-state-granularity.md](doc/rng-state-granularity.md), and a PCG32
-generator swap stays deferred behind the TAG 64-bit work.
+(the **second** standing regress alongside secret-sea-route).
+
+**Endgame — drive gameplay `rnd()` to zero.** The twelve roadmap subsystems are
+landed; the explicit exit criterion for #25 is now **no gameplay/world-build draw
+left on the global `rnd()`** (it survives only as the low-level MD5 primitive the
+`rng` layer is built on). The remaining ~41 draws are sequenced into units A–F (each
+its own branch + squash PR, surface-scope-first, both golden gates green on both
+presets): **A** skills/magic residuals (`produce.c`/`necro.c auto_undead`/`art.c`
+minters → existing `econ`/`npcs`/`qest`), **B** the calendar day-picks
+(`curse_erode`/`faery`/`dog_bark` → new `caln` stream — this retires the
+"deliberate permanent residual" framing), **C** `inn_income` (→ folded into
+`upkp`), **D** social (`swear.c`/`beast.c` → new `socl`), **E** an entity catch-all
+for the `u.c`/`stack.c`/`build.c` one-offs (→ new `enty`, quest-infra → `qrnd`), and
+**F** mint last (`code.c rnd_alloc_num` + `add.c` ids/passwords → `mint`; same PR
+repoints `test_random()` and flips on a standing "no gameplay `rnd()`" audit gate).
+The full per-unit plan is [doc/rng-endgame-to-zero.md](doc/rng-endgame-to-zero.md);
+the migration order and per-subsystem keying live in
+[doc/rng-state-granularity.md](doc/rng-state-granularity.md). A PCG32 generator swap
+stays deferred behind the TAG 64-bit work.

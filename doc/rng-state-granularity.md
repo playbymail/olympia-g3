@@ -9,10 +9,17 @@ turn-auto curse-erode / autonomous-undead draws are deferred; see the consumer
 sections below), worldgen (INIT-time city seeding + dungeon generation — the
 engine's largest draw set, the first consumer that fires at INIT rather than during
 the turn), and regions (faery/hades/cloud — each a worldgen-style hybrid: an INIT
-world build *and* turn-time autonomous behavior, on tags `faer`/`hads`/`clud`);
-the only remaining subsystem in the
-[distribution map](#recommended-subsystem-distribution) is **mint** (entity-id /
-password generation), still on the global `rnd()`.
+world build *and* turn-time autonomous behavior, on tags `faer`/`hads`/`clud`).
+
+The remaining global draws are now being driven to **zero** — the explicit exit
+criterion for #25 is **no gameplay `rnd()` left in the engine** (`rnd()` survives
+only as the low-level MD5 primitive the `rng` layer is built on). The audit of
+what is left and the sequenced units that retire it (skills/magic residuals →
+existing streams, then **calendar** day-picks, **income**, **social**, an **entity**
+catch-all, and **mint** last) live in the
+[endgame plan](#endgame--driving-gameplay-rnd-to-zero) below and in
+[rng-endgame-to-zero.md](rng-endgame-to-zero.md). This retires the earlier
+"deliberate permanent residual" framing for the day-picks: they get a home too.
 
 ## The problem
 
@@ -1216,8 +1223,18 @@ master seed                                  rng_seed(randseed bytes)
    │     └─ build SEQ per-region (ordered gen); auto leaf key(slot|who, sub|where, "nast"/"hunt"/"bknd"/"ambs"/...)
    │             two draw models on one tag (worldgen precedent); fires at INIT + every turn -> NOT byte-neutral, one re-baseline of both trees
    │
-   └─ mint       key(turn, new_id,   "mint")  [last]     z.c, pw.c (passwords / entity ids)
-         └─ leaf key(entity, slot, "pw"/"id")             ← order-sensitive today; keyed fixes it
+   │   ── endgame: drive gameplay rnd() to zero (each its own PR; see rng-endgame-to-zero.md) ──
+   │
+   ├─ (residuals)   → existing econ/npcs/qest  [planned A]  produce.c, necro.c auto_undead, art.c minters (NO new tag)
+   ├─ calendar   key(turn, 0,        "caln")  [planned B]  day.c day-picks (curse_erode/faery/dog_bark); leaf key(which, 0, "day")
+   ├─ income     → upkeep "upkp"               [planned C]  day.c inn_income (folds into upkeep; up_income leaf)
+   ├─ social     key(turn, 0,        "socl")  [planned D]  swear.c (bribe/terrorize/persuade/incite), beast.c (breeding); leaf key(actor, target)
+   ├─ entity     key(turn, 0,        "enty")  [planned E]  u.c/stack.c/build.c one-off behaviors (catch-all); quest-infra -> qrnd
+   │     └─ leaf key(who|where, purpose, "escp"/"land"/"grav"/"take"/"dmg"/"bark"/"bild")  ← keyed leaves, one per-turn stream
+   │
+   └─ mint       key(turn, new_id,   "mint")  [LAST]    code.c rnd_alloc_num, add.c (ids / passwords)
+         └─ leaf key(entity, slot, "pw"/"id")           ← order-sensitive today; keyed fixes it; re-bakes every id (biggest re-baseline)
+                 same PR: repoint test_random() to an rng_stream + flip on the "no gameplay rnd()" audit gate
 ```
 
 | Order | Root system | Tag                  | Scenario key            | Status                                                                                                         | Primary files                                                                        |
@@ -1230,11 +1247,43 @@ master seed                                  rng_seed(randseed bytes)
 | 6     | upkeep      | `upkp`               | turn (loc 0)            | **landed**                                                                                                     | `day.c`                                                                              |
 | 7     | quest       | `qest`               | where / actor           | **landed**                                                                                                     | `quest.c`, `use.c`                                                                   |
 | 8     | explore     | `expl`               | turn (loc 0)            | **landed**                                                                                                     | `c1.c`, `stealth.c`                                                                  |
-| 9     | skills      | `skil`               | turn (loc 0)            | **landed (command core)** — crafting/aura/alchemy deferred                                                     | `use.c`, `c2.c`, `stealth.c` (deferred: `basic.c`, `alchem.c`, `art.c`, `produce.c`) |
-| 10    | magic       | `magc`               | turn (loc 0)            | **landed (command core + art.c crafting commands)** — curse-erode/auto-undead + quest/economy minters deferred | `basic.c`, `scry.c`, `relig.c`, `necro.c`, `alchem.c`, `art.c`                       |
+| 9     | skills      | `skil`               | turn (loc 0)            | **landed (command core)** — `produce.c` mining/harvest → Unit A (econ)                                         | `use.c`, `c2.c`, `stealth.c` (residual: `produce.c` → A)                              |
+| 10    | magic       | `magc`               | turn (loc 0)            | **landed (command core + art.c crafting commands)** — auto-undead/art.c-minter residuals → Unit A             | `basic.c`, `scry.c`, `relig.c`, `necro.c`, `alchem.c`, `art.c`                       |
 | 11    | worldgen    | `wgen`               | turn (loc 0) / location | **landed** — INIT-time, NOT byte-neutral (one-time re-baseline of both trees)                                  | `seed.c` (keyed leaves), `tunnel.c` (sequential dungeon-gen)                         |
 | 12    | regions     | `faer`/`hads`/`clud` | region (build) / actor (auto) | **landed** — INIT build + turn autonomous, NOT byte-neutral (one-time re-baseline of both trees)          | `faery.c`, `hades.c`, `cloud.c`, `npc.c`, `u.c`                                      |
-| 13    | mint        | `mint`               | entity id               | last                                                                                                           | `z.c`, `pw.c`                                                                        |
+| A     | residuals   | `econ`/`npcs`/`qest` | (existing streams)      | **planned (endgame)** — skills/magic residuals onto landed streams; NO new tag                                 | `produce.c`, `necro.c`, `art.c`, `buy.c`                                             |
+| B     | calendar    | `caln`               | turn (loc 0)            | **planned (endgame)** — day-picks; fires every turn → re-baseline                                              | `day.c`                                                                              |
+| C     | income      | `upkp`               | turn (loc 0)            | **planned (endgame)** — `inn_income` folds into upkeep (no new tag)                                            | `day.c`                                                                              |
+| D     | social      | `socl`               | actor                   | **planned (endgame)** — bribe/terrorize/persuade/incite/breeding; likely byte-neutral                         | `swear.c`, `beast.c`                                                                 |
+| E     | entity      | `enty`               | actor / location        | **planned (endgame)** — catch-all one-off behaviors; quest-infra → `qrnd`                                      | `u.c`, `stack.c`, `build.c`, `quest.c`                                               |
+| F     | mint        | `mint`               | entity id               | **last** — re-bakes every id; repoint `test_random`, flip on the no-gameplay-`rnd()` gate                      | `code.c`, `add.c`, `z.c`                                                             |
+
+### Endgame — driving gameplay `rnd()` to zero
+
+Steps 1–12 are landed. The remaining units (A–F above) finish #25 against an
+explicit exit criterion: **no gameplay or world-build draw may call the global
+`rnd()`** — it survives only as the low-level MD5 primitive the `rng` layer is
+itself built on. The full per-unit plan (sites, routing, keying, byte-neutrality,
+gates) is in [rng-endgame-to-zero.md](rng-endgame-to-zero.md); the audit that
+defines "done" is:
+
+```
+# live gameplay rnd() call sites — must reduce to ZERO game-logic lines
+grep -rnE '[^_a-zA-Z]rnd\(' olympia/*.c | grep -v 'olympia/rnd.c' | grep -vE ':\s*\*|//'
+```
+
+At the time of writing this leaves **41 live draws in 7 buckets**: the
+**skills/magic residuals** (Unit A → existing `econ`/`npcs`/`qest`), the **calendar**
+day-picks (Unit B → `caln` — this retires the day-picks' "deliberate permanent
+residual" status), **income** (Unit C → folded into `upkp`), **social** (Unit D →
+`socl`), an **entity** catch-all for the `u.c`/`stack.c`/`build.c` one-offs (Unit E
+→ `enty`, with the quest shared-infra folded into `qrnd`), and **mint** (Unit F,
+last — it re-bakes every entity id, so nothing may follow it). Excluded as
+non-gameplay: the `#if 0 equip_new_noble` dead code, the commented
+`tunnel.c:506`/`buy.c:1547`, and `test_random()` (the `-R` self-test, repointed to
+an `rng_stream` in Unit F). Each unit is its own branch + squash PR (`Refs #25`),
+surfaces scope + re-baseline plan first, and keeps both golden gates green on both
+presets.
 
 ### Why this order
 
@@ -1351,9 +1400,19 @@ master seed                                  rng_seed(randseed bytes)
   `tunnel.c`/`seed.c` were already off-stream, so only the still-global mint draws
   (+ saved `randseed`) shifted. It absorbs the npc-deferred bandit residuals and the
   magic-deferred `cloud.c`. See [Twelfth consumer](#twelfth-consumer-regions-faery--hades--cloud).
-- **mint is last** — `z.c` password/id generation is *creation-order* sensitive
-  today, so keying it on the minted entity id is what most directly enables small
-  fixtures, but it touches the most golden bytes; stage it after everything else.
+- **the endgame units come next** (A–F, planned) — once the twelve roadmap
+  subsystems landed, the remaining global draws are driven to **zero** (see
+  [Endgame](#endgame--driving-gameplay-rnd-to-zero)): the skills/magic residuals fold
+  onto existing streams (A), then the **calendar** day-picks (B, `caln`), **income**
+  (C, into `upkp`), **social** (D, `socl`), and an **entity** catch-all (E, `enty`).
+  They are ordered cheap/byte-neutral-first; the day.c units (B/C) and `new_suffuse_ring`
+  in A move a manifest, so they re-baseline deliberately.
+- **mint is last** — `code.c`'s `rnd_alloc_num` (the entity-id allocator) and
+  `add.c`'s id/password generation are *creation-order* sensitive today, so keying
+  them on the minted id is what most directly enables small fixtures, but it
+  re-bakes **every** entity id (the largest re-baseline); stage it after everything
+  else, and in the same PR repoint `test_random()` and flip on the standing
+  "no gameplay `rnd()`" audit gate that defines #25 done.
 - Each step is **byte-neutral on the main manifest** wherever the bare-map
   standard turn does not exercise it (as combat and pillage were), otherwise a
   one-time re-baseline of just that subsystem's tree.
