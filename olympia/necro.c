@@ -244,7 +244,7 @@ get_some_skills(int who, int body, int chance)
 		if (has_skill(who, e->skill))
 			continue;
 
-		if (rnd(1,100) > chance)
+		if (magc_learn(who, e->skill) > chance)	/* issue #25: magic stream */
 			continue;
 
 		ilist_append(&to_learn, e->skill);
@@ -269,7 +269,7 @@ get_some_skills(int who, int body, int chance)
 		    ilist_lookup(to_learn, parent) < 0)
 			continue;
 
-		if (rnd(1,100) > chance)
+		if (magc_learn(who, e->skill) > chance)	/* issue #25: magic stream */
 			continue;
 
 		ilist_append(&to_learn, e->skill);
@@ -340,7 +340,7 @@ d_eat_dead(struct command *c)
 
 	wout(c->who, "Consumed %s.", box_name(body));
 
-	if (rnd(1,100) <= 33)
+	if (magc_eat(c->who, body, 0) <= 33)	/* issue #25: magic stream */
 	{
 		destroy_unique_item(c->who, body);
 		kill_char(c->who, MATES);
@@ -350,7 +350,7 @@ d_eat_dead(struct command *c)
 	get_some_skills(c->who, body, 100);
 	destroy_unique_item(c->who, body);
 
-	if (rnd(1,100) <= 25 && !char_sick(c->who))
+	if (magc_eat(c->who, body, 1) <= 25 && !char_sick(c->who))	/* issue #25: magic stream */
 	{
 		p_char(c->who)->sick = TRUE;
 		wout(c->who, "%s has fallen ill.", box_name(c->who));
