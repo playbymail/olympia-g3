@@ -512,7 +512,7 @@ d_locate_char(struct command *c)
 		break;
 	}
 
-	if (rnd(1,100) > chance)
+	if (magc_scry(c->who, target) > chance)	/* issue #25: magic stream */
 	{
 		wout(c->who, "Character location failed.");
 		return FALSE;
@@ -735,7 +735,7 @@ d_unbar_loc(struct command *c)
 		assert(FALSE);
 	}
 
-	if (rnd(1,100) > chance)
+	if (magc_scry(c->who, where) > chance)	/* issue #25: magic stream */
 	{
 		wout(c->who, "Attempt to remove barrier fails.");
 		return FALSE;

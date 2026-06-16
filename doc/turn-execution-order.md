@@ -138,7 +138,11 @@ evening if `poll` is set (`input.c:614-618`). State machine is
 Scheduled, day-conditioned effects. **First-call RNG draws** pick the random days
 for the month (these fire the first time `daily_events` runs, i.e. day 1):
 
-- `curse_erode_day = rnd(1, MONTH_DAYS)` (`day.c:1819`) — **global** (magic)
+- `curse_erode_day = rnd(1, MONTH_DAYS)` (`day.c:1819`) — **global** (magic) — a
+  **deliberate magic residual**: the magic migration (#25, tag `magc`) keyed the
+  player-cast spell draws but left this turn-auto day-pick global, since it fires
+  every turn and would move the main manifest (`noncreator_curse_erode()` itself
+  draws nothing)
 - `faery_day = rnd(MONTH_DAYS/2, MONTH_DAYS)` (`day.c:1822`) — **global** (region:faery)
 - `dog_bark_day = rnd(1, MONTH_DAYS)` (`day.c:1825`) — **global** (detection/stealth)
 - `weather_days`: built `1..MONTH_DAYS`, shuffled, then the first 4 `qsort`ed
@@ -247,11 +251,12 @@ stream they're on:
 | Each day, day 1 | `daily_events()` `weather_days` schedule shuffle | **keyed** per-turn weather — `begin_weather()` (#25) |
 | Each day, after commands | `daily_events()` `ship_coastal_damage` / `random_loc_damage` (acute) | **keyed** weather `wthr_wreck` (#25) — *not reached on the bare map* |
 | Weather-days | `daily_events()` → `natural_weather()` province shuffle + storm-strength rolls | **keyed** per-turn weather (#25) — the ~76.7k draws/turn that dominate the phase |
-| Each day, after commands | `daily_events()` day picks (`curse_erode`/`faery`/`dog_bark`) | **global** `rnd()` (magic / region:faery / detection residuals — the *day picks*, distinct from the keyed EXPLORE/SEEK commands below) |
+| Each day, after commands | `daily_events()` day picks (`curse_erode`/`faery`/`dog_bark`) | **global** `rnd()` (magic / region:faery / detection residuals — the *day picks*, distinct from the keyed spell/EXPLORE/SEEK commands below; `curse_erode` is the deferred magic residual) |
 | Per-pillage / undead / storm | `do_cookie_npc()` troop count when `man_kind` set | **keyed** per-location, `begin_npc(where)` (`npc.c:575`) — *not reached on the standard turn* |
 | Combat (only if a battle occurs) | `begin_battle()` / `crnd()` | **keyed** per-battle (combat migration) |
 | Command phase (only if issued) | EXPLORE (`d_explore`/`find_lost_items`) + SEEK (`d_seek`) detect rolls | **keyed** per-turn explore — `begin_explore()` / `expl_*` (#25, tag `expl`) — *not reached on either golden tree* |
 | Command phase (only if issued) | weapon training (ARCHERY/DEFENSE/SWORDPLAY), STUDY scroll-consume, RESEARCH pick/gate, TORTURE, PETTY THIEF | **keyed** per-turn skills — `begin_skills()` / `skil_*` (#25, tag `skil`, command core) — *not reached on either golden tree* |
+| Command phase (only if issued) | scry/locate, religion gates, necro eat-dead/skill-transfer, MEDITATE/HEAL aura spells, alchemy potion brew/use | **keyed** per-turn magic — `begin_magic()` / `magc_*` (#25, tag `magc`, command core) — *not reached on either golden tree* |
 | Each day (`day%7`) / end of month | `heal_characters`, `loyalty_decay`, `men_starve`, `animal_deaths`, `corpse_decay` | **keyed** per-turn upkeep — `begin_upkeep()` (#25) — *not reached on either golden tree* |
 | End of month | `inn_income()` (`temple_income` draws nothing) | **global** `rnd()` (future income subsystem residual) |
 
@@ -290,8 +295,21 @@ Notes for #25 work:
   (`begin_skills()` / `skil_*`, tag `skil`), but a standard `-r` turn issues no
   skill command, so the stream is unreached on both golden trees and at
   world-init — byte-neutral, no re-baseline. This is a **deliberate partial**:
-  the aura/magic-adjacent draws (`basic.c` meditation/heal, `alchem.c` potions,
-  `art.c` artifact crafting) and the `produce.c` mining/harvest residual stay on
-  the global stream pending the magic step.
+  the aura/magic-adjacent draws (`basic.c` meditation/heal, `alchem.c` potions)
+  deferred to magic — **now landed** (below) — while `art.c` artifact crafting and
+  the `produce.c` mining/harvest residual stay on the global stream (post-magic
+  follow-up / economy residual).
+- **Magic (command core) is command-only too** (the quest/explore/skills profile):
+  the player-cast spell draws across five files — scrying (`scry.c`), religion
+  gates (`relig.c`), necromancy eat-dead/skill-transfer (`necro.c`), the
+  meditation/aura + heal spells (`basic.c`), and alchemy potion brew/use
+  (`alchem.c`, the last two inherited from the skills step-9 deferral) — draw from
+  the keyed per-turn magic stream (`begin_magic()` / `magc_*`, tag `magc`, actor in
+  the leaf key), but a standard `-r` turn issues no magic command, so the stream is
+  unreached on both golden trees and at world-init — byte-neutral, no re-baseline.
+  Another **deliberate partial**: the turn-auto `curse_erode` day-pick (`day.c`)
+  stays global (it fires every turn and would move the main manifest), `auto_undead`
+  defers to npc (autonomous behavior), `art.c` crafting to a post-magic follow-up,
+  and `cloud.c` to region:cloud.
 - The keyed-stream seam is `lib/rng.{c,h}`; the per-subsystem migration order is
   in [rng-state-granularity.md](rng-state-granularity.md).

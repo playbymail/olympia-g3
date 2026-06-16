@@ -6,7 +6,162 @@
 #include 	<stdlib.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
 
+
+/*
+ *  issue #25 (step 10): magic RNG stream (command core).
+ *
+ *  The unambiguous, player-cast spell draws across the magic subsystem --
+ *  scrying (scry.c), religion gates (relig.c), necromancy eat-dead/skill
+ *  transfer (necro.c), the meditation/aura + heal spells (basic.c, inherited
+ *  from the skills step-9 deferral), and the alchemy potion brew/use draws
+ *  (alchem.c, also a skills-step-9 deferral) -- draw from a per-turn
+ *  `magic_rng` stream keyed off the turn root, tag "magc", instead of the
+ *  global rnd(). Like explore/skills/upkeep (and unlike combat/quest's fresh
+ *  per-scenario sequential stream), this is ONE per-turn stream seeded once via
+ *  the turn-guarded begin_magic(), with all draws being KEYED LEAVES (rng_keyed,
+ *  which never advances a counter). The actor goes in the leaf key k1 -- not the
+ *  map's literal "scenario key = actor" -- because the draws are scattered
+ *  across five files (scry.c, relig.c, necro.c, basic.c, alchem.c) with no
+ *  single per-actor chokepoint, and one actor may cast several spells in a turn.
+ *  Carrying the actor in the leaf key gives identical per-(actor, context)
+ *  addressability for free and is collision-free across spells (the
+ *  explore/skills precedent). Every draw is command-only, so this migration is
+ *  byte-neutral on both golden trees (no spell/USE/BREW order is issued on the
+ *  bare-map or guard-pillage turns, and none fire at world-init -- verified
+ *  empirically: 0 draws on the bare-map turn, both guard-pillage twins, and the
+ *  -s/-a/-i world-init).
+ *
+ *  This is a DELIBERATE PARTIAL of the magic row (command core only). Deferred
+ *  as named residuals (each would move a manifest or belongs to another system):
+ *    - day.c curse_erode_day -- a turn-auto day-pick fired every turn via
+ *      daily_events; migrating it would move the MAIN manifest (the
+ *      economy/weather profile), breaking the byte-neutral goal. Stays global.
+ *    - necro.c auto_undead -- autonomous summoned-undead behavior (reached only
+ *      from npc.c's auto-behavior dispatch), not a player spell; an NPC residual.
+ *    - necro undead summoning troop-count -- already on the npcs stream via
+ *      do_cookie_npc (the npc migration); not touched here.
+ *    - art.c artifact/orb/ring crafting -- a post-magic follow-up (overlaps
+ *      quest shared-infra, economy suffuse-rings, and a world-init mint risk).
+ *    - cloud.c -- region:cloud (step 12).
+ *
+ *  Hosted here (basic.c, the core-spell file); begin_magic() and the basic.c
+ *  meditation/heal helpers (magc_med/magc_omen/magc_heal) are static, while
+ *  magc_scry/magc_piety/magc_eat/magc_learn/magc_potion are exposed via proto.h
+ *  so scry.c/relig.c/necro.c/alchem.c draw from the same stream (the
+ *  begin_economy/skil_crit cross-file convention).
+ */
+#define	TAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_MAGIC	0x6d616763u	/* "magc" */
+
+/* magic leaf-draw purpose tags (private, like use.c's STAG_* / c1.c's XTAG_*) */
+#define	MTAG_SCRY	0x73637279u	/* "scry" -- scry/locate/unbarrier gates       */
+#define	MTAG_PIETY	0x70696574u	/* "piet" -- religion success gates            */
+#define	MTAG_EATD	0x65617464u	/* "eatd" -- necro eat-dead destroy/sick gates */
+#define	MTAG_LEARN	0x6c65726eu	/* "lern" -- necro skill-transfer per-skill    */
+#define	MTAG_MED	0x6d656469u	/* "medi" -- meditation/adv-med gates          */
+#define	MTAG_OMEN	0x6f6d656eu	/* "omen" -- hinder-meditation omen flavor     */
+#define	MTAG_HEAL	0x6865616cu	/* "heal" -- Heal spell success gate           */
+#define	MTAG_POTN	0x706f746eu	/* "potn" -- alchemy potion brew/use draws     */
+
+static rng_stream magic_rng;
+static int magic_rng_turn = -1;		/* seed magic_rng once per turn */
+
+/*
+ *  Seed the per-turn magic stream once per turn. Self-seeded by every helper
+ *  below (including the cross-file magc_scry/magc_piety/magc_eat/magc_learn/
+ *  magc_potion), so the first spell draw of the turn cannot read an unseeded
+ *  stream regardless of which spell fires first.
+ */
+static void
+begin_magic(void)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	if (magic_rng_turn == sysclock.turn)
+		return;			/* already seeded this turn */
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	magic_rng = rng_stream_of(&turn, 0, TAG_MAGIC);
+
+	magic_rng_turn = sysclock.turn;
+}
+
+/* scry.c: LOCATE CHARACTER / REMOVE BARRIER success gate, keyed on (who, k2). */
+int
+magc_scry(int who, int k2)
+{
+	begin_magic();
+	return rng_keyed(&magic_rng, who, k2, MTAG_SCRY, 1, 100);
+}
+
+/* relig.c: REVEAL VISION / RESURRECT / REMOVE BLESSING piety gate, keyed (who, k2). */
+int
+magc_piety(int who, int k2)
+{
+	begin_magic();
+	return rng_keyed(&magic_rng, who, k2, MTAG_PIETY, 1, 100);
+}
+
+/*
+ *  necro.c EAT DEAD: the 33% destroy (sub 0) and 25% sick (sub 1) gates, keyed
+ *  on (who, body) with the sub folded into the leaf key (body*2 + sub) so each
+ *  is an independent keyed leaf (the skills petty / weather day*16+slot precedent).
+ */
+int
+magc_eat(int who, int body, int sub)
+{
+	begin_magic();
+	return rng_keyed(&magic_rng, who, body * 2 + sub, MTAG_EATD, 1, 100);
+}
+
+/* necro.c get_some_skills: per-skill transfer check, keyed on (who, skill). */
+int
+magc_learn(int who, int skill)
+{
+	begin_magic();
+	return rng_keyed(&magic_rng, who, skill, MTAG_LEARN, 1, 100);
+}
+
+/*
+ *  alchem.c potion draws, keyed on (who, sub): new_potion kind (sub 0, 1..2),
+ *  v_use_heal amount (sub 1, 0..3), v_use_slave gate (sub 2, 1..100). The range
+ *  is passed in since the three sub-draws differ.
+ */
+int
+magc_potion(int who, int sub, int low, int high)
+{
+	begin_magic();
+	return rng_keyed(&magic_rng, who, sub, MTAG_POTN, low, high);
+}
+
+/* basic.c MEDITATE / advanced-meditation hinder gate, keyed on (who, sub). */
+static int
+magc_med(int who, int sub)
+{
+	begin_magic();
+	return rng_keyed(&magic_rng, who, sub, MTAG_MED, 1, 100);
+}
+
+/* basic.c hinder-meditation omen flavor switch(rnd(1,4)), keyed on (who, other). */
+static int
+magc_omen(int who, int other)
+{
+	begin_magic();
+	return rng_keyed(&magic_rng, who, other, MTAG_OMEN, 1, 4);
+}
+
+/* basic.c HEAL spell success gate, keyed on (who, target). */
+static int
+magc_heal(int who, int target)
+{
+	begin_magic();
+	return rng_keyed(&magic_rng, who, target, MTAG_HEAL, 1, 100);
+}
 
 
 int
@@ -55,7 +210,7 @@ d_meditate(struct command *c)
 	p = p_magic(c->who);
 	p->hinder_meditation = 0;
 
-	if (rnd(1, 100) <= chance)
+	if (magc_med(c->who, 0) <= chance)	/* issue #25: magic stream */
 	{
 		wout(c->who, "Disturbing images and unquiet thoughts "
 			"ruin the meditative trance.  Meditation fails.");
@@ -99,7 +254,7 @@ d_adv_med(struct command *c)
 
 	bonus = max(2, max_eff_aura(c->who) / 10);
 
-	if (rnd(1, 100) <= chance)
+	if (magc_med(c->who, 1) <= chance)	/* issue #25: magic stream */
 	{
 		wout(c->who, "Disturbing images and unquiet thoughts "
 			"hamper the meditative trance.");
@@ -149,7 +304,7 @@ static void
 hinder_med_omen(int who, int other)
 {
 
-	switch (rnd(1,4))
+	switch (magc_omen(who, other))	/* issue #25: magic stream */
 	{
 	case 1:
 		wout(who, "A disturbing image of %s appeared last "
@@ -292,7 +447,7 @@ d_heal(struct command *c)
 	wout(VECT, "%s casts Heal on %s:",
 			box_name(c->who), box_name(target));
 
-	if (rnd(1,100) <= chance)
+	if (magc_heal(c->who, target) <= chance)	/* issue #25: magic stream */
 	{
 		wout(VECT, "Spell fails.");
 		return FALSE;

@@ -73,7 +73,7 @@ d_reveal_vision(struct command *c)
 		chance = 100;
 	}
 
-	if (rnd(1,100) > chance || diff_region(c->who, target))
+	if (magc_piety(c->who, target) > chance || diff_region(c->who, target))	/* issue #25: magic stream */
 	{
 		wout(c->who, "Failed to receive a vision.");
 		return FALSE;
@@ -182,7 +182,7 @@ d_resurrect(struct command *c)
 		chance = 100;
 	}
 
-	if (rnd(1,100) > chance)
+	if (magc_piety(c->who, body) > chance)	/* issue #25: magic stream */
 	{
 		wout(c->who, "Resurrection failed.");
 		return FALSE;
@@ -339,7 +339,7 @@ d_remove_bless(struct command *c)
 		chance = 100;
 	}
 
-	if (rnd(1,100) > chance)
+	if (magc_piety(c->who, target) > chance)	/* issue #25: magic stream */
 	{
 		wout(c->who, "Failed to remove blessing.");
 		return FALSE;

@@ -2,10 +2,11 @@
 
 Status: **in progress.** Groundwork for Project Ultron
 ([agentic-project-ultron.md](agentic-project-ultron.md)). The seam
-(`lib/rng.{c,h}`) is wired into nine subsystems so far — combat, pillage,
-economy/market, NPC spawning, weather, upkeep, quest, explore, and skills
-(**command core only** — the crafting/aura/alchemy draws are deferred; see the
-consumer sections below); the remaining subsystems in the
+(`lib/rng.{c,h}`) is wired into ten subsystems so far — combat, pillage,
+economy/market, NPC spawning, weather, upkeep, quest, explore, skills, and magic
+(the last two **command core only** — the crafting/aura/alchemy draws and the
+turn-auto curse-erode / autonomous-undead draws are deferred; see the consumer
+sections below); the remaining subsystems in the
 [distribution map](#recommended-subsystem-distribution) are still on the global
 `rnd()`.
 
@@ -61,11 +62,11 @@ model that the recommendation below generalizes.
 
 ## Options
 
-| # | Approach | Blast-radius win | Call-site churn |
-|---|----------|------------------|-----------------|
-| 1 | **Keyed / stateless draws** — replace order-dependent `rnd()` with draws keyed on stable inputs, `hash(entity, turn, purpose, sub_index)`. A draw no longer depends on how many draws preceded it. | **Largest** — true fix; reordering other code can't move a draw. | **Largest** — every migrated call site changes. |
-| 2 | **Per-subsystem / per-stream state** — keep `rnd()` stateful but split `digest` into named streams (combat, market, weather, …) seeded from master + a stream tag. | Partial — reordering *within* a stream still perturbs it, but subsystem A no longer moves subsystem B. | Smaller — mostly threading a stream handle. |
-| 3 | **Per-entity / per-turn reseed checkpoints** — snapshot/reseed at well-defined boundaries (per noble, per location, per turn-phase). | Coarse — partitions the golden tree along those seams only. | Smallest — no per-draw change. |
+| # | Approach                                                                                                                                                                                           | Blast-radius win                                                                                       | Call-site churn                                 |
+|---|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|-------------------------------------------------|
+| 1 | **Keyed / stateless draws** — replace order-dependent `rnd()` with draws keyed on stable inputs, `hash(entity, turn, purpose, sub_index)`. A draw no longer depends on how many draws preceded it. | **Largest** — true fix; reordering other code can't move a draw.                                       | **Largest** — every migrated call site changes. |
+| 2 | **Per-subsystem / per-stream state** — keep `rnd()` stateful but split `digest` into named streams (combat, market, weather, …) seeded from master + a stream tag.                                 | Partial — reordering *within* a stream still perturbs it, but subsystem A no longer moves subsystem B. | Smaller — mostly threading a stream handle.     |
+| 3 | **Per-entity / per-turn reseed checkpoints** — snapshot/reseed at well-defined boundaries (per noble, per location, per turn-phase).                                                               | Coarse — partitions the golden tree along those seams only.                                            | Smallest — no per-draw change.                  |
 
 Each option requires a **one-time, deliberate golden re-baseline** when it lands
 (it changes the stream once). The win is that *subsequent* changes stop
@@ -787,9 +788,11 @@ not-yet-migrated subsystem and stays on the global `rnd()`:
 - **`basic.c` meditation/aura + heal** — `d_meditate`, `d_adv_med`,
   `hinder_med_omen`, and `d_heal` are **aura/spell draws** (they
   `charge_aura()`, scale on aura level, print "casts Heal"); deferred to **magic**
-  (step 10).
+  (step 10). **Now landed** under magic (the tenth consumer, below) — they draw
+  from the per-turn `magic_rng` (tag `magc`) via `magc_med`/`magc_omen`/`magc_heal`.
 - **`alchem.c`** — `new_potion`, `v_use_heal`, `v_use_slave` (potion brew/use) —
-  alchemy/magic-adjacent; deferred to **magic**.
+  alchemy/magic-adjacent; deferred to **magic**. **Now landed** under magic via
+  `magc_potion`.
 - **`art.c`** — `d_forge_aura`, `new_orb`/`v_use_orb`, `create_npc_token`,
   `new_suffuse_ring`/`v_suffuse_ring` (artifact/magic-item crafting) — deferred to
   a **follow-up after magic** because it has three overlaps to settle first: (i)
@@ -803,6 +806,106 @@ not-yet-migrated subsystem and stays on the global `rnd()`:
 
 `d_hide`/`d_sneak`/`spy_*` draw nothing; `equip_new_noble` (`c1.c`) is `#if 0`
 dead code — nothing to migrate either way.
+
+## Tenth consumer: magic (command core)
+
+Magic is the tenth subsystem migrated, tag `"magc"`, and — like skills before it
+— it is a **deliberate partial**. Only the unambiguous, player-cast spell draws
+land here: scrying, religion gates, necromancy eat-dead/skill-transfer, the
+meditation/aura + heal spells, and the alchemy potion brew/use draws (the last
+two **inherited from the skills step-9 deferral**). The turn-auto curse-erode
+day-pick and the autonomous-undead draw are **explicitly deferred** so a small,
+byte-neutral slice lands cleanly. It is a sibling of the others under the turn
+root:
+
+```
+turn seed
+  ├─ … (combat … skills)
+  └─ (0,        TAG_MAGIC)   → magic_rng    (scry/piety/necro/meditation/alchemy spell draws)
+```
+
+### One per-turn stream, keyed leaves (the explore/skills model)
+
+Like explore and skills, magic uses **one per-turn stream seeded once** —
+`begin_magic()` (`olympia/basic.c`) is turn-guarded, scenario key `0` — with all
+draws being **keyed leaves** (`rng_keyed`, which never advances a counter). The
+**actor goes in the leaf key `k1`**, not the map's literal "scenario key =
+actor": the draws are scattered across **five files** (`scry.c`, `relig.c`,
+`necro.c`, `basic.c`, `alchem.c`) with no single per-actor chokepoint, and one
+actor may cast several spells in a turn. Carrying the actor in the leaf key gives
+identical per-`(actor, context)` addressability for free and is collision-free
+across spells — the explore/skills precedent. The stream + `begin_magic()` + the
+helpers live in `basic.c` (the core-spell file); `begin_magic` and the basic.c
+meditation/heal helpers (`magc_med`/`magc_omen`/`magc_heal`) are static, while
+`magc_scry`/`magc_piety`/`magc_eat`/`magc_learn`/`magc_potion` are exposed
+through `proto.h` so the other four files draw from the same stream (the
+`begin_economy`/`skil_crit` cross-file convention).
+
+Migrated draws (all keyed leaves via small named helpers, purpose a 4-char tag):
+
+- **scrying** (`scry.c` `d_locate_char`/`d_unbar_loc`) — the success gate
+  `rnd(1,100)` (`magc_scry`, `"scry"`), keyed on `(who, target|where)`.
+- **religion** (`relig.c` `d_reveal_vision`/`d_resurrect`/`d_remove_bless`) — the
+  piety gate `rnd(1,100)` (`magc_piety`, `"piet"`), keyed on `(who, c->a)` (the
+  vision target / resurrected body / blessing target).
+- **necromancy eat-dead** (`necro.c` `d_eat_dead`) — the 33% destroy and 25% sick
+  gates (`magc_eat`, `"eatd"`), keyed on `(who, body)` with the sub folded into
+  the leaf key (`body*2 + sub`) so each is an independent keyed leaf (the skills
+  `petty` / weather `day*16+slot` precedent).
+- **necromancy skill transfer** (`necro.c` `get_some_skills`, reached only from
+  `d_eat_dead`) — the per-skill transfer check `rnd(1,100)` (`magc_learn`,
+  `"lern"`), keyed on `(who, skill)`. The two disjoint loops (category vs subskill)
+  key on the distinct skill ids, so the keying is collision-free across them.
+- **meditation/aura** (`basic.c` `d_meditate`/`d_adv_med` + `hinder_med_omen`) —
+  the hinder gate `rnd(1,100)` (`magc_med`, `"medi"`, keyed on `(who, sub)` to
+  separate the two commands) and the omen flavor `switch(rnd(1,4))` (`magc_omen`,
+  `"omen"`, keyed on `(who, other)`).
+- **heal** (`basic.c` `d_heal`) — the Heal-spell success gate `rnd(1,100)`
+  (`magc_heal`, `"heal"`), keyed on `(who, target)`.
+- **alchemy** (`alchem.c` `new_potion`/`v_use_heal`/`v_use_slave`) — the potion
+  kind `switch(rnd(1,2))`, the heal amount `rnd(0,3)`, and the slave-potion gate
+  `rnd(1,100)<=33`, all via a single generic `magc_potion(who, sub, lo, hi)`
+  (`"potn"`), keyed on `(who, sub)` with the differing range passed in.
+  `new_potion` is reached from the BREW commands and the `d_save_*` quick-cast
+  saves — all command-path.
+
+### Why this one is byte-neutral on both trees (the quest/explore/skills profile)
+
+Like quest, explore, and skills, **every magic-spell draw is unreached on both
+golden trees** — measured empirically (instrument each of the 16 in-scope sites,
+build, run, count, revert):
+
+- **Bare-map standard turn (incl. its `-i` world-init): 0 magic draws.** No player
+  characters, so no spell / USE / BREW command is ever issued.
+- **guard-pillage turn (both `check.sh` and `check-lua.sh`): 0 magic draws.** Its
+  factions issue `pillage`/`guard`, never a magic command.
+- **World-init (`-s`/`-a`/`-i`, via `build-scenario.sh`): 0 magic draws.** None of
+  the migrated draws fire at world-init.
+
+So the migration is **byte-neutral on both manifests** (the quest/upkeep/explore/
+skills profile): no re-baseline of the main manifest *or* the guard-pillage tree,
+and `scenario.tgz` is untouched. Its value is purely future Ultron-fixture
+addressability.
+
+### Explicitly deferred (named residuals — the partial boundary)
+
+This slice **stops at the command/auto boundary**. Each deferred group would move
+a manifest or belongs to another subsystem, and stays on the global `rnd()`:
+
+- **`day.c` `curse_erode_day`** (`daily_events`) — a turn-auto day-pick
+  (`rnd(1,MONTH_DAYS)`) fired **every turn**; migrating it would move the **main
+  manifest** (the economy/weather profile), breaking the byte-neutral goal. Left
+  global as a deliberate decision (`noncreator_curse_erode()` itself draws nothing,
+  so only the day-pick is at issue).
+- **`necro.c` `auto_undead`** (`rnd(1,2)`) — autonomous summoned-undead behavior,
+  reached only from `npc.c`'s auto-behavior dispatch (`auto_*` family), **not a
+  player spell**; an NPC autonomous-behavior residual.
+- **necro undead summoning troop-count** — already on the `npcs` stream via
+  `do_cookie_npc` (the npc migration); not touched here.
+- **`art.c`** (8 draws) — artifact/orb/ring crafting; a **post-magic follow-up**
+  (three overlaps: quest shared-infra `new_orb`/`create_npc_token`, economy
+  `trade_suffuse_ring`, and a world-init mint risk).
+- **`cloud.c`** (4 draws) — `region:cloud` (step 12).
 
 ## Recommended subsystem distribution
 
@@ -856,8 +959,9 @@ master seed                                  rng_seed(randseed bytes)
    │     └─ leaf key(who, ctx, "crit"/"yiel"/"stdy"/"rsch"/"rpik"/"tort"/"ptty")  ← keyed leaves, one per-turn stream, actor in k1
    │             COMMAND CORE landed; deferred: basic.c aura/heal + alchem.c -> magic (10); art.c crafting -> follow-up; produce.c -> economy residual
    │
-   ├─ magic      key(turn, actor,    "magc")  [proposed] scry.c, necro.c, relig.c
-   │     └─ leaf key(spell, target, "scry"/"summon"/"piety")
+   ├─ magic      key(turn, 0,        "magc")  [PARTIAL]  basic.c (begin_magic/magc_*), scry.c, relig.c, necro.c, alchem.c
+   │     └─ leaf key(who, ctx, "scry"/"piet"/"eatd"/"lern"/"medi"/"omen"/"heal"/"potn")  ← keyed leaves, one per-turn stream, actor in k1
+   │             COMMAND CORE landed; deferred: curse_erode day-pick (day.c) -> stays global; auto_undead -> npc; art.c crafting -> follow-up; cloud.c -> region:cloud (12)
    │
    ├─ worldgen   key(turn, location, "wgen")  [proposed] seed.c (region/sublocation/feature seeding), tunnel.c (dungeon-gen, deferred from explore)
    │     └─ leaf key(where, feature_id, "terrain"/"gate"/"resource")
@@ -871,21 +975,21 @@ master seed                                  rng_seed(randseed bytes)
          └─ leaf key(entity, slot, "pw"/"id")             ← order-sensitive today; keyed fixes it
 ```
 
-| Order | Root system | Tag | Scenario key | Status | Primary files |
-|-------|-------------|-----|--------------|--------|---------------|
-| 1 | combat | `comb` | location | **landed** | `combat.c` |
-| 2 | pillage | `pill` | location | **landed** | `combat.c`, `npc.c` |
-| 3 | economy | `econ` | market | **landed** | `buy.c`, `seed.c` |
-| 4 | npc | `npcs` | location | **landed** | `npc.c`, `savage.c` |
-| 5 | weather | `wthr` | turn (loc 0) | **landed** | `storm.c`, `day.c` |
-| 6 | upkeep | `upkp` | turn (loc 0) | **landed** | `day.c` |
-| 7 | quest | `qest` | where / actor | **landed** | `quest.c`, `use.c` |
-| 8 | explore | `expl` | turn (loc 0) | **landed** | `c1.c`, `stealth.c` |
-| 9 | skills | `skil` | turn (loc 0) | **landed (command core)** — crafting/aura/alchemy deferred | `use.c`, `c2.c`, `stealth.c` (deferred: `basic.c`, `alchem.c`, `art.c`, `produce.c`) |
-| 10 | magic | `magc` | actor | proposed | `scry.c`, `necro.c`, `relig.c` |
-| 11 | worldgen | `wgen` | location | proposed | `seed.c`, `tunnel.c` (dungeon-gen) |
-| 12 | regions | `faer`/`hads`/`clud` | location | proposed | `faery.c`, `hades.c`, `cloud.c` |
-| 13 | mint | `mint` | entity id | last | `z.c`, `pw.c` |
+| Order | Root system | Tag                  | Scenario key  | Status                                                                | Primary files                                                                        |
+|-------|-------------|----------------------|---------------|-----------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| 1     | combat      | `comb`               | location      | **landed**                                                            | `combat.c`                                                                           |
+| 2     | pillage     | `pill`               | location      | **landed**                                                            | `combat.c`, `npc.c`                                                                  |
+| 3     | economy     | `econ`               | market        | **landed**                                                            | `buy.c`, `seed.c`                                                                    |
+| 4     | npc         | `npcs`               | location      | **landed**                                                            | `npc.c`, `savage.c`                                                                  |
+| 5     | weather     | `wthr`               | turn (loc 0)  | **landed**                                                            | `storm.c`, `day.c`                                                                   |
+| 6     | upkeep      | `upkp`               | turn (loc 0)  | **landed**                                                            | `day.c`                                                                              |
+| 7     | quest       | `qest`               | where / actor | **landed**                                                            | `quest.c`, `use.c`                                                                   |
+| 8     | explore     | `expl`               | turn (loc 0)  | **landed**                                                            | `c1.c`, `stealth.c`                                                                  |
+| 9     | skills      | `skil`               | turn (loc 0)  | **landed (command core)** — crafting/aura/alchemy deferred            | `use.c`, `c2.c`, `stealth.c` (deferred: `basic.c`, `alchem.c`, `art.c`, `produce.c`) |
+| 10    | magic       | `magc`               | turn (loc 0)  | **landed (command core)** — curse-erode/auto-undead/crafting deferred | `basic.c`, `scry.c`, `relig.c`, `necro.c`, `alchem.c`                                |
+| 11    | worldgen    | `wgen`               | location      | proposed                                                              | `seed.c`, `tunnel.c` (dungeon-gen)                                                   |
+| 12    | regions     | `faer`/`hads`/`clud` | location      | proposed                                                              | `faery.c`, `hades.c`, `cloud.c`                                                      |
+| 13    | mint        | `mint`               | entity id     | last                                                                  | `z.c`, `pw.c`                                                                        |
 
 ### Why this order
 
@@ -955,6 +1059,20 @@ master seed                                  rng_seed(randseed bytes)
   post-magic follow-up (three overlaps incl. a world-init mint risk), and
   `produce.c` stays an economy residual. See
   [Ninth consumer](#ninth-consumer-skills-command-core).
+- **magic came next, as a deliberate partial** (command core now landed) — the
+  player-cast spell draws across `scry.c`/`relig.c`/`necro.c`/`basic.c`/`alchem.c`
+  (scrying, religion gates, necromancy eat-dead/skill-transfer, the meditation/aura
+  + heal spells and alchemy potions inherited from the skills step-9 deferral).
+  Like explore/skills it uses **one per-turn stream, keyed leaves** (the actor in
+  the leaf key, no per-actor chokepoint across the five files). Byte-neutral on
+  **both** golden trees (every magic draw is command-only, unreached on the bare
+  map and guard-pillage, and none fire at world-init) — the quest/explore/skills
+  profile, so no re-baseline and no `scenario.tgz` regeneration. The slice **stops
+  at the command/auto boundary**: the `day.c` `curse_erode_day` turn-auto day-pick
+  stays global (migrating it would move the main manifest), `necro.c` `auto_undead`
+  defers to npc (autonomous behavior), `art.c` crafting to a post-magic follow-up,
+  and `cloud.c` to region:cloud (step 12). See
+  [Tenth consumer](#tenth-consumer-magic-command-core).
 - **mint is last** — `z.c` password/id generation is *creation-order* sensitive
   today, so keying it on the minted entity id is what most directly enables small
   fixtures, but it touches the most golden bytes; stage it after everything else.
@@ -984,6 +1102,12 @@ master seed                                  rng_seed(randseed bytes)
 - `olympia/c1.c` — `begin_explore()`/`expl_*` (explore), the eighth consumer;
   the EXPLORE command + `stealth.c` `d_seek` detect, command-only (unreached on
   both trees). `tunnel.c` dungeon-gen deferred to worldgen, torture/petty to skills.
+- `olympia/use.c` — `begin_skills()`/`skil_*` (skills, command core), the ninth
+  consumer; weapon training, STUDY/RESEARCH, TORTURE/PETTY THIEF, command-only.
+- `olympia/basic.c` — `begin_magic()`/`magc_*` (magic, command core), the tenth
+  consumer; scry/relig/necro/meditation/alchemy spell draws across five files,
+  command-only (unreached on both trees). `curse_erode`/`auto_undead`/`art.c`
+  crafting deferred.
 - `tests/olympia/regress/guard-pillage/` — the combat golden tree (and the
   #4-unreachability write-up).
 - [agentic-project-ultron.md](agentic-project-ultron.md) — the coverage

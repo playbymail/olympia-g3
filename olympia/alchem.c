@@ -16,7 +16,7 @@ new_potion(int who)
 	if (new < 0)
 		return -1;
 
-	switch (rnd(1,2))
+	switch (magc_potion(who, 0, 1, 2))	/* issue #25: magic stream */
 	{
 	case 1:
 		s = "Magic potion";
@@ -132,7 +132,7 @@ v_use_heal(struct command *c)
 
 	if (char_health(c->who) < 100)
 	{
-		p_char(c->who)->health += rnd(0,3) * 10;
+		p_char(c->who)->health += magc_potion(c->who, 1, 0, 3) * 10;	/* issue #25: magic stream */
 		if (char_health(c->who) > 100)
 			p_char(c->who)->health = 100;
 		wout(c->who, "Health is now %d.",
@@ -185,7 +185,7 @@ v_use_slave(struct command *c)
 
 	destroy_unique_item(c->who, item);
 
-	if (rnd(1,100) <= 33)
+	if (magc_potion(c->who, 2, 1, 100) <= 33)	/* issue #25: magic stream */
 	{
 		kill_char(c->who, MATES);
 		return TRUE;
