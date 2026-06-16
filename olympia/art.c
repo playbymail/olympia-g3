@@ -823,7 +823,7 @@ d_forge_aura(struct command *c)
 
 	if (numargs(c) < 2)
 	{
-		switch (rnd(1,3))
+		switch (magc_forge(c->who, 0))	/* issue #25: magic stream */
 		{
 		case 1:
 			new_name = "Gold ring";
@@ -852,7 +852,7 @@ d_forge_aura(struct command *c)
 	set_name(new, new_name);
 
 	p = p_item(new);
-	p->weight = (short) rnd(1,3);
+	p->weight = (short) magc_forge(c->who, 1);	/* issue #25: magic stream */
 
 	pm = p_item_magic(new);
 
@@ -919,7 +919,7 @@ v_use_orb(struct command *c)
 
 	ilist_append(&orb_used_this_month, item);
 
-	if (rnd(1,3) == 1)
+	if (magc_orb(c->who) == 1)	/* issue #25: magic stream */
 	{
 	    wout(c->who, "Only murky, indistinct images are seen in the orb.");
 	    return FALSE;
@@ -1475,7 +1475,7 @@ v_suffuse_ring(struct command *c, int kind)
 	log_write(LOG_SPECIAL, "Golden ring %s used by %s",
 			box_code_less(item), box_code_less(player(c->who)));
 
-	if (rnd(1,3) == 1)
+	if (magc_ring(c->who) == 1)	/* issue #25: magic stream */
 	{
 		wout(c->who, "Nothing happens.");
 	}

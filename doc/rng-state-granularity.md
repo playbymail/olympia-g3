@@ -799,8 +799,12 @@ not-yet-migrated subsystem and stays on the global `rnd()`:
   `new_orb`/`create_npc_token` are quest-left shared-infra residuals; (ii) suffuse
   rings overlap economy (`trade_suffuse_ring`); (iii) a **world-init mint risk**
   (orbs/tokens/rings may be minted during `-s`/`-a`/`-i`, which would flip this to
-  the expensive economy profile with a `scenario.tgz` regen). The follow-up does
-  the empirical world-init check.
+  the expensive economy profile with a `scenario.tgz` regen). **Now partly landed**
+  under magic (the crafting follow-up below): the three **command-path** draws
+  (`d_forge_aura` kind+weight, `v_use_orb`, `v_suffuse_ring`) draw from `magc` via
+  `magc_forge`/`magc_orb`/`magc_ring`; the three **shared-infra minters** stay
+  deferred (i = quest, ii = economy). The empirical world-init check came back **0
+  art.c draws** at `-s`/`-a`/`-i` — overlap (iii) did not materialize.
 - **`produce.c`** mining/harvest/mage-menial — left global by the economy
   migration; an **economy** residual.
 
@@ -821,7 +825,7 @@ root:
 ```
 turn seed
   ├─ … (combat … skills)
-  └─ (0,        TAG_MAGIC)   → magic_rng    (scry/piety/necro/meditation/alchemy spell draws)
+  └─ (0,        TAG_MAGIC)   → magic_rng    (scry/piety/necro/meditation/alchemy spell + art.c crafting draws)
 ```
 
 ### One per-turn stream, keyed leaves (the explore/skills model)
@@ -830,15 +834,17 @@ Like explore and skills, magic uses **one per-turn stream seeded once** —
 `begin_magic()` (`olympia/basic.c`) is turn-guarded, scenario key `0` — with all
 draws being **keyed leaves** (`rng_keyed`, which never advances a counter). The
 **actor goes in the leaf key `k1`**, not the map's literal "scenario key =
-actor": the draws are scattered across **five files** (`scry.c`, `relig.c`,
-`necro.c`, `basic.c`, `alchem.c`) with no single per-actor chokepoint, and one
-actor may cast several spells in a turn. Carrying the actor in the leaf key gives
+actor": the draws are scattered across **six files** (`scry.c`, `relig.c`,
+`necro.c`, `basic.c`, `alchem.c`, `art.c` — the last added by the crafting
+follow-up below) with no single per-actor chokepoint, and one actor may cast
+several spells in a turn. Carrying the actor in the leaf key gives
 identical per-`(actor, context)` addressability for free and is collision-free
 across spells — the explore/skills precedent. The stream + `begin_magic()` + the
 helpers live in `basic.c` (the core-spell file); `begin_magic` and the basic.c
 meditation/heal helpers (`magc_med`/`magc_omen`/`magc_heal`) are static, while
-`magc_scry`/`magc_piety`/`magc_eat`/`magc_learn`/`magc_potion` are exposed
-through `proto.h` so the other four files draw from the same stream (the
+`magc_scry`/`magc_piety`/`magc_eat`/`magc_learn`/`magc_potion` plus the crafting
+helpers `magc_forge`/`magc_orb`/`magc_ring` are exposed
+through `proto.h` so the other five files draw from the same stream (the
 `begin_economy`/`skil_crit` cross-file convention).
 
 Migrated draws (all keyed leaves via small named helpers, purpose a 4-char tag):
@@ -902,10 +908,45 @@ a manifest or belongs to another subsystem, and stays on the global `rnd()`:
   player spell**; an NPC autonomous-behavior residual.
 - **necro undead summoning troop-count** — already on the `npcs` stream via
   `do_cookie_npc` (the npc migration); not touched here.
-- **`art.c`** (8 draws) — artifact/orb/ring crafting; a **post-magic follow-up**
-  (three overlaps: quest shared-infra `new_orb`/`create_npc_token`, economy
-  `trade_suffuse_ring`, and a world-init mint risk).
+- **`art.c`** — artifact/orb/ring crafting; the **command-path** draws landed
+  here (see the crafting follow-up below), but the three shared-infra **minters**
+  stay deferred: `new_orb`/`create_npc_token` (quest loot) and `new_suffuse_ring`
+  (economy per-turn restock).
 - **`cloud.c`** (4 draws) — `region:cloud` (step 12).
+
+### Crafting follow-up: art.c command draws (still on magc)
+
+The artifact-crafting overlaps the magic step flagged are now **settled**. The
+three **player-command** crafting draws in `art.c` reuse the **same `magc`
+stream** (no new stream or tag) via three cross-file helpers in `basic.c`,
+declared in `proto.h` — the `magc_scry`/`magc_piety` convention:
+
+- **`d_forge_aura`** (FORGE AURACULUM, `sk_forge_aura` skill completion) — the
+  unnamed-ring kind `switch(rnd(1,3))` and the auraculum weight `rnd(1,3)`, both
+  via `magc_forge(who, sub)` (`"forg"`), keyed on `(who, sub)` with `sub` 0=kind,
+  1=weight (the `magc_eat` sub-key precedent).
+- **`v_use_orb`** (USE orb) — the 1-in-3 murky-image failure gate
+  (`magc_orb(who)`, `"orb "`), keyed on `(who)`.
+- **`v_suffuse_ring`** (USE suffuse-ring) — the 1-in-3 fizzle gate
+  (`magc_ring(who)`, `"ring"`), keyed on `(who)`.
+
+**Byte-neutral on both trees** (the quest/explore/skills profile), verified
+empirically by instrumenting all seven live `art.c` `rnd()` sites:
+
+- The **three command draws are 0 everywhere** — bare-map turn, both
+  guard-pillage twins (`check.sh` + `check-lua.sh`), and `-s`/`-a`/`-i`
+  world-init. No re-baseline, no `scenario.tgz` regen. The **world-init mint
+  risk did not materialize** (0 art.c draws at `-s`/`-a`/`-i`).
+- **Deferred minters stay global**, by design:
+  - `new_orb` (`rnd(1,4)*2+1` orb_use_count) and `create_npc_token`
+    (`switch(rnd(1,5))`) are reached **only** from `quest.c` loot generation —
+    **quest** shared-infra residuals (the quest step already left them global).
+  - `new_suffuse_ring` (`switch(rnd(1,5))`) is reached from `buy.c`
+    `trade_suffuse_ring`, the **per-turn economy restock** — it fires ~22–42×
+    on the standard turn (measured), so migrating it **would move the main
+    manifest**. An **economy** residual.
+  - `add_token_unit_sup`'s `gen_item(..., rnd(3,15))` is **dead code** (`#if 0`);
+    nothing to migrate.
 
 ## Recommended subsystem distribution
 
@@ -959,9 +1000,9 @@ master seed                                  rng_seed(randseed bytes)
    │     └─ leaf key(who, ctx, "crit"/"yiel"/"stdy"/"rsch"/"rpik"/"tort"/"ptty")  ← keyed leaves, one per-turn stream, actor in k1
    │             COMMAND CORE landed; deferred: basic.c aura/heal + alchem.c -> magic (10); art.c crafting -> follow-up; produce.c -> economy residual
    │
-   ├─ magic      key(turn, 0,        "magc")  [PARTIAL]  basic.c (begin_magic/magc_*), scry.c, relig.c, necro.c, alchem.c
-   │     └─ leaf key(who, ctx, "scry"/"piet"/"eatd"/"lern"/"medi"/"omen"/"heal"/"potn")  ← keyed leaves, one per-turn stream, actor in k1
-   │             COMMAND CORE landed; deferred: curse_erode day-pick (day.c) -> stays global; auto_undead -> npc; art.c crafting -> follow-up; cloud.c -> region:cloud (12)
+   ├─ magic      key(turn, 0,        "magc")  [PARTIAL]  basic.c (begin_magic/magc_*), scry.c, relig.c, necro.c, alchem.c, art.c
+   │     └─ leaf key(who, ctx, "scry"/"piet"/"eatd"/"lern"/"medi"/"omen"/"heal"/"potn"/"forg"/"orb "/"ring")  ← keyed leaves, one per-turn stream, actor in k1
+   │             COMMAND CORE + art.c crafting commands landed; deferred: curse_erode day-pick (day.c) -> stays global; auto_undead -> npc; art.c minters new_orb/create_npc_token -> quest, new_suffuse_ring -> economy; cloud.c -> region:cloud (12)
    │
    ├─ worldgen   key(turn, location, "wgen")  [proposed] seed.c (region/sublocation/feature seeding), tunnel.c (dungeon-gen, deferred from explore)
    │     └─ leaf key(where, feature_id, "terrain"/"gate"/"resource")
@@ -986,7 +1027,7 @@ master seed                                  rng_seed(randseed bytes)
 | 7     | quest       | `qest`               | where / actor | **landed**                                                            | `quest.c`, `use.c`                                                                   |
 | 8     | explore     | `expl`               | turn (loc 0)  | **landed**                                                            | `c1.c`, `stealth.c`                                                                  |
 | 9     | skills      | `skil`               | turn (loc 0)  | **landed (command core)** — crafting/aura/alchemy deferred            | `use.c`, `c2.c`, `stealth.c` (deferred: `basic.c`, `alchem.c`, `art.c`, `produce.c`) |
-| 10    | magic       | `magc`               | turn (loc 0)  | **landed (command core)** — curse-erode/auto-undead/crafting deferred | `basic.c`, `scry.c`, `relig.c`, `necro.c`, `alchem.c`                                |
+| 10    | magic       | `magc`               | turn (loc 0)  | **landed (command core + art.c crafting commands)** — curse-erode/auto-undead + quest/economy minters deferred | `basic.c`, `scry.c`, `relig.c`, `necro.c`, `alchem.c`, `art.c`                       |
 | 11    | worldgen    | `wgen`               | location      | proposed                                                              | `seed.c`, `tunnel.c` (dungeon-gen)                                                   |
 | 12    | regions     | `faer`/`hads`/`clud` | location      | proposed                                                              | `faery.c`, `hades.c`, `cloud.c`                                                      |
 | 13    | mint        | `mint`               | entity id     | last                                                                  | `z.c`, `pw.c`                                                                        |
@@ -1070,8 +1111,11 @@ master seed                                  rng_seed(randseed bytes)
   profile, so no re-baseline and no `scenario.tgz` regeneration. The slice **stops
   at the command/auto boundary**: the `day.c` `curse_erode_day` turn-auto day-pick
   stays global (migrating it would move the main manifest), `necro.c` `auto_undead`
-  defers to npc (autonomous behavior), `art.c` crafting to a post-magic follow-up,
-  and `cloud.c` to region:cloud (step 12). See
+  defers to npc (autonomous behavior), and `cloud.c` to region:cloud (step 12). The
+  `art.c` **crafting commands** (FORGE AURACULUM / USE orb / USE suffuse-ring) then
+  landed on `magc` too (the crafting follow-up — also byte-neutral, also 0 at
+  world-init), leaving only the `art.c` **shared-infra minters** deferred
+  (`new_orb`/`create_npc_token` → quest, `new_suffuse_ring` → economy). See
   [Tenth consumer](#tenth-consumer-magic-command-core).
 - **mint is last** — `z.c` password/id generation is *creation-order* sensitive
   today, so keying it on the minted entity id is what most directly enables small
@@ -1105,9 +1149,11 @@ master seed                                  rng_seed(randseed bytes)
 - `olympia/use.c` — `begin_skills()`/`skil_*` (skills, command core), the ninth
   consumer; weapon training, STUDY/RESEARCH, TORTURE/PETTY THIEF, command-only.
 - `olympia/basic.c` — `begin_magic()`/`magc_*` (magic, command core), the tenth
-  consumer; scry/relig/necro/meditation/alchemy spell draws across five files,
-  command-only (unreached on both trees). `curse_erode`/`auto_undead`/`art.c`
-  crafting deferred.
+  consumer; scry/relig/necro/meditation/alchemy spell draws plus the `art.c`
+  crafting commands (FORGE AURACULUM / USE orb / USE suffuse-ring via
+  `magc_forge`/`magc_orb`/`magc_ring`) across six files, command-only (unreached on
+  both trees). `curse_erode`/`auto_undead` and the `art.c` shared-infra minters
+  (`new_orb`/`create_npc_token` → quest, `new_suffuse_ring` → economy) deferred.
 - `tests/olympia/regress/guard-pillage/` — the combat golden tree (and the
   #4-unreachability write-up).
 - [agentic-project-ultron.md](agentic-project-ultron.md) — the coverage

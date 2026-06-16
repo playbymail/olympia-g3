@@ -202,7 +202,7 @@ stream — see [doc/turn-execution-order.md](doc/turn-execution-order.md).
 
 **Ten consumers landed so far: combat, pillage, economy/market, npc, weather,
 upkeep, quest, explore, skills (command core only), and magic (command core
-only).** Each reseeds a stream off the turn root (`rng_master_seed()` →
+plus the `art.c` crafting commands).** Each reseeds a stream off the turn root (`rng_master_seed()` →
 turn → its own 4-char tag) and draws from it instead of the global `rnd()`:
 
 - **combat** — per-battle stream on `(turn, location)`, `begin_battle()`/`crnd()`
@@ -265,22 +265,27 @@ turn → its own 4-char tag) and draws from it instead of the global `rnd()`:
   the aura/magic-adjacent draws are deferred as named residuals — `basic.c`
   meditation/heal and `alchem.c` potions to **magic (step 10)** (**now landed**,
   below), `art.c` artifact/orb/ring crafting to a **post-magic follow-up** (three
-  overlaps incl. a world-init mint risk), and `produce.c` mining/harvest as an
-  **economy** residual.
+  overlaps incl. a world-init mint risk — the **command** draws **now landed** on
+  magc, below; the shared-infra minters stay deferred), and `produce.c`
+  mining/harvest as an **economy** residual.
 - **magic (command core)** — **one per-turn** stream (tag `magc`), seeded once via
   the turn-guarded `begin_magic()` (`basic.c`, the core-spell file); the
   explore/skills model (keyed leaves, actor in the leaf key `k1`) because the
-  player-cast spell draws are scattered across five files (`scry.c`, `relig.c`,
-  `necro.c`, `basic.c`, `alchem.c`) with no per-actor chokepoint. Cross-file
+  player-cast spell draws are scattered across six files (`scry.c`, `relig.c`,
+  `necro.c`, `basic.c`, `alchem.c`, `art.c`) with no per-actor chokepoint. Cross-file
   keyed-leaf helpers `magc_scry` (scry/locate/unbar gates), `magc_piety` (religion
   gates), `magc_eat` (necro eat-dead, sub-keyed), `magc_learn` (necro skill
-  transfer), `magc_potion` (alchemy brew/use) exposed via `proto.h`; static
+  transfer), `magc_potion` (alchemy brew/use), and the `art.c` crafting helpers
+  `magc_forge`/`magc_orb`/`magc_ring` (FORGE AURACULUM kind+weight, USE orb, USE
+  suffuse-ring — the post-magic crafting follow-up) exposed via `proto.h`; static
   `magc_med`/`magc_omen`/`magc_heal` for the `basic.c` meditation/aura + heal
   spells (the skills-deferred aura half, now landed). A **deliberate partial**:
   the turn-auto `curse_erode` day-pick (`day.c`) stays global (fires every turn →
   would move the main manifest), `necro.c` `auto_undead` defers to **npc**
-  (autonomous behavior, already keyed troop-count rides the `npcs` stream), `art.c`
-  crafting to the **post-magic follow-up**, and `cloud.c` to **region:cloud**.
+  (autonomous behavior, already keyed troop-count rides the `npcs` stream), the
+  `art.c` shared-infra **minters** stay deferred (`new_orb`/`create_npc_token` →
+  **quest** loot, `new_suffuse_ring` → **economy** per-turn restock, which fires
+  ~22–42×/turn), and `cloud.c` to **region:cloud**.
 
 Combat and pillage were **byte-neutral on the main manifest** (the bare-map turn
 runs no combat/pillage); economy, npc, and weather each ran on the standard turn
@@ -305,11 +310,18 @@ empirically: 0 draws on the bare-map turn, both guard-pillage twins, and
 migrated spell draw is command-only, neither tree issues a magic / USE / BREW
 command, and none fire at world-init (verified empirically: 0 draws on the
 bare-map turn, both guard-pillage twins, and `-s`/`-a`/`-i`) — so no re-baseline
-and no `scenario.tgz` regeneration.
+and no `scenario.tgz` regeneration. The **art.c crafting follow-up** (FORGE
+AURACULUM / USE orb / USE suffuse-ring command draws, `magc_forge`/`magc_orb`/
+`magc_ring` on the same `magc` stream) **is byte-neutral on *both* trees too**
+(the same profile): all three command draws are 0 on the bare-map turn, both
+guard-pillage twins, and `-s`/`-a`/`-i` world-init (verified empirically — the
+flagged mint risk did not materialize) — so no re-baseline and no `scenario.tgz`
+regeneration.
 Combat/pillage/npc/weather/upkeep behavior is pinned by its own golden tree,
 [tests/olympia/regress/guard-pillage](tests/olympia/regress/guard-pillage)
 (the **second** standing regress alongside secret-sea-route). The **deferred**
-skills/magic crafting draws (`art.c`), the magic turn-auto residuals
+`art.c` shared-infra minters (`new_orb`/`create_npc_token` → quest loot,
+`new_suffuse_ring` → economy per-turn restock), the magic turn-auto residuals
 (`curse_erode` day-pick, `auto_undead`), and the remaining subsystems (worldgen —
 which absorbs `tunnel.c` dungeon-gen — regions incl. `cloud.c`, mint) stay on the
 global `rnd()`; the migration order and per-subsystem keying live in
