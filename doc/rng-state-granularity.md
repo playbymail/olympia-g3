@@ -2,11 +2,13 @@
 
 Status: **in progress.** Groundwork for Project Ultron
 ([agentic-project-ultron.md](agentic-project-ultron.md)). The seam
-(`lib/rng.{c,h}`) is wired into ten subsystems so far — combat, pillage,
-economy/market, NPC spawning, weather, upkeep, quest, explore, skills, and magic
-(the last two **command core only** — the crafting/aura/alchemy draws and the
+(`lib/rng.{c,h}`) is wired into eleven subsystems so far — combat, pillage,
+economy/market, NPC spawning, weather, upkeep, quest, explore, skills, magic
+(the latter two **command core only** — the crafting/aura/alchemy draws and the
 turn-auto curse-erode / autonomous-undead draws are deferred; see the consumer
-sections below); the remaining subsystems in the
+sections below), and worldgen (INIT-time city seeding + dungeon generation — the
+engine's largest draw set, the one consumer that fires at INIT rather than during
+the turn); the remaining subsystems in the
 [distribution map](#recommended-subsystem-distribution) are still on the global
 `rnd()`.
 
@@ -676,17 +678,19 @@ list conflates three distinct reachability profiles. The boundary was drawn as:
 - **Migrated now (`expl`):** the genuine explore/detect rolls — `c1.c`
   `find_lost_items`/`d_explore` and `stealth.c` `d_seek` — matching the map's
   literal `"find"`/`"detect"` leaf names.
-- **Deferred to worldgen (step 11, `"wgen"`):** `tunnel.c` dungeon/subworld
-  generation. These are **pure world-gen** draws that fire at INIT (`create_tunnels`
-  ← `io.c`, init-guarded `if (tunnel_region == 0)`), have **no actor** (explore
-  keys on the actor; a dungeon keys on `(where, feature)` — exactly worldgen's
-  proposed leaf), and are the **single largest draw set in the engine: ~409,727
-  `rnd()` calls per fresh world build** (≈5× weather). `tunnel.c` sits in the same
-  `io.c` world-init block as `create_faery`/`create_hades`, which the map already
-  defers to regions (step 12) — direct precedent. Migrating it would force a
-  main-manifest re-baseline **plus** a `scenario.tgz` regeneration +
-  `EXPECT.sha256` re-baseline (it fires inside `build-scenario.sh`/`check-lua.sh`
-  world-init — the economy precedent) for **zero** command-fixture benefit.
+- **Deferred to worldgen (step 11, `"wgen"`) — now landed:** `tunnel.c`
+  dungeon/subworld generation. These are **pure world-gen** draws that fire at INIT
+  (`create_tunnels` ← `io.c`, init-guarded `if (tunnel_region == 0)`), have **no
+  actor** (explore keys on the actor; a dungeon is built per location), and are the
+  **single largest draw set in the engine: ~409,727 `rnd()` calls per fresh world
+  build** (≈5× weather). `tunnel.c` sits in the same `io.c` world-init block as
+  `create_faery`/`create_hades`, which the map defers to regions (step 12). As
+  predicted, migrating it forced a main-manifest re-baseline **plus** a
+  `scenario.tgz` regeneration + `EXPECT.sha256` re-baseline (it fires inside
+  `build-scenario.sh`/`check-lua.sh` world-init — the economy precedent) for
+  **zero** command-fixture benefit. **Landed** as the eleventh consumer using
+  fresh per-location *sequential* streams (a dungeon is an ordered recursive build,
+  un-keyable); see [Eleventh consumer](#eleventh-consumer-worldgen).
 - **Deferred to skills (step 9, `"skil"`):** `stealth.c` TORTURE and PETTY THIEF.
   Both are **skill commands** (`sk_torture`, `sk_petty_thief` registered in
   `use.c`), so they belong with the skills subsystem keyed on the actor, not with
@@ -948,6 +952,101 @@ empirically by instrumenting all seven live `art.c` `rnd()` sites:
   - `add_token_unit_sup`'s `gen_item(..., rnd(3,15))` is **dead code** (`#if 0`);
     nothing to migrate.
 
+## Eleventh consumer: worldgen
+
+Worldgen is the eleventh subsystem migrated, tag `"wgen"`, and — unlike the seven
+command-only consumers before it (quest through magic) — it **fires at INIT, not
+during the turn**, so it is **NOT byte-neutral**: it took a deliberate one-time
+re-baseline of *both* golden trees, exactly like the economy migration (the third
+consumer). It is a sibling of the others under the turn root:
+
+```
+turn seed
+  ├─ … (combat … magic)
+  └─ (0 | location, TAG_WORLDGEN) → worldgen (INIT city seeding + dungeon generation)
+```
+
+### One subsystem, two draw models (the weather precedent)
+
+Worldgen spans two files with fundamentally different draw shapes, so — like
+weather (sequential generation + keyed acute leaves) — it carries **two draw
+models on one tag**:
+
+- **`seed.c` → keyed leaves on one per-turn stream** (the upkeep/explore model).
+  `begin_worldgen()` (`olympia/seed.c`) is turn-guarded, scenario key `0`; the
+  draws go through small keyed helpers `wgen_prom` (`"prom"`, city prominence),
+  `wgen_skill` (`"tech"`, city skill teaching, `sub` 0–3 over its four draws),
+  `wgen_garr` (`"garr"`, province garrison size), and `wgen_gate` (`"gate"`, the
+  per-city tunnel build decision — exposed via `proto.h` for `tunnel.c`). The
+  **location goes in the leaf key**, not the map's literal "scenario key =
+  location": the *same city* is visited in **three separate INIT passes**
+  (prominence via `seed_city_near_lists`, skill via `seed_city`/`seed_initial_locations`,
+  garrison via `add_city_garrisons`), so a fresh per-city *sequential* stream would
+  reset to counter 0 each pass and **correlate** them. Keying on `(where, sub,
+  purpose)` is pass- and order-independent. It also makes the draws caller-agnostic:
+  `seed_city` (→ `seed_city_skill`) is reached not just from INIT but from
+  `faery.c`/`cloud.c`/`hades.c`/`tunnel.c`/`immed.c`, and the keyed leaf is
+  addressable per city regardless of which caller seeded it (the economy precedent
+  — `seed_city_trade` was pulled from the same shared callers onto `econ`; the
+  region-specific flavor in faery/hades/cloud stays for step 12).
+- **`tunnel.c` → fresh per-location sequential streams** (the combat/quest model).
+  `begin_worldgen_loc(where)` reseeds a file-static stream per location and the
+  draws go through `wseq_rnd` / `wseq_shuffle` (the latter over the weather
+  migration's `ilist_shuffle_rng`). A dungeon is an **ordered recursive build** —
+  hundreds of draws where each shapes the next (level count, chamber placement,
+  the Fisher-Yates exit shuffles) — so it **cannot** be expressed as keyed leaves;
+  it must be sequential. `create_subworld()` seeds on `under_region`; each
+  `create_tunnel_set(city)` seeds on `city` (also reached recursively for the
+  minted subworld city). Each location is built **exactly once**, so the fresh
+  per-location reseed never correlates across builds — the reason `seed.c`'s
+  multi-pass correlation problem does not arise here. The per-city build gate
+  (`create_tunnels:559`) stays a **keyed leaf** (`wgen_gate`) rather than the first
+  draw of the city's sequential stream, because `create_tunnel_set` re-seeds that
+  same `(turn, city)` stream at entry, which would collide.
+
+The two flavors are distinct streams under one tag — the leaf stream is
+`rng_stream_of(turn, 0, TAG_WORLDGEN)`; the sequential streams are
+`rng_stream_of(turn, where, TAG_WORLDGEN)` with `where` a nonzero entity id — so
+they never collide. `seed.c` hosts `begin_worldgen()` + the leaf helpers (only
+`wgen_gate` exported); `tunnel.c` keeps its sequential stream fully static (the
+`begin_economy`/`wthr_shuffle` cross-file convention).
+
+### Why this one moved both manifests (the economy profile)
+
+Both files fire at the `-i`/`-s`/`-a` world-init that `./run/olympia-g3.sh` and
+`build-scenario.sh` run (`seed_initial_locations` and `create_tunnels` in
+`io.c`'s init-guarded read block). Removing ~409,733 draws/build (≈5× weather;
+`tunnel.c`'s ~409,727 + `seed.c`'s 6) from the global serial stream realigns every
+global draw that follows — including the still-global **mint** draws that assign
+entity ids — so this migration took a **deliberate one-time re-baseline**:
+
+- **Main manifest** re-baselined (`golden_check.sh --update`) — still **204 files**,
+  content-only shift (the same signature as npc/weather: only the still-global
+  entity-id mint draws moved).
+- **guard-pillage tree** re-baselined: `scenario.tgz` regenerated with
+  `build-scenario.sh` (its world-init now runs the migrated worldgen draws → a
+  different saved `randseed` → the still-global mint/loot draws shift; the noble
+  ids moved, e.g. pillager 3695 / guard 1663) and `EXPECT.sha256` re-baselined via
+  `check.sh --update`. **Both `check.sh` and `check-lua.sh` agree** on the
+  re-baselined tree — the C-frozen and Lua-built paths produce identical post-turn
+  hashes, confirming the saved-`randseed` coupling is consistent. This coupling
+  through the saved `randseed` → master seed disappears once **mint** (step 13)
+  lands.
+
+**Honest framing:** worldgen yields **zero command-fixture benefit** — no small
+Ultron fixture comes out of it (it has no player command; it is pure world build).
+Its value is twofold: it removes the engine's **single largest draw set** from the
+global serial stream so a reorder no longer re-bakes the manifest through it, and
+it **completes the INIT-seeding partition** (economy already took the market half;
+worldgen takes the city-seeding + dungeon half).
+
+**Deliberately left on the global `rnd()`** (documented residuals): the entity-id
+**mint** draws (step 13 — the coupling above); the region-specific flavor in
+`faery.c`/`hades.c`/`cloud.c` (step 12, their own tags — only the shared
+`seed_city` infra they call moved here); and `produce.c` mining/harvest (an
+economy residual). The dead `rnd(1,2)` inside `create_tunnel_set`'s `#if 0`/`/* */`
+hades block draws nothing.
+
 ## Recommended subsystem distribution
 
 The map below is the canonical target the remaining migrations work against. It
@@ -1004,8 +1103,9 @@ master seed                                  rng_seed(randseed bytes)
    │     └─ leaf key(who, ctx, "scry"/"piet"/"eatd"/"lern"/"medi"/"omen"/"heal"/"potn"/"forg"/"orb "/"ring")  ← keyed leaves, one per-turn stream, actor in k1
    │             COMMAND CORE + art.c crafting commands landed; deferred: curse_erode day-pick (day.c) -> stays global; auto_undead -> npc; art.c minters new_orb/create_npc_token -> quest, new_suffuse_ring -> economy; cloud.c -> region:cloud (12)
    │
-   ├─ worldgen   key(turn, location, "wgen")  [proposed] seed.c (region/sublocation/feature seeding), tunnel.c (dungeon-gen, deferred from explore)
-   │     └─ leaf key(where, feature_id, "terrain"/"gate"/"resource")
+   ├─ worldgen   key(turn, 0|location, "wgen")  [LANDED]  seed.c (begin_worldgen/wgen_*: prominence/skill/garrison + tunnel gate), tunnel.c (begin_worldgen_loc/wseq_*: dungeon-gen, from explore)
+   │     └─ seed.c keyed leaf key(where, sub, "prom"/"tech"/"garr"/"gate"); tunnel.c SEQ per-location (ordered recursive build)
+   │             two draw models on one tag (weather precedent); fires at INIT -> NOT byte-neutral, one-time re-baseline of both trees
    │
    ├─ region:faery  key(turn, location, "faer")  [proposed] faery.c
    ├─ region:hades  key(turn, location, "hads")  [proposed] hades.c
@@ -1016,21 +1116,21 @@ master seed                                  rng_seed(randseed bytes)
          └─ leaf key(entity, slot, "pw"/"id")             ← order-sensitive today; keyed fixes it
 ```
 
-| Order | Root system | Tag                  | Scenario key  | Status                                                                | Primary files                                                                        |
-|-------|-------------|----------------------|---------------|-----------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| 1     | combat      | `comb`               | location      | **landed**                                                            | `combat.c`                                                                           |
-| 2     | pillage     | `pill`               | location      | **landed**                                                            | `combat.c`, `npc.c`                                                                  |
-| 3     | economy     | `econ`               | market        | **landed**                                                            | `buy.c`, `seed.c`                                                                    |
-| 4     | npc         | `npcs`               | location      | **landed**                                                            | `npc.c`, `savage.c`                                                                  |
-| 5     | weather     | `wthr`               | turn (loc 0)  | **landed**                                                            | `storm.c`, `day.c`                                                                   |
-| 6     | upkeep      | `upkp`               | turn (loc 0)  | **landed**                                                            | `day.c`                                                                              |
-| 7     | quest       | `qest`               | where / actor | **landed**                                                            | `quest.c`, `use.c`                                                                   |
-| 8     | explore     | `expl`               | turn (loc 0)  | **landed**                                                            | `c1.c`, `stealth.c`                                                                  |
-| 9     | skills      | `skil`               | turn (loc 0)  | **landed (command core)** — crafting/aura/alchemy deferred            | `use.c`, `c2.c`, `stealth.c` (deferred: `basic.c`, `alchem.c`, `art.c`, `produce.c`) |
-| 10    | magic       | `magc`               | turn (loc 0)  | **landed (command core + art.c crafting commands)** — curse-erode/auto-undead + quest/economy minters deferred | `basic.c`, `scry.c`, `relig.c`, `necro.c`, `alchem.c`, `art.c`                       |
-| 11    | worldgen    | `wgen`               | location      | proposed                                                              | `seed.c`, `tunnel.c` (dungeon-gen)                                                   |
-| 12    | regions     | `faer`/`hads`/`clud` | location      | proposed                                                              | `faery.c`, `hades.c`, `cloud.c`                                                      |
-| 13    | mint        | `mint`               | entity id     | last                                                                  | `z.c`, `pw.c`                                                                        |
+| Order | Root system | Tag                  | Scenario key            | Status                                                                                                         | Primary files                                                                        |
+|-------|-------------|----------------------|-------------------------|----------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| 1     | combat      | `comb`               | location                | **landed**                                                                                                     | `combat.c`                                                                           |
+| 2     | pillage     | `pill`               | location                | **landed**                                                                                                     | `combat.c`, `npc.c`                                                                  |
+| 3     | economy     | `econ`               | market                  | **landed**                                                                                                     | `buy.c`, `seed.c`                                                                    |
+| 4     | npc         | `npcs`               | location                | **landed**                                                                                                     | `npc.c`, `savage.c`                                                                  |
+| 5     | weather     | `wthr`               | turn (loc 0)            | **landed**                                                                                                     | `storm.c`, `day.c`                                                                   |
+| 6     | upkeep      | `upkp`               | turn (loc 0)            | **landed**                                                                                                     | `day.c`                                                                              |
+| 7     | quest       | `qest`               | where / actor           | **landed**                                                                                                     | `quest.c`, `use.c`                                                                   |
+| 8     | explore     | `expl`               | turn (loc 0)            | **landed**                                                                                                     | `c1.c`, `stealth.c`                                                                  |
+| 9     | skills      | `skil`               | turn (loc 0)            | **landed (command core)** — crafting/aura/alchemy deferred                                                     | `use.c`, `c2.c`, `stealth.c` (deferred: `basic.c`, `alchem.c`, `art.c`, `produce.c`) |
+| 10    | magic       | `magc`               | turn (loc 0)            | **landed (command core + art.c crafting commands)** — curse-erode/auto-undead + quest/economy minters deferred | `basic.c`, `scry.c`, `relig.c`, `necro.c`, `alchem.c`, `art.c`                       |
+| 11    | worldgen    | `wgen`               | turn (loc 0) / location | **landed** — INIT-time, NOT byte-neutral (one-time re-baseline of both trees)                                  | `seed.c` (keyed leaves), `tunnel.c` (sequential dungeon-gen)                         |
+| 12    | regions     | `faer`/`hads`/`clud` | location                | proposed                                                                                                       | `faery.c`, `hades.c`, `cloud.c`                                                      |
+| 13    | mint        | `mint`               | entity id               | last                                                                                                           | `z.c`, `pw.c`                                                                        |
 
 ### Why this order
 
@@ -1117,6 +1217,22 @@ master seed                                  rng_seed(randseed bytes)
   world-init), leaving only the `art.c` **shared-infra minters** deferred
   (`new_orb`/`create_npc_token` → quest, `new_suffuse_ring` → economy). See
   [Tenth consumer](#tenth-consumer-magic-command-core).
+- **worldgen came next** (now landed) — the non-economy INIT city seeding (`seed.c`:
+  prominence, skill teaching, garrison size) and the dungeon/subworld generation
+  (`tunnel.c`, deferred from explore — the engine's largest draw set,
+  ~409,727 `rnd()`/build). It is the **only consumer so far that fires at INIT
+  rather than during the turn**, and the first since economy/npc/weather that is
+  **NOT byte-neutral** (the economy profile): both files fire at the world-init
+  that `./run/olympia-g3.sh` and `build-scenario.sh` run, so it took a deliberate
+  one-time re-baseline of the main manifest (still 204 files, content-only) *and*
+  a `scenario.tgz` regeneration + `EXPECT.sha256` re-baseline of the guard-pillage
+  tree (both `check.sh` and `check-lua.sh` agree). It carries **two draw models on
+  one tag** (the weather precedent): `seed.c` keyed leaves (location in the leaf
+  key — the same city is seeded in three separate passes, which a sequential stream
+  would correlate) and `tunnel.c` fresh per-location sequential streams (a dungeon
+  is an ordered recursive build, un-keyable). Worldgen yields no command fixture;
+  its value is removing the largest draw set from the global stream and completing
+  the INIT-seeding partition. See [Eleventh consumer](#eleventh-consumer-worldgen).
 - **mint is last** — `z.c` password/id generation is *creation-order* sensitive
   today, so keying it on the minted entity id is what most directly enables small
   fixtures, but it touches the most golden bytes; stage it after everything else.

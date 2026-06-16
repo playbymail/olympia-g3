@@ -653,6 +653,7 @@ extern void seed_phase_two(void);
 extern void seed_taxes(void);
 extern void seed_undead_cookies(void);
 extern void seed_weather_cookies(void);
+extern int wgen_gate(int city);				/* issue #25: per-city tunnel build gate (worldgen RNG stream) */
 
 /* olympia/sout.c */
 extern ilist save_output_vector(void);
