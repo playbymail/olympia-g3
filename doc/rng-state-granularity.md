@@ -4,9 +4,9 @@ Status: **in progress.** Groundwork for Project Ultron
 ([agentic-project-ultron.md](agentic-project-ultron.md)). The seam
 (`lib/rng.{c,h}`) is wired into twelve subsystems so far — combat, pillage,
 economy/market, NPC spawning, weather, upkeep, quest, explore, skills, magic
-(the latter two **command core only** — the crafting/aura/alchemy draws and the
-turn-auto curse-erode / autonomous-undead draws are deferred; see the consumer
-sections below), worldgen (INIT-time city seeding + dungeon generation — the
+(the latter two **command core only** — their crafting/aura/alchemy deferrals have
+since landed under magic, and their remaining residuals are scheduled into the
+endgame units below), worldgen (INIT-time city seeding + dungeon generation — the
 engine's largest draw set, the first consumer that fires at INIT rather than during
 the turn), and regions (faery/hades/cloud — each a worldgen-style hybrid: an INIT
 world build *and* turn-time autonomous behavior, on tags `faer`/`hads`/`clud`).
@@ -840,9 +840,11 @@ Magic is the tenth subsystem migrated, tag `"magc"`, and — like skills before 
 land here: scrying, religion gates, necromancy eat-dead/skill-transfer, the
 meditation/aura + heal spells, and the alchemy potion brew/use draws (the last
 two **inherited from the skills step-9 deferral**). The turn-auto curse-erode
-day-pick and the autonomous-undead draw are **explicitly deferred** so a small,
-byte-neutral slice lands cleanly. It is a sibling of the others under the turn
-root:
+day-pick and the autonomous-undead draw were **explicitly deferred** so a small,
+byte-neutral slice lands cleanly — both are now **scheduled into the endgame**
+(curse-erode → Unit B `caln`, auto_undead → Unit A `npcs`; see
+[Explicitly deferred](#explicitly-deferred-named-residuals--the-partial-boundary-1)
+below). It is a sibling of the others under the turn root:
 
 ```
 turn seed
@@ -917,23 +919,26 @@ addressability.
 
 ### Explicitly deferred (named residuals — the partial boundary)
 
-This slice **stops at the command/auto boundary**. Each deferred group would move
-a manifest or belongs to another subsystem, and stays on the global `rnd()`:
+This slice **stopped at the command/auto boundary**. Each deferred group stayed on
+the global `rnd()` at the time, and has since **landed or been scheduled** into the
+[endgame](#endgame--driving-gameplay-rnd-to-zero) (no open-ended deferrals remain):
 
 - **`day.c` `curse_erode_day`** (`daily_events`) — a turn-auto day-pick
-  (`rnd(1,MONTH_DAYS)`) fired **every turn**; migrating it would move the **main
-  manifest** (the economy/weather profile), breaking the byte-neutral goal. Left
-  global as a deliberate decision (`noncreator_curse_erode()` itself draws nothing,
-  so only the day-pick is at issue).
+  (`rnd(1,MONTH_DAYS)`) fired **every turn**; migrating it moves the **main
+  manifest** (the economy/weather profile). Originally left global as a deliberate
+  decision, it is now **scheduled as endgame Unit B** (the `caln` calendar stream),
+  which retires its "permanent residual" status (`noncreator_curse_erode()` itself
+  draws nothing, so only the day-pick is at issue).
 - **`necro.c` `auto_undead`** (`rnd(1,2)`) — autonomous summoned-undead behavior,
   reached only from `npc.c`'s auto-behavior dispatch (`auto_*` family), **not a
-  player spell**; an NPC autonomous-behavior residual.
+  player spell**; an NPC autonomous-behavior residual. **Scheduled as endgame
+  Unit A** (onto the `npcs` stream via `npc_behavior`).
 - **necro undead summoning troop-count** — already on the `npcs` stream via
   `do_cookie_npc` (the npc migration); not touched here.
 - **`art.c`** — artifact/orb/ring crafting; the **command-path** draws landed
-  here (see the crafting follow-up below), but the three shared-infra **minters**
-  stay deferred: `new_orb`/`create_npc_token` (quest loot) and `new_suffuse_ring`
-  (economy per-turn restock).
+  here (see the crafting follow-up below). The three shared-infra **minters** are
+  **scheduled as endgame Unit A**: `new_orb`/`create_npc_token` (quest loot → `qest`
+  via `qrnd`) and `new_suffuse_ring` (economy per-turn restock → `econ`).
 - **`cloud.c`** (the gate seal-key + ring shuffle build draws) — `region:cloud`
   (step 12). **Now landed** on the sequential `clud` build stream.
 
@@ -1214,9 +1219,9 @@ master seed                                  rng_seed(randseed bytes)
    │     └─ leaf key(who, ctx, "crit"/"yiel"/"stdy"/"rsch"/"rpik"/"tort"/"ptty")  ← keyed leaves, one per-turn stream, actor in k1
    │             COMMAND CORE landed; all deferrals resolved or scheduled: basic.c aura/heal + alchem.c -> magic (10, LANDED); art.c crafting -> magic follow-up (LANDED); produce.c mining/harvest -> endgame Unit A (econ, SCHEDULED)
    │
-   ├─ magic      key(turn, 0,        "magc")  [PARTIAL]  basic.c (begin_magic/magc_*), scry.c, relig.c, necro.c, alchem.c, art.c
+   ├─ magic      key(turn, 0,        "magc")  [CORE LANDED]  basic.c (begin_magic/magc_*), scry.c, relig.c, necro.c, alchem.c, art.c
    │     └─ leaf key(who, ctx, "scry"/"piet"/"eatd"/"lern"/"medi"/"omen"/"heal"/"potn"/"forg"/"orb "/"ring")  ← keyed leaves, one per-turn stream, actor in k1
-   │             COMMAND CORE + art.c crafting commands landed; deferred: curse_erode day-pick (day.c) -> stays global; auto_undead -> npc; art.c minters new_orb/create_npc_token -> quest, new_suffuse_ring -> economy; cloud.c -> region:cloud (12, landed)
+   │             COMMAND CORE + art.c crafting commands landed; all deferrals resolved or scheduled: cloud.c -> region:cloud (12, LANDED); curse_erode day-pick -> endgame Unit B (caln, SCHEDULED); auto_undead -> Unit A (npcs); art.c minters new_orb/create_npc_token -> Unit A (qest), new_suffuse_ring -> Unit A (econ)
    │
    ├─ worldgen   key(turn, 0|location, "wgen")  [LANDED]  seed.c (begin_worldgen/wgen_*: prominence/skill/garrison + tunnel gate), tunnel.c (begin_worldgen_loc/wseq_*: dungeon-gen, from explore)
    │     └─ seed.c keyed leaf key(where, sub, "prom"/"tech"/"garr"/"gate"); tunnel.c SEQ per-location (ordered recursive build)
@@ -1253,7 +1258,7 @@ master seed                                  rng_seed(randseed bytes)
 | 7     | quest       | `qest`               | where / actor           | **landed**                                                                                                     | `quest.c`, `use.c`                                                                   |
 | 8     | explore     | `expl`               | turn (loc 0)            | **landed**                                                                                                     | `c1.c`, `stealth.c`                                                                  |
 | 9     | skills      | `skil`               | turn (loc 0)            | **landed (command core)** — `produce.c` mining/harvest → Unit A (econ)                                         | `use.c`, `c2.c`, `stealth.c` (residual: `produce.c` → A)                              |
-| 10    | magic       | `magc`               | turn (loc 0)            | **landed (command core + art.c crafting commands)** — auto-undead/art.c-minter residuals → Unit A             | `basic.c`, `scry.c`, `relig.c`, `necro.c`, `alchem.c`, `art.c`                       |
+| 10    | magic       | `magc`               | turn (loc 0)            | **landed (command core + art.c crafting commands)** — curse-erode → Unit B; auto-undead/art.c-minters → Unit A | `basic.c`, `scry.c`, `relig.c`, `necro.c`, `alchem.c`, `art.c`                       |
 | 11    | worldgen    | `wgen`               | turn (loc 0) / location | **landed** — INIT-time, NOT byte-neutral (one-time re-baseline of both trees)                                  | `seed.c` (keyed leaves), `tunnel.c` (sequential dungeon-gen)                         |
 | 12    | regions     | `faer`/`hads`/`clud` | region (build) / actor (auto) | **landed** — INIT build + turn autonomous, NOT byte-neutral (one-time re-baseline of both trees)          | `faery.c`, `hades.c`, `cloud.c`, `npc.c`, `u.c`                                      |
 | A     | residuals   | `econ`/`npcs`/`qest` | (existing streams)      | **planned (endgame)** — skills/magic residuals onto landed streams; NO new tag                                 | `produce.c`, `necro.c`, `art.c`, `buy.c`                                             |
@@ -1366,16 +1371,16 @@ presets.
   the leaf key, no per-actor chokepoint across the five files). Byte-neutral on
   **both** golden trees (every magic draw is command-only, unreached on the bare
   map and guard-pillage, and none fire at world-init) — the quest/explore/skills
-  profile, so no re-baseline and no `scenario.tgz` regeneration. The slice **stops
-  at the command/auto boundary**: the `day.c` `curse_erode_day` turn-auto day-pick
-  stays global (migrating it would move the main manifest), `necro.c` `auto_undead`
-  defers to npc (autonomous behavior), and `cloud.c` to region:cloud (step 12 — now
-  landed). The
-  `art.c` **crafting commands** (FORGE AURACULUM / USE orb / USE suffuse-ring) then
-  landed on `magc` too (the crafting follow-up — also byte-neutral, also 0 at
-  world-init), leaving only the `art.c` **shared-infra minters** deferred
-  (`new_orb`/`create_npc_token` → quest, `new_suffuse_ring` → economy). See
-  [Tenth consumer](#tenth-consumer-magic-command-core).
+  profile, so no re-baseline and no `scenario.tgz` regeneration. The slice **stopped
+  at the command/auto boundary**, and every deferral has since resolved or been
+  scheduled: `cloud.c` landed under region:cloud (step 12); the `day.c`
+  `curse_erode_day` day-pick is **scheduled as endgame Unit B** (`caln` — retiring
+  its "stays global" status), and `necro.c` `auto_undead` is **scheduled as Unit A**
+  (npc autonomous behavior). The `art.c` **crafting commands** (FORGE AURACULUM /
+  USE orb / USE suffuse-ring) landed on `magc` too (the crafting follow-up — also
+  byte-neutral, also 0 at world-init); the `art.c` **shared-infra minters**
+  (`new_orb`/`create_npc_token` → quest, `new_suffuse_ring` → economy) are
+  **scheduled as Unit A**. See [Tenth consumer](#tenth-consumer-magic-command-core).
 - **worldgen came next** (now landed) — the non-economy INIT city seeding (`seed.c`:
   prominence, skill teaching, garrison size) and the dungeon/subworld generation
   (`tunnel.c`, deferred from explore — the engine's largest draw set,
