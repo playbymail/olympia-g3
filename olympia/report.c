@@ -23,7 +23,7 @@ output_order_comp(const void *av, const void *bv)
 void
 sort_for_output(ilist l)
 {
-	qsort(l, (size_t)ilist_len(l), sizeof(int), output_order_comp);
+	safe_qsort(l, (size_t)ilist_len(l), sizeof(int), output_order_comp);
 }
 
 
@@ -237,7 +237,7 @@ void
 scenario_sort_items(int who)
 {
 	if (valid_box(who) && item_ents_len(bx[who]->items) > 0)
-		qsort(bx[who]->items, (size_t) item_ents_len(bx[who]->items),
+		safe_qsort(bx[who]->items, (size_t) item_ents_len(bx[who]->items),
 				sizeof(*bx[who]->items), inv_item_comp);
 }
 #endif	/* OLYSCRIPT_HOST */
@@ -301,7 +301,7 @@ show_char_inventory(int who, int num)
 
 	if (item_ents_len(bx[num]->items) > 0)
 	{
-		qsort(bx[num]->items, (size_t)item_ents_len(bx[num]->items),
+		safe_qsort(bx[num]->items, (size_t)item_ents_len(bx[num]->items),
 					sizeof(*bx[num]->items), inv_item_comp);
 	}
 
@@ -752,7 +752,7 @@ show_unclaimed(int who, int num)
 
 	if (item_ents_len(bx[num]->items) > 0)
 	{
-		qsort(bx[num]->items, (size_t)item_ents_len(bx[num]->items),
+		safe_qsort(bx[num]->items, (size_t)item_ents_len(bx[num]->items),
 					sizeof(*bx[num]->items), inv_item_comp);
 	}
 

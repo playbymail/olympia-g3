@@ -223,7 +223,7 @@ seller_list(int where, int except)
 	next_char_here;
 
 	if (trades_len(l) > 0)
-		qsort(l, (unsigned) trades_len(l), sizeof(*l), seller_comp);
+		safe_qsort(l, (unsigned) trades_len(l), sizeof(*l), seller_comp);
 
 	loop_trade(where, t)
 	{

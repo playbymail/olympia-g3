@@ -132,7 +132,7 @@ set_lord(int who, int new_lord, int k, int lev)
 	{
 		ilist_append(&p_player(new_pl)->units, who);
 
-		qsort(p_player(new_pl)->units,
+		safe_qsort(p_player(new_pl)->units,
 				(size_t)ilist_len(p_player(new_pl)->units),
 				sizeof(int),
 				int_comp);

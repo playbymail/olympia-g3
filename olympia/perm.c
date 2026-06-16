@@ -199,7 +199,7 @@ print_admit(int pl)
 	p = p_player(pl);
 
 	if (admits_len(p->admits) > 0)
-	    qsort(p->admits, (size_t)admits_len(p->admits), sizeof(*p->admits), admit_comp);
+	    safe_qsort(p->admits, (size_t)admits_len(p->admits), sizeof(*p->admits), admit_comp);
 
 	for (i = 0; i < admits_len(p->admits); i++)
 	{
@@ -253,17 +253,17 @@ set_att(int who, int targ, int disp)
 	{
 	case NEUTRAL:
 	    ilist_append(&p->neutral, targ);
-	    qsort(p->neutral, (size_t)ilist_len(p->neutral), sizeof(int), int_comp);
+	    safe_qsort(p->neutral, (size_t)ilist_len(p->neutral), sizeof(int), int_comp);
 	    break;
 
 	case HOSTILE:
 	    ilist_append(&p->hostile, targ);
-	    qsort(p->hostile, (size_t)ilist_len(p->hostile), sizeof(int), int_comp);
+	    safe_qsort(p->hostile, (size_t)ilist_len(p->hostile), sizeof(int), int_comp);
 	    break;
 
 	case DEFEND:
 	    ilist_append(&p->defend, targ);
-	    qsort(p->defend, (size_t)ilist_len(p->defend), sizeof(int), int_comp);
+	    safe_qsort(p->defend, (size_t)ilist_len(p->defend), sizeof(int), int_comp);
 	    break;
 
 	case ATT_NONE:
@@ -435,7 +435,7 @@ print_att_sup(int who, ilist l, char *header, int *first)
 
 	strcpy(buf, header);
 
-	qsort(l, (size_t)ilist_len(l), sizeof(int), int_comp);
+	safe_qsort(l, (size_t)ilist_len(l), sizeof(int), int_comp);
 
 	for (i = 0; i < ilist_len(l); i++)
 	{

@@ -78,3 +78,12 @@ extern void save_seed(char *fnam);
 extern int md5_int(int a, int b, int c, int d);
 
 extern int int_comp(const void *av, const void *bv);
+
+/*
+ *  NULL-tolerant qsort wrapper (issue #69).  An empty olympia list is a NULL
+ *  base with nmemb 0; glibc declares qsort's base nonnull, so passing it trips
+ *  UBSan even though the sort is a no-op.  Skipping nmemb < 2 sidesteps it and
+ *  is byte-neutral (0 or 1 elements are already sorted).
+ */
+extern void safe_qsort(void *base, size_t nmemb, size_t size,
+		int (*comp)(const void *av, const void *bv));

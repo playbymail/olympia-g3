@@ -2040,7 +2040,7 @@ daily_events(void)
 		assert(4 <= MONTH_DAYS);
 
 		wthr_shuffle(weather_days);	/* issue #25: weather stream, not the global generator */
-		qsort(weather_days, 4, sizeof(int), int_comp);
+		safe_qsort(weather_days, 4, sizeof(int), int_comp);
 	}
 
 	default_garrison_pay();
