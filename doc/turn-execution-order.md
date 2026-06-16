@@ -286,9 +286,9 @@ Notes for #25 work:
   `expl_*`, tag `expl`), but a standard `-r` turn issues neither command, so the
   stream is unreached on both golden trees and at world-init — byte-neutral, no
   re-baseline. `tunnel.c` dungeon generation (the engine's largest draw set,
-  ~409,727 `rnd()`/build, fired at INIT) was **deferred to worldgen**, and
-  `stealth.c`'s torture/petty-thief skill draws to **skills**, which has now
-  landed (below).
+  ~409,727 `rnd()`/build, fired at INIT) was **deferred to worldgen** — which has
+  now landed (below) — and `stealth.c`'s torture/petty-thief skill draws to
+  **skills**, which has now landed (below).
 - **Skills (command core) is command-only too** (the quest/explore profile): the
   mundane skill-command draws — weapon training (`c2.c`), STUDY scroll-consume and
   RESEARCH pick/gate (`use.c`), and the TORTURE / PETTY THIEF commands inherited
@@ -319,5 +319,25 @@ Notes for #25 work:
   shared-infra minters stay deferred (`new_orb`/`create_npc_token` → quest,
   `new_suffuse_ring` → economy — the last fires ~22–42×/turn), and `cloud.c` to
   region:cloud.
+- **Worldgen is the opposite of every command-only consumer above — it fires at
+  INIT, not during the turn**, and is the engine's largest draw set. The
+  non-economy city seeding (`seed.c`: city prominence, skill teaching, garrison
+  size) and the dungeon/subworld generation (`tunnel.c`, ~409,727 `rnd()`/build)
+  now draw from the worldgen stream (tag `wgen`): `seed.c` uses **keyed leaves**
+  on a per-turn stream (`begin_worldgen()` / `wgen_prom`/`wgen_skill`/`wgen_garr`,
+  location in the leaf key, the gate `wgen_gate` for `tunnel.c`'s per-city build
+  decision), while `tunnel.c` uses **fresh per-location sequential streams**
+  (`begin_worldgen_loc(where)` / `wseq_rnd`/`wseq_shuffle`) because a dungeon is an
+  ordered recursive build — one subsystem, two draw models (the weather
+  precedent). Both fire at the `-i`/`-s`/`-a` world-init that
+  `./run/olympia-g3.sh` and `build-scenario.sh` run, so removing them from the
+  global serial stream realigned the still-global mint draws: **NOT byte-neutral**.
+  It took a **deliberate one-time re-baseline** of the main manifest (still 204
+  files, content-only shift) and a `scenario.tgz` regeneration + `EXPECT.sha256`
+  re-baseline of the guard-pillage tree (both `check.sh` and `check-lua.sh` agree).
+  Worldgen yields no command fixture; its value is removing the largest draw set
+  from the global stream and completing the INIT-seeding partition. The
+  saved-`randseed` → master-seed coupling that moved the guard-pillage tree
+  disappears once **mint** (step 13) lands.
 - The keyed-stream seam is `lib/rng.{c,h}`; the per-subsystem migration order is
   in [rng-state-granularity.md](rng-state-granularity.md).

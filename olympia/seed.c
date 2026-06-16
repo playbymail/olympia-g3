@@ -3,6 +3,92 @@
 #include	<stdlib.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
+
+
+/*
+ *  issue #25 (worldgen, step 11): the non-economy INIT city seeding -- city
+ *  prominence (choose_city_prominence), skill teaching (seed_city_skill) and
+ *  province garrison size (add_city_garrisons) -- draws from a per-turn worldgen
+ *  stream (tag "wgen") instead of the global rnd(). These are KEYED LEAVES (the
+ *  upkeep/explore model): the same city is visited in three separate INIT passes
+ *  (prominence, skill, garrison), so a fresh per-city SEQUENTIAL stream would
+ *  reset to counter 0 each pass and correlate them -- keying on (where, sub,
+ *  purpose) is order- and pass-independent instead. The location lives in the
+ *  leaf key, so the draws are addressable regardless of which caller seeded the
+ *  city (seed_city is also reached from faery.c/cloud.c/hades.c/tunnel.c/immed.c).
+ *
+ *  tunnel.c's dungeon generation is the other half of worldgen, but its draws
+ *  are an ordered recursive build, so it uses SEQUENTIAL per-location streams on
+ *  the same "wgen" tag (the weather precedent: one subsystem, two draw models).
+ *  Only wgen_gate() (the per-city tunnel build gate, a keyed leaf) is exposed via
+ *  proto.h for tunnel.c; everything else here is file-static.
+ *
+ *  Deliberately left on the global rnd(): the entity-id mint draws (step 13);
+ *  the economy market draws here already moved onto "econ" (see seed_city_trade).
+ */
+static rng_stream worldgen_rng;
+static int worldgen_rng_turn = -1;	/* seed worldgen_rng once per turn */
+
+#define	TAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_WORLDGEN	0x7767656eu	/* "wgen" */
+
+/* worldgen leaf-draw purpose tags (kept private, like buy.c's ETAG_*) */
+#define	WTAG_PROM	0x70726f6du	/* "prom" -- city prominence            */
+#define	WTAG_TECH	0x74656368u	/* "tech" -- city skill teaching        */
+#define	WTAG_GARR	0x67617272u	/* "garr" -- province garrison size     */
+#define	WTAG_GATE	0x67617465u	/* "gate" -- per-city tunnel build gate */
+
+/*
+ *  Turn-guarded: seed the per-turn worldgen leaf stream once. Keyed helpers
+ *  never advance the counter, so the stream is effectively stateless and the
+ *  order seeding happens (which INIT pass fires first) is irrelevant.
+ */
+static void
+begin_worldgen(void)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	if (worldgen_rng_turn == sysclock.turn)
+		return;			/* already seeded this turn */
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	worldgen_rng = rng_stream_of(&turn, 0, TAG_WORLDGEN);
+
+	worldgen_rng_turn = sysclock.turn;
+}
+
+static int
+wgen_prom(int where)
+{
+	begin_worldgen();
+	return rng_keyed(&worldgen_rng, where, 0, WTAG_PROM, 1, 100);
+}
+
+static int
+wgen_skill(int where, int sub, int low, int high)
+{
+	begin_worldgen();
+	return rng_keyed(&worldgen_rng, where, sub, WTAG_TECH, low, high);
+}
+
+static int
+wgen_garr(int where)
+{
+	begin_worldgen();
+	return rng_keyed(&worldgen_rng, where, 0, WTAG_GARR, 25, 150);
+}
+
+/* exposed via proto.h: the per-city tunnel build gate (tunnel.c create_tunnels) */
+int
+wgen_gate(int city)
+{
+	begin_worldgen();
+	return rng_keyed(&worldgen_rng, city, 0, WTAG_GATE, 1, 2);
+}
 
 
 /*
@@ -23,7 +109,7 @@ choose_city_prominence(int city)
 	if (loc_hidden(city) || loc_hidden(province(city)))
 		return 0;
 
-	n = rnd(1,100);
+	n = wgen_prom(city);
 
 	if (n <= 10)
 		return 0;
@@ -336,13 +422,13 @@ seed_city_skill(int where)
 	}
 	else
 	{
-		common = rnd(1, 4);
-		magic = rnd(1, 8);
+		common = wgen_skill(where, 0, 1, 4);
+		magic = wgen_skill(where, 1, 1, 8);
 	}
 
 	if (in_faery(where))
 	{
-		common = rnd(2, 4);
+		common = wgen_skill(where, 2, 2, 4);
 		magic = 2;
 	}
 	else if (in_clouds(where))
@@ -353,7 +439,7 @@ seed_city_skill(int where)
 	{
 		common = 4;
 		magic = 4;
-		if (!rnd(0, 2))
+		if (!wgen_skill(where, 3, 0, 2))
 			ilist_append(&p->teaches, sk_artifact);
 	}
 
@@ -533,7 +619,7 @@ add_city_garrisons(void)
 		if (safe_haven(where) || greater_region(where) != 0)
 			continue;
 
-		garr = new_province_garrison(where, 0, item_pikeman, rnd(25,150));
+		garr = new_province_garrison(where, 0, item_pikeman, wgen_garr(where));
 		p_magic(garr)->default_garr = TRUE;
 	}
 	next_city;

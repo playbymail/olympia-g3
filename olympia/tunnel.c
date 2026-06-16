@@ -2,10 +2,56 @@
 #include	<stdio.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
 
 
 int tunnel_region = 0;
 int under_region = 0;
+
+
+/*
+ *  issue #25 (worldgen, step 11): dungeon/subworld generation draws from a
+ *  per-location SEQUENTIAL worldgen stream (tag "wgen") instead of the global
+ *  rnd(). Unlike seed.c's keyed-leaf half of worldgen, a dungeon is an ordered
+ *  recursive build (hundreds of draws where each shapes the next), so it cannot
+ *  be expressed as keyed leaves -- it is the combat/quest model: begin_worldgen_loc()
+ *  reseeds a fresh stream per location and wseq_rnd()/wseq_shuffle() draw from it
+ *  in order. This is the largest draw set in the engine (~409,727 rnd()/build),
+ *  so it fires only at world-init -- one subsystem, two draw models (the weather
+ *  precedent). Each location is built exactly once, so the fresh per-location
+ *  reseed never correlates across builds. The per-city build gate (create_tunnels)
+ *  is a keyed leaf on seed.c's per-turn worldgen stream (wgen_gate), kept separate
+ *  because create_tunnel_set re-seeds the same (turn, city) stream at entry.
+ */
+static rng_stream worldgen_seq;
+
+#define	TAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_WORLDGEN	0x7767656eu	/* "wgen" */
+
+/* Fresh per-location reseed (the combat/quest begin_battle model). */
+static void
+begin_worldgen_loc(int where)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	worldgen_seq = rng_stream_of(&turn, where, TAG_WORLDGEN);
+}
+
+static int
+wseq_rnd(int low, int high)
+{
+	return rng_draw(&worldgen_seq, low, high);
+}
+
+static void
+wseq_shuffle(ilist l)
+{
+	ilist_shuffle_rng(l, &worldgen_seq);
+}
 
 
 #define	SUB_SZ	10		/* SZ x SZ is size of Subworld */
@@ -25,6 +71,8 @@ create_subworld(void)
 
 	under_region = new_ent(T_loc, sub_region);
 	set_name(under_region, "Subworld");
+
+	begin_worldgen_loc(under_region);	/* issue #25: per-location wgen stream */
 
 	fprintf(stderr, "INIT: creating %s\n", box_name(under_region));
 
@@ -66,7 +114,7 @@ create_subworld(void)
 			map[r][c] = n;
 			set_where(n, under_region);
 
-			if (rnd(1,3) == 1)
+			if (wseq_rnd(1,3) == 1)
 			{
 				int new;
 
@@ -75,7 +123,7 @@ create_subworld(void)
 				p_loc(new)->hidden = TRUE;
 			}
 
-			if (rnd(1,3) == 1)
+			if (wseq_rnd(1,3) == 1)
 			{
 				int new;
 
@@ -155,7 +203,7 @@ random_subworld_loc(void)
 
 	assert(ilist_len(l) > 0);
 
-	ret = l[rnd(0,ilist_len(l)-1)];
+	ret = l[wseq_rnd(0,ilist_len(l)-1)];
 
 	ilist_reclaim(&l);
 	return ret;
@@ -276,7 +324,7 @@ filled_locs(int map[SZ+2][SZ+2][MAX_LEVELS], int l, int dir)
 
 	assert(ilist_len(sq) > 0);
 
-	ilist_scramble(sq);
+	wseq_shuffle(sq);
 	square = sq[0];
 
 	ilist_reclaim(&sq);
@@ -292,8 +340,8 @@ fill_out_level(int map[SZ+2][SZ+2][MAX_LEVELS], int l)
 	int n;
 	int sum;
 
-	r = rnd(1, SZ);
-	c = rnd(1, SZ);
+	r = wseq_rnd(1, SZ);
+	c = wseq_rnd(1, SZ);
 
 	sum = 0;
 	if (map[r+1][c][l])
@@ -322,7 +370,7 @@ fill_out_level(int map[SZ+2][SZ+2][MAX_LEVELS], int l)
 static int
 add_chamber(int map[SZ+2][SZ+2][MAX_LEVELS], int l)
 {
-	int dir = rnd(1,4);
+	int dir = wseq_rnd(1,4);
 	int new;
 	int square;
 
@@ -362,6 +410,8 @@ create_tunnel_set(int city, int subworld_link)
 	int square;
 	char name_buffer[100];
 
+	begin_worldgen_loc(city);	/* issue #25: per-location wgen stream */
+
 	tun_total_locs = 0;
 
 /*
@@ -378,8 +428,8 @@ create_tunnel_set(int city, int subworld_link)
 
 	l = 1;
 
-	r = rnd(1, SZ);
-	c = rnd(1, SZ);
+	r = wseq_rnd(1, SZ);
+	c = wseq_rnd(1, SZ);
 	n = new_tunnel();
 	map[r][c][l] = n;
 
@@ -396,7 +446,7 @@ create_tunnel_set(int city, int subworld_link)
 	p_loc(sewer)->prov_dest[DIR_DOWN-1] = n;
 	p_loc(n)->prov_dest[DIR_UP-1] = sewer;
 
-	level_size = rnd(3, 12);
+	level_size = wseq_rnd(3, 12);
 
 	count = 0;
 	while (level_size > 0 && count++ < 500)
@@ -410,22 +460,22 @@ create_tunnel_set(int city, int subworld_link)
 		nlevels = 11;
 	else
 	{
-		nlevels = rnd(2,5);
+		nlevels = wseq_rnd(2,5);
 		// Make 50% of non-safe-haven sewers extra deep
-		if (rnd(0, 1))
-			nlevels += rnd(1,6);
+		if (wseq_rnd(0, 1))
+			nlevels += wseq_rnd(1,6);
 	}
 
-	clev1 = rnd(1,6);
+	clev1 = wseq_rnd(1,6);
 	do {
-		clev2 = rnd(1,6);
+		clev2 = wseq_rnd(1,6);
 	} while (clev1 == clev2);
-	clev3 = rnd(7, 10);
+	clev3 = wseq_rnd(7, 10);
 
 	do {
 		do {
-			r = rnd(1,SZ);
-			c = rnd(1,SZ);
+			r = wseq_rnd(1,SZ);
+			c = wseq_rnd(1,SZ);
 		}
 		while (map[r][c][l] == 0);
 
@@ -439,9 +489,9 @@ create_tunnel_set(int city, int subworld_link)
 		p_loc(map[r][c][l-1])->prov_dest[DIR_DOWN-1] = map[r][c][l];
 
 		if (l > 5)
-			level_size = rnd(1, 4);
+			level_size = wseq_rnd(1, 4);
 		else
-			level_size = rnd(3, 12);
+			level_size = wseq_rnd(3, 12);
 
 		count = 0;
 		while (level_size > 0 && count++ < 500)
@@ -556,7 +606,7 @@ create_tunnels(void)
 		if (region(city) == cloud_region)
 			continue;
 
-		if (safe_haven(city) || rnd(1,2) == 1)
+		if (safe_haven(city) || wgen_gate(city) == 1)
 		{
 			link = create_tunnel_set(city, 0);
 			sum += tun_total_locs;

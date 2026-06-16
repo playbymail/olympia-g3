@@ -200,10 +200,13 @@ the addressable seam is `lib/rng.{c,h}`
 phase order the driver walks, and which draws are keyed vs still on the global
 stream — see [doc/turn-execution-order.md](doc/turn-execution-order.md).
 
-**Ten consumers landed so far: combat, pillage, economy/market, npc, weather,
-upkeep, quest, explore, skills (command core only), and magic (command core
-plus the `art.c` crafting commands).** Each reseeds a stream off the turn root (`rng_master_seed()` →
-turn → its own 4-char tag) and draws from it instead of the global `rnd()`:
+**Eleven consumers landed so far: combat, pillage, economy/market, npc, weather,
+upkeep, quest, explore, skills (command core only), magic (command core
+plus the `art.c` crafting commands), and worldgen (INIT-time city seeding +
+dungeon generation — the engine's largest draw set, the one consumer that fires
+at INIT and required a mandatory re-baseline of both golden trees).** Each
+reseeds a stream off the turn root (`rng_master_seed()` → turn → its own 4-char
+tag) and draws from it instead of the global `rnd()`:
 
 - **combat** — per-battle stream on `(turn, location)`, `begin_battle()`/`crnd()`
   in `olympia/combat.c` (sequential `rng_draw`).
@@ -250,9 +253,9 @@ turn → its own 4-char tag) and draws from it instead of the global `rnd()`:
   dungeon/subworld generation is **deferred to worldgen (step 11)** — pure
   world-gen, fires at INIT, no actor, and the engine's largest draw set
   (~409,727 `rnd()`/build), so migrating it would force a main-manifest +
-  `scenario.tgz` re-baseline for no command-fixture benefit; `stealth.c`'s
-  TORTURE/PETTY THIEF are **deferred to skills (step 9)** as skill commands (now
-  landed, below).
+  `scenario.tgz` re-baseline for no command-fixture benefit (now landed, see
+  worldgen below); `stealth.c`'s TORTURE/PETTY THIEF are **deferred to skills
+  (step 9)** as skill commands (now landed, below).
 - **skills (command core)** — **one per-turn** stream (tag `skil`), seeded once
   via the turn-guarded `begin_skills()` (`use.c`, the skill-command hub); the
   explore model (keyed leaves, actor in the leaf key `k1`) because the draws are
@@ -286,6 +289,22 @@ turn → its own 4-char tag) and draws from it instead of the global `rnd()`:
   `art.c` shared-infra **minters** stay deferred (`new_orb`/`create_npc_token` →
   **quest** loot, `new_suffuse_ring` → **economy** per-turn restock, which fires
   ~22–42×/turn), and `cloud.c` to **region:cloud**.
+- **worldgen** — tag `wgen`, the **only consumer that fires at INIT** (not during
+  the turn) and the engine's **largest draw set** (~409,733 draws/build). Carries
+  **two draw models on one tag** (the weather precedent): `seed.c`'s non-economy
+  city seeding (prominence/skill/garrison + the per-city tunnel gate) uses
+  **keyed leaves** on a per-turn stream — turn-guarded `begin_worldgen()` +
+  `wgen_prom`/`wgen_skill`/`wgen_garr`/`wgen_gate` (the last exposed via `proto.h`),
+  location in the leaf key because the same city is seeded across three INIT passes
+  (a sequential stream would correlate them); `tunnel.c`'s dungeon/subworld
+  generation uses **fresh per-location sequential streams** —
+  `begin_worldgen_loc(where)` + `wseq_rnd`/`wseq_shuffle` — because a dungeon is an
+  ordered recursive build (un-keyable). **NOT byte-neutral** (the economy profile):
+  both fire at the `-i`/`-s`/`-a` world-init, so it took a **mandatory one-time
+  re-baseline of both trees** — the main manifest (still 204 files, content-only)
+  and the guard-pillage `scenario.tgz` regen + `EXPECT.sha256` (both `check.sh` and
+  `check-lua.sh` agree). No command-fixture benefit; its value is removing the
+  largest draw set from the global stream and completing the INIT-seeding partition.
 
 Combat and pillage were **byte-neutral on the main manifest** (the bare-map turn
 runs no combat/pillage); economy, npc, and weather each ran on the standard turn
@@ -317,13 +336,24 @@ AURACULUM / USE orb / USE suffuse-ring command draws, `magc_forge`/`magc_orb`/
 guard-pillage twins, and `-s`/`-a`/`-i` world-init (verified empirically — the
 flagged mint risk did not materialize) — so no re-baseline and no `scenario.tgz`
 regeneration.
+**Worldgen, by contrast, was NOT byte-neutral** (the economy profile): both
+`seed.c`'s INIT city seeding and `tunnel.c`'s dungeon generation fire at the
+`-i`/`-s`/`-a` world-init that `./run/olympia-g3.sh` and `build-scenario.sh` run,
+so removing them from the global serial stream realigned the still-global mint
+draws. It took a **deliberate one-time re-baseline of both trees** in the same PR:
+`golden_check.sh --update` (main manifest, still 204 files — content-only shift)
+and a guard-pillage `scenario.tgz` regen (`build-scenario.sh`) + `EXPECT.sha256`
+re-baseline (`check.sh --update`), with both `check.sh` and `check-lua.sh`
+agreeing. The saved-`randseed` → master-seed coupling that moved the guard-pillage
+tree disappears once **mint** (step 13) lands.
+
 Combat/pillage/npc/weather/upkeep behavior is pinned by its own golden tree,
 [tests/olympia/regress/guard-pillage](tests/olympia/regress/guard-pillage)
 (the **second** standing regress alongside secret-sea-route). The **deferred**
 `art.c` shared-infra minters (`new_orb`/`create_npc_token` → quest loot,
 `new_suffuse_ring` → economy per-turn restock), the magic turn-auto residuals
-(`curse_erode` day-pick, `auto_undead`), and the remaining subsystems (worldgen —
-which absorbs `tunnel.c` dungeon-gen — regions incl. `cloud.c`, mint) stay on the
-global `rnd()`; the migration order and per-subsystem keying live in
+(`curse_erode` day-pick, `auto_undead`), and the remaining subsystems (regions —
+faery/hades incl. `cloud.c` — and mint) stay on the global `rnd()`; the migration
+order and per-subsystem keying live in
 [doc/rng-state-granularity.md](doc/rng-state-granularity.md), and a PCG32
 generator swap stays deferred behind the TAG 64-bit work.

@@ -19,10 +19,11 @@
  *  removing one market roll cannot move a sibling roll (the leaf key is
  *  (item, where, purpose), as recommended in doc/rng-state-granularity.md).
  *
- *  Deliberately left on the global rnd(): the non-market city seeding that runs
- *  in the same INIT pass -- skill teaching and prominence (seed_city_skill /
- *  choose_city_prominence) and garrisons (add_city_garrisons) -- and the
- *  production/skill player commands in produce.c; none are market-specific.
+ *  The non-market city seeding that runs in the same INIT pass -- skill teaching
+ *  and prominence (seed_city_skill / choose_city_prominence) and garrisons
+ *  (add_city_garrisons) -- has since moved onto the "wgen" worldgen stream
+ *  (issue #25 step 11, seed.c), not market-specific. The production/skill player
+ *  commands in produce.c stay on the global rnd() (an economy residual).
  *  The md5_int() buyer test in d_find_buy() (below) is already a keyed leaf and
  *  is intentionally turn-INDEPENDENT -- the set of buyer cities must be stable
  *  across turns -- so it stays as-is rather than moving onto the turn-keyed
