@@ -148,3 +148,11 @@ From `tunnel.c`, around line 505, just before `any sewer that goes to 11`.
 	}
 */
 ```
+
+## Trade Expire Jitter
+From `buy.c`, in `d_find_buy()` (around line 1547).
+A commented-out random jitter on a city trade's expiry, left inline:
+
+```c++
+	tt->expire = t->expire; /*  + rnd(2,5); */
+```
