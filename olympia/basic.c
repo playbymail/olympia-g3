@@ -15,15 +15,17 @@
  *  The unambiguous, player-cast spell draws across the magic subsystem --
  *  scrying (scry.c), religion gates (relig.c), necromancy eat-dead/skill
  *  transfer (necro.c), the meditation/aura + heal spells (basic.c, inherited
- *  from the skills step-9 deferral), and the alchemy potion brew/use draws
- *  (alchem.c, also a skills-step-9 deferral) -- draw from a per-turn
+ *  from the skills step-9 deferral), the alchemy potion brew/use draws
+ *  (alchem.c, also a skills-step-9 deferral), and the artifact-crafting command
+ *  draws (art.c FORGE AURACULUM / USE orb / USE suffuse-ring -- the post-magic
+ *  crafting follow-up) -- draw from a per-turn
  *  `magic_rng` stream keyed off the turn root, tag "magc", instead of the
  *  global rnd(). Like explore/skills/upkeep (and unlike combat/quest's fresh
  *  per-scenario sequential stream), this is ONE per-turn stream seeded once via
  *  the turn-guarded begin_magic(), with all draws being KEYED LEAVES (rng_keyed,
  *  which never advances a counter). The actor goes in the leaf key k1 -- not the
  *  map's literal "scenario key = actor" -- because the draws are scattered
- *  across five files (scry.c, relig.c, necro.c, basic.c, alchem.c) with no
+ *  across six files (scry.c, relig.c, necro.c, basic.c, alchem.c, art.c) with no
  *  single per-actor chokepoint, and one actor may cast several spells in a turn.
  *  Carrying the actor in the leaf key gives identical per-(actor, context)
  *  addressability for free and is collision-free across spells (the
@@ -42,14 +44,22 @@
  *      from npc.c's auto-behavior dispatch), not a player spell; an NPC residual.
  *    - necro undead summoning troop-count -- already on the npcs stream via
  *      do_cookie_npc (the npc migration); not touched here.
- *    - art.c artifact/orb/ring crafting -- a post-magic follow-up (overlaps
- *      quest shared-infra, economy suffuse-rings, and a world-init mint risk).
+ *    - art.c artifact-crafting COMMAND draws (FORGE AURACULUM kind+weight, USE
+ *      orb, USE suffuse-ring) landed here on magc (magc_forge/magc_orb/magc_ring,
+ *      the crafting follow-up). The art.c shared-infra MINTERS stay deferred:
+ *      new_orb + create_npc_token (reached only from quest.c loot) are quest
+ *      residuals, and new_suffuse_ring (reached from buy.c trade_suffuse_ring,
+ *      the per-turn economy restock that fires ~22-42x on the standard turn) is
+ *      an economy residual -- migrating it would move the MAIN manifest. The
+ *      flagged world-init mint risk did NOT materialize: 0 art.c draws at
+ *      -s/-a/-i (verified empirically). add_token_unit_sup's rnd is dead (#if 0).
  *    - cloud.c -- region:cloud (step 12).
  *
  *  Hosted here (basic.c, the core-spell file); begin_magic() and the basic.c
  *  meditation/heal helpers (magc_med/magc_omen/magc_heal) are static, while
- *  magc_scry/magc_piety/magc_eat/magc_learn/magc_potion are exposed via proto.h
- *  so scry.c/relig.c/necro.c/alchem.c draw from the same stream (the
+ *  magc_scry/magc_piety/magc_eat/magc_learn/magc_potion plus the crafting
+ *  helpers magc_forge/magc_orb/magc_ring are exposed via proto.h so
+ *  scry.c/relig.c/necro.c/alchem.c/art.c draw from the same stream (the
  *  begin_economy/skil_crit cross-file convention).
  */
 #define	TAG_TURN	0x7475726eu	/* "turn" */
@@ -64,6 +74,9 @@
 #define	MTAG_OMEN	0x6f6d656eu	/* "omen" -- hinder-meditation omen flavor     */
 #define	MTAG_HEAL	0x6865616cu	/* "heal" -- Heal spell success gate           */
 #define	MTAG_POTN	0x706f746eu	/* "potn" -- alchemy potion brew/use draws     */
+#define	MTAG_FORG	0x666f7267u	/* "forg" -- forge-auraculum kind + weight     */
+#define	MTAG_ORB	0x6f726220u	/* "orb " -- USE orb murky-image gate          */
+#define	MTAG_RING	0x72696e67u	/* "ring" -- USE suffuse-ring suffuse gate     */
 
 static rng_stream magic_rng;
 static int magic_rng_turn = -1;		/* seed magic_rng once per turn */
@@ -161,6 +174,34 @@ magc_heal(int who, int target)
 {
 	begin_magic();
 	return rng_keyed(&magic_rng, who, target, MTAG_HEAL, 1, 100);
+}
+
+/*
+ *  art.c FORGE AURACULUM (sk_forge_aura): the unnamed-ring kind (sub 0,
+ *  switch(rnd(1,3))) and the auraculum weight (sub 1, rnd(1,3)), keyed on
+ *  (who, sub) so each is an independent keyed leaf (the magc_eat precedent).
+ */
+int
+magc_forge(int who, int sub)
+{
+	begin_magic();
+	return rng_keyed(&magic_rng, who, sub, MTAG_FORG, 1, 3);
+}
+
+/* art.c USE orb (v_use_orb): the 1-in-3 murky-image failure gate, keyed (who). */
+int
+magc_orb(int who)
+{
+	begin_magic();
+	return rng_keyed(&magic_rng, who, 0, MTAG_ORB, 1, 3);
+}
+
+/* art.c USE suffuse-ring (v_suffuse_ring): the 1-in-3 fizzle gate, keyed (who). */
+int
+magc_ring(int who)
+{
+	begin_magic();
+	return rng_keyed(&magic_rng, who, 0, MTAG_RING, 1, 3);
 }
 
 

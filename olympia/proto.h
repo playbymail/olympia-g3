@@ -79,12 +79,15 @@ extern void limit_cur_aura(int who);
 extern void move_token(int item, int from, int to);
 
 /* olympia/basic.c */
-/* issue #25 (step 10): per-turn magic RNG stream; helpers called from scry.c/relig.c/necro.c/alchem.c */
+/* issue #25 (step 10): per-turn magic RNG stream; helpers called from scry.c/relig.c/necro.c/alchem.c/art.c */
 extern int magc_scry(int who, int k2);
 extern int magc_piety(int who, int k2);
 extern int magc_eat(int who, int body, int sub);
 extern int magc_learn(int who, int skill);
 extern int magc_potion(int who, int sub, int low, int high);
+extern int magc_forge(int who, int sub);	/* art.c FORGE AURACULUM kind + weight */
+extern int magc_orb(int who);			/* art.c USE orb gate */
+extern int magc_ring(int who);			/* art.c USE suffuse-ring gate */
 extern int d_adv_med(struct command *c);
 extern int d_detect_abil(struct command *c);
 extern int d_dispel_abil(struct command *c);
