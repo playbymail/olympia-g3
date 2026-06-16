@@ -245,55 +245,6 @@ make_teach_book(int who, int questor)
 }
 
 
-#if 0
-/*
- *  Find an artifact in our region held by a subloc monster
- *  which is not only-defeatable by another artifact.
- */
-
-static int
-free_artifact(int where)
-{
-	int reg = region(where);
-	int i;
-	int owner;
-	ilist l = NULL;
-	int ret;
-
-	loop_item(i)
-	{
-		if (subkind(i) != sub_artifact)
-			continue;
-
-		owner = item_unique(i);
-		assert(owner);
-
-		if (region(owner) != reg)
-			continue;
-
-		if (!is_npc(owner) ||
-		    npc_program(owner) != PROG_subloc_monster)
-			continue;
-
-		if (only_defeatable(owner))
-			continue;
-
-		ilist_append(&l, i);
-	}
-	next_item;
-
-	if (ilist_len(l) == 0)
-		return 0;
-
-	ret = l[rnd(0,ilist_len(l)-1)];
-
-	ilist_reclaim(&l);
-
-	return ret;
-}
-#endif
-
-
 static int
 new_artifact(int who)
 {
@@ -593,26 +544,6 @@ make_subloc_monster(int where, int questor)
 	default:
 		assert(FALSE);
 	}
-
-#if 0
-	if (rnd(1,6) == 1)
-	{
-		int item;
-
-/*
- *  Temporarily set only_vulnerable for ourselves so we don't
- *  have a circular problem.  free_artifact() will take care of
- *  skipping over other only_vulnerable's.
- */
-		p_misc(monster)->only_vulnerable = 1;
-		item = free_artifact(monster);
-
-		if (item)
-			rp_misc(monster)->only_vulnerable = item;
-		else
-			rp_misc(monster)->only_vulnerable = 0;
-	}
-#endif
 
 	return monster;
 }

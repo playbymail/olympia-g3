@@ -572,38 +572,6 @@ put_back_cookie(int who)
 }
 
 
-#if 0
-static int
-nearby_grave(int where)
-{
-	struct entity_loc *p;
-	int i;
-	static ilist l = NULL;
-
-	where = province(where);
-	p = rp_loc(where);
-
-	if (p && p->near_grave)
-		return p->near_grave;
-
-	log(LOG_CODE, "%s has no nearby grave", box_name(where));
-
-	ilist_clear(&l);
-	loop_subkind(sub_graveyard, i)
-	{
-		ilist_append(&l, i);
-	}
-	next_subkind;
-
-	assert(ilist_len(l) > 0);
-
-	ilist_scramble(l);
-
-	return l[rnd(0, ilist_len(l)-1)];
-}
-#endif
-
-
 static void
 dead_char_body(int pl, int who)
 {

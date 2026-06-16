@@ -29,6 +29,7 @@ static rng_stream npc_rng;
 #define	NTAG_SPAWN	0x7370776eu	/* "spwn" -- does an NPC spawn here      */
 #define	NTAG_QTY	0x716e7479u	/* "qnty" -- spawned quantity            */
 #define	NTAG_BEHAVE	0x62687672u	/* "bhvr" -- autonomous NPC behavior     */
+#define	NTAG_VICTIM	0x76696374u	/* "vict" -- auto_bandit victim pick     */
 
 void
 begin_npc(int where)
@@ -383,8 +384,15 @@ auto_bandit(int who, int prog)
 
 	if (ilist_len(targets) > 0)
 	{
-		ilist_scramble(targets);
-		victim = targets[0];
+		/*
+		 *  issue #25 (Unit F): pick the victim from the per-location NPC
+		 *  stream (keyed on the bandit) instead of ilist_scramble()'s
+		 *  global rnd(). A keyed uniform index is equivalent to the old
+		 *  "scramble then take [0]" and is order-independent.
+		 */
+		begin_npc(where);
+		victim = targets[rng_keyed(&npc_rng, who, 0, NTAG_VICTIM,
+					   0, ilist_len(targets) - 1)];
 		ilist_reclaim(&targets);
 	}
 

@@ -281,8 +281,17 @@ stream they're on:
 | Each day (`day%7`) / end of month | `heal_characters`, `loyalty_decay`, `men_starve`, `animal_deaths`, `corpse_decay` | **keyed** per-turn upkeep — `begin_upkeep()` (#25) — *not reached on either golden tree* |
 | End of month | `inn_income()` (`temple_income` draws nothing) | **keyed** per-turn upkeep — `up_income(inn, sub, …)` on `begin_upkeep()` (#25 endgame Unit C, purpose tag `inco`) — byte-neutral (no inn on either tree) |
 | Each day (`day%7`) / command phase | `weekly_prisoner_escape_check` (`check_prisoner_escape`), `dogs_bark_at_hidden_chars` (`bark_dogs`); TAKE-SOME qty, drop-stack scatter, sick-onset gate (combat damage), find-nearest-land, new-mine gate-crystal, mage-menial flavor | **keyed** per-turn entity — `begin_entity()` / `ent_*` (#25 endgame Unit E, tag `enty`, actor/location in leaf key k1; `ent_prisoner`/`ent_drop`/`ent_build`/`ent_menial` via `proto.h`) — 0 on the bare-map turn & all world-init; the guard-pillage turn fires 4 `ent_prisoner` but byte-neutral (manifest unchanged) |
+| INIT (`-i`/`-s`/`-a`) **and** every turn | entity-id allocation — `rnd_alloc_num` (THE chokepoint, every random-id `new_ent`/`alloc_box`), add-player ids/passwords | **sequential** per-turn mint — `begin_mint()` / `mint_alloc` (+ `add.c mint_city`/`mint_password`) (#25 endgame Unit F, tag `mint`) — ~8189 draws at INIT, ~18124/turn (main); **re-baked every id** → biggest re-baseline of both trees |
+| NPC/savage movement (turn) | randomized exit-direction pick — `exits_from_loc_nsew_select(…, rand)` → `exit_views_shuffle_rng` | **sequential** per-turn exit-direction — `begin_exitdir()` (#25 endgame Unit F, tag `exdr`) — ~117 draws/turn on the bare map; the last *indirect* (`ilist_scramble`/`exit_views_scramble`) gameplay draw, migrated off the global stream |
 
 Notes for #25 work:
+
+- **No global `rnd()` remains in the turn (or at world-init).** As of endgame Unit
+  F (mint) an instrumented `rnd()` counts **0** on `-i`/`-r`/`-s`/`-a`/`-R` and both
+  guard-pillage twins; the global `rnd()` (`lib/rnd.c`) survives only as the
+  low-level MD5 primitive the `rng` layer is built on. A standing audit gate in
+  `tests/rng/check.sh` enforces this (the `rnd(`-call-site grep over `olympia/*.c`
+  must stay empty). This closed #25.
 
 - `do_cookie_npc()`'s troop-count draw (`npc.c:576`, the pillage residual) is
   **unreached by the bare-map standard turn** — no pillage/undead/storm cookies

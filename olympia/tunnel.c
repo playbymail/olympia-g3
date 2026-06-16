@@ -502,23 +502,6 @@ create_tunnel_set(int city, int subworld_link)
 	}
 	while (l < nlevels);
 
-/*
-	if (l == 5 && rnd(1,2) == 1)
-	{
-		int hades;
-
-		hades = random_hades_loc();
-		square = filled_locs(map, l, 0);
-
-		p_loc(square)->hidden = TRUE;
-		p_loc(square)->prov_dest[DIR_DOWN-1] = hades;
-		fill_dir_exits(hades);
-		p_loc(hades)->prov_dest[DIR_UP-1] = square;
-		printf("(hades from sewer at %s)\n",
-			box_code_less(square));
-	}
-*/
-
 	/*
 	 * No longer just safe havens - any sewer that goes to 11
 	 * can now connect to the underworld

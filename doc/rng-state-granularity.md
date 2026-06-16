@@ -275,7 +275,9 @@ master seed, so the still-global mint/loot draws shift. The frozen `scenario.tgz
 (used by `check.sh`, `init=1` so it never re-seeds) was therefore stale; it was
 regenerated with `build-scenario.sh` and `EXPECT.sha256` re-baselined so both the
 C and Lua twins agree again. This coupling through the saved `randseed` → master
-seed disappears once the `mint` subsystem (last in the map) is migrated.
+seed **disappeared when the `mint` subsystem landed** (Unit F, last in the map) — no
+gameplay `rnd()` advances `digest` during a turn now, so the saved `randseed` is
+stable turn-to-turn.
 
 ## Fourth consumer: NPC spawning
 
@@ -1073,8 +1075,8 @@ entity ids — so this migration took a **deliberate one-time re-baseline**:
   `check.sh --update`. **Both `check.sh` and `check-lua.sh` agree** on the
   re-baselined tree — the C-frozen and Lua-built paths produce identical post-turn
   hashes, confirming the saved-`randseed` coupling is consistent. This coupling
-  through the saved `randseed` → master seed disappears once **mint** (step 13)
-  lands.
+  through the saved `randseed` → master seed **disappeared once mint landed**
+  (endgame Unit F) — no gameplay `rnd()` advances `digest` during a turn now.
 
 **Honest framing:** worldgen yields **zero command-fixture benefit** — no small
 Ultron fixture comes out of it (it has no player command; it is pure world build).
@@ -1167,7 +1169,9 @@ one-PR rationale) under a **deliberate one-time re-baseline**:
   different saved `randseed` → the still-global mint/loot draws shift; the noble
   ids moved to pillager 6249 / guard 2002) and `EXPECT.sha256` re-baselined via
   `check.sh --update`. **Both `check.sh` and `check-lua.sh` agree** on the
-  re-baselined tree. This coupling disappears once **mint** (step 13) lands.
+  re-baselined tree. This coupling **disappeared once mint landed** (endgame Unit F);
+  the guard-pillage noble ids settled at their final values (pillager 4126 /
+  guard 8651) when mint re-baked every id.
 
 This migration is smaller than worldgen's re-baseline because `tunnel.c`/`seed.c`
 were already off the global stream — only the still-global mint draws (+ saved
@@ -1185,8 +1189,9 @@ hades/faery **bandit** ambushes (`create_hades_bandit`/`create_faery_bandit` /
 `hades_attack_check`/`faery_attack_check`, `npc.c`) and the magic-deferred
 **`cloud.c`** gate-build draws. The `faery_day` day-pick (`day.c`, a turn-auto
 schedule pick like `curse_erode_day`) has since **landed as endgame Unit B**
-(the `caln` calendar stream); **deliberately left global:** the entity-id **mint**
-(endgame Unit F).
+(the `caln` calendar stream); the entity-id **mint** has since **landed as endgame
+Unit F** (the `mint` stream) — the last consumer, closing #25 with zero gameplay
+`rnd()`.
 
 ## Recommended subsystem distribution
 
@@ -1268,9 +1273,10 @@ master seed                                  rng_seed(randseed bytes)
    │     └─ leaf key(actor|loc, purpose, "pris"/"drop"/"take"/"sick"/"ldir"/"lpkk"/"bark"/"bldg"/"meni")  ← keyed leaves, one per-turn stream
    │        quest-infra (free_artifact/make_subloc_monster #if 0) + u.c nearby_grave were DEAD #if 0, not live -> no-op; byte-neutral both trees
    │
-   └─ mint       key(turn, new_id,   "mint")  [LAST]    code.c rnd_alloc_num, add.c (ids / passwords)
-         └─ leaf key(entity, slot, "pw"/"id")           ← order-sensitive today; keyed fixes it; re-bakes every id (biggest re-baseline)
-                 same PR: repoint test_random() to an rng_stream + flip on the "no gameplay rnd()" audit gate
+   └─ mint       seq(turn, 0,        "mint")  [LANDED F] code.c rnd_alloc_num (mint_alloc, sequential), add.c (mint_city seq + mint_password keyed (pl,i))
+         └─ SEQUENTIAL stream, NOT keyed (no entity in hand minting its id) — re-baked every id (biggest re-baseline, both trees)
+                 same PR: test_random() repointed to a local rng_stream; dead rnd() deleted; no-gameplay-rnd() audit gate flipped ON;
+                 indirect ilist_scramble/exit_views_scramble draws also migrated (dir.c -> new "exdr" per-turn stream; npc/add); #25 CLOSED
 ```
 
 | Order | Root system | Tag                  | Scenario key                  | Status                                                                                                                                                                                | Primary files                                                    |
@@ -1292,14 +1298,14 @@ master seed                                  rng_seed(randseed bytes)
 | C     | income      | `upkp`               | turn (loc 0)                  | **landed (endgame)** — `inn_income` folds into upkeep (`up_income`, no new tag); byte-neutral (no inn on either tree)                                                                 | `day.c`                                                          |
 | D     | social      | `socl`               | actor                         | **landed (endgame)** — gift/bribe/terrorize/incite/persuade/breeding; actor in k1, `soc_breed` via `proto.h`; byte-neutral both trees (no re-baseline)                                | `swear.c`, `beast.c`                                             |
 | E     | entity      | `enty`               | actor / location              | **landed (endgame)** — 11 catch-all one-offs (prisoner/drop/take/sick/land/bark/build/mage-menial); host `begin_entity` in `u.c`, 4 helpers via `proto.h`; byte-neutral both trees (the listed quest-infra + `u.c nearby_grave` were dead `#if 0`, a no-op) | `u.c`, `stack.c`, `build.c`, `produce.c`                         |
-| F     | mint        | `mint`               | entity id                     | **last** — re-bakes every id; repoint `test_random`, flip on the no-gameplay-`rnd()` gate                                                                                             | `code.c`, `add.c`, `z.c`                                         |
+| F     | mint        | `mint`               | turn (loc 0), sequential      | **landed (endgame) — #25 DONE** — entity-id allocator + add-player ids/passwords; SEQUENTIAL stream (`mint_alloc`/`mint_city` seq, `mint_password` keyed); re-baked every id (biggest re-baseline, BOTH trees: main 205 content-only + guard-pillage `scenario.tgz` regen, both twins agree); repointed `test_random`, deleted dead `rnd()`, flipped the no-gameplay-`rnd()` audit gate ON. Also migrated the indirect `ilist_scramble`/`exit_views_scramble` draws (`dir.c` → new `exdr` per-turn stream; `npc`/`add`) | `code.c`, `add.c`, `z.c`, `dir.c`, `npc.c`, `lib/exit_views.c` |
 
 ### Endgame — driving gameplay `rnd()` to zero
 
-Steps 1–12 are landed, and **Units A–E are now landed** (skills/magic residuals,
-calendar, income, social, and the entity catch-all — below). The remaining unit (F,
-mint) finishes #25 against an explicit exit criterion: **no gameplay or world-build
-draw may call the global `rnd()`** — it survives only as the low-level MD5 primitive
+Steps 1–12 are landed, and **Units A–F are now ALL landed — #25 is CLOSED**
+(skills/magic residuals, calendar, income, social, the entity catch-all, and
+**mint** — below). Unit F (mint) finished #25 against an explicit exit criterion:
+**no gameplay or world-build draw may call the global `rnd()`** — it survives only as the low-level MD5 primitive
 the `rng` layer is itself built on. The full per-unit plan (sites, routing, keying, byte-neutrality,
 gates) is in [rng-endgame-to-zero.md](rng-endgame-to-zero.md); the audit that
 defines "done" is:
@@ -1323,21 +1329,28 @@ flavor, no item/where) was deferred to **Unit E** (now landed → `enty`/`ent_me
 grep -rnE '[^_a-zA-Z]rnd\(' olympia/*.c | grep -v 'olympia/rnd.c' | grep -vE ':\s*\*|//'
 ```
 
-With Units A–E landed this leaves **only the mint bucket** (was 41 draws in 7): the
-now-landed **skills/magic residuals** (Unit A → existing `econ`/`npcs`/`qest`), the
-now-landed **calendar** day-picks (Unit B → `caln` — this retired the day-picks'
-"deliberate permanent residual" status), **income** (Unit C → folded into `upkp`),
-the now-landed **social** commands (Unit D → `socl` — this retired the
-`swear.c`/`beast.c` "residual on global" status), and the now-landed **entity**
-catch-all for the `stack.c`/`u.c`/`build.c`/`produce.c` one-offs (Unit E → `enty`,
-**11 live sites** — the brief's quest shared-infra half and a 12th entity site
-turned out to be dead `#if 0` code, a no-op; see [dead-code.md](dead-code.md)), and
-still ahead only **mint** (Unit F, last — it re-bakes every entity id, so nothing may
-follow it). Excluded as non-gameplay: the `#if 0 equip_new_noble`/`nearby_grave`/
-`free_artifact` dead code, the commented `tunnel.c:506`/`buy.c:1547`, and
-`test_random()` (the `-R` self-test, repointed to an `rng_stream` in Unit F). Each unit is its own branch + squash PR (`Refs #25`),
-surfaces scope + re-baseline plan first, and keeps both golden gates green on both
-presets.
+With Units A–F **all landed** the bucket count is **zero** (was 41 draws in 7): the
+**skills/magic residuals** (Unit A → existing `econ`/`npcs`/`qest`), the **calendar**
+day-picks (Unit B → `caln` — this retired the day-picks' "deliberate permanent
+residual" status), **income** (Unit C → folded into `upkp`), the **social** commands
+(Unit D → `socl` — this retired the `swear.c`/`beast.c` "residual on global" status),
+the **entity** catch-all for the `stack.c`/`u.c`/`build.c`/`produce.c` one-offs (Unit
+E → `enty`, **11 live sites** — the brief's quest shared-infra half and a 12th entity
+site turned out to be dead `#if 0` code, a no-op; see [dead-code.md](dead-code.md)),
+and finally **mint** (Unit F → `mint` — the entity-id allocator + add-player draws,
+which re-baked every id, the biggest re-baseline; it ran last so nothing could
+perturb it). Unit F also repointed `test_random()` (the `-R` self-test) to a local
+`rng_stream`, **deleted** the dead `rnd()` code formerly excluded as non-gameplay
+(`equip_new_noble`/`nearby_grave`/`free_artifact`/`okay_entity_code`, the commented
+`tunnel.c`/`buy.c`, and `art.c:1102`; all archived in [dead-code.md](dead-code.md)),
+and — beyond the call-site grep — migrated the **indirect** `ilist_scramble`/
+`exit_views_scramble` draws (`dir.c` exit-direction shuffles → new `exdr` per-turn
+stream; `npc`/`add` sites) so an instrumented `rnd()` truly counts 0 everywhere. The
+**saved-`randseed` → master-seed coupling** that moved the guard-pillage tree on
+every prior INIT-touching unit is now **gone**: no gameplay `rnd()` advances `digest`
+during a turn, so `save_seed` writes a stable seed turn-to-turn. Each unit was its
+own branch + squash PR (`Refs #25`, Unit F **`Closes #25`**), surfaced scope +
+re-baseline plan first, and kept both golden gates green on both presets.
 
 ### Why this order
 

@@ -33,7 +33,8 @@
  *      main-manifest + scenario.tgz re-baseline for no command-fixture benefit.
  *    - stealth.c TORTURE / PETTY THIEF -- skill commands (sk_torture,
  *      sk_petty_thief in use.c); deferred to skills (step 9, "skil").
- *    - d_hide/d_sneak/spy_* draw nothing; equip_new_noble is #if 0 dead code.
+ *    - d_hide/d_sneak/spy_* draw nothing; equip_new_noble was #if 0 dead code,
+ *      deleted in issue #25 Unit F (mint) along with the other dead draw sites.
  *
  *  begin_explore() and the c1.c-local helpers are static; only expl_seek/
  *  expl_detect are exposed via proto.h so stealth.c's d_seek can draw from the
@@ -931,93 +932,6 @@ print_unformed(int pl)
 }
 
 
-#if 0
-/*
- *  Some micromodeling nonsense to randomly equip a new noble
- *  with a few items or skills
- */
-
-static void
-equip_new_noble(int who, int new)
-{
-	int where = subloc(who);
-	int n;
-	int qty;
-
-	if (rnd(1,4) == 1)	/* appropriate region skill */
-	{
-		if (is_port_city(where) && rnd(1,5) < 5)
-		{
-			n = sk_shipcraft;
-		}
-		else if (has_ocean_access(where) && rnd(1,2) == 1)
-		{
-			n = sk_shipcraft;
-		}
-		else
-		{
-			switch (rnd(1,4))
-			{
-			case 1:
-			case 2:
-				n = sk_combat;
-				break;
-
-			case 3:
-				n = sk_construction;
-				break;
-
-			case 4:
-				n = sk_stealth;
-				break;
-
-			default:
-				assert(FALSE);
-			}
-		}
-
-		set_skill(new, n, SKILL_know);
-		wout(who, "%s knows %s.", just_name(new), box_name(n));
-	}
-
-	if (rnd(1,5) == 1)	/* a possession */
-	{
-		qty = 1;
-
-		switch (rnd(1,5))
-		{
-		case 1:		/* gold */
-			qty = rnd(50, 550);
-			n = item_gold;
-			break;
-
-		case 2:
-			n = item_riding_horse;
-			break;
-
-		case 3:
-			n = item_longsword;
-			break;
-
-		case 4:
-			n = item_longbow;
-			break;
-
-		case 5:
-			n = item_warmount;
-			break;
-
-		default:
-			assert(FALSE);
-		}
-
-		gen_item(new, n, qty);
-		wout(who, "%s has %s.", just_name(new), just_name_qty(n, qty));
-	}
-}
-#endif
-
-
 static void
 form_new_noble(int who, char *name, int new)
 {
@@ -1045,10 +959,6 @@ form_new_noble(int who, char *name, int new)
 	set_lord(new, player(who), LOY_contract, 500);
 
 	join_stack(new, who);
-
-#if 0
-	equip_new_noble(who, new);
-#endif
 }
 
 

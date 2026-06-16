@@ -70,7 +70,7 @@ static int get_city_id(char *start_city) {
     return 0;
   }
 
-  rnd_id_cnt = rnd(1, 6);
+  rnd_id_cnt = mint_city();		/* issue #25 (Unit F): mint stream, not the global generator */
   rnd_line_cur = 1;
 
   while (s = getlin(fp)) {
@@ -152,12 +152,12 @@ pick_starting_city(char *start_city)
 
 		if (ilist_len(garrisoned) > 0)
 		{
-			ilist_scramble(garrisoned);
+			mint_shuffle(garrisoned);	/* issue #25 (Unit F): mint stream, not the global generator */
 			return garrisoned[0];
 		}
 		else if (ilist_len(ungarrisoned) > 0)
 		{
-			ilist_scramble(ungarrisoned);
+			mint_shuffle(ungarrisoned);	/* issue #25 (Unit F): mint stream, not the global generator */
 			return ungarrisoned[0];
 		}
 
@@ -197,8 +197,8 @@ add_new_player(int pl, char *faction, char *character, char *start_city,
 
 	// by sbaillie:
 	// give new players a randomly generated password by default
-	for (i = 0; i < 8; i++)
-		password[i] = symbols[rnd(1, (int) strlen(symbols)) - 1];	/* symbol-set len fits 32 bits */
+	for (i = 0; i < 8; i++)		/* issue #25 (Unit F): mint stream keyed on (pl, i), not the global generator */
+		password[i] = symbols[mint_password(pl, i, (int) strlen(symbols)) - 1];	/* symbol-set len fits 32 bits */
 	password[i] = '\0';
 	pp->password = str_save(password);
 
@@ -264,10 +264,11 @@ add_new_player(int pl, char *faction, char *character, char *start_city,
  *  olyscript-g3 host hook (issue #31): the scripted equivalent of
  *  make_new_players_sup(), driven from explicit arguments rather than an
  *  act/<pl>/Join-g3 file. Same two steps in the same order -- alloc_box(pl)
- *  then add_new_player() -- so the global rnd() draw sequence (noble slot,
- *  password, starting-city pick, unformed ids) is IDENTICAL to the -a pass,
- *  which is what keeps the guard-pillage golden tree byte-for-byte stable.
- *  The faction box id `pl` is caller-chosen (explicit alloc_box, no rnd); the
+ *  then add_new_player() -- so the mint-stream draw sequence (noble slot,
+ *  password, starting-city pick, unformed ids -- since issue #25 Unit F all on
+ *  the per-turn `mint` stream, not the global rnd()) is IDENTICAL to the -a
+ *  pass, which is what keeps the guard-pillage golden tree byte-for-byte stable.
+ *  The faction box id `pl` is caller-chosen (explicit alloc_box, no mint); the
  *  noble id new_ent() minted is the last entry add_new_player() pushed onto
  *  new_chars, returned here so the host can name it in the registry.
  *

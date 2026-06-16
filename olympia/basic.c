@@ -161,7 +161,7 @@ magc_med(int who, int sub)
 	return rng_keyed(&magic_rng, who, sub, MTAG_MED, 1, 100);
 }
 
-/* basic.c hinder-meditation omen flavor switch(rnd(1,4)), keyed on (who, other). */
+/* basic.c hinder-meditation omen flavor [1,4] switch, keyed on (who, other). */
 static int
 magc_omen(int who, int other)
 {

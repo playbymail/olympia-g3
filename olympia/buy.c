@@ -1581,7 +1581,7 @@ d_find_buy(struct command *c)
 
 	tt = add_city_trade(where, CONSUME, item, qty, cost, 0);
 
-	tt->expire = t->expire; /*  + rnd(2,5); */
+	tt->expire = t->expire;
 
 	wout(c->who, "%s buys %s at %s.",
 				box_name(where),
