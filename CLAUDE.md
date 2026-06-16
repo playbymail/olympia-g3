@@ -200,8 +200,9 @@ the addressable seam is `lib/rng.{c,h}`
 phase order the driver walks, and which draws are keyed vs still on the global
 stream — see [doc/turn-execution-order.md](doc/turn-execution-order.md).
 
-**Eight consumers landed so far: combat, pillage, economy/market, npc, weather,
-upkeep, quest, explore.** Each reseeds a stream off the turn root (`rng_master_seed()` →
+**Nine consumers landed so far: combat, pillage, economy/market, npc, weather,
+upkeep, quest, explore, and skills (command core only).** Each reseeds a stream
+off the turn root (`rng_master_seed()` →
 turn → its own 4-char tag) and draws from it instead of the global `rnd()`:
 
 - **combat** — per-battle stream on `(turn, location)`, `begin_battle()`/`crnd()`
@@ -250,7 +251,21 @@ turn → its own 4-char tag) and draws from it instead of the global `rnd()`:
   world-gen, fires at INIT, no actor, and the engine's largest draw set
   (~409,727 `rnd()`/build), so migrating it would force a main-manifest +
   `scenario.tgz` re-baseline for no command-fixture benefit; `stealth.c`'s
-  TORTURE/PETTY THIEF are **deferred to skills (step 9)** as skill commands.
+  TORTURE/PETTY THIEF are **deferred to skills (step 9)** as skill commands (now
+  landed, below).
+- **skills (command core)** — **one per-turn** stream (tag `skil`), seeded once
+  via the turn-guarded `begin_skills()` (`use.c`, the skill-command hub); the
+  explore model (keyed leaves, actor in the leaf key `k1`) because the draws are
+  scattered across three files (`c2.c`, `use.c`, `stealth.c`) with no per-actor
+  chokepoint. Keyed-leaf helpers `skil_crit`/`skil_bonus` (weapon training, `c2.c`
+  ARCHERY/DEFENSE/SWORDPLAY), static `skil_study`/`skil_research`/
+  `skil_research_pick` (STUDY/RESEARCH, `use.c`), and `skil_torture`/`skil_petty`
+  (TORTURE/PETTY THIEF, `stealth.c`, inherited from explore; exposed via
+  `proto.h`). A **deliberate partial**: only the mundane command-core draws land;
+  the aura/magic-adjacent draws are deferred as named residuals — `basic.c`
+  meditation/heal and `alchem.c` potions to **magic (step 10)**, `art.c`
+  artifact/orb/ring crafting to a **post-magic follow-up** (three overlaps incl. a
+  world-init mint risk), and `produce.c` mining/harvest as an **economy** residual.
 
 Combat and pillage were **byte-neutral on the main manifest** (the bare-map turn
 runs no combat/pillage); economy, npc, and weather each ran on the standard turn
@@ -265,11 +280,17 @@ command, and the only world-init quest call (`create_relics`) draws nothing — 
 no re-baseline and no `scenario.tgz` regeneration. **Explore is byte-neutral on
 *both* trees too** (the quest/upkeep profile): every explore draw is command-only,
 neither tree issues an EXPLORE/SEEK command, and none fire at world-init — so no
-re-baseline and no `scenario.tgz` regeneration.
+re-baseline and no `scenario.tgz` regeneration. **Skills (command core) is
+byte-neutral on *both* trees too** (the same profile): every migrated skill draw
+is command-only, neither tree issues a skill command (weapon training / STUDY /
+RESEARCH / TORTURE / PETTY THIEF), and none fire at world-init (verified
+empirically: 0 draws on the bare-map turn, both guard-pillage twins, and
+`-s`/`-a`/`-i`) — so no re-baseline and no `scenario.tgz` regeneration.
 Combat/pillage/npc/weather/upkeep behavior is pinned by its own golden tree,
 [tests/olympia/regress/guard-pillage](tests/olympia/regress/guard-pillage)
-(the **second** standing regress alongside secret-sea-route). Remaining
-subsystems (skills, magic, worldgen — which absorbs `tunnel.c` dungeon-gen —
+(the **second** standing regress alongside secret-sea-route). The **deferred**
+skills crafting/aura/alchemy draws and the remaining
+subsystems (magic, worldgen — which absorbs `tunnel.c` dungeon-gen —
 regions, mint) stay on the global `rnd()`; the migration
 order and per-subsystem keying live in
 [doc/rng-state-granularity.md](doc/rng-state-granularity.md), and a PCG32

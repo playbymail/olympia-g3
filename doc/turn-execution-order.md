@@ -251,6 +251,7 @@ stream they're on:
 | Per-pillage / undead / storm | `do_cookie_npc()` troop count when `man_kind` set | **keyed** per-location, `begin_npc(where)` (`npc.c:575`) — *not reached on the standard turn* |
 | Combat (only if a battle occurs) | `begin_battle()` / `crnd()` | **keyed** per-battle (combat migration) |
 | Command phase (only if issued) | EXPLORE (`d_explore`/`find_lost_items`) + SEEK (`d_seek`) detect rolls | **keyed** per-turn explore — `begin_explore()` / `expl_*` (#25, tag `expl`) — *not reached on either golden tree* |
+| Command phase (only if issued) | weapon training (ARCHERY/DEFENSE/SWORDPLAY), STUDY scroll-consume, RESEARCH pick/gate, TORTURE, PETTY THIEF | **keyed** per-turn skills — `begin_skills()` / `skil_*` (#25, tag `skil`, command core) — *not reached on either golden tree* |
 | Each day (`day%7`) / end of month | `heal_characters`, `loyalty_decay`, `men_starve`, `animal_deaths`, `corpse_decay` | **keyed** per-turn upkeep — `begin_upkeep()` (#25) — *not reached on either golden tree* |
 | End of month | `inn_income()` (`temple_income` draws nothing) | **global** `rnd()` (future income subsystem residual) |
 
@@ -280,7 +281,17 @@ Notes for #25 work:
   stream is unreached on both golden trees and at world-init — byte-neutral, no
   re-baseline. `tunnel.c` dungeon generation (the engine's largest draw set,
   ~409,727 `rnd()`/build, fired at INIT) was **deferred to worldgen**, and
-  `stealth.c`'s torture/petty-thief skill draws to **skills** — both still on the
-  global stream.
+  `stealth.c`'s torture/petty-thief skill draws to **skills**, which has now
+  landed (below).
+- **Skills (command core) is command-only too** (the quest/explore profile): the
+  mundane skill-command draws — weapon training (`c2.c`), STUDY scroll-consume and
+  RESEARCH pick/gate (`use.c`), and the TORTURE / PETTY THIEF commands inherited
+  from explore (`stealth.c`) — draw from the keyed per-turn skills stream
+  (`begin_skills()` / `skil_*`, tag `skil`), but a standard `-r` turn issues no
+  skill command, so the stream is unreached on both golden trees and at
+  world-init — byte-neutral, no re-baseline. This is a **deliberate partial**:
+  the aura/magic-adjacent draws (`basic.c` meditation/heal, `alchem.c` potions,
+  `art.c` artifact crafting) and the `produce.c` mining/harvest residual stay on
+  the global stream pending the magic step.
 - The keyed-stream seam is `lib/rng.{c,h}`; the per-subsystem migration order is
   in [rng-state-granularity.md](rng-state-granularity.md).

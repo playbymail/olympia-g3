@@ -787,6 +787,11 @@ extern void put_back_cookie(int who);
 extern void restore_dead_body(int owner, int who);
 
 /* olympia/use.c */
+/* issue #25 (step 9): per-turn skills RNG stream; helpers called from c2.c/stealth.c */
+extern int skil_crit(int who, int wsk);
+extern int skil_bonus(int who, int wsk, int low, int high);
+extern int skil_torture(int who, int target);
+extern int skil_petty(int who, int where, int sub, int low, int high);
 extern int char_np_total(int who);
 extern int d_research(struct command *c);
 extern int d_study(struct command *c);

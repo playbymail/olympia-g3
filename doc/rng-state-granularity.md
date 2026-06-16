@@ -2,8 +2,9 @@
 
 Status: **in progress.** Groundwork for Project Ultron
 ([agentic-project-ultron.md](agentic-project-ultron.md)). The seam
-(`lib/rng.{c,h}`) is wired into eight subsystems so far — combat, pillage,
-economy/market, NPC spawning, weather, upkeep, quest, and explore (see the
+(`lib/rng.{c,h}`) is wired into nine subsystems so far — combat, pillage,
+economy/market, NPC spawning, weather, upkeep, quest, explore, and skills
+(**command core only** — the crafting/aura/alchemy draws are deferred; see the
 consumer sections below); the remaining subsystems in the
 [distribution map](#recommended-subsystem-distribution) are still on the global
 `rnd()`.
@@ -687,14 +688,121 @@ list conflates three distinct reachability profiles. The boundary was drawn as:
   world-init — the economy precedent) for **zero** command-fixture benefit.
 - **Deferred to skills (step 9, `"skil"`):** `stealth.c` TORTURE and PETTY THIEF.
   Both are **skill commands** (`sk_torture`, `sk_petty_thief` registered in
-  `use.c`), so they belong with the skills subsystem keyed on `(actor, skill)`,
-  not with explore. When skills migrates, it picks these up; `d_explore`/
-  `find_lost_items` in `c1.c` (nominally a "skills" file) stay on `expl` as a
-  documented cross-reference (the npc→`swear.c`/`beast.c` split precedent).
+  `use.c`), so they belong with the skills subsystem keyed on the actor, not with
+  explore. **These have now landed** under the skills migration (the ninth
+  consumer, below) — they draw from the per-turn `skills_rng` (tag `skil`) via
+  `skil_torture`/`skil_petty`. `d_explore`/`find_lost_items` in `c1.c` (nominally
+  a "skills" file) stay on `expl` as a documented cross-reference (the
+  npc→`swear.c`/`beast.c` split precedent).
 
 **Draw nothing / dead code (nothing to migrate):** `d_hide`, `d_sneak`, and the
 `spy_*` commands draw no `rnd()`; the map's `"hide"` leaf has no draw.
 `equip_new_noble` (`c1.c`) is inside `#if 0` — never compiled.
+
+## Ninth consumer: skills (command core)
+
+Skills is the ninth subsystem migrated, tag `"skil"`, and — unlike every
+consumer before it — it is a **deliberate partial**. Only the unambiguous,
+mundane, command-only skill draws land here; everything that straddles magic,
+alchemy, or artifact crafting is **explicitly deferred** to the magic step (10)
+and a crafting follow-up, so a small, byte-neutral slice lands cleanly while the
+murky magic boundary is settled separately. It is a sibling of the others under
+the turn root:
+
+```
+turn seed
+  ├─ … (combat … explore)
+  └─ (0,        TAG_SKILLS)  → skills_rng   (weapon training, study/research, torture/petty)
+```
+
+### One per-turn stream, keyed leaves (the explore/upkeep model)
+
+Like explore and upkeep, skills uses **one per-turn stream seeded once** —
+`begin_skills()` (`olympia/use.c`) is turn-guarded, scenario key `0` — with all
+draws being **keyed leaves** (`rng_keyed`, which never advances a counter). The
+**actor goes in the leaf key `k1`**, not the map's literal "scenario key =
+actor": the draws are scattered across several independent skill commands in
+**three files** (`c2.c`, `use.c`, `stealth.c`) with no single per-actor
+chokepoint, and one actor may issue several skill commands in a turn. Carrying
+the actor in the leaf key gives identical per-`(actor, context)` addressability
+for free and is collision-free across commands — the explore precedent. The
+stream + `begin_skills()` + the helpers live in `use.c` (the skill-command hub,
+`use_tbl`); `begin_skills` and the `use.c`-local helpers
+(`skil_study`/`skil_research`/`skil_research_pick`) are static, while
+`skil_crit`/`skil_bonus` (for `c2.c`) and `skil_torture`/`skil_petty` (for
+`stealth.c`) are exposed via `proto.h` (the `begin_economy`/`expl_seek`
+cross-file convention).
+
+Migrated draws (all keyed leaves via small named helpers, purpose a 4-char tag):
+
+- **weapon training** (`c2.c` `d_archery`/`d_defense`/`d_swordplay`) — the 5%
+  crit gate `rnd(1,100)` (`skil_crit`, `"crit"`) and the rating bonus
+  `rnd(3,5)`/`rnd(1,3)` (`skil_bonus`, `"yiel"`), keyed on `(who, weapon skill)`
+  (`sk_archery`/`sk_defense`/`sk_swordplay`) — matching the map's `crit`/`yield`
+  leaf names.
+- **STUDY** (`use.c` `v_study`) — the 1-in-4 scroll/book consume check `rnd(1,4)`
+  (`skil_study`, `"stdy"`), keyed on `(who, skill)`. The two mutually-exclusive
+  code paths (fast-study vs normal) share the key — only one fires per command.
+- **RESEARCH** (`use.c` `d_research`/`research_notknown`) — the success gate
+  `rnd(1,100)` (`skil_research`, `"rsch"`) and the unknown-skill pick
+  `rnd(0,len-1)` (`skil_research_pick`, `"rpik"`), keyed on `(who, skill)`. The
+  pick is keyed (not sequential), so its firing in both `v_research` (validation)
+  and `d_research` (execution) now yields the same skill instead of two
+  independent global draws.
+- **TORTURE** (`stealth.c` `d_torture`, inherited from explore step 8) — the
+  prisoner talk-chance `rnd(1,100)` (`skil_torture`, `"tort"`), keyed on
+  `(who, target)`.
+- **PETTY THIEF** (`stealth.c` `d_petty_thief`, inherited from explore step 8) —
+  the command's ~8-draw run (caught check, beating/report/rumor flavor, damage,
+  amount stolen) via a single generic `skil_petty(who, where, sub, lo, hi)`
+  (`"ptty"`), keyed on `(who, where)` with a per-site `sub` folded into the leaf
+  key (`where*16 + sub`) — the weather `day*16+slot` / upkeep animal-index
+  precedent. The report sub-cases recur in two mutually-exclusive branches, so a
+  shared `sub` never double-draws within one invocation.
+
+### Why this one is byte-neutral on both trees (the quest/explore profile)
+
+Like quest and explore, **every skill-command draw is unreached on both golden
+trees** — measured empirically (instrument each command handler, build, run,
+count, revert):
+
+- **Bare-map standard turn: 0 skill draws.** No player characters, so no skill
+  command is ever issued.
+- **guard-pillage turn (both `check.sh` and `check-lua.sh`): 0 skill draws.** Its
+  factions issue `pillage`/`guard`, never a skill command.
+- **World-init (`-s`/`-a`/`-i`): 0 skill draws.** None of these fire at
+  world-init (the Lua world-build, the byte-equivalent of `-s`/`-a`/`-i`, also
+  draws zero).
+
+So the migration is **byte-neutral on both manifests** (the quest/upkeep/explore
+profile): no re-baseline of the main manifest *or* the guard-pillage tree, and
+`scenario.tgz` is untouched. Its value is purely future Ultron-fixture
+addressability.
+
+### Explicitly deferred (named residuals — the partial boundary)
+
+This slice **stops at the magic boundary**. Each deferred group straddles a
+not-yet-migrated subsystem and stays on the global `rnd()`:
+
+- **`basic.c` meditation/aura + heal** — `d_meditate`, `d_adv_med`,
+  `hinder_med_omen`, and `d_heal` are **aura/spell draws** (they
+  `charge_aura()`, scale on aura level, print "casts Heal"); deferred to **magic**
+  (step 10).
+- **`alchem.c`** — `new_potion`, `v_use_heal`, `v_use_slave` (potion brew/use) —
+  alchemy/magic-adjacent; deferred to **magic**.
+- **`art.c`** — `d_forge_aura`, `new_orb`/`v_use_orb`, `create_npc_token`,
+  `new_suffuse_ring`/`v_suffuse_ring` (artifact/magic-item crafting) — deferred to
+  a **follow-up after magic** because it has three overlaps to settle first: (i)
+  `new_orb`/`create_npc_token` are quest-left shared-infra residuals; (ii) suffuse
+  rings overlap economy (`trade_suffuse_ring`); (iii) a **world-init mint risk**
+  (orbs/tokens/rings may be minted during `-s`/`-a`/`-i`, which would flip this to
+  the expensive economy profile with a `scenario.tgz` regen). The follow-up does
+  the empirical world-init check.
+- **`produce.c`** mining/harvest/mage-menial — left global by the economy
+  migration; an **economy** residual.
+
+`d_hide`/`d_sneak`/`spy_*` draw nothing; `equip_new_noble` (`c1.c`) is `#if 0`
+dead code — nothing to migrate either way.
 
 ## Recommended subsystem distribution
 
@@ -742,10 +850,11 @@ master seed                                  rng_seed(randseed bytes)
    │
    ├─ explore    key(turn, 0,        "expl")  [LANDED]   c1.c (begin_explore/expl_*), stealth.c (d_seek)
    │     └─ leaf key(who, where|target, "find"/"gate"/"flav"/"pick"/"seek"/"dtct")  ← keyed leaves, one per-turn stream
-   │             actor in leaf key (no chokepoint); tunnel.c dungeon-gen -> worldgen (11), torture/petty -> skills (9)
+   │             actor in leaf key (no chokepoint); tunnel.c dungeon-gen -> worldgen (11), torture/petty -> skills (9, landed)
    │
-   ├─ skills     key(turn, actor,    "skil")  [proposed] c1.c, c2.c, basic.c, use.c, alchem.c, art.c
-   │     └─ leaf key(skill, target, "success"/"yield"/"crit")
+   ├─ skills     key(turn, 0,        "skil")  [PARTIAL]  use.c (begin_skills/skil_*), c2.c (weapon), stealth.c (torture/petty)
+   │     └─ leaf key(who, ctx, "crit"/"yiel"/"stdy"/"rsch"/"rpik"/"tort"/"ptty")  ← keyed leaves, one per-turn stream, actor in k1
+   │             COMMAND CORE landed; deferred: basic.c aura/heal + alchem.c -> magic (10); art.c crafting -> follow-up; produce.c -> economy residual
    │
    ├─ magic      key(turn, actor,    "magc")  [proposed] scry.c, necro.c, relig.c
    │     └─ leaf key(spell, target, "scry"/"summon"/"piety")
@@ -772,7 +881,7 @@ master seed                                  rng_seed(randseed bytes)
 | 6 | upkeep | `upkp` | turn (loc 0) | **landed** | `day.c` |
 | 7 | quest | `qest` | where / actor | **landed** | `quest.c`, `use.c` |
 | 8 | explore | `expl` | turn (loc 0) | **landed** | `c1.c`, `stealth.c` |
-| 9 | skills | `skil` | actor | proposed | `c1.c`, `c2.c`, `basic.c`, `use.c`, `alchem.c`, `art.c` (+ `stealth.c` torture/petty) |
+| 9 | skills | `skil` | turn (loc 0) | **landed (command core)** — crafting/aura/alchemy deferred | `use.c`, `c2.c`, `stealth.c` (deferred: `basic.c`, `alchem.c`, `art.c`, `produce.c`) |
 | 10 | magic | `magc` | actor | proposed | `scry.c`, `necro.c`, `relig.c` |
 | 11 | worldgen | `wgen` | location | proposed | `seed.c`, `tunnel.c` (dungeon-gen) |
 | 12 | regions | `faer`/`hads`/`clud` | location | proposed | `faery.c`, `hades.c`, `cloud.c` |
@@ -834,6 +943,18 @@ master seed                                  rng_seed(randseed bytes)
   guard-pillage, and none fire at world-init) — the quest/upkeep profile, so no
   re-baseline and no `scenario.tgz` regeneration. See
   [Eighth consumer](#eighth-consumer-explore).
+- **skills came next, as a deliberate partial** (command core now landed) — the
+  mundane, command-only skill draws: weapon training (`c2.c`), STUDY/RESEARCH
+  (`use.c`), and the TORTURE/PETTY THIEF commands inherited from explore
+  (`stealth.c`). Like explore it uses **one per-turn stream, keyed leaves** (the
+  actor in the leaf key). Byte-neutral on **both** golden trees (every skill draw
+  is command-only, unreached on the bare map and guard-pillage, and none fire at
+  world-init) — the quest/explore profile, so no re-baseline and no `scenario.tgz`
+  regeneration. The slice **stops at the magic boundary**: `basic.c` aura/heal and
+  `alchem.c` potions defer to magic (step 10), `art.c` artifact crafting to a
+  post-magic follow-up (three overlaps incl. a world-init mint risk), and
+  `produce.c` stays an economy residual. See
+  [Ninth consumer](#ninth-consumer-skills-command-core).
 - **mint is last** — `z.c` password/id generation is *creation-order* sensitive
   today, so keying it on the minted entity id is what most directly enables small
   fixtures, but it touches the most golden bytes; stage it after everything else.

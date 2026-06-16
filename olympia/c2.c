@@ -681,15 +681,15 @@ d_archery(struct command *c)
 
 	p = p_char(c->who);
 
-	if (rnd(1,100) <= 5)
+	if (skil_crit(c->who, sk_archery) <= 5)	/* issue #25: skills stream */
 		amount = 10;
 	// by Cappinator:
 	// Fixed bug where defense was checked instead of
 	// missile rating when determining the random factor
 	else if (p->missile < 100)
-		amount = rnd(3,5);
+		amount = skil_bonus(c->who, sk_archery, 3, 5);
 	else
-		amount = rnd(1,3);
+		amount = skil_bonus(c->who, sk_archery, 1, 3);
 
 	p->missile += amount;
 
@@ -714,12 +714,12 @@ d_defense(struct command *c)
 
 	p = p_char(c->who);
 
-	if (rnd(1,100) <= 5)
+	if (skil_crit(c->who, sk_defense) <= 5)	/* issue #25: skills stream */
 		amount = 10;
 	else if (p->defense < 100)
-		amount = rnd(3,5);
+		amount = skil_bonus(c->who, sk_defense, 3, 5);
 	else
-		amount = rnd(1,3);
+		amount = skil_bonus(c->who, sk_defense, 1, 3);
 
 	p->defense += amount;
 
@@ -744,12 +744,12 @@ d_swordplay(struct command *c)
 
 	p = p_char(c->who);
 
-	if (rnd(1,100) <= 5)
+	if (skil_crit(c->who, sk_swordplay) <= 5)	/* issue #25: skills stream */
 		amount = 10;
 	else if (p->attack < 100)
-		amount = rnd(3,5);
+		amount = skil_bonus(c->who, sk_swordplay, 3, 5);
 	else
-		amount = rnd(1,3);
+		amount = skil_bonus(c->who, sk_swordplay, 1, 3);
 
 	p->attack += amount;
 
