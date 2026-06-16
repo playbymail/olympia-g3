@@ -3,6 +3,7 @@
 #include	<math.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
 
 
 int hades_region = 0;
@@ -11,6 +12,123 @@ int hades_player = 0;
 
 
 #define	SZ	100		/* SZ x SZ is the maximum size of Hades */
+
+
+/*
+ *  issue #25 (regions, step 12): Hades draws from a per-turn "hads" stream
+ *  instead of the global rnd(). Like worldgen, it is a hybrid -- one tag, two
+ *  draw models (the weather/worldgen precedent):
+ *
+ *  - The WORLD BUILD (create_hades) is an ordered terrain/gate/city generation,
+ *    so it uses a fresh per-build SEQUENTIAL stream (the tunnel.c model):
+ *    begin_hades_build() reseeds it and hseq_rnd()/hseq_shuffle() draw in order.
+ *    It fires at the -i/-s/-a world init (io.c, init-guarded if (hades_region ==
+ *    0)), so the build half is NOT byte-neutral.
+ *
+ *  - The AUTONOMOUS turn-time behavior (auto_hades' create_hades_nasty spawns,
+ *    the random_hades_loc transcend-death pick, and the npc.c bandit ambushes)
+ *    has no per-actor chokepoint and is scattered across hades.c/npc.c/u.c, so
+ *    it uses KEYED LEAVES on a turn-guarded per-turn stream (the explore/magic
+ *    model): begin_hades() seeds once per turn and the hads_*() helpers are
+ *    order-independent leaf draws. The build stream keys on the (nonzero) region
+ *    id and the leaf stream keys on 0, so they never collide (the worldgen
+ *    convention). The bandit/transcend helpers are exposed via proto.h.
+ */
+static rng_stream hades_seq;			/* build: ordered generation        */
+static rng_stream hades_rng;			/* autonomous: keyed leaves         */
+static int hades_rng_turn = -1;			/* seed hades_rng once per turn     */
+
+#define	TAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_HADES	0x68616473u	/* "hads" */
+
+/* hades autonomous leaf-draw purpose tags (kept private) */
+#define	HTAG_NAST	0x6e617374u	/* "nast" -- create_hades_nasty spawn (slot-keyed) */
+#define	HTAG_BKND	0x626b6e64u	/* "bknd" -- create_hades_bandit kind             */
+#define	HTAG_BQTY	0x62717479u	/* "bqty" -- create_hades_bandit troop count      */
+#define	HTAG_AMBS	0x616d6273u	/* "ambs" -- hades_attack_check ambush trigger    */
+#define	HTAG_RTAL	0x7274616cu	/* "rtal" -- hades_attack_check retaliate         */
+#define	HTAG_RLOC	0x726c6f63u	/* "rloc" -- random_hades_loc (transcend-death)   */
+
+/* build: fresh per-build reseed (the tunnel.c/worldgen sequential model). */
+static void
+begin_hades_build(int where)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	hades_seq = rng_stream_of(&turn, where, TAG_HADES);
+}
+
+static int
+hseq_rnd(int low, int high)
+{
+	return rng_draw(&hades_seq, low, high);
+}
+
+static void
+hseq_shuffle(ilist l)
+{
+	ilist_shuffle_rng(l, &hades_seq);
+}
+
+/* autonomous: turn-guarded per-turn keyed-leaf stream (the explore/magic model). */
+static void
+begin_hades(void)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	if (hades_rng_turn == sysclock.turn)
+		return;			/* already seeded this turn */
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	hades_rng = rng_stream_of(&turn, 0, TAG_HADES);
+
+	hades_rng_turn = sysclock.turn;
+}
+
+/* create_hades_nasty: keyed on the auto_hades spawn slot (no entity yet at the
+ * where/kind pick); sub 0=where, 1=kind, 2=troop count. */
+static int
+hads_nasty(int slot, int sub, int low, int high)
+{
+	begin_hades();
+	return rng_keyed(&hades_rng, slot, sub, HTAG_NAST, low, high);
+}
+
+/* exposed via proto.h for the npc.c bandit ambushes (region-environmental). */
+int
+hads_bandit_kind(int who, int where)
+{
+	begin_hades();
+	return rng_keyed(&hades_rng, who, where, HTAG_BKND, 1, 5);
+}
+
+int
+hads_bandit_qty(int unit)
+{
+	begin_hades();
+	return rng_keyed(&hades_rng, unit, 0, HTAG_BQTY, 4, 24);
+}
+
+int
+hads_ambush(int who, int where)
+{
+	begin_hades();
+	return rng_keyed(&hades_rng, who, where, HTAG_AMBS, 1, 100);
+}
+
+int
+hads_retal(int who, int where)
+{
+	begin_hades();
+	return rng_keyed(&hades_rng, who, where, HTAG_RTAL, 1, 2);
+}
 
 
 /*
@@ -41,6 +159,8 @@ create_hades(void)
 	set_name(hades_region, "Hades");
 
 	fprintf(stderr, "INIT: creating %s\n", box_name(hades_region));
+
+	begin_hades_build(hades_region);	/* issue #25: per-build hads stream */
 
 /*
  *  Create the King of Hades player
@@ -142,7 +262,7 @@ combat combatpassword
 			set_name(n, "Hades");
 			set_where(n, hades_region);
 			// 50% of Hades regions are hidden
-			if (rnd(0, 1))
+			if (hseq_rnd(0, 1))
 			{
 				p_loc(n)->hidden = TRUE;
 
@@ -210,7 +330,7 @@ combat combatpassword
 	for (r = 0; r < sz; r++)
 		for (c = 0; c < sz; c++)
 		{
-			if (rnd(0, 60))
+			if (hseq_rnd(0, 60))
 				continue;
 			n = map[r][c];
 			if (bx[n]->temp)
@@ -220,7 +340,7 @@ combat combatpassword
 			set_name(city, "Necropolis");
 			set_known(hades_player, city);
 			bx[n]->temp = 1;
-			bx[n]->x_loc->hidden = (schar) rnd(0, 1);
+			bx[n]->x_loc->hidden = (schar) hseq_rnd(0, 1);
 			space--;
 			
 			seed_city(city);
@@ -231,15 +351,15 @@ combat combatpassword
  *  Hades locations except the center one containing the pit.
  */
 
-	ilist_scramble(graveyards);
+	hseq_shuffle(graveyards);
 
 	assert(space > ilist_len(graveyards));
 
 	i = 0;
 	while (i < ilist_len(graveyards))
 	{
-		r = rnd(1, sz) - 1;
-		c = rnd(1, sz) - 1;
+		r = hseq_rnd(1, sz) - 1;
+		c = hseq_rnd(1, sz) - 1;
 
 		if (!bx[map[r][c]]->x_loc->hidden && !bx[graveyards[i]]->x_loc->hidden)
 			continue;
@@ -268,7 +388,7 @@ combat combatpassword
 
 
 static void
-create_hades_nasty(void)
+create_hades_nasty(int slot)
 {
 	int new;
 	struct loc_info *p;
@@ -277,9 +397,9 @@ create_hades_nasty(void)
 	p = rp_loc_info(hades_region);
 	assert(p);
 
-	where = p->here_list[rnd(0,ilist_len(p->here_list)-1)];
+	where = p->here_list[hads_nasty(slot, 0, 0, ilist_len(p->here_list)-1)];
 
-	switch (rnd(1,4))
+	switch (hads_nasty(slot, 1, 1, 4))
 	{
 	case 1:
 		new = new_char(sub_ni, item_spirit, where, 100, hades_player,
@@ -288,7 +408,7 @@ create_hades_nasty(void)
 		if (new < 0)
 			return;
 
-		gen_item(new, item_spirit, rnd(25,75));
+		gen_item(new, item_spirit, hads_nasty(slot, 2, 25, 75));
 		break;
 
 	case 2:
@@ -311,7 +431,7 @@ create_hades_nasty(void)
 
 		p_char(new)->attack = 250;
 		rp_char(new)->defense = 250;
-		gen_item(new, item_spirit, rnd(50,150));
+		gen_item(new, item_spirit, hads_nasty(slot, 2, 50, 150));
 		break;
 
 	case 4:
@@ -324,7 +444,7 @@ create_hades_nasty(void)
 		p_char(new)->attack = 500;
 		rp_char(new)->defense = 500;
 
-		gen_item(new, item_spirit, rnd(100,250));
+		gen_item(new, item_spirit, hads_nasty(slot, 2, 100, 250));
 		break;
 
 	default:
@@ -376,7 +496,7 @@ auto_hades(void)
 
 	while (n_hades < 25)
 	{
-		create_hades_nasty();
+		create_hades_nasty(n_hades);
 		n_hades++;
 	}
 
@@ -389,7 +509,7 @@ auto_hades(void)
 
 
 int
-random_hades_loc(void)
+random_hades_loc(int who)
 {
 	ilist l = NULL;
 	int i;
@@ -409,7 +529,8 @@ random_hades_loc(void)
 	if (ilist_len(l) < 1)
 		return 0;
 
-	ret = l[rnd(0,ilist_len(l)-1)];
+	begin_hades();
+	ret = l[rng_keyed(&hades_rng, who, 0, HTAG_RLOC, 0, ilist_len(l)-1)];
 
 	ilist_reclaim(&l);
 	return ret;

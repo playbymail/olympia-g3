@@ -86,11 +86,20 @@ In order (`input.c:1044-1062`):
 >    every turn**, keyed on the fort (#25). The bare-map standard turn has 243
 >    forts, so this is 243 keyed draws on the standard manifest even though no
 >    savages end up spawning. This is the "surprise" draw.
-> 2. `auto_hades()`
+> 2. `auto_hades()` — spawns up to 25 Hades "nasties" (`create_hades_nasty`) per
+>    turn. Since #25 step 12 these draw from the keyed per-turn **region:hades**
+>    stream (tag `hads`, `begin_hades()` / `hads_nasty`, the auto-spawn slot in the
+>    leaf key); 25 spawns × ~2–3 draws fire on the bare-map turn (NOT byte-neutral).
 > 3. A `loop_units(indep_player, …)` pass dispatching each independent unit to its
 >    `npc_program` / `subkind` behavior (`auto_unsworn`, `auto_undead`,
 >    `auto_savage`, `auto_mob`, `auto_bandit`, `npc_move`). Units already running
->    or already queued are skipped (`npc.c:623-627`).
+>    or already queued are skipped (`npc.c:623-627`). The hades/faery **bandit
+>    ambush checks** (`hades_attack_check`/`faery_attack_check`, fired from
+>    `move.c` when a char enters Hades/Faery) also draw from the region streams
+>    since #25 step 12 (`hads_ambush`/`faer_ambush` etc.); the trigger roll fires
+>    per mover (the spawned NPCs move, so ~25/15 trigger draws on the bare map) but
+>    no bandit spawns there (the roll passes only 6% of the time, and NPC movers
+>    short-circuit).
 
 ### The daily loop
 
@@ -144,6 +153,9 @@ for the month (these fire the first time `daily_events` runs, i.e. day 1):
   every turn and would move the main manifest (`noncreator_curse_erode()` itself
   draws nothing)
 - `faery_day = rnd(MONTH_DAYS/2, MONTH_DAYS)` (`day.c:1822`) — **global** (region:faery)
+  — the **day-pick stays global** (a turn-auto schedule pick that fires every turn,
+  like `curse_erode_day`); only `auto_faery`'s *behavior* draws moved onto the
+  keyed `faer` stream (#25 step 12, below)
 - `dog_bark_day = rnd(1, MONTH_DAYS)` (`day.c:1825`) — **global** (detection/stealth)
 - `weather_days`: built `1..MONTH_DAYS`, shuffled, then the first 4 `qsort`ed
   (`day.c:1827-1838`) — the shuffle now draws from the **keyed** weather stream
@@ -161,7 +173,7 @@ if (day == curse_erode_day) noncreator_curse_erode();
 if (day == 15)             increment_stone_ring_aura();
 if (day == dog_bark_day)   dogs_bark_at_hidden_chars();
 if (day == weather_days[wday_index]) { wday_index++; natural_weather(); }
-if (day == faery_day)      auto_faery();
+if (day == faery_day)      auto_faery();   // create_elven_hunt -> keyed faer stream (#25 step 12)
 ```
 
 > Mixed streams since the weather migration (#25). The **weather** draws here are
@@ -176,6 +188,9 @@ if (day == faery_day)      auto_faery();
 > stay on the **global serial stream** (`rnd()`) as documented residuals for the
 > magic / region:faery / stealth subsystems. Those global residuals are part of
 > why reordering or adding a global draw still re-bakes the rest of the manifest.
+> When `faery_day` arrives, `auto_faery()`'s `create_elven_hunt` spawns (15/turn)
+> draw from the keyed per-turn **region:faery** stream (tag `faer`, #25 step 12),
+> not the global `rnd()` — only the day-*pick* above stays global.
 
 ---
 
@@ -318,7 +333,7 @@ Notes for #25 work:
   manifest), `auto_undead` defers to npc (autonomous behavior), the `art.c`
   shared-infra minters stay deferred (`new_orb`/`create_npc_token` → quest,
   `new_suffuse_ring` → economy — the last fires ~22–42×/turn), and `cloud.c` to
-  region:cloud.
+  region:cloud — **now landed** (regions, below).
 - **Worldgen is the opposite of every command-only consumer above — it fires at
   INIT, not during the turn**, and is the engine's largest draw set. The
   non-economy city seeding (`seed.c`: city prominence, skill teaching, garrison
@@ -339,5 +354,28 @@ Notes for #25 work:
   from the global stream and completing the INIT-seeding partition. The
   saved-`randseed` → master-seed coupling that moved the guard-pillage tree
   disappears once **mint** (step 13) lands.
+- **Regions are a hybrid like worldgen — part INIT, part turn-time** (#25 step 12,
+  three sibling tags `faer`/`hads`/`clud`). Each region splits two reachability
+  profiles in one file: the **world BUILD** (`create_faery`/`create_hades`/
+  `create_cloudlands`, fired once at the `-i`/`-s`/`-a` world-init via `io.c`,
+  init-guarded `if (<region>_region == 0)`) is ordered terrain/gate/populate
+  generation, so it uses a **fresh per-build sequential stream** (the `tunnel.c`
+  model: `begin_<region>_build()` / `<r>seq_rnd`/`<r>seq_shuffle`); the
+  **turn-time autonomous** behavior (`auto_hades`'s nasties, `auto_faery`'s elven
+  hunts, the `npc.c` bandit ambushes, and the `random_hades_loc` transcend pick)
+  uses **keyed leaves** on a turn-guarded per-turn stream (the explore/npc model:
+  `begin_<region>()` / `hads_*`/`faer_*`, actor/location/slot in the leaf key,
+  the bandit/transcend helpers exposed via `proto.h`). cloud is build-only (no
+  autonomous half). Like worldgen the build halves fire at world-init → **NOT
+  byte-neutral**; *unlike* the brief's expectation the autonomous halves are not
+  byte-neutral either (`auto_hades`/`auto_faery` fire every turn — 25 nasty + 15
+  hunt spawns + 40 ambush-trigger draws on the bare map). Both halves migrated in
+  one PR under a **single deliberate re-baseline** of both trees (main manifest
+  still 204 files content-only; guard-pillage `scenario.tgz` regen +
+  `EXPECT.sha256`, both `check.sh`/`check-lua.sh` agree). This absorbs the
+  npc-deferred bandit residuals and the magic-deferred `cloud.c`. The autonomous
+  halves give future fixture addressability (a hades-ambush / faery-bandit
+  fixture); the build halves yield no command fixture. After this only **mint**
+  (step 13) remains.
 - The keyed-stream seam is `lib/rng.{c,h}`; the per-subsystem migration order is
   in [rng-state-granularity.md](rng-state-granularity.md).

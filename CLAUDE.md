@@ -200,11 +200,14 @@ the addressable seam is `lib/rng.{c,h}`
 phase order the driver walks, and which draws are keyed vs still on the global
 stream — see [doc/turn-execution-order.md](doc/turn-execution-order.md).
 
-**Eleven consumers landed so far: combat, pillage, economy/market, npc, weather,
+**Twelve consumers landed so far: combat, pillage, economy/market, npc, weather,
 upkeep, quest, explore, skills (command core only), magic (command core
-plus the `art.c` crafting commands), and worldgen (INIT-time city seeding +
-dungeon generation — the engine's largest draw set, the one consumer that fires
-at INIT and required a mandatory re-baseline of both golden trees).** Each
+plus the `art.c` crafting commands), worldgen (INIT-time city seeding +
+dungeon generation — the engine's largest draw set, the first consumer that fires
+at INIT and required a mandatory re-baseline of both golden trees), and regions
+(faery/hades/cloud — a worldgen-style hybrid carrying an INIT world build *and*
+turn-time autonomous behavior, on tags `faer`/`hads`/`clud`; also required a
+re-baseline of both trees).** Each
 reseeds a stream off the turn root (`rng_master_seed()` → turn → its own 4-char
 tag) and draws from it instead of the global `rnd()`:
 
@@ -288,7 +291,7 @@ tag) and draws from it instead of the global `rnd()`:
   (autonomous behavior, already keyed troop-count rides the `npcs` stream), the
   `art.c` shared-infra **minters** stay deferred (`new_orb`/`create_npc_token` →
   **quest** loot, `new_suffuse_ring` → **economy** per-turn restock, which fires
-  ~22–42×/turn), and `cloud.c` to **region:cloud**.
+  ~22–42×/turn), and `cloud.c` to **region:cloud** (**now landed**, below).
 - **worldgen** — tag `wgen`, the **only consumer that fires at INIT** (not during
   the turn) and the engine's **largest draw set** (~409,733 draws/build). Carries
   **two draw models on one tag** (the weather precedent): `seed.c`'s non-economy
@@ -305,6 +308,31 @@ tag) and draws from it instead of the global `rnd()`:
   and the guard-pillage `scenario.tgz` regen + `EXPECT.sha256` (both `check.sh` and
   `check-lua.sh` agree). No command-fixture benefit; its value is removing the
   largest draw set from the global stream and completing the INIT-seeding partition.
+- **regions** — three sibling tags `faer`/`hads`/`clud` (`faery.c`, `hades.c`,
+  `cloud.c`, plus the `npc.c` bandit residuals and the `u.c` transcend pick). Like
+  worldgen each carries **two draw models on one tag** (the weather/worldgen
+  precedent), split by reachability: the **INIT world build**
+  (`create_faery`/`create_hades`/`create_cloudlands`, init-guarded in `io.c`) uses a
+  **fresh per-build sequential stream** — `begin_<region>_build(<region>_id)` +
+  `<r>seq_rnd`/`<r>seq_shuffle` (the `tunnel.c` model: ordered terrain/gate/populate
+  generation, un-keyable); the **turn-time autonomous** behavior (`auto_hades`'s
+  nasties, `auto_faery`'s elven hunts, the bandit ambushes, the transcend pick) uses
+  **keyed leaves** on a turn-guarded per-turn stream — `begin_<region>()` +
+  `hads_*`/`faer_*`, the auto-spawn loop slot in the leaf key for the spawns
+  (no entity yet at the where/kind pick) and the actor/location for the bandit/
+  transcend draws (helpers exposed via `proto.h` for `npc.c`/`u.c`). `cloud.c` is
+  build-only. **NOT byte-neutral** (the worldgen profile): the build halves fire at
+  world-init *and* — unlike the brief's expectation — the autonomous halves fire on
+  the bare-map turn too (`auto_hades`/`auto_faery` run every turn: 25 nasty + 15 hunt
+  spawns + 40 ambush-trigger draws). Migrated in **one PR** (all three builds share
+  the same `io.c` INIT block) under a **single deliberate re-baseline of both trees**
+  — main manifest still 204 files (content-only), guard-pillage `scenario.tgz` regen
+  + `EXPECT.sha256` (noble ids moved to pillager 6249 / guard 2002; both `check.sh`
+  and `check-lua.sh` agree). This **resolves the npc-deferred bandit residuals and
+  the magic-deferred `cloud.c`**. The autonomous halves give future fixture
+  addressability (a hades-ambush / faery-bandit fixture); the build halves do not.
+  Smaller re-baseline than worldgen because `tunnel.c`/`seed.c` were already
+  off-stream — only the still-global mint draws (+ saved `randseed`) shifted.
 
 Combat and pillage were **byte-neutral on the main manifest** (the bare-map turn
 runs no combat/pillage); economy, npc, and weather each ran on the standard turn
@@ -352,8 +380,9 @@ Combat/pillage/npc/weather/upkeep behavior is pinned by its own golden tree,
 (the **second** standing regress alongside secret-sea-route). The **deferred**
 `art.c` shared-infra minters (`new_orb`/`create_npc_token` → quest loot,
 `new_suffuse_ring` → economy per-turn restock), the magic turn-auto residuals
-(`curse_erode` day-pick, `auto_undead`), and the remaining subsystems (regions —
-faery/hades incl. `cloud.c` — and mint) stay on the global `rnd()`; the migration
+(`curse_erode` day-pick, `auto_undead`), the `faery_day` day-pick, and the last
+remaining subsystem (**mint** — entity-id / password generation) stay on the
+global `rnd()`; the migration
 order and per-subsystem keying live in
 [doc/rng-state-granularity.md](doc/rng-state-granularity.md), and a PCG32
 generator swap stays deferred behind the TAG 64-bit work.

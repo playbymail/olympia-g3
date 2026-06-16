@@ -3,12 +3,54 @@
 #include 	<string.h>
 #include	"z.h"
 #include	"oly.h"
+#include	"rng.h"
 
 
 int cloud_region = 0;
 
 
 #define	SZ	4
+
+
+/*
+ *  issue #25 (regions, step 12): the Cloudlands world build draws from a fresh
+ *  per-build SEQUENTIAL stream (tag "clud") instead of the global rnd(). Like
+ *  tunnel.c's dungeon generation (the worldgen precedent), the build is an
+ *  ordered terrain/gate generation (the corner-gate seal keys and the ring-of-
+ *  stones shuffle), so it is the combat/quest sequential model, not keyed leaves.
+ *  cloud.c is build-only -- it has no autonomous turn-time behavior -- so unlike
+ *  faery/hades it carries just the one stream. It fires at the -i/-s/-a world
+ *  init (io.c, init-guarded if (cloud_region == 0)), so it is NOT byte-neutral.
+ */
+static rng_stream cloud_seq;
+
+#define	TAG_TURN	0x7475726eu	/* "turn" */
+#define	TAG_CLOUD	0x636c7564u	/* "clud" */
+
+/* Fresh per-build reseed (the tunnel.c/worldgen sequential model). */
+static void
+begin_cloud_build(int where)
+{
+	uint32_t m[4];
+	rng_stream root, turn;
+
+	rng_master_seed(m);
+	root = rng_seed(m);
+	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
+	cloud_seq = rng_stream_of(&turn, where, TAG_CLOUD);
+}
+
+static int
+cseq_rnd(int low, int high)
+{
+	return rng_draw(&cloud_seq, low, high);
+}
+
+static void
+cseq_shuffle(ilist l)
+{
+	ilist_shuffle_rng(l, &cloud_seq);
+}
 
 
 /*
@@ -78,6 +120,8 @@ create_cloudlands(void)
 	set_name(cloud_region, "Cloudlands");
 
 	fprintf(stderr, "INIT: creating %s\n", box_name(cloud_region));
+
+	begin_cloud_build(cloud_region);	/* issue #25: per-build clud stream */
 
 /*
  *  Fill map[row,col] with locations.
@@ -192,27 +236,27 @@ create_cloudlands(void)
 		next_loc;
 
 		assert(ilist_len(l) >= 4);
-		ilist_scramble(l);
+		cseq_shuffle(l);
 
 		gate1 = new_ent(T_gate, 0);
 		set_where(gate1, map[0][0]);
 		p_gate(gate1)->to_loc = l[0];
-		rp_gate(gate1)->seal_key = (short) rnd(111,999);
+		rp_gate(gate1)->seal_key = (short) cseq_rnd(111,999);
 
 		gate2 = new_ent(T_gate, 0);
 		set_where(gate2, map[SZ][0]);
 		p_gate(gate2)->to_loc = l[1];
-		rp_gate(gate2)->seal_key = (short) rnd(111,999);
+		rp_gate(gate2)->seal_key = (short) cseq_rnd(111,999);
 
 		gate3 = new_ent(T_gate, 0);
 		set_where(gate3, map[0][SZ]);
 		p_gate(gate3)->to_loc = l[2];
-		rp_gate(gate3)->seal_key = (short) rnd(111,999);
+		rp_gate(gate3)->seal_key = (short) cseq_rnd(111,999);
 
 		gate4 = new_ent(T_gate, 0);
 		set_where(gate4, map[SZ][SZ]);
 		p_gate(gate4)->to_loc = l[3];
-		rp_gate(gate4)->seal_key = (short) rnd(111,999);
+		rp_gate(gate4)->seal_key = (short) cseq_rnd(111,999);
 
 		ilist_reclaim(&l);
 	}

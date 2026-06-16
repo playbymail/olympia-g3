@@ -642,7 +642,7 @@ kill_char(int who, int inherit)
 
 	if (!char_melt_me(who) && has_skill(who, sk_transcend_death))
 	{
-		int hades_point = random_hades_loc();
+		int hades_point = random_hades_loc(who);
 
 		p_char(who)->prisoner = FALSE;
 
