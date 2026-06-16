@@ -239,7 +239,9 @@ finish_generic_mine(struct command *c, int item)
 
 	p->shaft_depth++;
 
-	if (depth >= 4 && rnd(1,5) == 1 && has_item(where, item_gate_crystal))
+	begin_economy(where);		/* issue #25 Unit A: per-market RNG stream */
+	if (depth >= 4 && econ_mine(item_gate_crystal, where, 1, 5) == 1 &&
+	    has_item(where, item_gate_crystal))
 	{
 		wout(c->who, "A gate crystal was found while mining!");
 		move_item(where, c->who, item_gate_crystal, 1);
@@ -651,7 +653,8 @@ d_generic_harvest(struct command *c, struct harvest *t)
 
 	if (qty > 0)
 	{
-		if (t->chance && rnd(1,100) > t->chance)
+		begin_economy(where);	/* issue #25 Unit A: per-market RNG stream */
+		if (t->chance && econ_harvest(t->item, where, 1, 100) > t->chance)
 		{
 			if (c->wait == 0)
 				return i_generic_harvest(c, t);

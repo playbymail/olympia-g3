@@ -272,7 +272,7 @@ stream they're on:
 | Command phase (only if issued) | EXPLORE (`d_explore`/`find_lost_items`) + SEEK (`d_seek`) detect rolls | **keyed** per-turn explore — `begin_explore()` / `expl_*` (#25, tag `expl`) — *not reached on either golden tree* |
 | Command phase (only if issued) | weapon training (ARCHERY/DEFENSE/SWORDPLAY), STUDY scroll-consume, RESEARCH pick/gate, TORTURE, PETTY THIEF | **keyed** per-turn skills — `begin_skills()` / `skil_*` (#25, tag `skil`, command core) — *not reached on either golden tree* |
 | Command phase (only if issued) | scry/locate, religion gates, necro eat-dead/skill-transfer, MEDITATE/HEAL aura spells, alchemy potion brew/use, FORGE AURACULUM / USE orb / USE suffuse-ring crafting | **keyed** per-turn magic — `begin_magic()` / `magc_*` (#25, tag `magc`, command core + `art.c` crafting via `magc_forge`/`magc_orb`/`magc_ring`) — *not reached on either golden tree* |
-| Per-turn / quest loot (restock & loot minters) | `new_suffuse_ring` (`buy.c` `trade_suffuse_ring`, per-turn economy restock), `new_orb`/`create_npc_token` (`quest.c` loot) | **global** `rnd()` — `art.c` shared-infra minters deferred (economy / quest residuals; the per-turn `new_suffuse_ring` fires ~22–42×/turn, so it stays global to keep the main manifest pinned) |
+| Per-turn / quest loot (restock & loot minters) | `new_suffuse_ring` (`buy.c` `trade_suffuse_ring`, per-turn economy restock), `new_orb`/`create_npc_token` (`quest.c` loot) | **keyed** (#25 endgame Unit A) — `new_suffuse_ring` → `econ_ring` on `begin_economy(where)` (fires ~25×/turn over faery/cloud cities — forced a 204-file content-only main-manifest re-baseline); `new_orb`/`create_npc_token` → `qrnd` inside quest loot gen (byte-neutral) |
 | Each day (`day%7`) / end of month | `heal_characters`, `loyalty_decay`, `men_starve`, `animal_deaths`, `corpse_decay` | **keyed** per-turn upkeep — `begin_upkeep()` (#25) — *not reached on either golden tree* |
 | End of month | `inn_income()` (`temple_income` draws nothing) | **global** `rnd()` (future income subsystem residual) |
 
@@ -313,9 +313,11 @@ Notes for #25 work:
   world-init — byte-neutral, no re-baseline. This is a **deliberate partial**:
   the aura/magic-adjacent draws (`basic.c` meditation/heal, `alchem.c` potions)
   deferred to magic — **now landed** (below) — while the `art.c` artifact-crafting
-  **commands** also landed on magic (the crafting follow-up, below) and only the
-  `art.c` shared-infra **minters** plus the `produce.c` mining/harvest residual
-  stay on the global stream (quest/economy residuals).
+  **commands** also landed on magic (the crafting follow-up, below). The
+  `art.c` shared-infra **minters** and the `produce.c` mining/harvest residual
+  have **since landed** as endgame **Unit A** (onto `qest`/`econ`); only the
+  cosmetic `produce.c mage_menial_how` flavor pick stays global (deferred to
+  Unit E).
 - **Magic (command core) is command-only too** (the quest/explore/skills profile):
   the player-cast spell draws across six files — scrying (`scry.c`), religion
   gates (`relig.c`), necromancy eat-dead/skill-transfer (`necro.c`), the
@@ -330,10 +332,11 @@ Notes for #25 work:
   (the flagged world-init mint risk did not materialize: 0 `art.c` draws at
   `-s`/`-a`/`-i`). Another **deliberate partial**: the turn-auto `curse_erode`
   day-pick (`day.c`) stays global (it fires every turn and would move the main
-  manifest), `auto_undead` defers to npc (autonomous behavior), the `art.c`
-  shared-infra minters stay deferred (`new_orb`/`create_npc_token` → quest,
-  `new_suffuse_ring` → economy — the last fires ~22–42×/turn), and `cloud.c` to
-  region:cloud — **now landed** (regions, below).
+  manifest), and `cloud.c` defers to region:cloud — **now landed** (regions, below).
+  `auto_undead` (npc autonomous behavior) and the `art.c` shared-infra minters
+  (`new_orb`/`create_npc_token` → quest, `new_suffuse_ring` → economy — the last
+  fires ~25×/turn) have **since landed** as endgame **Unit A** (`auto_undead` →
+  `npcs` via `npc_behavior`; minters → `qrnd`/`econ_ring`).
 - **Worldgen is the opposite of every command-only consumer above — it fires at
   INIT, not during the turn**, and is the engine's largest draw set. The
   non-economy city seeding (`seed.c`: city prominence, skill teaching, garrison

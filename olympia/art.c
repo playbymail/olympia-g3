@@ -892,7 +892,7 @@ new_orb(int who)
 	p_item(new)->weight = 1;
 	p_item_magic(new)->use_key = use_orb;
 	p_item_magic(new)->lore = lore_orb;
-	p_item_magic(new)->orb_use_count = (schar)(rnd(1,4)*2+1);
+	p_item_magic(new)->orb_use_count = (schar)(qrnd(1,4)*2+1);	/* issue #25 Unit A: quest stream (loot gen) */
 
 	return new;
 }
@@ -1250,7 +1250,7 @@ create_npc_token(int who)
 
 	new = create_unique_item(who, sub_npc_token);
 
-	switch (rnd(1,5))
+	switch (qrnd(1,5))	/* issue #25 Unit A: quest stream (loot gen) */
 	{
 	case 1:
 		ni = item_barbarian;
@@ -1424,7 +1424,12 @@ new_suffuse_ring(int who)
 
 	new = create_unique_item(who, sub_suffuse_ring);
 
-	switch (rnd(1,5))
+	/*
+	 *  Issue #25 Unit A: the ring-kind pick rides the per-market economy
+	 *  stream that the only caller, trade_suffuse_ring (buy.c), already seeded
+	 *  via begin_economy(where). `who` is the restock location.
+	 */
+	switch (econ_ring(sub_suffuse_ring, who, 1, 5))
 	{
 	case 1:
 		ni = use_barbarian_kill;
