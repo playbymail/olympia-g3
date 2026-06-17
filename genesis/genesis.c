@@ -37,6 +37,7 @@
 
 #include "pcg.h"
 #include "names.h"
+#include "map_image.h"		/* issue #81: --image debug BMP export */
 
 #define MAX_DIM			100	/* mapgen MAX_ROW/MAX_COL; size is 10..99 */
 #define DISTANCE_CAP		9
@@ -1424,10 +1425,16 @@ usage(const char *prog)
 	fprintf(stderr,
 		"Usage: %s [--seed N] [--size 10..99] [--number-of-oceans N]\n"
 		"          [--island-iterations 2..10] [--defer-oceans]\n"
+		"          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]\n"
 		"  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to\n"
 		"  fit; larger requests are reduced with a warning.\n"
 		"  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus\n"
 		"  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.\n"
+		"  --image dumps the generated Map as a 24-bit BMP for eyeballing the\n"
+		"  world (debug aid, issue #81; emitted only when given, never affects\n"
+		"  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per\n"
+		"  province (default 8); --grid sets black grid-line thickness in pixels\n"
+		"  between and around provinces (default 0 = no grid).\n"
 		"Generates the mapgen input set (Map, Regions, Land, Cities, randseed)\n"
 		"in the current directory.  See doc/genesis.md.\n", prog);
 }
@@ -1440,13 +1447,20 @@ main(int argc, char *argv[])
 	int iterations = 10;
 	uint64_t seed = 0;
 	int opt;
+	const char *image_path = NULL;	/* issue #81: --image debug BMP (NULL = off) */
+	int image_pixels = 8;		/* --pixels: N x N pixels per province */
+	int image_grid = 0;		/* --grid: black grid-line thickness */
 
+	enum { OPT_IMAGE = 256, OPT_PIXELS, OPT_GRID };
 	static struct option longopts[] = {
 		{ "size",              required_argument, 0, 's' },
 		{ "number-of-oceans",  required_argument, 0, 'n' },
 		{ "island-iterations", required_argument, 0, 'i' },
 		{ "seed",              required_argument, 0, 'd' },
 		{ "defer-oceans",      no_argument,       0, 'D' },
+		{ "image",             required_argument, 0, OPT_IMAGE },
+		{ "pixels",            required_argument, 0, OPT_PIXELS },
+		{ "grid",              required_argument, 0, OPT_GRID },
 		{ "help",              no_argument,       0, 'h' },
 		{ 0, 0, 0, 0 }
 	};
@@ -1458,6 +1472,9 @@ main(int argc, char *argv[])
 		case 'i': iterations = atoi(optarg); break;
 		case 'd': seed = strtoull(optarg, NULL, 0); break;
 		case 'D': g_defer_oceans = 1; break;
+		case OPT_IMAGE:  image_path = optarg; break;
+		case OPT_PIXELS: image_pixels = atoi(optarg); break;
+		case OPT_GRID:   image_grid = atoi(optarg); break;
 		case 'h': usage(argv[0]); return 0;
 		default:  usage(argv[0]); return 1;
 		}
@@ -1484,6 +1501,15 @@ main(int argc, char *argv[])
 	 */
 	if (iterations < 2 || iterations > 10) {
 		fprintf(stderr, "genesis: --island-iterations must be 2..10 (got %d)\n", iterations);
+		return 1;
+	}
+	/* --image tuning bounds (issue #81); only checked when --image is given. */
+	if (image_path && (image_pixels < 1 || image_pixels > 64)) {
+		fprintf(stderr, "genesis: --pixels must be 1..64 (got %d)\n", image_pixels);
+		return 1;
+	}
+	if (image_path && (image_grid < 0 || image_grid > 4)) {
+		fprintf(stderr, "genesis: --grid must be 0..4 (got %d)\n", image_grid);
 		return 1;
 	}
 
@@ -1516,5 +1542,38 @@ main(int argc, char *argv[])
 	write_randseed(seed);
 
 	fprintf(stderr, "genesis: wrote Map, Regions, Land, Cities, randseed\n");
+
+	/*
+	 * --image (issue #81): dump the just-generated Map as a BMP for eyeballing.
+	 * Purely a debug aid -- it runs AFTER every world-output step and touches no
+	 * generation state, so it cannot affect the Map/Regions/Land/Cities output.
+	 * `map` is MAX_DIM-strided, so pack the live g_size x g_size cells into a
+	 * tight row-major buffer for the (stride-agnostic) renderer.
+	 */
+	if (image_path) {
+		char *grid = malloc((size_t)g_size * (size_t)g_size);
+		int r, c;
+
+		if (!grid) {
+			fprintf(stderr, "genesis: out of memory for --image\n");
+			return 1;
+		}
+		for (r = 0; r < g_size; r++)
+			for (c = 0; c < g_size; c++)
+				grid[r * g_size + c] = map[r][c];
+
+		if (map_image_write_bmp(image_path, grid, g_size,
+					image_pixels, image_grid) != 0) {
+			fprintf(stderr, "genesis: failed to write image '%s'\n",
+				image_path);
+			free(grid);
+			return 1;
+		}
+		free(grid);
+		fprintf(stderr, "genesis: wrote image %s (%dx%d px)\n", image_path,
+			g_size * image_pixels + (g_size + 1) * image_grid,
+			g_size * image_pixels + (g_size + 1) * image_grid);
+	}
+
 	return 0;
 }
