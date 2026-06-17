@@ -207,7 +207,8 @@ otherwise "Lake <name>") — a light editorial touch; the GM is expected to hand
 `Map` and names afterward.
 
 Landlocked water bodies smaller than **4 provinces** are **filled in with land**
-(they merge into the enclosing land mass) so the tiniest island-/Olympus-enclosed
-puddles don't become seas. mapgen requires every water region to be named, so filling
-them in — rather than leaving them as unnamed water — is what keeps the map valid.
+(the `'o'` random-terrain glyph, so mapgen rolls each filled province's terrain) and
+merge into the enclosing land mass, so the tiniest island-/Olympus-enclosed puddles
+don't become seas. mapgen requires every water region to be named, so filling them in —
+rather than leaving them as unnamed water — is what keeps the map valid.
 

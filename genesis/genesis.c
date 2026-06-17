@@ -623,6 +623,8 @@ compute_ocean_metadata(int seeded_n, const int *orow, const int *ocol)
  * it with land removes it as a water region; the cell merges into the enclosing
  * land mass.  Only landlocked bodies are filled, so this never puts land on the
  * all-water border (the main sea, the one body that touches it, is huge anyway).
+ * The fill glyph is 'o' (mapgen's random-terrain marker), so mapgen rolls each
+ * filled province's terrain rather than getting a uniform patch.
  * Returns the number of bodies filled.  Must run before coloring/metadata.
  */
 static int
@@ -651,7 +653,7 @@ fill_tiny_water(void)
 			if (id < 0)
 				continue;
 			if (size[id] < MIN_NAMED_WATER && lock[id]) {
-				map[r][c] = 'p';	/* plains; merges into the enclosing land */
+				map[r][c] = 'o';	/* random terrain; merges into enclosing land */
 				ocean_id[r][c] = -1;
 			}
 		}
