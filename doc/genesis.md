@@ -28,6 +28,11 @@ The map is partitioned into several distinct oceans grown from random seed point
 then 4-colored with the plain ocean glyphs so that mapgen reads each ocean as its own
 region. The oceans must not contain sea lanes.
 
+By default this partition happens **up front**, over the blank canvas, before the
+islands are grown. The `--defer-oceans` flag instead generates the oceans **after**
+the islands and Mt. Olympus (see "Deferred oceans" below), which produces seas that
+follow the finished coastlines.
+
 ### Step 1 — Partition into oceans (partition)
 
 This is the core "assign the oceans" logic — a randomized flood-fill / region-growth:
@@ -54,6 +59,32 @@ count by one and re-partitions/re-colors until it succeeds (a single ocean alway
 colors), so it always produces a valid map.
 
 The reason it matches mapgen's adjacency rule precisely is so the separate oceans we draw are read back as separate regions downstream.
+
+### Deferred oceans (`--defer-oceans`)
+
+With `--defer-oceans`, steps 1–2 are skipped at the start. The canvas is filled with
+a single ocean glyph (`' '`) so the islands have valid water to grow into, the islands
+and Mt. Olympus are laid down, and only then are the oceans carved out of the water
+that remains. This runs on its own PCG stream (`STEP_ORIGINS`), so determinism and the
+"reorder steps freely" property still hold.
+
+1. **Pick origins.** Choose `--number-of-oceans` "ocean-origin provinces" among the
+   water (`' '`) cells using Mitchell's best-candidate sampling with a minimum spacing
+   of `~0.65 · sqrt(water_cells / N)`. If an origin can't clear the spacing within
+   `N·N` candidate draws, the count is reduced by one and the placement restarts (the
+   spacing floor is held fixed, so fewer points is strictly easier).
+2. **Partition (water only).** Grow each origin into an ocean with the same
+   randomized-frontier flood as step 1, but claiming only unclaimed water cells and
+   using mapgen's 8-neighbor / column-wrap rule — so growth is geodesic through the
+   channels and each ocean is one connected water body.
+3. **Discover the rest.** Islands shouldn't enclose water, but dropping in Mt. Olympus
+   can seal off a small pocket. Any water body no origin reached is swept row-major and
+   becomes its own ocean, so every water cell ends up in a named sea.
+4. **Color** exactly as step 2 above (4-color, reduce-and-retry on failure), painting
+   only the water cells.
+
+The `ocean_id[][]` partition is kept alive through region writing (it also feeds the
+size-based naming below).
 
 ## Create the islands
 
@@ -155,7 +186,7 @@ It overwrites the cell at the center of the map and the 8 adjacent neighbors.
 ## Generate Regions
 
 ### Seas
-By convention, the Great Sea is always the sea starting in the top left cell.
+By default, the Great Sea is the sea starting in the top left cell.
 
 ```text
 0,0	Great Sea
@@ -165,4 +196,19 @@ Assign random names to the remaining regions.
 
 It is likely that the island generation split a sea into two parts.
 When that happens, the generated map will have an unnamed sea.
+
+Under `--defer-oceans`, naming is **size-based** rather than position-based. Each ocean
+is counted, and the **largest** becomes the Great Sea — naming the smallest-area sea
+"Great" just because it sits at the corner makes no sense. Ties break by: (1) the ocean
+that owns the top-left cell `(0,0)`, then (2) the origin nearest `(0,0)`, then (3) the
+ocean created first. Every other ocean draws a random pool name, and a **landlocked**
+water body smaller than 12 provinces is recast as a lake ("Great Sea" → "Great Lake",
+otherwise "Lake <name>") — a light editorial touch; the GM is expected to hand-edit the
+`Map` and names afterward.
+
+Landlocked water bodies smaller than **4 provinces** are **filled in with land**
+(the `'o'` random-terrain glyph, so mapgen rolls each filled province's terrain) and
+merge into the enclosing land mass, so the tiniest island-/Olympus-enclosed puddles
+don't become seas. mapgen requires every water region to be named, so filling them in —
+rather than leaving them as unnamed water — is what keeps the map valid.
 

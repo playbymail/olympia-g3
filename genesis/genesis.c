@@ -32,6 +32,7 @@
 #include <string.h>
 #include <getopt.h>
 #include <stdint.h>
+#include <limits.h>
 #include <assert.h>
 
 #include "pcg.h"
@@ -50,7 +51,19 @@
 #define STEP_NAMES		2
 #define STEP_CITIES		3
 #define STEP_RANDSEED		4
+#define STEP_ORIGINS		5	/* --defer-oceans origin selection + frontier */
 #define STEP_ISLAND_BASE	100	/* island streams: STEP_ISLAND_BASE + iteration */
+
+/*
+ * --defer-oceans tuning (issue #80).
+ *   ALPHA_SQ        : (0.65)^2 -- min origin spacing ~0.65*sqrt(water_cells/N).
+ *   LAKE_MAX        : a landlocked water body smaller than this gets a "lake" name.
+ *   MIN_NAMED_WATER : landlocked water bodies smaller than this are filled in with
+ *                     land rather than kept as (necessarily named) tiny seas.
+ */
+#define ALPHA_SQ		0.4225
+#define LAKE_MAX		12
+#define MIN_NAMED_WATER		4
 
 typedef struct {
 	int x, y;
@@ -82,6 +95,20 @@ static location island_cells[MAX_DIM * MAX_DIM];
 /* Region-labeling scratch (iterative flood). */
 static int  label[MAX_DIM][MAX_DIM];
 static int  flood_stack[MAX_DIM * MAX_DIM];
+
+/*
+ * --defer-oceans state (issue #80).  When set, oceans are generated AFTER the
+ * islands and Mt. Olympus rather than partitioned up-front.  The partition is
+ * recorded in ocean_id[][] (kept alive through region writing) plus per-ocean
+ * metadata used for size-based naming.  defer_n counts the oceans actually made
+ * (N seeded survivors + any origin-less water bodies discovered by the sweep).
+ */
+static int  g_defer_oceans;
+static int  defer_n;
+static int  ocean_size[MAX_DIM];
+static int  ocean_origin_r[MAX_DIM];	/* tie-break point + output anchor (a region cell) */
+static int  ocean_origin_c[MAX_DIM];
+static int  ocean_landlocked[MAX_DIM];	/* 1 = never touches a top/bottom border row */
 
 /* ------------------------------------------------------------------------- */
 /* Glyph helpers (must agree with mapgen.c's reader).                        */
@@ -331,6 +358,373 @@ add_oceans(int requested, uint64_t seed)
 	}
 
 	fprintf(stderr, "genesis: internal error: could not color even one ocean\n");
+	exit(1);
+}
+
+/* ------------------------------------------------------------------------- */
+/* --defer-oceans: generate oceans AFTER islands + Olympus (issue #80).      */
+/*                                                                           */
+/* Flow: fill the canvas with ' ' water, grow islands, drop Olympus, then    */
+/* (here) pick N well-spaced ocean-origin provinces among the remaining      */
+/* water, grow each into an ocean (frontier flood through water only),       */
+/* discover any origin-less water body as its own ocean, 4-color the lot,    */
+/* and name them by size (largest = Great Sea).                              */
+/* ------------------------------------------------------------------------- */
+
+/* Reset the whole canvas to open water (the four-ocean coloring comes later). */
+static void
+fill_ocean_canvas(void)
+{
+	int r, c;
+
+	for (r = 0; r < g_size; r++)
+		for (c = 0; c < g_size; c++)
+			map[r][c] = ' ';
+}
+
+/* Squared Euclidean distance (no column wrap -- spacing/anchoring only). */
+static long
+dist2(int r1, int c1, int r2, int c2)
+{
+	long dr = r1 - r2;
+	long dc = c1 - c2;
+
+	return dr * dr + dc * dc;
+}
+
+/*
+ * Pick n ocean-origin cells among the water (' ') cells, spaced at least
+ * sqrt(r2) apart, using Mitchell's best-candidate sampling: each origin is the
+ * farthest-from-existing of up to n*n random candidates, accepted early once it
+ * clears the spacing floor.  Returns 1 with origins in orow/ocol, or 0 if some
+ * origin couldn't clear r2 within budget (the caller then reduces n).  r2 is held
+ * fixed across reductions, so fewer points at the same spacing is strictly easier.
+ */
+static int
+place_origins(int n, long r2, pcg32_t *rng, int *orow, int *ocol)
+{
+	static int wr[MAX_DIM * MAX_DIM];
+	static int wc[MAX_DIM * MAX_DIM];
+	int wn = 0;
+	int r, c, i;
+
+	for (r = 0; r < g_size; r++)
+		for (c = 0; c < g_size; c++)
+			if (map[r][c] == ' ') {
+				wr[wn] = r;
+				wc[wn] = c;
+				wn++;
+			}
+	if (wn < n)
+		return 0;
+
+	for (i = 0; i < n; i++) {
+		int best = -1;
+		long best_d2 = -1;
+
+		if (i == 0) {
+			best = pcg32_range(rng, 0, wn - 1);
+		} else {
+			int budget = n * n;
+			int a;
+			for (a = 0; a < budget; a++) {
+				int cand = pcg32_range(rng, 0, wn - 1);
+				long d2 = LONG_MAX;
+				int j;
+				for (j = 0; j < i; j++) {
+					long dd = dist2(wr[cand], wc[cand], orow[j], ocol[j]);
+					if (dd < d2)
+						d2 = dd;
+				}
+				if (d2 > best_d2) {
+					best_d2 = d2;
+					best = cand;
+				}
+				if (d2 >= r2)
+					break;	/* clears the spacing floor: accept */
+			}
+			if (best_d2 < r2)
+				return 0;	/* couldn't space this origin -- reduce n */
+		}
+		orow[i] = wr[best];
+		ocol[i] = wc[best];
+	}
+	return 1;
+}
+
+/*
+ * Partition the water into oceans: seed ocean_id[][] at the n origins and grow
+ * each via randomized-frontier flood, claiming only unclaimed water (' ') cells
+ * with mapgen's 8-neighbor (column-wrap) rule -- so growth is geodesic through
+ * the water and each ocean is one connected component under mapgen's own flood.
+ * Then sweep row-major: every still-unclaimed water cell seeds a fresh discovered
+ * ocean (an island-/Olympus-enclosed body no origin reached).  Sets defer_n.
+ *
+ * TODO(#80): try multi-source BFS Voronoi over the water subgraph as an alt.
+ */
+static void
+partition_oceans_deferred(int n, const int *orow, const int *ocol, pcg32_t *rng)
+{
+	static int frontier[MAX_DIM * MAX_DIM];
+	int fn = 0;
+	int r, c, i;
+
+	for (r = 0; r < g_size; r++)
+		for (c = 0; c < g_size; c++)
+			ocean_id[r][c] = -1;
+
+	for (i = 0; i < n; i++) {
+		ocean_id[orow[i]][ocol[i]] = i;
+		frontier[fn++] = orow[i] * g_size + ocol[i];
+	}
+
+	while (fn > 0) {
+		int fi = pcg32_range(rng, 0, fn - 1);
+		int cell = frontier[fi];
+		int cr = cell / g_size;
+		int cc = cell % g_size;
+		int nb[8];
+		int k = 0;
+		int d;
+
+		for (d = 0; d < 8; d++) {
+			int nr, nc;
+			if (!neighbor8(cr, cc, d, &nr, &nc))
+				continue;
+			if (map[nr][nc] == ' ' && ocean_id[nr][nc] == -1)
+				nb[k++] = nr * g_size + nc;
+		}
+		if (k == 0) {
+			frontier[fi] = frontier[--fn];	/* boxed in */
+			continue;
+		}
+		i = nb[pcg32_range(rng, 0, k - 1)];
+		ocean_id[i / g_size][i % g_size] = ocean_id[cr][cc];
+		frontier[fn++] = i;
+	}
+
+	/* Discover origin-less water bodies (single flood each). */
+	defer_n = n;
+	for (r = 0; r < g_size; r++)
+		for (c = 0; c < g_size; c++)
+			if (map[r][c] == ' ' && ocean_id[r][c] == -1) {
+				int top = 0;
+				ocean_id[r][c] = defer_n;
+				flood_stack[top++] = r * g_size + c;
+				while (top > 0) {
+					int pc = flood_stack[--top];
+					int pr = pc / g_size;
+					int qc = pc % g_size;
+					int d;
+					for (d = 0; d < 8; d++) {
+						int nr, nc;
+						if (!neighbor8(pr, qc, d, &nr, &nc))
+							continue;
+						if (map[nr][nc] == ' ' && ocean_id[nr][nc] == -1) {
+							ocean_id[nr][nc] = defer_n;
+							flood_stack[top++] = nr * g_size + nc;
+						}
+					}
+				}
+				defer_n++;
+			}
+}
+
+/*
+ * 4-color the deferred oceans (ocean_id 0..defer_n-1) with mapgen's 8-neighbor /
+ * column-wrap adjacency, painting only water cells (land keeps its glyph).
+ * Returns 1 on success, 0 if not 4-colorable (caller reduces the origin count).
+ */
+static int
+color_oceans_deferred(void)
+{
+	static char adj[MAX_DIM][MAX_DIM];
+	int colors[MAX_DIM];
+	int r, c, d, i, j;
+
+	assert(defer_n <= MAX_DIM);
+
+	for (i = 0; i < defer_n; i++) {
+		for (j = 0; j < defer_n; j++)
+			adj[i][j] = 0;
+		colors[i] = -1;
+	}
+
+	for (r = 0; r < g_size; r++)
+		for (c = 0; c < g_size; c++) {
+			if (ocean_id[r][c] < 0)
+				continue;
+			for (d = 0; d < 8; d++) {
+				int nr, nc, a, b;
+				if (!neighbor8(r, c, d, &nr, &nc))
+					continue;
+				if (ocean_id[nr][nc] < 0)
+					continue;
+				a = ocean_id[r][c];
+				b = ocean_id[nr][nc];
+				if (a != b) {
+					adj[a][b] = 1;
+					adj[b][a] = 1;
+				}
+			}
+		}
+
+	if (!color_solve(0, defer_n, adj, colors))
+		return 0;
+
+	for (r = 0; r < g_size; r++)
+		for (c = 0; c < g_size; c++)
+			if (ocean_id[r][c] >= 0)
+				map[r][c] = ocean_glyph[colors[ocean_id[r][c]]];
+	return 1;
+}
+
+/*
+ * Per-ocean metadata for size-based naming: province count, landlocked flag
+ * (never touches a top/bottom border row -- columns wrap, so left/right aren't
+ * edges), and an anchor/tie-break cell.  The anchor defaults to each ocean's
+ * first row-major cell; seeded oceans (0..seeded_n-1) override it with their
+ * actual origin.  Both are valid cells of the region, fine as the output anchor.
+ */
+static void
+compute_ocean_metadata(int seeded_n, const int *orow, const int *ocol)
+{
+	int r, c, i;
+
+	for (i = 0; i < defer_n; i++) {
+		ocean_size[i] = 0;
+		ocean_landlocked[i] = 1;
+		ocean_origin_r[i] = -1;
+		ocean_origin_c[i] = -1;
+	}
+	for (r = 0; r < g_size; r++)
+		for (c = 0; c < g_size; c++) {
+			int id = ocean_id[r][c];
+			if (id < 0)
+				continue;
+			ocean_size[id]++;
+			if (r == 0 || r == g_size - 1)
+				ocean_landlocked[id] = 0;
+			if (ocean_origin_r[id] < 0) {
+				ocean_origin_r[id] = r;
+				ocean_origin_c[id] = c;
+			}
+		}
+	for (i = 0; i < seeded_n; i++) {
+		ocean_origin_r[i] = orow[i];
+		ocean_origin_c[i] = ocol[i];
+	}
+}
+
+/*
+ * Fill in landlocked water bodies smaller than MIN_NAMED_WATER: mapgen requires
+ * every water region to carry a name (island_allowed derefs inside_names[]), so a
+ * tiny puddle either clutters Regions or crashes mapgen if left unnamed.  Filling
+ * it with land removes it as a water region; the cell merges into the enclosing
+ * land mass.  Only landlocked bodies are filled, so this never puts land on the
+ * all-water border (the main sea, the one body that touches it, is huge anyway).
+ * The fill glyph is 'o' (mapgen's random-terrain marker), so mapgen rolls each
+ * filled province's terrain rather than getting a uniform patch.
+ * Returns the number of bodies filled.  Must run before coloring/metadata.
+ */
+static int
+fill_tiny_water(void)
+{
+	int size[MAX_DIM];
+	int lock[MAX_DIM];
+	int r, c, i, filled = 0;
+
+	for (i = 0; i < defer_n; i++) {
+		size[i] = 0;
+		lock[i] = 1;
+	}
+	for (r = 0; r < g_size; r++)
+		for (c = 0; c < g_size; c++) {
+			int id = ocean_id[r][c];
+			if (id < 0)
+				continue;
+			size[id]++;
+			if (r == 0 || r == g_size - 1)
+				lock[id] = 0;
+		}
+	for (r = 0; r < g_size; r++)
+		for (c = 0; c < g_size; c++) {
+			int id = ocean_id[r][c];
+			if (id < 0)
+				continue;
+			if (size[id] < MIN_NAMED_WATER && lock[id]) {
+				map[r][c] = 'o';	/* random terrain; merges into enclosing land */
+				ocean_id[r][c] = -1;
+			}
+		}
+	for (i = 0; i < defer_n; i++)
+		if (size[i] < MIN_NAMED_WATER && lock[i])
+			filled++;
+	return filled;
+}
+
+/*
+ * Driver for --defer-oceans: pick origins, partition, color, retrying with one
+ * fewer seeded ocean on either a placement or a coloring failure.  The spacing
+ * floor r2 is computed once from the requested count and held fixed, so each
+ * reduction is strictly easier; a single ocean always colors, so this terminates.
+ */
+static void
+defer_oceans(int requested, uint64_t seed)
+{
+	static int orow[MAX_DIM];
+	static int ocol[MAX_DIM];
+	int cap = ocean_cap();
+	int n0 = requested;
+	int wn = 0;
+	int r, c, n;
+	long r2;
+
+	if (n0 > cap) {
+		fprintf(stderr,
+			"genesis: --number-of-oceans %d exceeds the cap for size %d; using %d\n",
+			requested, g_size, cap);
+		n0 = cap;
+	}
+
+	for (r = 0; r < g_size; r++)
+		for (c = 0; c < g_size; c++)
+			if (map[r][c] == ' ')
+				wn++;
+	if (wn < 1) {
+		fprintf(stderr, "genesis: no open water left for oceans\n");
+		exit(1);
+	}
+
+	r2 = (long)(ALPHA_SQ * (double)wn / (double)n0);
+	if (r2 < 1)
+		r2 = 1;	/* keep origins on distinct cells */
+
+	for (n = n0; n >= 1; n--) {
+		pcg32_t rng;
+		int nfilled;
+		pcg32_seed_step(&rng, seed, STEP_ORIGINS, (uint64_t)n);
+		if (!place_origins(n, r2, &rng, orow, ocol)) {
+			fprintf(stderr,
+				"genesis: couldn't place %d ocean origins; retrying with %d\n",
+				n, n - 1);
+			continue;
+		}
+		partition_oceans_deferred(n, orow, ocol, &rng);
+		nfilled = fill_tiny_water();
+		if (color_oceans_deferred()) {
+			compute_ocean_metadata(n, orow, ocol);
+			fprintf(stderr,
+				"genesis: deferred oceans: %d seeded, %d total, %d tiny filled\n",
+				n, defer_n, nfilled);
+			return;
+		}
+		fprintf(stderr,
+			"genesis: %d deferred oceans not 4-colorable; retrying with %d\n",
+			n, n - 1);
+	}
+
+	fprintf(stderr, "genesis: internal error: could not color even one deferred ocean\n");
 	exit(1);
 }
 
@@ -807,50 +1201,123 @@ write_map(void)
 }
 
 /*
- * Regions: name every sea and continent.  The water region containing (0,0) is
- * "Great Sea" by convention (doc/genesis.md); all others draw from the pool.
+ * Recast a sea name as a lake name (--defer-oceans editorial touch): swap an
+ * embedded "Sea"/"Ocean" for "Lake", else prepend "Lake ".  Returns a static
+ * buffer; the caller uses it before the next next_region_name() draw.
+ */
+static const char *
+lake_name(const char *base)
+{
+	static char buf[200];
+	const char *p;
+
+	if ((p = strstr(base, "Sea")) != NULL)
+		snprintf(buf, sizeof buf, "%.*sLake%s", (int)(p - base), base, p + 3);
+	else if ((p = strstr(base, "Ocean")) != NULL)
+		snprintf(buf, sizeof buf, "%.*sLake%s", (int)(p - base), base, p + 5);
+	else
+		snprintf(buf, sizeof buf, "Lake %s", base);
+	return buf;
+}
+
+/*
+ * --defer-oceans water naming: name the partition oceans by size.  Great Sea is
+ * the largest (tie -> the ocean owning (0,0); else origin nearest (0,0); else
+ * lowest id).  Every other ocean draws a pool name; a small landlocked body
+ * becomes a lake.  Anchored at each ocean's stored origin/first cell.
+ */
+static void
+write_water_regions_deferred(FILE *fp)
+{
+	int i, great = -1, maxsize = -1;
+	int id00 = ocean_id[0][0];
+
+	for (i = 0; i < defer_n; i++)
+		if (ocean_size[i] > maxsize)
+			maxsize = ocean_size[i];
+
+	if (id00 >= 0 && ocean_size[id00] == maxsize) {
+		great = id00;
+	} else {
+		long best = -1;
+		for (i = 0; i < defer_n; i++) {
+			long d;
+			if (ocean_size[i] != maxsize)
+				continue;
+			d = dist2(ocean_origin_r[i], ocean_origin_c[i], 0, 0);
+			if (best < 0 || d < best) {	/* ties -> lowest id (first seen) */
+				best = d;
+				great = i;
+			}
+		}
+	}
+
+	fprintf(fp, "%d,%d\tGreat Sea\n", ocean_origin_r[great], ocean_origin_c[great]);
+	for (i = 0; i < defer_n; i++) {
+		const char *nm;
+		if (i == great)
+			continue;
+		if (ocean_size[i] == 0)
+			continue;	/* filled in by fill_tiny_water -- no longer water */
+		nm = next_region_name();
+		if (ocean_landlocked[i] && ocean_size[i] < LAKE_MAX)
+			nm = lake_name(nm);
+		fprintf(fp, "%d,%d\t%s\n", ocean_origin_r[i], ocean_origin_c[i], nm);
+	}
+}
+
+/*
+ * Regions: name every sea and continent.  By default the water region containing
+ * (0,0) is "Great Sea" (doc/genesis.md); under --defer-oceans the largest ocean
+ * is the Great Sea (see write_water_regions_deferred).  All others draw from the
+ * pool.
  */
 static void
 write_regions(void)
 {
 	FILE *fp = fopen("Regions", "w");
 	int r, c, next = 0;
-	int great_sea_label;
 
 	if (!fp) {
 		perror("genesis: can't write Regions");
 		exit(1);
 	}
 
-	/* Label all water regions. */
-	for (r = 0; r < g_size; r++)
-		for (c = 0; c < g_size; c++)
-			label[r][c] = -1;
-	for (r = 0; r < g_size; r++)
-		for (c = 0; c < g_size; c++)
-			if (label[r][c] == -1 && is_ocean_glyph(map[r][c]))
-				flood_water(r, c, next++);
+	if (g_defer_oceans) {
+		write_water_regions_deferred(fp);
+	} else {
+		int great_sea_label;
 
-	/* (0,0) is guaranteed ocean (border exclusion keeps islands off edges). */
-	great_sea_label = label[0][0];
-	fprintf(fp, "0,0\tGreat Sea\n");
+		/* Label all water regions. */
+		for (r = 0; r < g_size; r++)
+			for (c = 0; c < g_size; c++)
+				label[r][c] = -1;
+		for (r = 0; r < g_size; r++)
+			for (c = 0; c < g_size; c++)
+				if (label[r][c] == -1 && is_ocean_glyph(map[r][c]))
+					flood_water(r, c, next++);
 
-	/* Name every other water region at its first (row-major) cell. */
-	{
-		int lab;
-		for (lab = 0; lab < next; lab++) {
-			int fr = -1, fc = -1;
-			if (lab == great_sea_label)
-				continue;
-			for (r = 0; r < g_size && fr < 0; r++)
-				for (c = 0; c < g_size; c++)
-					if (label[r][c] == lab) {
-						fr = r;
-						fc = c;
-						break;
-					}
-			if (fr >= 0)
-				fprintf(fp, "%d,%d\t%s\n", fr, fc, next_region_name());
+		/* (0,0) is guaranteed ocean (border exclusion keeps islands off edges). */
+		great_sea_label = label[0][0];
+		fprintf(fp, "0,0\tGreat Sea\n");
+
+		/* Name every other water region at its first (row-major) cell. */
+		{
+			int lab;
+			for (lab = 0; lab < next; lab++) {
+				int fr = -1, fc = -1;
+				if (lab == great_sea_label)
+					continue;
+				for (r = 0; r < g_size && fr < 0; r++)
+					for (c = 0; c < g_size; c++)
+						if (label[r][c] == lab) {
+							fr = r;
+							fc = c;
+							break;
+						}
+				if (fr >= 0)
+					fprintf(fp, "%d,%d\t%s\n", fr, fc, next_region_name());
+			}
 		}
 	}
 
@@ -956,9 +1423,11 @@ usage(const char *prog)
 {
 	fprintf(stderr,
 		"Usage: %s [--seed N] [--size 10..99] [--number-of-oceans N]\n"
-		"          [--island-iterations 2..10]\n"
+		"          [--island-iterations 2..10] [--defer-oceans]\n"
 		"  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to\n"
 		"  fit; larger requests are reduced with a warning.\n"
+		"  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus\n"
+		"  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.\n"
 		"Generates the mapgen input set (Map, Regions, Land, Cities, randseed)\n"
 		"in the current directory.  See doc/genesis.md.\n", prog);
 }
@@ -977,16 +1446,18 @@ main(int argc, char *argv[])
 		{ "number-of-oceans",  required_argument, 0, 'n' },
 		{ "island-iterations", required_argument, 0, 'i' },
 		{ "seed",              required_argument, 0, 'd' },
+		{ "defer-oceans",      no_argument,       0, 'D' },
 		{ "help",              no_argument,       0, 'h' },
 		{ 0, 0, 0, 0 }
 	};
 
-	while ((opt = getopt_long(argc, argv, "s:n:i:d:h", longopts, NULL)) != -1)
+	while ((opt = getopt_long(argc, argv, "s:n:i:d:Dh", longopts, NULL)) != -1)
 		switch (opt) {
 		case 's': size = atoi(optarg); break;
 		case 'n': oceans = atoi(optarg); break;
 		case 'i': iterations = atoi(optarg); break;
 		case 'd': seed = strtoull(optarg, NULL, 0); break;
+		case 'D': g_defer_oceans = 1; break;
 		case 'h': usage(argv[0]); return 0;
 		default:  usage(argv[0]); return 1;
 		}
@@ -1017,13 +1488,25 @@ main(int argc, char *argv[])
 	}
 
 	g_size = size;
-	fprintf(stderr, "genesis: seed=%llu size=%d oceans=%d iterations=%d\n",
-		(unsigned long long)seed, size, oceans, iterations);
+	fprintf(stderr, "genesis: seed=%llu size=%d oceans=%d iterations=%d%s\n",
+		(unsigned long long)seed, size, oceans, iterations,
+		g_defer_oceans ? " (defer-oceans)" : "");
 
 	/* Each step reseeds its own stream off the user seed (see doc/genesis.md). */
-	oceans = add_oceans(oceans, seed);	/* caps/clamps + retries to a colorable count */
-	add_islands(iterations, seed);
-	add_olympus();
+	if (g_defer_oceans) {
+		/*
+		 * Deferred: islands need valid water to grow into, so fill the canvas
+		 * first, grow the world, then carve oceans out of what water remains.
+		 */
+		fill_ocean_canvas();
+		add_islands(iterations, seed);
+		add_olympus();
+		defer_oceans(oceans, seed);
+	} else {
+		oceans = add_oceans(oceans, seed);	/* caps/clamps + retries to a colorable count */
+		add_islands(iterations, seed);
+		add_olympus();
+	}
 
 	init_region_names(seed);
 	write_map();
