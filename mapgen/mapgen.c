@@ -2615,14 +2615,25 @@ void gate_stone_circles(void)
 				inside_names[l[i]->inside]);
 	}
 
-	for (i = 0; i < tiles_len(circs); i++)
-	{
+	/*
+	 *  Each circle gets two gates to *distinct* other circles. That needs at
+	 *  least three circles: with fewer, choose_random_stone_circle() can never
+	 *  satisfy its "not avoid1 and not avoid2" rejection loop and spins forever
+	 *  (province-poor maps -- e.g. a genesis world with < 3 land regions -- hit
+	 *  this; see issue #77). When there are >= 3 circles this guard is a no-op
+	 *  and the rnd() call order is unchanged, so golden output is byte-identical;
+	 *  with < 3 circles we simply skip the cross-circle links (the per-circle
+	 *  random-province gates below still run).
+	 */
+	if (tiles_len(circs) >= 3)
+	    for (i = 0; i < tiles_len(circs); i++)
+	    {
 		first = choose_random_stone_circle(circs, circs[i], NULL);
 		second = choose_random_stone_circle(circs, circs[i], first);
 
 		new_gate(circs[i], first, rnd(111,333));
 		new_gate(circs[i], second, rnd(111,333));
-	}
+	    }
 
 	clear_province_marks();
 	mark_bad_locs();
