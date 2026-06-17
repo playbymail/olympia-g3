@@ -243,6 +243,33 @@ olympia_compile_flags(island-g3)
 olympia_enable_sanitizers(island-g3)
 
 # ------------------------------------------------------------------------------
+# G3 genesis -- generate a fresh mapgen input set (doc/genesis.md)
+# ------------------------------------------------------------------------------
+# A FOURTH-family tool, upstream of mapgen-g3: it creates the Map/Regions/Land/
+# Cities/randseed inputs that mapgen consumes. It uses its OWN deterministic PCG
+# (genesis/pcg.c) -- NOT the MD5-backed lib/rng.c / rnd.c the engine trio shares,
+# which stay byte-locked for the golden gates -- so it links neither rnd.c nor
+# rng.c. Output is upstream of both golden gates and does not touch them.
+add_executable(genesis-g3)
+target_sources(genesis-g3 PRIVATE
+    genesis/genesis.c genesis/pcg.c
+)
+target_sources(genesis-g3 PRIVATE
+    FILE_SET HEADERS
+    BASE_DIRS
+        genesis
+    FILES
+        genesis/pcg.h
+        genesis/names.h
+)
+target_include_directories(genesis-g3 PRIVATE genesis/)
+target_compile_features(genesis-g3 PRIVATE c_std_11)
+olympia_compile_flags(genesis-g3)
+
+# Optional ASan/UBSan via the asan-ubsan preset (OLYMPIA_SANITIZE=ON).
+olympia_enable_sanitizers(genesis-g3)
+
+# ------------------------------------------------------------------------------
 # G3 mapgen
 # ------------------------------------------------------------------------------
 add_executable(mapgen-g3)
