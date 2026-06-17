@@ -455,11 +455,17 @@ place_origins(int n, long r2, pcg32_t *rng, int *orow, int *ocol)
 
 /*
  * Partition the water into oceans: seed ocean_id[][] at the n origins and grow
- * each via randomized-frontier flood, claiming only unclaimed water (' ') cells
- * with mapgen's 8-neighbor (column-wrap) rule -- so growth is geodesic through
- * the water and each ocean is one connected component under mapgen's own flood.
- * Then sweep row-major: every still-unclaimed water cell seeds a fresh discovered
- * ocean (an island-/Olympus-enclosed body no origin reached).  Sets defer_n.
+ * each via randomized-frontier flood, claiming only unclaimed water (' ') cells.
+ * Growth uses CARDINAL (4-neighbor) steps, not diagonals: two oceans racing into a
+ * shared corridor under 8-neighbor growth interleave cell-by-cell (each color stays
+ * connected only through diagonals), painting a checkerboard seam where the seas
+ * should meet cleanly.  A 4-connected region can't form a diagonal-only checkerboard,
+ * so cardinal growth keeps boundaries clean.  The 4-coloring still uses the full
+ * 8-neighbor (column-wrap) rule (color_oceans_deferred), so diagonally-touching
+ * oceans get distinct colors and mapgen reads each as its own sea.  Then sweep
+ * row-major (8-neighbor): every still-unclaimed water cell seeds a fresh discovered
+ * ocean -- an island-/Olympus-enclosed body, or water beyond a diagonal pinch, that
+ * no origin reached.  Sets defer_n.
  *
  * TODO(#80): try multi-source BFS Voronoi over the water subgraph as an alt.
  */
@@ -488,7 +494,9 @@ partition_oceans_deferred(int n, const int *orow, const int *ocol, pcg32_t *rng)
 		int k = 0;
 		int d;
 
-		for (d = 0; d < 8; d++) {
+		/* d += 2 -> cardinal neighbors only (DR8/DC8 put N/E/S/W at even
+		 * indices); diagonal growth would interleave oceans into a checkerboard. */
+		for (d = 0; d < 8; d += 2) {
 			int nr, nc;
 			if (!neighbor8(cr, cc, d, &nr, &nc))
 				continue;
