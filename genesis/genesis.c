@@ -237,10 +237,11 @@ color_solve(int v, int n, const char adj[MAX_DIM][MAX_DIM], int *colors)
 	return 0;
 }
 
-static void
+/* Returns 1 and paints the ocean glyphs on success, 0 if not 4-colorable. */
+static int
 color_oceans(int n_oceans)
 {
-	static char adj[MAX_DIM][MAX_DIM];	/* n_oceans <= 9, but keep it simple */
+	static char adj[MAX_DIM][MAX_DIM];	/* n_oceans <= 12, but keep it simple */
 	int colors[MAX_DIM];
 	int r, c, d, i;
 
@@ -271,22 +272,66 @@ color_oceans(int n_oceans)
 	 *  adjacency (diagonals included) can make the ocean-adjacency graph
 	 *  non-planar, and with many oceans crammed onto a small canvas a cell can
 	 *  border more than four distinct oceans -- there simply aren't enough of
-	 *  mapgen's four ocean glyphs to keep them all distinct.  Fail cleanly with
-	 *  guidance rather than emitting a map mapgen would mis-read (see issue for
-	 *  capping --number-of-oceans to --size).
+	 *  mapgen's four ocean glyphs to keep them all distinct.  The size-scaled
+	 *  ocean cap (see add_oceans) makes this rare; the caller reduces the ocean
+	 *  count and retries when it does happen, so a failure here is not fatal.
 	 */
-	if (!color_solve(0, n_oceans, adj, colors)) {
-		fprintf(stderr,
-			"genesis: cannot 4-color %d oceans on a %dx%d map "
-			"(too many mutually-adjacent oceans);\n"
-			"         reduce --number-of-oceans or increase --size.\n",
-			n_oceans, g_size, g_size);
-		exit(1);
-	}
+	if (!color_solve(0, n_oceans, adj, colors))
+		return 0;
 
 	for (r = 0; r < g_size; r++)
 		for (c = 0; c < g_size; c++)
 			map[r][c] = ocean_glyph[colors[ocean_id[r][c]]];
+	return 1;
+}
+
+/*
+ * Cap of distinct oceans for a given canvas (issue #78):
+ *	max_oceans = min(ceil(size / 3), 12)
+ * Examples: size 10 -> 4, size 30 -> 10, size 36+ -> 12.
+ */
+static int
+ocean_cap(void)
+{
+	int cap = (g_size + 2) / 3;	/* ceil(size / 3) */
+	return cap > 12 ? 12 : cap;
+}
+
+/*
+ * Partition + 4-color the oceans, honoring the size-scaled cap.  A request above
+ * the cap is clamped (with a warning).  The cap is a heuristic, not a proof --
+ * the 8-neighbor / column-wrap adjacency can still be infeasible near the ceiling
+ * (color_oceans returns 0) -- so we reduce the count and re-partition/re-color
+ * until it succeeds.  A single ocean is always 4-colorable, so this terminates.
+ * Returns the ocean count actually used.
+ */
+static int
+add_oceans(int requested, uint64_t seed)
+{
+	pcg32_t rng;
+	int cap = ocean_cap();
+	int n = requested;
+
+	if (n > cap) {
+		fprintf(stderr,
+			"genesis: --number-of-oceans %d exceeds the cap for size %d; using %d\n",
+			requested, g_size, cap);
+		n = cap;
+	}
+
+	for (; n >= 1; n--) {
+		/* Reseed the partition stream each attempt: deterministic per count. */
+		pcg32_seed_step(&rng, seed, STEP_PARTITION, 0);
+		partition_oceans(n, &rng);
+		if (color_oceans(n))
+			return n;
+		fprintf(stderr,
+			"genesis: %d oceans not 4-colorable on this map; retrying with %d\n",
+			n, n - 1);
+	}
+
+	fprintf(stderr, "genesis: internal error: could not color even one ocean\n");
+	exit(1);
 }
 
 /* ------------------------------------------------------------------------- */
@@ -910,8 +955,10 @@ static void
 usage(const char *prog)
 {
 	fprintf(stderr,
-		"Usage: %s [--seed N] [--size 10..99] [--number-of-oceans 1..9]\n"
+		"Usage: %s [--seed N] [--size 10..99] [--number-of-oceans N]\n"
 		"          [--island-iterations 2..10]\n"
+		"  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to\n"
+		"  fit; larger requests are reduced with a warning.\n"
 		"Generates the mapgen input set (Map, Regions, Land, Cities, randseed)\n"
 		"in the current directory.  See doc/genesis.md.\n", prog);
 }
@@ -924,7 +971,6 @@ main(int argc, char *argv[])
 	int iterations = 10;
 	uint64_t seed = 0;
 	int opt;
-	pcg32_t rng;
 
 	static struct option longopts[] = {
 		{ "size",              required_argument, 0, 's' },
@@ -949,8 +995,13 @@ main(int argc, char *argv[])
 		fprintf(stderr, "genesis: --size must be 10..99 (got %d)\n", size);
 		return 1;
 	}
-	if (oceans < 1 || oceans > 9) {
-		fprintf(stderr, "genesis: --number-of-oceans must be 1..9 (got %d)\n", oceans);
+	/*
+	 * Upper bound is the size-scaled cap (issue #78); a larger request is clamped
+	 * with a warning in add_oceans rather than rejected, so the default (9) just
+	 * works on small maps. Only a nonsensical < 1 is rejected here.
+	 */
+	if (oceans < 1) {
+		fprintf(stderr, "genesis: --number-of-oceans must be >= 1 (got %d)\n", oceans);
 		return 1;
 	}
 	/*
@@ -970,9 +1021,7 @@ main(int argc, char *argv[])
 		(unsigned long long)seed, size, oceans, iterations);
 
 	/* Each step reseeds its own stream off the user seed (see doc/genesis.md). */
-	pcg32_seed_step(&rng, seed, STEP_PARTITION, 0);
-	partition_oceans(oceans, &rng);
-	color_oceans(oceans);		/* deterministic backtracking, no RNG */
+	oceans = add_oceans(oceans, seed);	/* caps/clamps + retries to a colorable count */
 	add_islands(iterations, seed);
 	add_olympus();
 

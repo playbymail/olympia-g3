@@ -19,8 +19,10 @@ The size must be between 10 and 99 (inclusive) and defaults to 99.
 
 Update the canvas, adding a number of seas.
 
-The `--number-of-oceans` flag specifies the number of oceans.
-The number of oceans must be between 1 and 9 (inclusive) and defaults to 9.
+The `--number-of-oceans` flag specifies the number of oceans (defaults to 9).
+The effective count is capped to the canvas: `max_oceans = min(ceil(size / 3), 12)`
+(e.g. size 10 → 4, size 30 → 10, size 36+ → 12). A larger request is clamped to
+the cap with a warning, so the default works on every size.
 
 The map is partitioned into several distinct oceans grown from random seed points,
 then 4-colored with the plain ocean glyphs so that mapgen reads each ocean as its own
@@ -41,8 +43,15 @@ The randomized frontier pick is what gives oceans their organic, jagged boundari
 The ASCII map only has a handful of ocean glyphs, so adjacent oceans need different glyphs to stay visually/logically distinct for mapgen. So it does a graph 4-coloring:
 
 - Build an ocean-adjacency graph using mapgen's exact flood rule: 8-neighbor, columns wrap, rows don't. Any two different ocean IDs touching under that rule become graph neighbors.
-- 4-color the graph by deterministic backtracking (colorVertex, maxColors = 4). This is guaranteed to succeed — the region-adjacency graph of a contiguous partition is planar, hence
-  4-colorable (the panic is unreachable).
+- 4-color the graph by deterministic backtracking (colorVertex, maxColors = 4).
+
+Note: 4-coloring is **not** always possible here. Because the adjacency rule is
+8-neighbor (diagonals) on a column-wrapped cylinder, the graph need not be planar,
+and on a crowded canvas a cell can border more than four distinct oceans — there
+are only four ocean glyphs, so no valid assignment exists. The size-scaled ocean
+cap above makes this rare; when coloring still fails, genesis reduces the ocean
+count by one and re-partitions/re-colors until it succeeds (a single ocean always
+colors), so it always produces a valid map.
 
 The reason it matches mapgen's adjacency rule precisely is so the separate oceans we draw are read back as separate regions downstream.
 
