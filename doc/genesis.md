@@ -51,7 +51,13 @@ The reason it matches mapgen's adjacency rule precisely is so the separate ocean
 Update the canvas, adding a number of islands.
 
 The `--island-iterations` specifies the number of island iterations.
-It must be between 1 and 10 (inclusive) and defaults to 10.
+It must be between 2 and 10 (inclusive) and defaults to 10.
+
+The minimum is 2 (not 1): iterations 1 and 2 together grow 1 + 2 = 3 islands,
+which the continental-shelf spacing keeps as at least 3 distinct land regions.
+`mapgen` needs at least 3 land regions to lay its stone-circle gates (each circle
+links to two *other* circles); fewer would wedge it. A single-island world is not
+playable in any case.
 
 The size of the islands depends on the iterations.
 

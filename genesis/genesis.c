@@ -266,10 +266,21 @@ color_oceans(int n_oceans)
 				}
 			}
 
-	/* A contiguous region partition is planar, hence 4-colorable. */
+	/*
+	 *  Try to 4-color the oceans.  This is NOT always possible: the 8-neighbor
+	 *  adjacency (diagonals included) can make the ocean-adjacency graph
+	 *  non-planar, and with many oceans crammed onto a small canvas a cell can
+	 *  border more than four distinct oceans -- there simply aren't enough of
+	 *  mapgen's four ocean glyphs to keep them all distinct.  Fail cleanly with
+	 *  guidance rather than emitting a map mapgen would mis-read (see issue for
+	 *  capping --number-of-oceans to --size).
+	 */
 	if (!color_solve(0, n_oceans, adj, colors)) {
-		fprintf(stderr, "genesis: 4-coloring failed (should be impossible)\n");
-		assert(0);
+		fprintf(stderr,
+			"genesis: cannot 4-color %d oceans on a %dx%d map "
+			"(too many mutually-adjacent oceans);\n"
+			"         reduce --number-of-oceans or increase --size.\n",
+			n_oceans, g_size, g_size);
 		exit(1);
 	}
 
@@ -900,7 +911,7 @@ usage(const char *prog)
 {
 	fprintf(stderr,
 		"Usage: %s [--seed N] [--size 10..99] [--number-of-oceans 1..9]\n"
-		"          [--island-iterations 1..10]\n"
+		"          [--island-iterations 2..10]\n"
 		"Generates the mapgen input set (Map, Regions, Land, Cities, randseed)\n"
 		"in the current directory.  See doc/genesis.md.\n", prog);
 }
@@ -942,8 +953,15 @@ main(int argc, char *argv[])
 		fprintf(stderr, "genesis: --number-of-oceans must be 1..9 (got %d)\n", oceans);
 		return 1;
 	}
-	if (iterations < 1 || iterations > 10) {
-		fprintf(stderr, "genesis: --island-iterations must be 1..10 (got %d)\n", iterations);
+	/*
+	 * Minimum is 2, not 1: iterations 1 and 2 grow 1 + 2 = 3 islands, which the
+	 * continental-shelf spacing keeps as >= 3 distinct land regions. mapgen's
+	 * gate_stone_circles needs >= 3 regions to link each stone circle to two
+	 * distinct others; fewer used to hang it (issue #75 / #77). One island is
+	 * never enough for a playable world anyway.
+	 */
+	if (iterations < 2 || iterations > 10) {
+		fprintf(stderr, "genesis: --island-iterations must be 2..10 (got %d)\n", iterations);
 		return 1;
 	}
 
