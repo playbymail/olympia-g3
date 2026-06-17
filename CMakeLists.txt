@@ -251,18 +251,24 @@ olympia_enable_sanitizers(island-g3)
 # which stay byte-locked for the golden gates -- so it links neither rnd.c nor
 # rng.c. Output is upstream of both golden gates and does not touch them.
 add_executable(genesis-g3)
+# lib/map_image.c is the ONLY engine-tree source genesis links (issue #81): a
+# self-contained glyph-grid -> 24-bit BMP debug exporter that pulls in nothing
+# but stdio/stdint -- no engine headers, no RNG -- so it does NOT compromise the
+# minimal-source-set rule above (still no lib/rnd.c / lib/rng.c).
 target_sources(genesis-g3 PRIVATE
-    genesis/genesis.c genesis/pcg.c
+    genesis/genesis.c genesis/pcg.c lib/map_image.c
 )
 target_sources(genesis-g3 PRIVATE
     FILE_SET HEADERS
     BASE_DIRS
         genesis
+        lib
     FILES
         genesis/pcg.h
         genesis/names.h
+        lib/map_image.h
 )
-target_include_directories(genesis-g3 PRIVATE genesis/)
+target_include_directories(genesis-g3 PRIVATE genesis/ lib/)
 target_compile_features(genesis-g3 PRIVATE c_std_11)
 olympia_compile_flags(genesis-g3)
 
