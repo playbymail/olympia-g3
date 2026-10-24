@@ -225,8 +225,14 @@ create_cloudlands(void)
 
 	{
 		ilist l = NULL;
-		int i;
-		int gate1, gate2, gate3, gate4;
+		int i, n;
+		int gate;
+		int corner[4];
+
+		corner[0] = map[0][0];
+		corner[1] = map[SZ][0];
+		corner[2] = map[0][SZ];
+		corner[3] = map[SZ][SZ];
 
 		loop_loc(i)
 		{
@@ -235,28 +241,23 @@ create_cloudlands(void)
 		}
 		next_loc;
 
-		assert(ilist_len(l) >= 4);
+/*
+ *  mapgen lays one ring of stones per land region, so a small world
+ *  may have fewer than four (#89).  Reuse rings round-robin so every
+ *  corner still gets a gate; with no rings at all, build no gates.
+ *  With four or more rings this is the same draws in the same order.
+ */
+
+		n = ilist_len(l);
 		cseq_shuffle(l);
 
-		gate1 = new_ent(T_gate, 0);
-		set_where(gate1, map[0][0]);
-		p_gate(gate1)->to_loc = l[0];
-		rp_gate(gate1)->seal_key = (short) cseq_rnd(111,999);
-
-		gate2 = new_ent(T_gate, 0);
-		set_where(gate2, map[SZ][0]);
-		p_gate(gate2)->to_loc = l[1];
-		rp_gate(gate2)->seal_key = (short) cseq_rnd(111,999);
-
-		gate3 = new_ent(T_gate, 0);
-		set_where(gate3, map[0][SZ]);
-		p_gate(gate3)->to_loc = l[2];
-		rp_gate(gate3)->seal_key = (short) cseq_rnd(111,999);
-
-		gate4 = new_ent(T_gate, 0);
-		set_where(gate4, map[SZ][SZ]);
-		p_gate(gate4)->to_loc = l[3];
-		rp_gate(gate4)->seal_key = (short) cseq_rnd(111,999);
+		for (i = 0; n > 0 && i < 4; i++)
+		{
+			gate = new_ent(T_gate, 0);
+			set_where(gate, corner[i]);
+			p_gate(gate)->to_loc = l[i % n];
+			rp_gate(gate)->seal_key = (short) cseq_rnd(111,999);
+		}
 
 		ilist_reclaim(&l);
 	}
