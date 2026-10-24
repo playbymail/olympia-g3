@@ -42,15 +42,15 @@ terrorize	social	cr		todo	todo	todo
 promote	stacking	cr		todo	todo	todo
 stack	stacking	cr		todo	todo	todo
 unstack	stacking	cr		todo	todo	todo
-accept	inventory	cpr		todo	todo	todo
-claim	inventory	c		todo	todo	todo
-discard	inventory	c		todo	todo	todo
-drop	inventory	cr	discard	todo	todo	todo
-get	inventory	cr		todo	todo	todo
-give	inventory	cr		todo	todo	todo
-pay	inventory	cr		todo	todo	todo
-reclaim	inventory	c		todo	todo	todo
-take	inventory	cr	get	todo	todo	todo
+accept	inventory	cpr		inventory-give	todo	n/a
+claim	inventory	c		inventory-give	inventory-refused	inventory-refused
+discard	inventory	c		inventory-give	inventory-refused	inventory-refused
+drop	inventory	cr	discard	inventory-give	inventory-refused	inventory-refused
+get	inventory	cr		inventory-give	inventory-refused	inventory-refused
+give	inventory	cr		inventory-give	inventory-refused	inventory-refused
+pay	inventory	cr		inventory-give	inventory-refused	inventory-refused
+reclaim	inventory	c		inventory-give	inventory-refused	n/a
+take	inventory	cr	get	inventory-give	inventory-refused	inventory-refused
 buy	trade	c		todo	todo	todo
 fee	trade	c		move-ship	todo	todo
 sell	trade	c		todo	todo	todo
@@ -70,7 +70,7 @@ quarry	production	c		production-harvest	production-refused	production-refused
 stone	production	c	quarry	production-harvest	production-refused	production-refused
 wood	production	c		production-harvest	production-refused	production-refused
 yew	production	c		production-harvest	production-refused	production-refused
-form	recruitment	c		todo	todo	todo
+form	recruitment	c		inventory-give	todo	todo
 raise	recruitment	c		todo	todo	todo
 rally	recruitment	c		todo	todo	todo
 recruit	recruitment	c		todo	todo	todo

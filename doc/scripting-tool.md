@@ -200,7 +200,8 @@ oly.add_player{                  -- replaces Join-g3 + the -a pass
     start     = 0,               -- index into startloc, or "empty"
     email     = "pillager@example.com",
     full_name = "P Layer One",
-}                                -- returns {player=<h>, noble=<h>}
+}                                -- returns {player=<h>, noble=<h>,
+                                 --          unformed={<id>, ...}}
 ```
 
 `add_player` wraps `add_new_player()` (`add.c:162`) directly — *not* the

@@ -14,7 +14,8 @@ with the fixture that exercises each outcome (`ok` / `rejected` / `fail`) or
 `move-ship`, and the player family (#118) by `player-settings`, `player-press`,
 `player-die` and `player-quit`. Those are also the first fixtures to cover
 `rejected`/`fail` cells. The production family (#126) is covered by
-`production-harvest` (`ok`) and `production-refused` (`fail`/`rejected`).
+`production-harvest` (`ok`) and `production-refused` (`fail`/`rejected`), and
+the inventory family (#127) by `inventory-give` and `inventory-refused`.
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):
