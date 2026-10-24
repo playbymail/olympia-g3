@@ -262,6 +262,7 @@ extern int mint_city(void);					/* add.c: get_city_id start-line pick, sequentia
 extern void mint_shuffle(ilist l);				/* add.c: pick_starting_city "empty" candidate shuffle */
 
 /* olympia/coverage.c */
+extern void coverage_count(int cmd, int outcome);
 extern void write_coverage(void);
 
 /* olympia/combat.c */

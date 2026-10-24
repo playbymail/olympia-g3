@@ -627,6 +627,7 @@ finish_command(struct command *c)
 void
 do_command(struct command *c)
 {
+	int cmd;
 
 	assert(c != NULL);
 
@@ -642,15 +643,18 @@ do_command(struct command *c)
 	{
 		out(c->who, "Unrecognized command.");
 		c->status = FALSE;
+		coverage_count(0, COV_REJECTED);
 	}
 	else if (!check_allow(c, cmd_tbl[c->cmd].allow))
 	{
 		c->status = FALSE;
+		coverage_count(c->cmd, COV_REJECTED);
 	}
 	else if (cmd_tbl[c->cmd].start == NULL)
 	{
 		out(c->who, "Unimplemented command.");
 		c->status = FALSE;
+		coverage_count(c->cmd, COV_UNIMPL);
 	}
 	else
 	{
@@ -665,7 +669,9 @@ do_command(struct command *c)
 
 		c->debug = 0;
 		c->inhibit_finish = FALSE;
-		c->status = (schar) (*cmd_tbl[c->cmd].start)(c);
+		cmd = c->cmd;		/* start may re-parse c */
+		c->status = (schar) (*cmd_tbl[cmd].start)(c);
+		coverage_count(cmd, c->status ? COV_OK : COV_FAIL);
 	}
 
 	if (!c->status)

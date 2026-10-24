@@ -1180,6 +1180,13 @@ extern uint64_t trade_route_seed_value;
 /* issue #100: "--coverage <path>" set by main.c, NULL = no coverage dump */
 extern char *coverage_path;
 
+/* issue #98: do_command() outcomes counted by coverage_count() */
+#define	COV_REJECTED	0	/* check_allow() failed, or unrecognized */
+#define	COV_UNIMPL	1	/* cmd_tbl start is NULL */
+#define	COV_OK		2	/* start returned TRUE */
+#define	COV_FAIL	3	/* start returned FALSE */
+#define	COV_MAX		4
+
 /*
  *  Saved in libdir/system:
  */

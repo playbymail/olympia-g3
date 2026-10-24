@@ -228,7 +228,7 @@ Ultron's brain to the Lua subset, and preserves `(seed, orders)` reproducibility
       │   2. brain (out-of-proc): state + coverage ► pick orders   │  (archetype)
       │   3. write order files                  ► lib/orders/*     │  (plain text)
       │   4. run turn          olympia-g3 -r -l lib -S            │  (real path!)
-      │   5. read coverage     lib/ ──────────► coverage.tsv       │  (do_command)
+      │   5. read coverage     --coverage ────► coverage.tsv       │  (do_command)
       │   6. score + choose next-turn targets                     │
       └──────────────────────────────────────────────────────────┘
                                    │ repeat
@@ -274,7 +274,8 @@ Smallest end-to-end slice that proves the architecture, in dependency order:
 
 1. **Coverage hook** at `do_command` + a `coverage.tsv` dump (engine-side,
    byte-neutral). Immediately useful even before any agent — it answers "what did
-   *today's* golden turn exercise."
+   *today's* golden turn exercise." **✅ Done** (#98, #100) — see
+   [§7.1](#71-coverage-hook--landed).
 2. **State export** — a minimal read-only dump (location, inventory, skills) via
    the oracle bindings or a `-state-export` mode.
 3. **A trivial brain** — one archetype (the Chaos Goblin is the cheapest: pick
@@ -283,3 +284,39 @@ Smallest end-to-end slice that proves the architecture, in dependency order:
    fixture.
 
 Each step is independently testable and the first two are valuable on their own.
+
+### 7.1 Coverage hook — landed
+
+`olympia-g3 ... --coverage <path>` (#100) writes `coverage.tsv` to `<path>` at the
+end of the run; `run/olympia-g3.sh` passes it through from `OLYMPIA_COVERAGE`.
+Without the flag nothing is counted or written, and every golden tree stays
+byte-identical. Keep the path outside `lib/`, which the gates hash.
+
+`do_command()` reports each dispatch to `coverage_count()` (`olympia/coverage.c`,
+#98). Decisions taken in the first cut:
+
+- **Outcomes** (columns): `rejected` (`check_allow()` failed), `unimplemented`
+  (`start == NULL`), `ok` / `fail` (what `start` returned). Finish and interrupt
+  outcomes are not counted yet.
+- **Turn-runner commands only.** Commands run in immediate mode (`-i`,
+  `olyscript-g3`) are not counted: they skip `check_allow()`, so they say nothing
+  about the player order path. For example, the GUARD that `guard-pillage.lua`
+  sets up does not show.
+- **Every verb gets a row**, sorted by name, including verbs that never fired.
+  Unrecognized commands have no verb; they are counted on the `cmd_tbl[0]`
+  placeholder and written as `(unrecognized)`, under `rejected`.
+
+**Baseline (2026-10-24).** Across the main golden turn and both olympia regress
+trees, only **4 of 147 verbs fire**, all with outcome `ok`; nothing is rejected
+and nothing fails:
+
+| Tree | Verbs fired (count) |
+|------|---------------------|
+| main golden turn | `move` 25, `wait` 25 |
+| guard-pillage | `move` 25, `wait` 25, `pillage` 1 |
+| trade-routes | `move` 15, `wait` 15, `use` 1 |
+
+The `move`/`wait` rows are NPC and savage orders. Every other verb, and every
+`rejected`/`fail` path, is unexercised: that list is the fixture backlog ahead of
+the Go port.
+
