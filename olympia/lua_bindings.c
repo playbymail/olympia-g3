@@ -22,7 +22,8 @@
  *  name/id registry. subitem, know, makeloc and restart followed for the
  *  move-ship fixture (issue #120); add_player's `unformed` list for the
  *  inventory-give fixture and the garrison query for inventory-refused
- *  (issue #127); mob for recruitment-raise's rally target (issue #139).
+ *  (issue #127); mob for recruitment-raise's rally target (issue #139);
+ *  castle_level for construction-refused's level-six improve (issue #162).
  *  Everything else in the design (kill, credit, the
  *  wider query set, the declarative format, RNG bindings) is deferred; a
  *  binding is added when a fixture needs it, not speculatively.
@@ -460,6 +461,34 @@ l_mob(lua_State *L)
 	return 1;
 }
 
+/*
+ *  oly.castle_level(castle, level)  -> <level>
+ *
+ *  Set a finished castle's improvement level (0-6), the castle_lev field a
+ *  run of improve orders would raise. No GM verb sets it, so this is a path
+ *  (B) binding, like mob. Only the level is set: the 5 defense per level
+ *  d_improve also adds is left alone.
+ */
+static int
+l_castle_level(lua_State *L)
+{
+	int castle = (int) luaL_checkinteger(L, 1);
+	int level = (int) luaL_checkinteger(L, 2);
+
+	if (!valid_box(castle) || subkind(castle) != sub_castle)
+		return luaL_error(L, "oly.castle_level: %d not a castle",
+				castle);
+
+	if (level < 0 || level > 6)
+		return luaL_error(L, "oly.castle_level: level %d not 0-6",
+				level);
+
+	p_subloc(castle)->castle_lev = (schar) level;
+
+	lua_pushinteger(L, castle_level(castle));
+	return 1;
+}
+
 /* oly.guard(who, on)  -- the `guard` order set via v_guard. */
 static int
 l_guard(lua_State *L)
@@ -653,6 +682,7 @@ static const luaL_Reg oly_funcs[] = {
 	{ "know",		l_know },
 	{ "makeloc",		l_makeloc },
 	{ "mob",		l_mob },
+	{ "castle_level",	l_castle_level },
 	{ "guard",		l_guard },
 	{ "order",		l_order },
 	{ "save",		l_save },

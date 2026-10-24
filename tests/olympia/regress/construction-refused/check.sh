@@ -5,9 +5,10 @@
 # Extracts the frozen scenario (scenario.patch over the shared
 # tests/olympia/fixtures/world.tgz) and runs one turn. In Greyfell build
 # fails with nothing named, an unknown structure, no skill, no stone and in
-# a safe haven; improve fails outside a castle, without workers and without
-# stone; repair fails outside a building, without workers and on an
-# undamaged tower. The player entity's orders for all three are refused.
+# a safe haven; improve fails outside a castle, without workers, without
+# stone and in a level-six castle; repair fails outside a building,
+# without workers and on an undamaged tower. The player entity's orders
+# for all three are refused.
 # See construction-refused.lua and README.md.
 #
 # Three checks, all required:
@@ -29,7 +30,7 @@ PRESET="${OLYMPIA_PRESET:-debug}"
 BIN="${ROOT}/build/${PRESET}/olympia-g3"
 . "${ROOT}/tests/olympia/fixtures/scenario.sh"
 
-FILES=(save/1/300 save/1/301 save/1/302 save/1/303 fact/300 fact/301 fact/302 fact/303)
+FILES=(save/1/300 save/1/301 save/1/302 save/1/303 save/1/304 fact/300 fact/301 fact/302 fact/303 fact/304)
 CELLS=(build:fail build:rejected improve:fail improve:rejected repair:fail repair:rejected)
 
 [ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }

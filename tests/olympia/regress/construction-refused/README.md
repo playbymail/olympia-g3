@@ -5,15 +5,17 @@ Pins the `fail` and `rejected` outcomes of `build`, `improve` and `repair`
 
 ## Scenario
 
-Four factions start in Greyfell (57081). `oly.makeloc` makes a castle,
-Castle [74301], and a tower, Tower [73052], in the city:
+Five factions start in Greyfell (57081). `oly.makeloc` makes two castles,
+Castle [74301] and Castle [72332], and a tower, Tower [73052], in the city.
+`oly.castle_level` (#162) sets the second castle to level six:
 
 | Faction | Noble | Set up |
 |---|---|---|
-| 300 Bunglers | Bungler One [4126] | in the castle; no Construction, no workers |
+| 300 Bunglers | Bungler One [4126] | in Castle [74301]; no Construction, no workers |
 | 301 Masons | Mason One [8651] | Greyfell; knows Construction [680]; no stone |
-| 302 Keepers | Keeper One [8159] | in the castle; 1 worker, no stone |
+| 302 Keepers | Keeper One [8159] | in Castle [74301]; 1 worker, no stone |
 | 303 Menders | Mender One [7012] | in the tower; 80 workers |
+| 304 Lords | Lord One [9463] | in Castle [72332], level six; 1 worker |
 
 | Unit | Order | Day | Fails with |
 |---|---|---|---|
@@ -27,19 +29,22 @@ Castle [74301], and a tower, Tower [73052], in the city:
 | mason | `improve` | 1 | Not in a castle. |
 | mason | `repair` | 1 | Greyfell [d21] may not be repaired. |
 | keeper | `improve` | 1 | 50 stone [78] required to proceed with improvement to level one. |
-| mender | `repair` | 3 | Tower [s052] is not damaged. |
+| lord | `improve` | 2 | No further castle improvement is possible. |
+| mender | `repair` | 2 | Tower [s052] is not damaged. |
 
 A tower made by `oly.makeloc` has defense 0, under the tower default of 40,
 so the mender's first `repair` starts (`ok`): 80 workers restore 40 points
-(2 worker-days each) on its first day, day 2. Its second `repair` finds the
+(2 worker-days each) on its first day, day 1. Its second `repair` finds the
 tower whole. The bungler's `build tower` mints an unformed id before the
 skill check fails (`v_build` mints first).
 
 Rejected: all three verbs are for nobles (`c`), so the Bunglers' player
 entity orders all three, and `check_allow()` refuses each.
 
-Not reached: a castle already at level six (nothing in `oly` sets a castle
-level), a ship repair without glue, too many towers in a castle, and the
+The lord's castle is added after the other buildings, so their ids are
+unchanged. The lord, not the keeper, collects Greyfell's month-end taxes.
+
+Not reached: a ship repair without glue, too many towers in a castle, and the
 `d_` failures that halt work already started (no workers left, no stone for
 the next fifth, the unit left the building). Those are `d_` outcomes, not
 `fail` cells.

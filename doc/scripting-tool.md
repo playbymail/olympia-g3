@@ -627,6 +627,13 @@ order scanner (`eat.c`) accepts a player's orders for its unformed nobles, and
 the order runs once a `form` makes the noble. Before this, `player(who)` of an
 unformed id was 0 and the call crashed.
 
+**Since landed (#162):** `oly.castle_level(castle, level)` sets a finished
+castle's improvement level (0–6) and returns it. It errors for anything but a
+castle (`sub_castle`) or a level outside 0–6. No GM verb sets the level, so it
+is a path (B) binding that writes `castle_lev` directly. It sets only the
+level, not the 5 defense per level that `d_improve` adds.
+`construction-refused` uses it to reach `improve`'s level-six fail.
+
 **Explicitly deferred:** `kill`, `credit`, the full query set
 (`here`/`all`/`chars_here`/`knows`), the declarative format, RNG bindings, and
 any production-engine integration. Path (B) direct-handler calls are deferred
