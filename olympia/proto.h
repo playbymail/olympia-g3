@@ -760,6 +760,7 @@ extern void dissipate_storm(int storm, int show);
 extern void init_weather_views(void);
 extern void move_bound_storms(int ship, int where);
 extern void natural_weather(void);
+extern int new_storm(int new, int sk, int aura, int where);
 extern void storm_report(int pl);
 extern void update_weather_view_locs(int stack, int where);
 

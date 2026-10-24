@@ -6,8 +6,8 @@
       "skills": []}],
    "locations": [
      {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
-      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
-      "here": [{"id": 4126, "name": "Bungler One", "faction": 300}, {"id": 8651, "name": "Breeder One", "faction": 301}]}]},
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 73052, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Bungler One", "faction": 300}, {"id": 8159, "name": "Landlubber One", "faction": 302}, {"id": 8651, "name": "Breeder One", "faction": 301}]}]},
   {"id": 301, "name": "Breeders",
    "units": [
      {"id": 8651, "name": "Breeder One", "where": 57081, "stacked_under": 0,
@@ -15,23 +15,23 @@
       "skills": [{"id": 650, "name": "Beastmastery"}, {"id": 654, "name": "Breed beasts"}]}],
    "locations": [
      {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
-      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
-      "here": [{"id": 4126, "name": "Bungler One", "faction": 300}, {"id": 8651, "name": "Breeder One", "faction": 301}]}]},
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 73052, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Bungler One", "faction": 300}, {"id": 8159, "name": "Landlubber One", "faction": 302}, {"id": 8651, "name": "Breeder One", "faction": 301}]}]},
   {"id": 302, "name": "Landlubbers",
    "units": [
-     {"id": 8159, "name": "Landlubber One", "where": 13450, "stacked_under": 0,
+     {"id": 8159, "name": "Landlubber One", "where": 57081, "stacked_under": 0,
       "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
-      "skills": [{"id": 800, "name": "Magic"}, {"id": 820, "name": "Weather magic"}, {"id": 822, "name": "Bind storm to ship"}, {"id": 824, "name": "Summon wind"}]}],
+      "skills": [{"id": 800, "name": "Magic"}, {"id": 820, "name": "Weather magic"}, {"id": 822, "name": "Bind storm to ship"}]}],
    "locations": [
-     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
-      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
-      "here": [{"id": 8159, "name": "Landlubber One", "faction": 302}]}]},
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 73052, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Bungler One", "faction": 300}, {"id": 8159, "name": "Landlubber One", "faction": 302}, {"id": 8651, "name": "Breeder One", "faction": 301}]}]},
   {"id": 303, "name": "Paupers",
    "units": [
-     {"id": 7012, "name": "Pauper One", "where": 74301, "stacked_under": 0,
+     {"id": 7012, "name": "Pauper One", "where": 73052, "stacked_under": 0,
       "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
-      "skills": [{"id": 800, "name": "Magic"}, {"id": 820, "name": "Weather magic"}, {"id": 822, "name": "Bind storm to ship"}, {"id": 825, "name": "Summon rain"}]}],
+      "skills": [{"id": 822, "name": "Bind storm to ship"}]}],
    "locations": [
-     {"id": 74301, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13351,
+     {"id": 73052, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13451,
       "exits": [],
       "here": [{"id": 7012, "name": "Pauper One", "faction": 303}]}]}]}

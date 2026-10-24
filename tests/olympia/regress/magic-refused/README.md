@@ -11,8 +11,8 @@ Four factions start in Greyfell (57081), a safe haven:
 |---|---|---|
 | 300 Bunglers | Bungler One [4126] | stays in Greyfell, no skills |
 | 301 Breeders | Breeder One [8651] | stays in Greyfell; knows Beastmastery [650] and Breed beasts [654]; one ox [76] |
-| 302 Landlubbers | Landlubber One [8159] | knows Magic, Weather magic, Bind storm, Summon wind (4 aura); poofed to Plain [13450] |
-| 303 Paupers | Pauper One [7012] | knows Magic, Weather magic, Bind storm, Summon rain (4 aura); aboard Roundship [74301] in Ocean [13351] |
+| 302 Landlubbers | Landlubber One [8159] | stays in Greyfell; knows Magic, Weather magic, Bind storm (3 aura); owns Rain [139904] over Forest [13451] |
+| 303 Paupers | Pauper One [7012] | knows only Bind storm (1 aura); aboard Roundship [73052] in Greyfell; owns Fog [143336] over Forest [13451] |
 
 | Unit | Order | Day | Fails with |
 |---|---|---|---|
@@ -23,21 +23,19 @@ Four factions start in Greyfell (57081), a safe haven:
 | breeder | `breed 57081 10` | 1 | 57081 is not an item. |
 | breeder | `breed 10 51` | 1 | Don't have any [51]. |
 | breeder | `breed 76 76` | 1 | Don't have two [76]. |
-| landlubber | `bind 122602` | 8 | Landlubber One [8159] must be on a ship to bind the storm to. |
-| pauper | `bind 103520` | 9 | Three aura required, current level is one. |
+| landlubber | `bind 139904` | 1 | Landlubber One [8159] must be on a ship to bind the storm to. |
+| pauper | `bind 143336` | 2 | Three aura required, current level is one. |
 
-Nothing in `oly` makes a storm, so both weather mages summon one in the
-turn, and each storm id was read from a run. Plain is not a safe haven and
-holds a wind cookie, so the landlubber's `use 824 3` summons Wind [122602]
-on day 7. The pauper's `use 825 3` summons Rain [103520] over the ocean on
-day 8 and leaves it 1 aura. Both summons start (`use` `ok`).
+`oly.storm` (#170) raises both storms at build time over Greyfell's
+forest, which holds one rain cookie and one fog cookie, and records each
+mage as its storm's summoner. `bind` checks the storm before the ship and
+the ship before the aura, so each mage reaches a different fail.
 
 Rejected: `trance`, `breed` and `bind` are for nobles (`c`), so the
 Bunglers' player entity orders all three, and `check_allow()` refuses each.
 
 The one `bind` fail not covered is a storm in another province than the
-ship. A mage would have to summon a storm and then move away from it in the
-same turn.
+ship (#171).
 
 ## What `check.sh` asserts
 
@@ -54,11 +52,6 @@ same turn.
 `scenario.patch` over the shared base world. The script never runs the `-a`
 pass, so `build-scenario.sh` also swaps in `world.tgz`'s `lib/log`; a turn
 deletes `lib/log` before it writes anything, so it is not turn input.
-
-If a change moves the turn's mint, the summons mint different storm ids and
-the two late `bind` orders fail for the wrong reason (no storm). Read the new
-ids from the reports, set `GALE` and `SHOWER` in `magic-refused.lua`, and
-rebuild.
 
 ## Run it
 

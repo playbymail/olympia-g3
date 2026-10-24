@@ -5,9 +5,9 @@
 # Extracts the frozen scenario (scenario.patch over the shared
 # tests/olympia/fixtures/world.tgz) and runs one turn. A noble with no
 # skills fails trance, breed and bind; breed fails four more ways; a weather
-# mage on land summons wind and fails to bind it (not on a ship); a weather
-# mage at sea summons rain and fails to bind it (too little aura). The player
-# entity's magic orders are refused. See magic-refused.lua and README.md.
+# mage on land fails to bind its storm (not on a ship); a mage on a ship
+# fails to bind its storm (too little aura). The player entity's magic
+# orders are refused. See magic-refused.lua and README.md.
 #
 # Three checks, all required:
 #   1. coverage: every verb:outcome in CELLS has a nonzero count in the

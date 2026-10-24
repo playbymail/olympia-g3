@@ -9,24 +9,21 @@
 --              its peasants: breeds a peasant with the ox (a minotaur); the
 --              breeding accidents and the offspring are draws on the social
 --              stream
---   binder     a weather mage aboard a roundship in Ocean [13351], north of
---              Greyfell's forest (Greyfell is a safe haven, where magic may
---              not be used): summons rain over the ocean, then binds the new
---              storm to the ship. Nothing in oly makes a storm, so the summon
---              runs in the turn, and the storm's id is read from a run
+--   binder     a weather mage aboard a roundship in Greyfell's port, owning a
+--              rain storm over Greyfell's forest [13451] (made by oly.storm):
+--              binds the storm to the ship
 --
 -- Every start returns TRUE (ok).
 
 local oly = require "oly"
 
-local GREYFELL = 57081			-- start city 0
-local OCEAN = 13351			-- north of Greyfell's forest, holds a rain cookie
+local GREYFELL = 57081			-- start city 0, a port
+local FOREST = 13451			-- Greyfell's province, holds a rain cookie
 local PEASANT, OX = 10, 76		-- items
 local BEAST, BREED = 650, 654		-- skills: Beastmastery, Breed beasts
 local ADV, TRANCE = 920, 921		-- skills: Advanced sorcery, Trance
 local MAGIC, WEATHER = 800, 820		-- skills: Magic, Weather magic
-local BIND, RAIN = 822, 825		-- skills: Bind storm to ship, Summon rain
-local STORM = 122602		-- the storm the summon mints (read from a run)
+local BIND = 822			-- skill: Bind storm to ship
 
 oly.load("./lib")
 oly.extract_startlocs()
@@ -54,22 +51,23 @@ oly.know(breeder, BEAST)
 oly.know(breeder, BREED)
 oly.additem(breeder, OX, 1)
 
--- each magic skill learned adds one aura: 6 here, 3 to summon and 3 to bind
-for _, sk in ipairs{ MAGIC, 801, 802, WEATHER, BIND, RAIN } do
+-- each magic skill learned adds one aura: 3 here, what bind costs
+for _, sk in ipairs{ MAGIC, WEATHER, BIND } do
 	oly.know(binder, sk)
 end
-oly.poof(binder, OCEAN)
 local ship = oly.makeloc(binder, "roundship", "ship")
 oly.poof(binder, ship)
-assert(oly.loc(ship) == OCEAN, "the ship must be built at sea")
+assert(oly.loc(ship) == GREYFELL, "the ship must be built in Greyfell")
 assert(oly.loc(binder) == ship, "the binder must be aboard the ship")
+assert(oly.loc(GREYFELL) == FOREST, "Greyfell must be in the forest")
+local storm = oly.storm(FOREST, "rain", 6, binder, "storm")
+assert(oly.loc(storm) == FOREST, "the storm must be over the forest")
 
 oly.order(trancer, "trance")
 oly.order(breeder, "breed " .. PEASANT .. " " .. OX)
-oly.order(binder, "use " .. RAIN .. " 3")
-oly.order(binder, "bind " .. STORM)
+oly.order(binder, "bind " .. storm)
 
 oly.save("./lib")
 
 print(string.format("built magic-cast: trancer=%d breeder=%d binder=%d "
-	.. "ship=%d", trancer, breeder, binder, ship))
+	.. "ship=%d storm=%d", trancer, breeder, binder, ship, storm))

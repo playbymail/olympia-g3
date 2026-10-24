@@ -8,31 +8,23 @@
 --   breeder     stays in Greyfell, knows Breed beasts and holds one ox:
 --               breed fails four ways (usage, not an item, don't have any,
 --               don't have two)
---   landlubber  a weather mage poofed to Plain [13450], which is not a safe
---               haven and holds a wind cookie: summons wind, then bind
---               fails (not on a ship)
---   pauper      a weather mage with 4 aura aboard a roundship in Ocean
---               [13351]: summons rain for 3, then bind fails (too little
+--   landlubber  stays in Greyfell, owning a rain storm over Greyfell's forest
+--               [13451] (made by oly.storm): bind fails (not on a ship)
+--   pauper      a mage with 1 aura aboard a roundship in Greyfell's port,
+--               owning a fog storm over the forest: bind fails (too little
 --               aura)
---
--- Nothing in oly makes a storm, so both storms are summoned in the turn and
--- their ids are read from a run.
 --
 -- Rejected: trance, breed and bind are for nobles (c), so the player
 -- entity's orders are refused.
 
 local oly = require "oly"
 
-local GREYFELL = 57081			-- start city 0
-local PLAIN = 13450			-- holds a wind cookie, not a safe haven
-local OCEAN = 13351			-- north of Greyfell's forest, holds a rain cookie
+local GREYFELL = 57081			-- start city 0, a port
+local FOREST = 13451			-- Greyfell's province: a rain and a fog cookie
 local PEASANT, OX = 10, 76		-- items
 local BEAST, BREED = 650, 654		-- skills: Beastmastery, Breed beasts
 local MAGIC, WEATHER = 800, 820		-- skills: Magic, Weather magic
 local BIND = 822			-- skill: Bind storm to ship
-local WIND, RAIN = 824, 825		-- skills: Summon wind, Summon rain
-local GALE = 122602			-- the landlubber's storm (read from a run)
-local SHOWER = 103520		-- the pauper's storm (read from a run)
 
 oly.load("./lib")
 oly.extract_startlocs()
@@ -59,21 +51,20 @@ oly.know(breeder, BEAST)
 oly.know(breeder, BREED)
 oly.additem(breeder, OX, 1)
 
--- each magic skill learned adds one aura: 4 apiece
-for _, sk in ipairs{ MAGIC, WEATHER, BIND, WIND } do
+-- each magic skill learned adds one aura: 3 for the landlubber, 1 for the
+-- pauper, short of the 3 that bind costs
+for _, sk in ipairs{ MAGIC, WEATHER, BIND } do
 	oly.know(landlubber, sk)
 end
-oly.poof(landlubber, PLAIN)
-assert(oly.loc(landlubber) == PLAIN, "the landlubber must be in Plain")
+local gale = oly.storm(FOREST, "rain", 6, landlubber, "gale")
 
-for _, sk in ipairs{ MAGIC, WEATHER, BIND, RAIN } do
-	oly.know(pauper, sk)
-end
-oly.poof(pauper, OCEAN)
+oly.know(pauper, BIND)
 local ship = oly.makeloc(pauper, "roundship", "ship")
 oly.poof(pauper, ship)
-assert(oly.loc(ship) == OCEAN, "the ship must be built at sea")
+assert(oly.loc(ship) == GREYFELL, "the ship must be built in Greyfell")
 assert(oly.loc(pauper) == ship, "the pauper must be aboard the ship")
+assert(oly.loc(GREYFELL) == FOREST, "Greyfell must be in the forest")
+local shower = oly.storm(FOREST, "fog", 6, pauper, "shower")
 
 oly.order(bungler, "trance")
 oly.order(bungler, "breed " .. PEASANT .. " " .. OX)
@@ -82,10 +73,8 @@ oly.order(breeder, "breed " .. PEASANT)
 oly.order(breeder, "breed " .. GREYFELL .. " " .. PEASANT)
 oly.order(breeder, "breed " .. PEASANT .. " 51")	-- no wild horse
 oly.order(breeder, "breed " .. OX .. " " .. OX)
-oly.order(landlubber, "use " .. WIND .. " 3")
-oly.order(landlubber, "bind " .. GALE)
-oly.order(pauper, "use " .. RAIN .. " 3")
-oly.order(pauper, "bind " .. SHOWER)
+oly.order(landlubber, "bind " .. gale)
+oly.order(pauper, "bind " .. shower)
 for _, o in ipairs{ "trance", "breed " .. PEASANT .. " " .. OX,
 		"bind " .. GREYFELL } do
 	oly.order(bunglers.player, o)
@@ -94,5 +83,5 @@ end
 oly.save("./lib")
 
 print(string.format("built magic-refused: player=%d bungler=%d breeder=%d "
-	.. "landlubber=%d pauper=%d ship=%d", bunglers.player, bungler,
-	breeder, landlubber, pauper, ship))
+	.. "landlubber=%d pauper=%d ship=%d gale=%d shower=%d", bunglers.player,
+	bungler, breeder, landlubber, pauper, ship, gale, shower))

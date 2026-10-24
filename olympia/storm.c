@@ -276,7 +276,7 @@ move_bound_storms(int ship, int where)
 }
 
 
-static int
+int
 new_storm(int new, int sk, int aura, int where)
 {
 	int before;

@@ -23,7 +23,8 @@
  *  move-ship fixture (issue #120); add_player's `unformed` list for the
  *  inventory-give fixture and the garrison query for inventory-refused
  *  (issue #127); mob for recruitment-raise's rally target (issue #139);
- *  castle_level for construction-refused's level-six improve (issue #162).
+ *  castle_level for construction-refused's level-six improve (issue #162);
+ *  storm for the magic fixtures' bind (issue #170).
  *  Everything else in the design (kill, credit, the
  *  wider query set, the declarative format, RNG bindings) is deferred; a
  *  binding is added when a fixture needs it, not speculatively.
@@ -462,6 +463,78 @@ l_mob(lua_State *L)
 }
 
 /*
+ *  oly.storm(where, "rain"|"wind"|"fog", strength [, owner [, name]])  -> <id>
+ *
+ *  Raise a storm over the province `where`, as a summon spell does
+ *  (d_summon_rain and friends): do_cookie_npc() mints the storm and spends
+ *  where's storm cookie (it comes back when the storm dissipates), then
+ *  new_storm() sets its strength and places it. `owner`, when given and
+ *  nonzero, is recorded as the summoner, so it may bind, direct or dissipate
+ *  the storm, and its faction sees the province, as after a summon. No GM
+ *  verb makes a storm, so this is a path (B) binding, like mob. `name`, when
+ *  given, binds the id in the registry.
+ */
+static int
+l_storm(lua_State *L)
+{
+	int where = (int) luaL_checkinteger(L, 1);
+	const char *sk_s = luaL_checkstring(L, 2);
+	int strength = (int) luaL_checkinteger(L, 3);
+	int owner = (int) luaL_optinteger(L, 4, 0);
+	const char *name = luaL_optstring(L, 5, NULL);
+	int sk, cookie, storm;
+
+	if (strcmp(sk_s, "rain") == 0)
+	{
+		sk = sub_rain;
+		cookie = item_rain_cookie;
+	}
+	else if (strcmp(sk_s, "wind") == 0)
+	{
+		sk = sub_wind;
+		cookie = item_wind_cookie;
+	}
+	else if (strcmp(sk_s, "fog") == 0)
+	{
+		sk = sub_fog;
+		cookie = item_fog_cookie;
+	}
+	else
+		return luaL_error(L, "oly.storm: '%s' not rain, wind or fog",
+				sk_s);
+
+	if (!valid_box(where) || loc_depth(where) != LOC_province)
+		return luaL_error(L, "oly.storm: %d not a province", where);
+
+	if (strength < 1 || strength > 32767)
+		return luaL_error(L, "oly.storm: strength %d not 1-32767",
+				strength);
+
+	if (owner != 0 && kind(owner) != T_char)
+		return luaL_error(L, "oly.storm: %d not a character", owner);
+
+	if (!may_cookie_npc(0, where, cookie))
+		return luaL_error(L, "oly.storm: no %s storm may be raised at %d",
+				sk_s, where);
+
+	storm = do_cookie_npc(owner, where, cookie, where);
+	if (storm <= 0)
+		return luaL_error(L, "oly.storm: could not raise a storm at %d",
+				where);
+
+	new_storm(storm, sk, strength, where);
+
+	if (owner != 0)
+		touch_loc_pl(player(owner), where);
+
+	if (name != NULL)
+		reg_bind(str_save((char *) name), storm);
+
+	lua_pushinteger(L, storm);
+	return 1;
+}
+
+/*
  *  oly.castle_level(castle, level)  -> <level>
  *
  *  Set a finished castle's improvement level (0-6), the castle_lev field a
@@ -682,6 +755,7 @@ static const luaL_Reg oly_funcs[] = {
 	{ "know",		l_know },
 	{ "makeloc",		l_makeloc },
 	{ "mob",		l_mob },
+	{ "storm",		l_storm },
 	{ "castle_level",	l_castle_level },
 	{ "guard",		l_guard },
 	{ "order",		l_order },

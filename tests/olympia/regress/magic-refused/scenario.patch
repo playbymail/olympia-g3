@@ -91,7 +91,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 +
 --- /dev/null
 +++ b/lib/fact/302
-@@ -0,0 +1,46 @@
+@@ -0,0 +1,44 @@
 +302 player pl_regular
 +na Landlubbers
 +il	1 5000 \
@@ -105,7 +105,6 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 + np 18
 + fs 198
 + ft 1
-+ kn 13450 
 + un 8159 
 + uf 9655 6087 6523 7473 3056 
 +
@@ -114,7 +113,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 +il	1 200 \
 +	10 25
 +LI
-+ wh 13450
++ wh 57081
 +CH
 + lo 302
 + he 100
@@ -122,15 +121,14 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 + lr 2
 + sl	800 2 0 0 0 \
 +	820 2 0 0 0 \
-+	822 2 0 0 0 \
-+	824 2 0 0 0
++	822 2 0 0 0
 + bp 50
 + at 80
 + df 80
 +CM
 + im 1
-+ ma 4
-+ ca 4
++ ma 3
++ ca 3
 + kw 1
 +CO
 + li be 7012
@@ -140,7 +138,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 +
 --- /dev/null
 +++ b/lib/fact/303
-@@ -0,0 +1,47 @@
+@@ -0,0 +1,43 @@
 +303 player pl_regular
 +na Paupers
 +il	1 5000 \
@@ -154,7 +152,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 + np 18
 + fs 198
 + ft 1
-+ kn 13351 74301 
++ kn 73052 
 + un 7012 
 + uf 6133 9236 5303 7474 8867 
 +
@@ -163,24 +161,20 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 +il	1 200 \
 +	10 25
 +LI
-+ wh 74301
++ wh 73052
 +CH
 + lo 303
 + he 100
 + lk 2
 + lr 2
-+ sl	800 2 0 0 0 \
-+	820 2 0 0 0 \
-+	822 2 0 0 0 \
-+	825 2 0 0 0
++ sl	822 2 0 0 0
 + bp 50
 + at 80
 + df 80
 +CM
 + im 1
-+ ma 4
-+ ca 4
-+ kw 1
++ ma 1
++ ca 1
 +CO
 + li save
 + ar 0 0 0 0 0 0 0 0
@@ -190,30 +184,27 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 +
 --- a/lib/loc
 +++ b/lib/loc
-@@ -43523,7 +43523,7 @@
- 	276 1
- LI
-  wh 58761
-- hl 67340 
-+ hl 67340 74301 
- LO
-  pd 13251 13352 13451 13350 
-  dg 3
-@@ -44829,7 +44829,7 @@
- 	275 1
+@@ -44841,12 +44841,10 @@
+ 	59 30 \
+ 	277 10 \
+ 	96 150 \
+-	101 1 \
+-	276 1 \
+-	274 1
++	101 1
  LI
   wh 58762
-- hl 73045 74516 
-+ hl 73045 74516 8159 
+- hl 57081 
++ hl 57081 139904 143336 
  LO
-  pd 13350 13451 13550 13449 
-  dg 3
-@@ -261607,7 +261607,7 @@
+  pd 13351 13452 13551 13450 
+  dg 4
+@@ -261607,7 +261605,7 @@
  	1 77 25 7 0 0 0 0
  LI
   wh 13451
 - hl 77708 
-+ hl 8651 4126 77708 
++ hl 8159 8651 4126 77708 73052 
  SL
   te 600 610 680 700 730 800 860 
   sh 1
@@ -383,14 +374,44 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  9676	2.64	fact/207	
  9685	2.64	fact/207	
  9714	2.64	fact/207	
-@@ -34344,6 +34372,7 @@
- 74298	3.9	loc		
- 74299	3.15	loc		
- 74300	3.21	loc		
-+74301	9.31	ship		
- 74312	3.22	loc		Cursed Pits
- 74316	3.9	loc		
- 74317	3.18	loc		Old battlefield
+@@ -33746,6 +33774,7 @@
+ 73045	3.13	loc		
+ 73047	3.13	loc		
+ 73048	3.9	loc		
++73052	9.31	ship		
+ 73056	3.25	loc		
+ 73059	3.26	loc		
+ 73060	3.16	loc		
+@@ -36997,3 +37026,5 @@
+ 78915	7.0	misc	Secret pass
+ 78962	7.0	misc	Secret pass
+ 78982	7.0	misc	Old road
++139904	11.59	misc	
++143336	11.57	misc	
+--- a/lib/misc
++++ b/lib/misc
+@@ -22,3 +22,21 @@
+ 
+ 942 lore 0
+ 
++139904 storm rain
++LI
++ wh 13451
++MI
++ sb 8159
++ ss 6
++ mh 13451
++ co 276
++
++143336 storm fog
++LI
++ wh 13451
++MI
++ sb 7012
++ ss 6
++ mh 13451
++ co 274
++
 --- /dev/null
 +++ b/lib/orders/300
 @@ -0,0 +1,6 @@
@@ -409,20 +430,18 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 +8651:breed 76 76
 --- /dev/null
 +++ b/lib/orders/302
-@@ -0,0 +1,2 @@
-+8159:use 824 3
-+8159:bind 122602
+@@ -0,0 +1 @@
++8159:bind 139904
 --- /dev/null
 +++ b/lib/orders/303
-@@ -0,0 +1,2 @@
-+7012:use 825 3
-+7012:bind 103520
+@@ -0,0 +1 @@
++7012:bind 143336
 --- a/lib/ship
 +++ b/lib/ship
 @@ -0,0 +1,5 @@
-+74301 ship roundship
++73052 ship roundship
 +LI
-+ wh 13351
++ wh 57081
 + hl 7012 
 +
 --- a/lib/times_0

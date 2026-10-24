@@ -634,6 +634,20 @@ is a path (B) binding that writes `castle_lev` directly. It sets only the
 level, not the 5 defense per level that `d_improve` adds.
 `construction-refused` uses it to reach `improve`'s level-six fail.
 
+**Since landed (#170):** `oly.storm(where, "rain"|"wind"|"fog", strength
+[, owner [, name]])` raises a storm over the province `where` and returns its
+id (optionally bound in the registry). Like `oly.mob` it is a path (B)
+binding through `do_cookie_npc`: it spends `where`'s storm cookie, which comes
+back when the storm dissipates, and then `new_storm` (now exported from
+`storm.c`) sets the strength. A nonzero `owner` is recorded as the summoner,
+so that character can `bind`, direct or dissipate the storm, and its faction
+sees the province, as after a summon spell. It errors where
+`may_cookie_npc` refuses the storm (wrong terrain or no cookie left), or
+when `where` isn't a province, the strength is outside 1–32767, or `owner`
+isn't a character. The only difference from a summon in the turn is
+`npc_created`: the build runs at turn 0. `magic-cast` and `magic-refused`
+use it, so their storm ids no longer have to be read from a run.
+
 **Explicitly deferred:** `kill`, `credit`, the full query set
 (`here`/`all`/`chars_here`/`knows`), the declarative format, RNG bindings, and
 any production-engine integration. Path (B) direct-handler calls are deferred
