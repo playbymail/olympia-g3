@@ -318,5 +318,6 @@ and nothing fails:
 
 The `move`/`wait` rows are NPC and savage orders. Every other verb, and every
 `rejected`/`fail` path, is unexercised: that list is the fixture backlog ahead of
-the Go port.
+the Go port, tracked per verb and outcome in
+[`tests/ultron/backlog.tsv`](../tests/ultron/README.md).
 

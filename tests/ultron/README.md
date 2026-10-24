@@ -1,0 +1,93 @@
+# Ultron fixture backlog
+
+`backlog.tsv` lists every command the engine dispatches, together with the
+fixture that exercises each outcome of it. It is the fixture to-do list ahead of
+the Go port: the golden output is the only spec a port can be checked against,
+and a verb or outcome without a fixture is behavior the port can get wrong
+without anyone noticing. The baseline it starts from is in
+[doc/ultron-harness-architecture.md §7.1](../../doc/ultron-harness-architecture.md#71-coverage-hook--landed):
+only 4 of 147 verbs fire, and none is ever rejected or fails.
+
+`./check.sh` keeps the list honest. It prints `YES` when every `cmd_tbl` verb in
+`olympia/glob.c` has exactly one row, and every fixture a cell names exists.
+
+## Format
+
+Tab-separated, one row per `cmd_tbl` verb, grouped by family:
+
+| Column | Meaning |
+|---|---|
+| `verb` | the `cmd_tbl` name, matching the `verb` column of `coverage.tsv` |
+| `family` | the system the verb belongs to (see [Families](#families)) |
+| `allow` | the `cmd_tbl` allow string: who may issue it |
+| `alias_of` | the earlier verb that shares its `start` function, if any |
+| `ok` | fixture where `start` returns TRUE |
+| `rejected` | fixture where `check_allow()` refuses it |
+| `fail` | fixture where `start` returns FALSE |
+
+The three outcome columns match the `coverage.tsv` columns of the same name. Each
+holds one of:
+
+- `todo`: not exercised by any fixture yet.
+- `golden`: exercised by the main golden turn (`tests/olympia/golden`).
+- a fixture name: the directory under `tests/olympia/regress/` that exercises it.
+- `n/a`: not part of the player order path, so no fixture is wanted. These are
+  the `gm-immediate` verbs (immediate mode only, which skips `check_allow()`) and
+  the order-file `directive` rows (`begin`, `unit`, … consumed by the order
+  loader, with no `start` function).
+
+`coverage.tsv`'s `unimplemented` column has no backlog column: every verb with
+an `n/a` row is either never dispatched in a turn or has no `start`, and every
+other verb has one.
+
+## Working through it
+
+1. **Pick a `todo` cell.** Prefer rows with an empty `alias_of`: an alias runs
+   the same `start` as its target, so it adds little once the target is covered.
+   Within that, prefer `ok` before `rejected`/`fail`, and families with the most
+   `todo` cells.
+2. **Build a fixture** under `tests/olympia/regress/<name>/`, following
+   `guard-pillage` and `trade-routes`: a GM-built scenario (`build-scenario.sh` or
+   an `olyscript-g3` `.lua`), the player order files, a `scenario.tgz`, and a
+   `check.sh` that runs one `-r -S` turn and compares a hashed manifest with
+   `EXPECT.sha256`. The orders under test go in plain order files and through the
+   normal turn, never through immediate mode.
+3. **Prove the cell.** Run the fixture's turn with `--coverage <path>` and confirm
+   the target verb has a nonzero count in the target column. One fixture can
+   clear several cells; record it in each.
+4. **Record it.** Replace `todo` with the fixture name, run `./check.sh`, and land
+   the fixture and the backlog update in the same PR.
+
+A cell whose outcome turns out to be unreachable (the way the #4 guard-dedup
+branch was) becomes `n/a`, with the reason in the fixture's or the PR's notes.
+
+## Families
+
+The grouping is a first proposal for the vision doc's verb→system map
+(open question 2 in the harness doc), and can be refined:
+
+| Family | Verbs |
+|---|---|
+| movement | go, move, the compass verbs, enter/exit/in/out, fly, sail, board, unload, ferry |
+| combat | attack, behind, guard, pillage, surrender, execute, raze |
+| attitude | admit, contact, defend, default, hostile, neutral |
+| loyalty | swear, oath, pledge, honor/honour |
+| social | bribe, incite, terrorize |
+| stacking | stack, unstack, promote |
+| inventory | give, get/take, discard/drop, claim, reclaim, pay, accept |
+| trade | buy, sell, fee |
+| governance | decree, garrison, ungarrison |
+| construction | build, improve, repair |
+| production | make, quarry/stone, wood, yew, fish, catch, mallorn, opium, collect |
+| recruitment | recruit, train, form, raise, rally |
+| skills | study, research, forget, use |
+| magic | trance, bind, breed |
+| stealth | hide, sneak, torture |
+| exploration | explore, quest, seek, plugh, xyzzy |
+| player | faction and report settings, plus stop, wait, die, quit |
+| gm | credit, emote, relore (the GM player during a turn) |
+| gm-immediate | immediate-mode GM tools (`n/a`) |
+| directive | order-file directives (`n/a`) |
+
+`use` is a single verb but dispatches every usable skill and item, so its `ok`
+cell is only the start: per-skill coverage of `use` is a later refinement.

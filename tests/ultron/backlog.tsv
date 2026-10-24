@@ -1,0 +1,148 @@
+verb	family	allow	alias_of	ok	rejected	fail
+board	movement	c		todo	todo	todo
+e	movement	cr	east	todo	todo	todo
+east	movement	cr		todo	todo	todo
+enter	movement	cr		todo	todo	todo
+exit	movement	cr		todo	todo	todo
+ferry	movement	c		todo	todo	todo
+fly	movement	c		todo	todo	todo
+go	movement	cr		todo	todo	todo
+in	movement	cr	enter	todo	todo	todo
+move	movement	cr	go	golden	todo	todo
+n	movement	cr	north	todo	todo	todo
+north	movement	cr		todo	todo	todo
+out	movement	cr	exit	todo	todo	todo
+s	movement	cr		todo	todo	todo
+sail	movement	c		todo	todo	todo
+south	movement	cr	s	todo	todo	todo
+unload	movement	c		todo	todo	todo
+w	movement	cr	west	todo	todo	todo
+west	movement	cr		todo	todo	todo
+attack	combat	cr		todo	todo	todo
+behind	combat	cr		todo	todo	todo
+execute	combat	cr		todo	todo	todo
+guard	combat	c		todo	todo	todo
+pillage	combat	cr		guard-pillage	todo	todo
+raze	combat	cr		todo	todo	todo
+surrender	combat	c		todo	todo	todo
+admit	attitude	cpr		todo	todo	todo
+contact	attitude	cr		todo	todo	todo
+default	attitude	cpr		todo	todo	todo
+defend	attitude	cpr		todo	todo	todo
+hostile	attitude	cpr		todo	todo	todo
+neutral	attitude	cpr		todo	todo	todo
+honor	loyalty	c		todo	todo	todo
+honour	loyalty	c	honor	todo	todo	todo
+oath	loyalty	c		todo	todo	todo
+pledge	loyalty	c		todo	todo	todo
+swear	loyalty	c		todo	todo	todo
+bribe	social	c		todo	todo	todo
+incite	social	c		todo	todo	todo
+terrorize	social	cr		todo	todo	todo
+promote	stacking	cr		todo	todo	todo
+stack	stacking	cr		todo	todo	todo
+unstack	stacking	cr		todo	todo	todo
+accept	inventory	cpr		todo	todo	todo
+claim	inventory	c		todo	todo	todo
+discard	inventory	c		todo	todo	todo
+drop	inventory	cr	discard	todo	todo	todo
+get	inventory	cr		todo	todo	todo
+give	inventory	cr		todo	todo	todo
+pay	inventory	cr		todo	todo	todo
+reclaim	inventory	c		todo	todo	todo
+take	inventory	cr	get	todo	todo	todo
+buy	trade	c		todo	todo	todo
+fee	trade	c		todo	todo	todo
+sell	trade	c		todo	todo	todo
+decree	governance	c		todo	todo	todo
+garrison	governance	c		todo	todo	todo
+ungarrison	governance	c		todo	todo	todo
+build	construction	c		todo	todo	todo
+improve	construction	c		todo	todo	todo
+repair	construction	c		todo	todo	todo
+catch	production	c		todo	todo	todo
+collect	production	c		todo	todo	todo
+fish	production	c		todo	todo	todo
+make	production	c		todo	todo	todo
+mallorn	production	c		todo	todo	todo
+opium	production	c		todo	todo	todo
+quarry	production	c		todo	todo	todo
+stone	production	c	quarry	todo	todo	todo
+wood	production	c		todo	todo	todo
+yew	production	c		todo	todo	todo
+form	recruitment	c		todo	todo	todo
+raise	recruitment	c		todo	todo	todo
+rally	recruitment	c		todo	todo	todo
+recruit	recruitment	c		todo	todo	todo
+train	recruitment	c	make	todo	todo	todo
+forget	skills	c		todo	todo	todo
+research	skills	c		todo	todo	todo
+study	skills	c		todo	todo	todo
+use	skills	c		trade-routes	todo	todo
+bind	magic	c		todo	todo	todo
+breed	magic	c		todo	todo	todo
+trance	magic	c		todo	todo	todo
+hide	stealth	c		todo	todo	todo
+sneak	stealth	c		todo	todo	todo
+torture	stealth	c		todo	todo	todo
+explore	exploration	c		todo	todo	todo
+plugh	exploration	cr		todo	todo	todo
+quest	exploration	c		todo	todo	todo
+seek	exploration	cr		todo	todo	todo
+xyzzy	exploration	cr		todo	todo	todo
+banner	player	cr		todo	todo	todo
+die	player	c		todo	todo	todo
+flag	player	cr		todo	todo	todo
+format	player	cp		todo	todo	todo
+message	player	cp		todo	todo	todo
+name	player	cpr		todo	todo	todo
+notab	player	cp		todo	todo	todo
+post	player	c		todo	todo	todo
+press	player	cp		todo	todo	todo
+public	player	cp		todo	todo	todo
+quit	player	p		todo	todo	todo
+realname	player	cpr		todo	todo	todo
+rumor	player	cp		todo	todo	todo
+split	player	cp		todo	todo	todo
+stop	player	cpr		todo	todo	todo
+times	player	cp		todo	todo	todo
+wait	player	crm		golden	todo	todo
+credit	gm	m		todo	todo	todo
+emote	gm	m		todo	todo	todo
+relore	gm	m		todo	todo	todo
+additem	gm-immediate	i		n/a	n/a	n/a
+be	gm-immediate	i		n/a	n/a	n/a
+ct	gm-immediate	i		n/a	n/a	n/a
+dump	gm-immediate	i		n/a	n/a	n/a
+fix	gm-immediate	i		n/a	n/a	n/a
+fix2	gm-immediate	i		n/a	n/a	n/a
+h	gm-immediate	i		n/a	n/a	n/a
+i	gm-immediate	i		n/a	n/a	n/a
+kill	gm-immediate	i		n/a	n/a	n/a
+know	gm-immediate	i		n/a	n/a	n/a
+l	gm-immediate	i	look	n/a	n/a	n/a
+look	gm-immediate	i		n/a	n/a	n/a
+los	gm-immediate	i		n/a	n/a	n/a
+makeloc	gm-immediate	i		n/a	n/a	n/a
+poof	gm-immediate	i		n/a	n/a	n/a
+postproc	gm-immediate	i		n/a	n/a	n/a
+remail	gm-immediate	i		n/a	n/a	n/a
+save	gm-immediate	i		n/a	n/a	n/a
+seeall	gm-immediate	i		n/a	n/a	n/a
+seed	gm-immediate	i		n/a	n/a	n/a
+seedmarket	gm-immediate	i		n/a	n/a	n/a
+sheet	gm-immediate	i		n/a	n/a	n/a
+sk	gm-immediate	i		n/a	n/a	n/a
+subitem	gm-immediate	i		n/a	n/a	n/a
+tp	gm-immediate	i		n/a	n/a	n/a
+begin	directive			n/a	n/a	n/a
+email	directive			n/a	n/a	n/a
+end	directive			n/a	n/a	n/a
+flush	directive			n/a	n/a	n/a
+lore	directive			n/a	n/a	n/a
+passwd	directive			n/a	n/a	n/a
+password	directive			n/a	n/a	n/a
+players	directive			n/a	n/a	n/a
+resend	directive			n/a	n/a	n/a
+unit	directive			n/a	n/a	n/a
+vis_email	directive			n/a	n/a	n/a
