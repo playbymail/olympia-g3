@@ -1,0 +1,30 @@
+# The Ultron fixture backlog
+
+> Split out of [CLAUDE.md](../../CLAUDE.md). Read this when you add or change a regress fixture, work a `tests/ultron/backlog.tsv` cell, or touch the Ultron harness (`--coverage`, `--state-export`, the Chaos Goblin, `loop.py`).
+
+## The backlog (ahead of the Go port)
+
+The work left before the Go port is **fixture coverage**. The golden output is the
+only spec a port can be checked against, so a verb or outcome without a fixture is
+behavior the port can get wrong without anyone noticing. The to-do list is
+[`tests/ultron/backlog.tsv`](../../tests/ultron/README.md): one row per `cmd_tbl` verb,
+with the fixture that exercises each outcome (`ok` / `rejected` / `fail`) or
+`todo`. The work is split into one child issue per verb family under the parent
+**#116**. The movement family (#117) is covered by `move-go`, `move-land` and
+`move-ship`. No `rejected`/`fail` cell is covered yet.
+
+The harness to work through it is in place
+([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):
+the `do_command` coverage hook and `--coverage` dump (#98, #100), the
+`--state-export` JSON snapshot (#104), the Chaos Goblin brain (#105, #110), and the
+`tests/ultron/loop.py` driver that freezes crashes as fixtures (#106). New fixtures
+go under `tests/olympia/regress/<name>/`, following guard-pillage and the move-*
+fixtures. A one-turn fixture commits a plain-text `scenario.patch` over the shared
+base world `tests/olympia/fixtures/world.tgz` (#121; see
+[tests/olympia/fixtures/README.md](../../tests/olympia/fixtures/README.md)), not a full
+`scenario.tgz`. Land each fixture with its backlog update, and keep
+`tests/ultron/check.sh` printing `YES`. Two known gaps beyond the per-verb table:
+`use` dispatches every usable skill and item, so its single `ok` cell says little,
+and the hook does not see the non-command turn phases (NPC/savage movement,
+weather, upkeep, region spawns, month-end) listed in
+[doc/turn-execution-order.md](../turn-execution-order.md).

@@ -10,11 +10,22 @@ ancestor of the TAG engine. This repo is a standalone extraction of G3 from the
 original multi-engine monorepo; it builds on its own with CMake.
 
 The code is legacy C originally targeting **32-bit** systems. The C11/64-bit
-modernization warning ladder is **complete** (see [Modernization
-status](#modernization-status)); the full phase-by-phase record and the
-[warning policy](BUILD_HISTORY.md#warning-policy) live in
-[BUILD_HISTORY.md](BUILD_HISTORY.md) — **read it before changing build flags or
-touching prototypes/headers.**
+modernization and the 32→64-bit list refactor are **complete**; the forward
+track is fixture coverage ahead of the Go port.
+
+## Read only what your task needs
+
+This file holds what every task needs. Task-specific detail lives in
+[`doc/claude/`](doc/claude/); open a file when its trigger applies.
+
+| Read | When you |
+|---|---|
+| [doc/claude/build.md](doc/claude/build.md) | change build flags, `CMakeLists.txt`, presets, prototypes or headers; triage a new compiler warning; need the modernization phase table or the deferred-bug record |
+| [doc/claude/testing.md](doc/claude/testing.md) | need more than the two standing gates below: what the golden manifest covers, re-baselining, the per-subsystem regress gates |
+| [doc/claude/ultron-fixtures.md](doc/claude/ultron-fixtures.md) | add or change a regress fixture, work a `tests/ultron/backlog.tsv` cell, or touch the Ultron harness |
+| [doc/claude/rng-streams.md](doc/claude/rng-streams.md) | add, move or remove a random draw; touch `lib/rng.{c,h}` or a `begin_*()` stream; need to know why a change did or did not re-baseline a golden tree |
+| [BUILD_HISTORY.md](BUILD_HISTORY.md) | change build flags, prototypes or headers (**required**; it has the [warning policy](BUILD_HISTORY.md#warning-policy)) |
+| [doc/turn-execution-order.md](doc/turn-execution-order.md) | need the order the turn's phases run in |
 
 ## Build
 
@@ -26,21 +37,10 @@ cmake --build --preset debug
 # Binaries: build/debug/{olympia-g3,mapgen-g3,island-g3}
 ```
 
-Presets (`CMakePresets.json`): `debug` (default), `release`, `asan-ubsan`.
-The `asan-ubsan` preset sets `OLYMPIA_SANITIZE=ON` with address+undefined on
-**all three** targets.
-
-There are **three** targets (one more than G1/G2): `olympia-g3` (engine),
-`mapgen-g3` (map generator), and `island-g3` (island generator —
-`mapgen/island.c` + `mapgen/rnd.c`).
-
-### 32-bit build (Linux only — for regenerating golden files)
-
-```bash
-mkdir build32 && cd build32
-cmake -DBUILD_32BIT=ON ..   # requires gcc-multilib
-cmake --build .
-```
+Presets: `debug` (default), `release`, `asan-ubsan`. Three targets: `olympia-g3`
+(engine), `mapgen-g3` (map generator), `island-g3` (island generator). Details,
+the 32-bit build and the compiler-flag rules are in
+[doc/claude/build.md](doc/claude/build.md).
 
 ## Test — golden snapshots (must stay green)
 
@@ -68,15 +68,9 @@ OLYMPIA_PRESET=asan-ubsan ./run/olympia-g3.sh
 OLYMPIA_PRESET=asan-ubsan ./tests/olympia/golden_check.sh   # YES, zero diagnostics
 ```
 
-> **The olympia golden gate.** `tests/olympia/golden_check.sh` (adapted from G2)
-> gates the post-turn DB in `run/olympia/lib` as a sorted sha256 **manifest**
-> (`tests/olympia/golden/manifest.sha256`). Run `./run/olympia-g3.sh` (a full
-> `-r -S` turn) first, then `golden_check.sh` (prints `YES`); re-baseline with
-> `--update`. It is date-independent (the `test-use-const-report-date` flag — see
-> BUILD_HISTORY.md). G3 output is **deterministic across clean rebuilds**, so the
-> gate has **no flaky-file holdout**. `tests/mapgen/golden` is a **stale 32-bit
-> baseline** — *not* the gate; the mapgen check is
-> `tests/mapgen/regress/secret-sea-route/check.sh`.
+The gate is a sorted sha256 manifest of the post-turn DB; re-baseline with
+`golden_check.sh --update`, only for a deliberate output change. Per-subsystem
+gates: [doc/claude/testing.md](doc/claude/testing.md).
 
 ## Layout
 
@@ -87,7 +81,8 @@ OLYMPIA_PRESET=asan-ubsan ./tests/olympia/golden_check.sh   # YES, zero diagnost
 - `tests/` — golden fixtures (and the stale mapgen baseline)
 - `run/` — run/test driver scripts and scratch run dirs
 - `doc/` — assorted G3 design/reference notes, plus the modernization playbook
-  and `phase4-tools/`
+  and `phase4-tools/`; `doc/claude/` holds the task-specific agent guidance
+  indexed above
 - `BUILD_HISTORY.md` — the full phase-by-phase modernization record + warning
   policy
 
@@ -99,20 +94,10 @@ OLYMPIA_PRESET=asan-ubsan ./tests/olympia/golden_check.sh   # YES, zero diagnost
   must be deliberate and the snapshot updated in the same change with a note on
   why. Modernization changes (prototypes, casts, dead-code removal) must produce
   byte-identical golden output.
-- Build config lives in `CMakeLists.txt`. All compiler flags live in **one
-  shared helper**, `olympia_compile_flags(tgt)`, applied identically to all three
-  targets — `(island-g3)`, `(mapgen-g3)`, `(olympia-g3)`. The helper carries the
-  `-Wno-*` suppressions plus the enforced `-Wfoo -Werror=foo` pairs (one pair per
-  line, `# Phase N` comments). Optimization/debug (`-O`/`-g`) is owned by
-  `CMAKE_BUILD_TYPE` / the presets, **not** the helper.
-  `olympia_enable_sanitizers()` is called on all three targets. **Before changing
-  any of this, read [BUILD_HISTORY.md](BUILD_HISTORY.md) and its
-  [warning policy](BUILD_HISTORY.md#warning-policy).**
-- **C11 standard** is set project-wide (`CMAKE_C_STANDARD 11` / `…_REQUIRED ON` /
-  `CMAKE_C_EXTENSIONS OFF`) and declared per target via
-  `target_compile_features(<tgt> PRIVATE c_std_11)`. The per-target call is
-  documentation/intent only (inert — the global standard already forces
-  `-std=c11`); it guards against divergence if new targets are added.
+- All compiler flags live in one CMake helper, `olympia_compile_flags(tgt)`,
+  applied to all three targets. **Read
+  [doc/claude/build.md](doc/claude/build.md) and
+  [BUILD_HISTORY.md](BUILD_HISTORY.md) before changing it.**
 - **No CI.** Both golden gates are run locally (maintainer decision); warning
   enforcement is not wired into CI.
 
@@ -132,368 +117,3 @@ direct-to-`main` as of the #25 groundwork). Conventions:
 - **Squash-merge** to keep `main` linear. The squashed commit keeps the
   `type(scope): subject (#NN)` subject and the
   `Co-Authored-By: Claude Opus <noreply@anthropic.com>` trailer.
-
-## Modernization status
-
-The C11/64-bit modernization ran as a phased warning ladder and is **complete**.
-Every targeted warning class is enforced as `-Werror` via
-`olympia_compile_flags()` in `CMakeLists.txt` (applied to all three targets:
-`olympia-g3`, `mapgen-g3`, `island-g3`), and the golden flow runs clean under
-AddressSanitizer + UndefinedBehaviorSanitizer. The per-phase scaffolding has been
-removed. The 32→64-bit refactoring the ladder cleared the way for (converting
-the entity lists to work on 64-bit, issues #1/#2) is also **complete**; the
-forward track is test coverage ahead of the Go port.
-
-Enforced classes (all `-Werror`):
-
-| Phase | Scope |
-|-------|-------|
-| 1 | `int-to-pointer-cast`, `pointer-to-int-cast` |
-| 2 | `incompatible-pointer-types` |
-| 3 | `int-conversion` |
-| 3.5 | removed dead/unused source files |
-| 4 | `strict-prototypes`, `missing-prototypes`, `implicit-function-declaration` |
-| 5 | `missing-declarations` + sanitizers verified against the golden flow |
-| 6 | `shorten-64-to-32` (Clang-guarded) + `sizeof-pointer-memaccess` |
-| 7 | `sign-conversion` |
-| 8 | `return-type` + `return-mismatch` |
-| 9 | `format` / vararg checking, full class incl. non-literal sites (project-wide; #20) |
-| 10 | `implicit-int-conversion` (Clang-guarded, code-quality — not a 64-bit hazard) |
-
-Also locked in: flag consolidation into `olympia_compile_flags()` with the dead
-scaffolding removed (#12), sanitizers wired across all three targets (#13), and a
-deterministic newsletter date for reproducible goldens.
-
-**Before changing build flags, prototypes, or headers, read
-[BUILD_HISTORY.md](BUILD_HISTORY.md)** — it has the full phase-by-phase record,
-the traps each class hid (and the G3-specific divergences: the MD5 RNG, the third
-`island-g3` target, the HTML-report/tunnel/`add.c` feature code), the rationale
-behind every locked-in flag, and the
-[warning policy](BUILD_HISTORY.md#warning-policy) for triaging new warnings.
-
-### Known bugs deferred past the 64-bit effort
-
-Post-modernization tracks, intentionally **not** part of the phase ladder (full
-detail in [BUILD_HISTORY.md](BUILD_HISTORY.md#known-bugs-deferred-past-the-64-bit-effort)).
-
-All cleared: **#4** (combat guard-check pointer/int compare) is fixed with a
-proper `->unit` membership scan; **#19** (mapgen allocator) and **#20**
-(non-literal format strings) are resolved. The #4 branch turned out to be
-**unreachable** through its only caller — `attack_guard_units` builds `l_a` with
-`add_allies = FALSE` (pillager's stack only) while guards are found via
-`loop_here(province)` (province-direct only), so a guard can never be in both.
-An A/B build (fixed vs buggy) yields a byte-identical battle report, so the fix
-is correct-on-principle hardening of dead code and **no black-box fixture can
-pin it** (write-up in
-[tests/olympia/regress/guard-pillage/README.md](tests/olympia/regress/guard-pillage/README.md)).
-
-### Next track: the Ultron fixture backlog (ahead of the Go port)
-
-The work left before the Go port is **fixture coverage**. The golden output is the
-only spec a port can be checked against, so a verb or outcome without a fixture is
-behavior the port can get wrong without anyone noticing. The to-do list is
-[`tests/ultron/backlog.tsv`](tests/ultron/README.md): one row per `cmd_tbl` verb,
-with the fixture that exercises each outcome (`ok` / `rejected` / `fail`) or
-`todo`. The work is split into one child issue per verb family under the parent
-**#116**. The movement family (#117) is covered by `move-go`, `move-land` and
-`move-ship`. No `rejected`/`fail` cell is covered yet.
-
-The harness to work through it is in place
-([doc/ultron-harness-architecture.md §7](doc/ultron-harness-architecture.md#7-first-cut-scope-proposed)):
-the `do_command` coverage hook and `--coverage` dump (#98, #100), the
-`--state-export` JSON snapshot (#104), the Chaos Goblin brain (#105, #110), and the
-`tests/ultron/loop.py` driver that freezes crashes as fixtures (#106). New fixtures
-go under `tests/olympia/regress/<name>/`, following guard-pillage and the move-*
-fixtures. A one-turn fixture commits a plain-text `scenario.patch` over the shared
-base world `tests/olympia/fixtures/world.tgz` (#121; see
-[tests/olympia/fixtures/README.md](tests/olympia/fixtures/README.md)), not a full
-`scenario.tgz`. Land each fixture with its backlog update, and keep
-`tests/ultron/check.sh` printing `YES`. Two known gaps beyond the per-verb table:
-`use` dispatches every usable skill and item, so its single `ok` cell says little,
-and the hook does not see the non-command turn phases (NPC/savage movement,
-weather, upkeep, region spawns, month-end) listed in
-[doc/turn-execution-order.md](doc/turn-execution-order.md).
-
-### Ultron groundwork (#25 — ✅ COMPLETE)
-
-The [Project Ultron](doc/agentic-project-ultron.md) test-coverage initiative was
-gated by **#25 — RNG-state granularity**.
-**#25 is now complete**: the engine no longer draws from the process-global serial
-stream for any gameplay or world-build randomness — every subsystem reseeds its own
-addressable stream off the turn root, so a reordered/added draw no longer re-bakes
-the whole manifest, unblocking the small per-subsystem fixtures Ultron needs. The
-global `rnd()` (`lib/rnd.c` / `olympia/rnd.c`) survives only as the low-level MD5
-primitive the `rng` layer is built on, and a standing audit gate in
-`tests/rng/check.sh` keeps it that way. The design survey lives in
-[doc/rng-state-granularity.md](doc/rng-state-granularity.md); the addressable seam is
-`lib/rng.{c,h}` (`rng_seed`/`rng_stream_of`/`rng_draw`/`rng_keyed`). For **when** each
-draw fires during a turn — the fixed phase order the driver walks, and which stream
-each draw is on — see [doc/turn-execution-order.md](doc/turn-execution-order.md).
-The follow-up stream ticket **#46** (per-game trade-route buyer secret) landed in
-PR #71.
-
-**#25 is COMPLETE — the engine has ZERO gameplay/world-build draws on the global
-`rnd()`** (it survives only as the low-level MD5 primitive the `rng` layer is built
-on), enforced by a standing audit gate in `tests/rng/check.sh`. The consumers landed
-across the roadmap (1–12) and the endgame (units A–F): combat, pillage,
-economy/market, npc, weather, upkeep, quest, explore, skills (command core), magic
-(command core + `art.c` crafting), worldgen (INIT-time city seeding + dungeon
-generation — the engine's largest draw set, first consumer at INIT, mandatory
-re-baseline of both trees), regions (faery/hades/cloud — INIT build + turn-time
-autonomous, tags `faer`/`hads`/`clud`), and finally **mint** (endgame Unit F —
-the entity-id allocator + add-player draws, a per-turn sequential stream that
-re-baked every id, the biggest re-baseline; closed #25). The endgame units A–E
-(skills/magic residuals, calendar, income, social, entity catch-all) routed the
-remaining one-off draws onto existing or small new per-turn streams. Each consumer
-reseeds a stream off the turn root (`rng_master_seed()` → turn → its own 4-char
-tag) and draws from it instead of the global `rnd()`:
-
-- **combat** — per-battle stream on `(turn, location)`, `begin_battle()`/`crnd()`
-  in `olympia/combat.c` (sequential `rng_draw`).
-- **pillage** — sibling per-pillage stream, `begin_pillage()`/`prnd()`
-  (`combat.c`) plus the mob-name draw in `create_peasant_mob()` (`npc.c`).
-- **economy/market** — `begin_economy()`/`econ_*` (`buy.c`, `seed.c`), keyed leaf
-  draws on `(item, where, purpose)` via `rng_keyed`.
-- **npc** — per-location `npcs` stream, `begin_npc()`/`npc_spawn`/`npc_qty`/
-  `npc_behavior` (`npc.c`, `savage.c`); absorbs the pillage troop-count residual
-  in the shared `do_cookie_npc()`.
-- **weather** — **one per-turn** stream (tag `wthr`), seeded once via the
-  turn-guarded `begin_weather()` (`storm.c`); `wthr_shuffle`/`wthr_storm`/
-  `wthr_wreck` exposed via `proto.h` for `day.c`. Unlike the others it carries a
-  *persistent counter* across the turn because its reached draws are sequential
-  province shuffles (`natural_weather`/`create_some_storms` + the `weather_days`
-  schedule, via the new `ilist_shuffle_rng` in `lib/ilist.c`). Largest
-  manifest-mover yet (~76.7k draws/turn). Acute damage (`ship_coastal_damage`,
-  mine/inn calamities) migrated to keyed `wthr_wreck` but is unreached on the bare
-  map; `storm_decay`/`storm_move` draw nothing (the `"decay"` tag is reserved/
-  unused).
-- **upkeep** — **one per-turn** stream (tag `upkp`), seeded once via the
-  turn-guarded `begin_upkeep()` (`day.c`); keyed-leaf helpers `up_heal`/`up_loyal`/
-  `up_starve`/`up_animal`/`up_corpse` (static in `day.c` — every draw site is
-  there). The per-noble gradual-maintenance draws (healing, loyalty decay,
-  starvation, animal deaths, corpse decay); entity carried in the leaf key (no
-  per-entity chokepoint, like weather). `inn_income` (per-structure income) later
-  folded into this same stream as `up_income` (endgame Unit C); the `daily_events`
-  day-picks moved to their own `caln` calendar stream (endgame Unit B);
-  `temple_income` and the `post_month` decays draw nothing.
-- **quest** — per-quest stream (tag `qest`), but a **fresh per-scenario reseed**
-  (the `begin_battle` model, not turn-guarded) via `begin_quest()`/`qrnd()`
-  exposed through `proto.h` (`quest.c`, `use.c`). The QUEST command generation
-  chain is a sequential ~20-draw run (monster pick, gold/loot switch, artifact
-  assembly, teach-book shuffle via `ilist_shuffle_rng`); keyed on the sublocation
-  (`d_quest`) or the actor (`v_use_bta_skull`) — there is no first-class quest
-  entity. Shared infra on the path (`new_char`/`gen_item`/`create_unique_item`/
-  `new_orb`/`create_npc_token`) stays global; `quest_decay` draws nothing.
-- **explore** — **one per-turn** stream (tag `expl`), seeded once via the
-  turn-guarded `begin_explore()` (`c1.c`); keyed-leaf helpers `expl_find`/
-  `expl_gate`/`expl_flavor`/`expl_pick` (EXPLORE command, `c1.c`) and
-  `expl_seek`/`expl_detect` (SEEK detect, `stealth.c` `d_seek`, exposed via
-  `proto.h`). The upkeep model (keyed leaves, actor in the leaf key `k1`) because
-  the draws are scattered across two files with no per-actor chokepoint and one
-  actor may issue EXPLORE *and* SEEK in a turn. **Boundary decisions:** `tunnel.c`
-  dungeon/subworld generation is **deferred to worldgen (step 11)** — pure
-  world-gen, fires at INIT, no actor, and the engine's largest draw set
-  (~409,727 `rnd()`/build), so migrating it would force a main-manifest +
-  `scenario.tgz` re-baseline for no command-fixture benefit (now landed, see
-  worldgen below); `stealth.c`'s TORTURE/PETTY THIEF are **deferred to skills
-  (step 9)** as skill commands (now landed, below).
-- **skills (command core)** — **one per-turn** stream (tag `skil`), seeded once
-  via the turn-guarded `begin_skills()` (`use.c`, the skill-command hub); the
-  explore model (keyed leaves, actor in the leaf key `k1`) because the draws are
-  scattered across three files (`c2.c`, `use.c`, `stealth.c`) with no per-actor
-  chokepoint. Keyed-leaf helpers `skil_crit`/`skil_bonus` (weapon training, `c2.c`
-  ARCHERY/DEFENSE/SWORDPLAY), static `skil_study`/`skil_research`/
-  `skil_research_pick` (STUDY/RESEARCH, `use.c`), and `skil_torture`/`skil_petty`
-  (TORTURE/PETTY THIEF, `stealth.c`, inherited from explore; exposed via
-  `proto.h`). A **deliberate partial**: only the mundane command-core draws land;
-  the aura/magic-adjacent draws are deferred as named residuals — `basic.c`
-  meditation/heal and `alchem.c` potions to **magic (step 10)** (**now landed**,
-  below), `art.c` artifact/orb/ring crafting to a **post-magic follow-up** (three
-  overlaps incl. a world-init mint risk — the **command** draws **now landed** on
-  magc, below; the shared-infra minters stay deferred), and `produce.c`
-  mining/harvest as an **economy** residual.
-- **magic (command core)** — **one per-turn** stream (tag `magc`), seeded once via
-  the turn-guarded `begin_magic()` (`basic.c`, the core-spell file); the
-  explore/skills model (keyed leaves, actor in the leaf key `k1`) because the
-  player-cast spell draws are scattered across six files (`scry.c`, `relig.c`,
-  `necro.c`, `basic.c`, `alchem.c`, `art.c`) with no per-actor chokepoint. Cross-file
-  keyed-leaf helpers `magc_scry` (scry/locate/unbar gates), `magc_piety` (religion
-  gates), `magc_eat` (necro eat-dead, sub-keyed), `magc_learn` (necro skill
-  transfer), `magc_potion` (alchemy brew/use), and the `art.c` crafting helpers
-  `magc_forge`/`magc_orb`/`magc_ring` (FORGE AURACULUM kind+weight, USE orb, USE
-  suffuse-ring — the post-magic crafting follow-up) exposed via `proto.h`; static
-  `magc_med`/`magc_omen`/`magc_heal` for the `basic.c` meditation/aura + heal
-  spells (the skills-deferred aura half, now landed). A **deliberate partial**:
-  the turn-auto `curse_erode` day-pick (`day.c`) deferred to the calendar stream
-  (now landed as endgame Unit B → `caln`), `necro.c` `auto_undead` defers to **npc**
-  (autonomous behavior, already keyed troop-count rides the `npcs` stream), the
-  `art.c` shared-infra **minters** stay deferred (`new_orb`/`create_npc_token` →
-  **quest** loot, `new_suffuse_ring` → **economy** per-turn restock, which fires
-  ~22–42×/turn), and `cloud.c` to **region:cloud** (**now landed**, below).
-- **worldgen** — tag `wgen`, the **only consumer that fires at INIT** (not during
-  the turn) and the engine's **largest draw set** (~409,733 draws/build). Carries
-  **two draw models on one tag** (the weather precedent): `seed.c`'s non-economy
-  city seeding (prominence/skill/garrison + the per-city tunnel gate) uses
-  **keyed leaves** on a per-turn stream — turn-guarded `begin_worldgen()` +
-  `wgen_prom`/`wgen_skill`/`wgen_garr`/`wgen_gate` (the last exposed via `proto.h`),
-  location in the leaf key because the same city is seeded across three INIT passes
-  (a sequential stream would correlate them); `tunnel.c`'s dungeon/subworld
-  generation uses **fresh per-location sequential streams** —
-  `begin_worldgen_loc(where)` + `wseq_rnd`/`wseq_shuffle` — because a dungeon is an
-  ordered recursive build (un-keyable). **NOT byte-neutral** (the economy profile):
-  both fire at the `-i`/`-s`/`-a` world-init, so it took a **mandatory one-time
-  re-baseline of both trees** — the main manifest (still 204 files, content-only)
-  and the guard-pillage `scenario.tgz` regen + `EXPECT.sha256` (both `check.sh` and
-  `check-lua.sh` agree). No command-fixture benefit; its value is removing the
-  largest draw set from the global stream and completing the INIT-seeding partition.
-- **regions** — three sibling tags `faer`/`hads`/`clud` (`faery.c`, `hades.c`,
-  `cloud.c`, plus the `npc.c` bandit residuals and the `u.c` transcend pick). Like
-  worldgen each carries **two draw models on one tag** (the weather/worldgen
-  precedent), split by reachability: the **INIT world build**
-  (`create_faery`/`create_hades`/`create_cloudlands`, init-guarded in `io.c`) uses a
-  **fresh per-build sequential stream** — `begin_<region>_build(<region>_id)` +
-  `<r>seq_rnd`/`<r>seq_shuffle` (the `tunnel.c` model: ordered terrain/gate/populate
-  generation, un-keyable); the **turn-time autonomous** behavior (`auto_hades`'s
-  nasties, `auto_faery`'s elven hunts, the bandit ambushes, the transcend pick) uses
-  **keyed leaves** on a turn-guarded per-turn stream — `begin_<region>()` +
-  `hads_*`/`faer_*`, the auto-spawn loop slot in the leaf key for the spawns
-  (no entity yet at the where/kind pick) and the actor/location for the bandit/
-  transcend draws (helpers exposed via `proto.h` for `npc.c`/`u.c`). `cloud.c` is
-  build-only. **NOT byte-neutral** (the worldgen profile): the build halves fire at
-  world-init *and* — unlike the brief's expectation — the autonomous halves fire on
-  the bare-map turn too (`auto_hades`/`auto_faery` run every turn: 25 nasty + 15 hunt
-  spawns + 40 ambush-trigger draws). Migrated in **one PR** (all three builds share
-  the same `io.c` INIT block) under a **single deliberate re-baseline of both trees**
-  — main manifest still 204 files (content-only), guard-pillage `scenario.tgz` regen
-  + `EXPECT.sha256` (noble ids moved to pillager 6249 / guard 2002; both `check.sh`
-  and `check-lua.sh` agree). This **resolves the npc-deferred bandit residuals and
-  the magic-deferred `cloud.c`**. The autonomous halves give future fixture
-  addressability (a hades-ambush / faery-bandit fixture); the build halves do not.
-  Smaller re-baseline than worldgen because `tunnel.c`/`seed.c` were already
-  off-stream — only the still-global mint draws (+ saved `randseed`) shifted.
-
-Combat and pillage were **byte-neutral on the main manifest** (the bare-map turn
-runs no combat/pillage); economy, npc, and weather each ran on the standard turn
-(`seed_city_trade` at INIT, `init_savage_attacks` per turn, `daily_events`
-weather every day) and took a deliberate one-time re-baseline. **Upkeep is
-byte-neutral on *both* trees** (the combat/pillage profile): every upkeep draw is
-unreached — the bare map has no player chars and the guard-pillage soldiers are
-inventory items, so its nobles afford maintenance and stay at full health — so it
-took no re-baseline. **Quest is byte-neutral on *both* trees too** (the same
-profile): every quest draw is command-only and neither tree issues a QUEST/USE
-command, and the only world-init quest call (`create_relics`) draws nothing — so
-no re-baseline and no `scenario.tgz` regeneration. **Explore is byte-neutral on
-*both* trees too** (the quest/upkeep profile): every explore draw is command-only,
-neither tree issues an EXPLORE/SEEK command, and none fire at world-init — so no
-re-baseline and no `scenario.tgz` regeneration. **Skills (command core) is
-byte-neutral on *both* trees too** (the same profile): every migrated skill draw
-is command-only, neither tree issues a skill command (weapon training / STUDY /
-RESEARCH / TORTURE / PETTY THIEF), and none fire at world-init (verified
-empirically: 0 draws on the bare-map turn, both guard-pillage twins, and
-`-s`/`-a`/`-i`) — so no re-baseline and no `scenario.tgz` regeneration. **Magic
-(command core) is byte-neutral on *both* trees too** (the same profile): every
-migrated spell draw is command-only, neither tree issues a magic / USE / BREW
-command, and none fire at world-init (verified empirically: 0 draws on the
-bare-map turn, both guard-pillage twins, and `-s`/`-a`/`-i`) — so no re-baseline
-and no `scenario.tgz` regeneration. The **art.c crafting follow-up** (FORGE
-AURACULUM / USE orb / USE suffuse-ring command draws, `magc_forge`/`magc_orb`/
-`magc_ring` on the same `magc` stream) **is byte-neutral on *both* trees too**
-(the same profile): all three command draws are 0 on the bare-map turn, both
-guard-pillage twins, and `-s`/`-a`/`-i` world-init (verified empirically — the
-flagged mint risk did not materialize) — so no re-baseline and no `scenario.tgz`
-regeneration.
-**Worldgen, by contrast, was NOT byte-neutral** (the economy profile): both
-`seed.c`'s INIT city seeding and `tunnel.c`'s dungeon generation fire at the
-`-i`/`-s`/`-a` world-init that `./run/olympia-g3.sh` and `build-scenario.sh` run,
-so removing them from the global serial stream realigned the still-global mint
-draws. It took a **deliberate one-time re-baseline of both trees** in the same PR:
-`golden_check.sh --update` (main manifest, still 204 files — content-only shift)
-and a guard-pillage `scenario.tgz` regen (`build-scenario.sh`) + `EXPECT.sha256`
-re-baseline (`check.sh --update`), with both `check.sh` and `check-lua.sh`
-agreeing. The saved-`randseed` → master-seed coupling that moved the guard-pillage
-tree disappears once **mint** (step 13) lands.
-
-Combat/pillage/npc/weather/upkeep behavior is pinned by its own golden tree,
-[tests/olympia/regress/guard-pillage](tests/olympia/regress/guard-pillage)
-(the **second** standing regress alongside secret-sea-route).
-
-**Endgame — drive gameplay `rnd()` to zero — ✅ DONE (#25 CLOSED).** The twelve
-roadmap subsystems plus endgame units A–F are all landed; the explicit exit
-criterion for #25 was **no gameplay/world-build draw left on the global `rnd()`**
-(it survives only as the low-level MD5 primitive the `rng` layer is built on) — now
-**achieved and gated** (`tests/rng/check.sh`). The ~41 draws were sequenced into
-units A–F (each its own branch + squash PR, surface-scope-first, both golden gates
-green on both presets): **A (LANDED)** skills/magic residuals — `produce.c` mine/harvest →
-`econ_mine`/`econ_harvest`, `necro.c auto_undead` → `npc_behavior`, `art.c`
-minters `new_orb`/`create_npc_token` → `qrnd` and `new_suffuse_ring` → `econ_ring`
-(all onto existing `econ`/`npcs`/`qest`, NO new tag; the per-turn suffuse restock
-forced a 204-file content-only main-manifest re-baseline, guard-pillage byte-neutral;
-`produce.c mage_menial_how` split out to Unit E); **B (LANDED)** the calendar
-day-picks (`curse_erode`/`faery`/`dog_bark` → new `caln` per-turn stream via the
-static `begin_calendar()`/`cal_day(which,…)`, keyed on the pick identity — this
-retired the day-picks' "deliberate permanent residual" framing; fires every turn
-on both trees but 0 at world-init, so EXPECT-only re-baseline — the main manifest
-moved **204→205** as the mint shift adds an `orders/204` residual, guard-pillage
-EXPECT only, no `scenario.tgz` regen); **C (LANDED, bundled with B)** `inn_income`
-(→ folded into `upkp` as `up_income(inn,sub,…)`, no new tag — byte-neutral, no inn
-on either golden tree); **D (LANDED)** the social commands (`swear.c` gift/bribe/
-terrorize/incite/persuade + `beast.c` breeding-accident rolls — 10 draws → new
-`socl` per-turn stream via the turn-guarded `begin_social()` + keyed-leaf helpers,
-actor in the leaf key k1, a distinct purpose tag per command; the cross-file
-skills/magic model — `begin_social()` + `soc_gift`/`soc_bribe`/`soc_terror`/
-`soc_incite`/`soc_persuade` static in `swear.c`, `soc_breed` exposed via `proto.h`
-for `beast.c`; the `swear.c:863` incite-mob spawn already rides `npcs`, left alone;
-this retired the `swear.c`/`beast.c` "residual on global" framing — byte-neutral on
-both trees, verified empirically 0 draws on the bare-map turn / both guard-pillage
-twins / `-s`/`-a`/`-i`, so NO re-baseline and NO `scenario.tgz` regen); **E (LANDED)**
-the entity catch-all (`stack.c` prisoner-escape/drop-stack + `u.c` TAKE-SOME/
-sick-onset/find-nearest-land/bark-dogs + `build.c` new-mine gate + `produce.c
-mage_menial_how` — **11 live sites** → new `enty` per-turn stream via the
-turn-guarded `begin_entity()` + keyed-leaf helpers, actor/location in the leaf key
-k1, a distinct purpose tag per site; the cross-file skills/magic/social model —
-host `begin_entity()` + the u.c-local `ent_take`/`ent_sick`/`ent_land_dir`/
-`ent_land_pick`/`ent_bark` static in `u.c`, `ent_prisoner`/`ent_drop`/`ent_build`/
-`ent_menial` exposed via `proto.h` for `stack.c`/`build.c`/`produce.c`. The brief's
-quest shared-infra half (`free_artifact`/`make_subloc_monster` rolls) and a 12th
-entity site (`u.c nearby_grave`) turned out to be **dead `#if 0` code**, a no-op —
-the live `make_subloc_monster` already draws from `qrnd` (documented in
-`doc/dead-code.md`). **Byte-neutral on both trees**: 0 draws on the bare-map turn
-and at all world-init, and the 4 `ent_prisoner` rolls the guard-pillage turn fires
-do not perturb the hashed faction records — both twins match `EXPECT` unchanged, so
-NO re-baseline and NO `scenario.tgz` regen); and **F (LANDED) — #25 CLOSED** mint,
-the last consumer (`code.c rnd_alloc_num`, THE entity-id allocator, + `add.c`
-ids/passwords → new per-turn **`mint`** stream, tag `mint`). Unlike A–E this is a
-**fresh per-turn SEQUENTIAL stream** (`rng_draw` via the turn-guarded `begin_mint()`,
-which also seeds at INIT — the `begin_worldgen()` idiom — because the allocator mints
-at the `-i`/`-s`/`-a` world build *and* during the turn), NOT keyed leaves: there is
-no entity in hand when minting its id and no natural leaf key, so the win is
-**isolation** (the worldgen-tunnel / quest-`qrnd` precedent). Hosted in `code.c`
-(`mint_alloc` static); the `add.c` draws share the stream via `mint_password(pl,i,n)`
-(keyed leaf on `(pl,i)`) and `mint_city()` (sequential), exposed via `proto.h`.
-**This re-baked every entity id → the biggest re-baseline of the project, on BOTH
-trees** (the reason mint is last): main manifest stayed **205 files** (content-only —
-`loc`/`item`/`master`/`unform`/`gate` + renumbered `fact/*` shifted as ~8189 INIT +
-~18124 turn allocator draws left the global stream), and guard-pillage took a
-`scenario.tgz` regen + `EXPECT` re-baseline (noble ids settled at pillager 4126 /
-guard 8651), with both `check.sh` and `check-lua.sh` agreeing — confirming the
-**saved-`randseed` → master-seed coupling is now gone** (no gameplay `rnd()` advances
-`digest` during a turn). The same PR repointed `test_random()` (the `-R` self-test)
-to a local `rng_stream`, **deleted** the remaining dead `rnd()` sites (`equip_new_noble`/
-`okay_entity_code`/`art.c:1102`/`buy.c` jitter/`tunnel.c` hades-sewer/`nearby_grave`/
-`free_artifact` + caller, archived in `doc/dead-code.md`), and **flipped on the
-standing "no gameplay `rnd()`" audit gate** in `tests/rng/check.sh` (the `rnd(`-grep
-over `olympia/*.c` must stay empty — **this passing IS the definition of #25 done**).
-Beyond the call-site grep, Unit F also migrated the **indirect** draws it could not
-see (`ilist_scramble`/`exit_views_scramble` via `lib/`): `dir.c`'s randomized
-exit-direction pick (~117 draws/turn from NPC/savage movement) → a new per-turn
-**`exitdir`** stream (tag `exdr`, weather model) via the new `exit_views_shuffle_rng`;
-`npc.c auto_bandit`'s victim pick → `npcs` (`NTAG_VICTIM`); `add.c`'s "empty"-start
-shuffle → `mint` (`mint_shuffle`); the two dead `ilist_scramble` sites
-(`faery.c swap_region_locs`, `necro.c random_body_here`) deleted. **#25 exits with
-ZERO gameplay/world-build `rnd()`** — verified empirically (an instrumented `rnd()`
-counts 0 on `-i`/`-r`/`-s`/`-a`/`-R` and both guard-pillage twins); the global
-`rnd()` survives only as the MD5 primitive under the `rng` layer.
-The full per-unit plan is [doc/rng-endgame-to-zero.md](doc/rng-endgame-to-zero.md);
-the migration order and per-subsystem keying live in
-[doc/rng-state-granularity.md](doc/rng-state-granularity.md). A PCG32 generator swap
-stays deferred behind the TAG 64-bit work; the follow-up **#46** landed in PR #71.
