@@ -1,0 +1,19 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Pillager Horde",
+   "units": [
+     {"id": 4126, "name": "Warlord Grok", "where": 10113, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 359}, {"id": 10, "name": "peasant", "qty": 27}, {"id": 12, "name": "soldier", "qty": 32}],
+      "skills": []}],
+   "locations": [
+     {"id": 10113, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 10113,
+      "exits": [{"direction": "north", "destination": 10013, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 10114, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 10213, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 10112, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 62791, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Warlord Grok", "faction": 300}, {"id": 8651, "name": "Captain Vigil", "faction": 301}]}]},
+  {"id": 301, "name": "Guard Order",
+   "units": [
+     {"id": 8651, "name": "Captain Vigil", "where": 10113, "stacked_under": 4126,
+      "items": [],
+      "skills": []}],
+   "locations": [
+     {"id": 10113, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 10113,
+      "exits": [{"direction": "north", "destination": 10013, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 10114, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 10213, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 10112, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 62791, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Warlord Grok", "faction": 300}, {"id": 8651, "name": "Captain Vigil", "faction": 301}]}]}]}

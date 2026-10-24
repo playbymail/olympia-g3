@@ -12,6 +12,10 @@
 # combat resolution or the keyed-RNG derivation is caught here -- in this
 # subsystem's own small golden tree, NOT the 206-file main manifest.
 #
+# EXPECT.json pins the post-turn --state-export snapshot (#104) next to the
+# hashes. The hashes stay the strict gate; the JSON diff shows *which* unit,
+# item or location moved when they fail (and is what a port is debugged with).
+#
 # NOTE: this fixture does NOT exercise issue #4's guard-dedup branch. That
 # branch is unreachable through the pillage path (a guard found by
 # loop_here(province) can never be in the pillager's stack-only l_a), so the
@@ -34,7 +38,8 @@ WORK="$(mktemp -d)"
 trap 'rm -rf "${WORK}"' EXIT
 tar zxf "${HERE}/scenario.tgz" -C "${WORK}" || exit 2
 
-( cd "${WORK}" && "${BIN}" -r -l ./lib -S test-use-const-report-date </dev/null >/dev/null 2>&1 )
+( cd "${WORK}" && "${BIN}" -r -l ./lib -S test-use-const-report-date \
+	--state-export "${WORK}/state.json" </dev/null >/dev/null 2>&1 )
 ec=$?
 if [ "${ec}" -ne 0 ]; then
 	echo "NO  (olympia-g3 turn failed: exit ${ec})"
@@ -47,15 +52,24 @@ manifest() { ( cd "${WORK}/lib" && shasum -a 256 \
 
 if [ "${1:-}" = "--update" ]; then
 	manifest > "${HERE}/EXPECT.sha256"
-	echo "updated ${HERE}/EXPECT.sha256"
+	cp "${WORK}/state.json" "${HERE}/EXPECT.json"
+	echo "updated ${HERE}/EXPECT.sha256 and EXPECT.json"
 	exit 0
 fi
 
-if diff -u "${HERE}/EXPECT.sha256" <(manifest) >/dev/null; then
-	echo "YES"
-	exit 0
-else
+fail=0
+if ! diff -u "${HERE}/EXPECT.sha256" <(manifest) >/dev/null; then
 	echo "NO  (output changed vs EXPECT.sha256)"
 	diff -u "${HERE}/EXPECT.sha256" <(manifest)
-	exit 1
+	fail=1
 fi
+if ! diff -u "${HERE}/EXPECT.json" "${WORK}/state.json" >/dev/null; then
+	echo "NO  (state export changed vs EXPECT.json)"
+	diff -u "${HERE}/EXPECT.json" "${WORK}/state.json"
+	fail=1
+fi
+if [ "${fail}" -eq 0 ]; then
+	echo "YES"
+	exit 0
+fi
+exit 1

@@ -23,6 +23,10 @@
 # additionally checks the seed-persistence side effect: lib/trade_routes is
 # written (with the seed) under -G and absent under the default.
 #
+# EXPECT.json pins the default run's post-turn --state-export snapshot (#104).
+# The hashes stay the strict gate; the JSON diff shows which unit, item or
+# location moved when they fail.
+#
 # Date-independent via the `test-use-const-report-date` flag.
 # Pass:  prints YES and exits 0.   Re-baseline: ./check.sh --update
 ###########################################################################
@@ -60,7 +64,11 @@ routes_file() {		# args: extra olympia flags...
 	rm -rf "${W}"
 }
 
-H_DEFAULT="$(report_hash)"
+STATE_DIR="$(mktemp -d)"
+trap 'rm -rf "${STATE_DIR}"' EXIT
+STATE="${STATE_DIR}/state.json"
+
+H_DEFAULT="$(report_hash --state-export "${STATE}")"
 H_SEEDED="$(report_hash -G 1)"
 H_SEEDED2="$(report_hash -G 1)"
 RF_DEFAULT="$(routes_file)"
@@ -69,7 +77,8 @@ RF_SEEDED="$(routes_file -G 1)"
 if [ "${1:-}" = "--update" ]; then
 	printf '%s\n' "${H_DEFAULT}" > "${HERE}/EXPECT.sha256"
 	printf '%s\n' "${H_SEEDED}"  > "${HERE}/EXPECT-seeded.sha256"
-	echo "updated EXPECT.sha256 (default) and EXPECT-seeded.sha256 (-G 1)"
+	cp "${STATE}" "${HERE}/EXPECT.json"
+	echo "updated EXPECT.sha256 + EXPECT.json (default) and EXPECT-seeded.sha256 (-G 1)"
 	exit 0
 fi
 
@@ -83,6 +92,11 @@ fail=0
 [ "${H_DEFAULT}" != "${H_SEEDED}"   ] || { echo "NO  (the secret did not change the buyer verdict)"; fail=1; }
 [ "${RF_DEFAULT}" = "(none)" ]        || { echo "NO  (default flow wrote lib/trade_routes: '${RF_DEFAULT}')"; fail=1; }
 [ "${RF_SEEDED}"  = "1" ]             || { echo "NO  (-G 1 did not persist seed 1 to lib/trade_routes: '${RF_SEEDED}')"; fail=1; }
+if ! diff -u "${HERE}/EXPECT.json" "${STATE}" >/dev/null 2>&1; then
+	echo "NO  (default-secret state export changed vs EXPECT.json)"
+	diff -u "${HERE}/EXPECT.json" "${STATE}"
+	fail=1
+fi
 
 if [ "${fail}" -eq 0 ]; then
 	echo "YES"

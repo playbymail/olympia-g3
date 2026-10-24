@@ -57,7 +57,9 @@ candidate fixture ([harness doc §7.4](../../doc/ultron-harness-architecture.md#
    `guard-pillage` and `trade-routes`: a GM-built scenario (`build-scenario.sh` or
    an `olyscript-g3` `.lua`), the player order files, a `scenario.tgz`, and a
    `check.sh` that runs one `-r -S` turn and compares a hashed manifest with
-   `EXPECT.sha256`. The orders under test go in plain order files and through the
+   `EXPECT.sha256` and the `--state-export` snapshot with `EXPECT.json`. The
+   hashes (reports included) are the strict gate; the JSON shows what changed
+   when they fail. The orders under test go in plain order files and through the
    normal turn, never through immediate mode.
 3. **Prove the cell.** Run the fixture's turn with `--coverage <path>` and confirm
    the target verb has a nonzero count in the target column. One fixture can

@@ -14,7 +14,8 @@
 #      -- exactly build-scenario.sh's starting point;
 #   2. olyscript-g3 guard-pillage.lua  -> builds + saves the pre-turn lib;
 #   3. olympia-g3 -r -S                 -> run the turn (as check.sh does);
-#   4. hash save/1/{300,301} + fact/{300,301} and diff EXPECT.sha256.
+#   4. hash save/1/{300,301} + fact/{300,301} and diff EXPECT.sha256, and diff
+#      the --state-export snapshot against the same committed EXPECT.json.
 #
 # Date-independent via `test-use-const-report-date`.
 # Pass: prints YES and exits 0.   (Re-baseline lives in check.sh --update.)
@@ -31,6 +32,7 @@ SEED_LIB="${ROOT}/tests/olympia/fixtures/lib.tgz"
 [ -x "${SCRIPT_BIN}" ] || { echo "error: missing ${SCRIPT_BIN} (build the ${PRESET} preset first)"; exit 2; }
 [ -f "${SEED_LIB}" ]   || { echo "error: missing ${SEED_LIB}"; exit 2; }
 [ -f "${HERE}/EXPECT.sha256" ] || { echo "error: missing EXPECT.sha256"; exit 2; }
+[ -f "${HERE}/EXPECT.json" ]   || { echo "error: missing EXPECT.json"; exit 2; }
 
 WORK="$(mktemp -d)"
 trap 'rm -rf "${WORK}"' EXIT
@@ -48,7 +50,8 @@ if ! "${SCRIPT_BIN}" "${HERE}/guard-pillage.lua" >/dev/null 2>&1; then
 fi
 
 # 3. run a turn against the scripted lib (identical to check.sh)
-"${BIN}" -r -l ./lib -S test-use-const-report-date </dev/null >/dev/null 2>&1
+"${BIN}" -r -l ./lib -S test-use-const-report-date \
+	--state-export "${WORK}/state.json" </dev/null >/dev/null 2>&1
 ec=$?
 if [ "${ec}" -ne 0 ]; then
 	echo "NO  (olympia-g3 turn failed: exit ${ec})"
@@ -59,11 +62,19 @@ fi
 manifest() { ( cd "${WORK}/lib" && shasum -a 256 \
 	save/1/300 save/1/301 fact/300 fact/301 ); }
 
-if diff -u "${HERE}/EXPECT.sha256" <(manifest) >/dev/null; then
-	echo "YES"
-	exit 0
-else
+fail=0
+if ! diff -u "${HERE}/EXPECT.sha256" <(manifest) >/dev/null; then
 	echo "NO  (Lua-built output differs from EXPECT.sha256)"
 	diff -u "${HERE}/EXPECT.sha256" <(manifest)
-	exit 1
+	fail=1
 fi
+if ! diff -u "${HERE}/EXPECT.json" "${WORK}/state.json" >/dev/null; then
+	echo "NO  (Lua-built state export differs from EXPECT.json)"
+	diff -u "${HERE}/EXPECT.json" "${WORK}/state.json"
+	fail=1
+fi
+if [ "${fail}" -eq 0 ]; then
+	echo "YES"
+	exit 0
+fi
+exit 1

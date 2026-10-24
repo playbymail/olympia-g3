@@ -57,6 +57,10 @@ and additionally requires:
   test (not a dead arg);
 - `-G 1` persists `lib/trade_routes` = `1`, while the default flow writes **no**
   such file (the #46 persistence side effect).
+- the default run's post-turn `--state-export` snapshot (#104) matches
+  `EXPECT.json`, a readable view of the noble's units, items and location that
+  shows what changed when a hash fails. The buyer verdict itself is only in the
+  report, so the hashes stay the strict gate.
 
 A regression in the secret derivation, the `splitmix64` fold, the persistence, or
 the `md5_int` keying flips one of these and fails the gate — in this subsystem's
@@ -74,7 +78,7 @@ Re-baseline (only after a deliberate behaviour change):
 
 ```bash
 ./build-scenario.sh        # regenerate scenario.tgz
-./check.sh --update        # rewrite both EXPECT files
+./check.sh --update        # rewrite the EXPECT files
 ```
 
 The flow is date-independent via the `test-use-const-report-date` flag.

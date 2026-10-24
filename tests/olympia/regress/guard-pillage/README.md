@@ -38,6 +38,12 @@ location). `check.sh` runs the turn and hashes the two faction reports
 (`save/1/300`, `save/1/301`) plus final unit state (`fact/300`, `fact/301`)
 against `EXPECT.sha256`.
 
+It also diffs the post-turn `--state-export` snapshot (#104) against
+`EXPECT.json`. The hashes are the strict gate; the JSON is a readable view of the
+same outcome (the pillager's gold and men, the captured guard stacked under him),
+so a failing run shows *what* changed and not just *that* it changed.
+`check-lua.sh` checks the Lua-built turn against the same `EXPECT.json`.
+
 ## Run it
 
 ```bash
