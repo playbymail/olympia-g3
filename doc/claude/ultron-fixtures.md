@@ -21,8 +21,9 @@ the combat family (#128) by `combat-attack`, `combat-refused` and
 `attitude-refused`, the recruitment family (#130) by
 `recruitment-raise` and `recruitment-refused`, the stacking family
 (#141) by `stacking-stack` and `stacking-refused`, the trade family
-(#142) by `trade-market` and `trade-refused`, and the loyalty family
-(#143) by `loyalty-bind` and `loyalty-refused`.
+(#142) by `trade-market` and `trade-refused`, the loyalty family
+(#143) by `loyalty-bind` and `loyalty-refused`, and the skills family
+(#144) by `skills-learn` and `skills-refused`.
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):

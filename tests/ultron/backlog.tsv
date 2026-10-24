@@ -75,10 +75,10 @@ raise	recruitment	c		recruitment-raise	recruitment-refused	recruitment-refused
 rally	recruitment	c		recruitment-raise	recruitment-refused	recruitment-refused
 recruit	recruitment	c		recruitment-raise	recruitment-refused	recruitment-refused
 train	recruitment	c	make	production-harvest	production-refused	production-refused
-forget	skills	c		todo	todo	todo
-research	skills	c		todo	todo	todo
-study	skills	c		todo	todo	todo
-use	skills	c		trade-routes	todo	todo
+forget	skills	c		skills-learn	skills-refused	skills-refused
+research	skills	c		skills-learn	skills-refused	skills-refused
+study	skills	c		skills-learn	skills-refused	skills-refused
+use	skills	c		trade-routes	skills-refused	skills-refused
 bind	magic	c		todo	todo	todo
 breed	magic	c		todo	todo	todo
 trance	magic	c		todo	todo	todo
