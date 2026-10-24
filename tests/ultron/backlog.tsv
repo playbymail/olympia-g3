@@ -39,9 +39,9 @@ swear	loyalty	c		todo	todo	todo
 bribe	social	c		todo	todo	todo
 incite	social	c		todo	todo	todo
 terrorize	social	cr		todo	todo	todo
-promote	stacking	cr		todo	todo	todo
-stack	stacking	cr		todo	todo	todo
-unstack	stacking	cr		todo	todo	todo
+promote	stacking	cr		stacking-stack	stacking-refused	stacking-refused
+stack	stacking	cr		stacking-stack	stacking-refused	stacking-refused
+unstack	stacking	cr		stacking-stack	stacking-refused	stacking-refused
 accept	inventory	cpr		inventory-give	inventory-refused	n/a
 claim	inventory	c		inventory-give	inventory-refused	inventory-refused
 discard	inventory	c		inventory-give	inventory-refused	inventory-refused
