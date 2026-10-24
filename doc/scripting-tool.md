@@ -621,6 +621,12 @@ refuses a mob. No GM verb makes a mob, so this is the first path (B) binding:
 it calls `do_cookie_npc` directly, the way `create_peasant_mob` does, without
 that function's Mob/Crowd name draw.
 
+**Since landed (#143):** `oly.order(who, ...)` also takes an unformed noble.
+It queues the order under the player whose unformed list holds `who`, as the
+order scanner (`eat.c`) accepts a player's orders for its unformed nobles, and
+the order runs once a `form` makes the noble. Before this, `player(who)` of an
+unformed id was 0 and the call crashed.
+
 **Explicitly deferred:** `kill`, `credit`, the full query set
 (`here`/`all`/`chars_here`/`knows`), the declarative format, RNG bindings, and
 any production-engine integration. Path (B) direct-handler calls are deferred

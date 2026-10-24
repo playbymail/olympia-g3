@@ -478,14 +478,35 @@ l_guard(lua_State *L)
  *  queue_order() str_save()'s its argument, and oly.save -> save_db ->
  *  save_orders writes lib/orders/<pl>, so the hand-written order files of the
  *  old flow (doc §1.4 step 7) are generated instead.
+ *
+ *  who may be an unformed noble: its orders are queued under the player
+ *  whose unformed list holds it, as the order scanner (eat.c) accepts them,
+ *  and run once a form makes the noble.
  */
 static int
 l_order(lua_State *L)
 {
 	int who = (int) luaL_checkinteger(L, 1);
 	const char *order = luaL_checkstring(L, 2);
+	int pl = 0;
+	int i;
 
-	queue_order(player(who), who, (char *) order);
+	if (kind(who) == T_unform)
+	{
+		loop_player(i)
+		{
+			if (ilist_lookup(p_player(i)->unformed, who) >= 0)
+				pl = i;
+		}
+		next_player;
+	}
+	else
+		pl = player(who);
+
+	if (pl == 0)
+		return luaL_error(L, "oly.order: %d has no player", who);
+
+	queue_order(pl, who, (char *) order);
 	return 0;
 }
 

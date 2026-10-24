@@ -31,11 +31,11 @@ default	attitude	cpr		attitude-set	attitude-refused	n/a
 defend	attitude	cpr		attitude-set	attitude-refused	n/a
 hostile	attitude	cpr		attitude-set	attitude-refused	n/a
 neutral	attitude	cpr		attitude-set	attitude-refused	n/a
-honor	loyalty	c		todo	todo	todo
-honour	loyalty	c	honor	todo	todo	todo
-oath	loyalty	c		todo	todo	todo
-pledge	loyalty	c		todo	todo	todo
-swear	loyalty	c		todo	todo	todo
+honor	loyalty	c		loyalty-bind	loyalty-refused	loyalty-refused
+honour	loyalty	c	honor	loyalty-bind	loyalty-refused	loyalty-refused
+oath	loyalty	c		loyalty-bind	loyalty-refused	loyalty-refused
+pledge	loyalty	c		loyalty-bind	loyalty-refused	loyalty-refused
+swear	loyalty	c		n/a	loyalty-refused	loyalty-refused
 bribe	social	c		todo	todo	todo
 incite	social	c		todo	todo	todo
 terrorize	social	cr		todo	todo	todo
