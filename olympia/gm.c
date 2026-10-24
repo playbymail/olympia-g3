@@ -23,6 +23,20 @@ int gold_opium = 0;
 int gold_garrison = 0;
 
 
+/*
+ *  n as a percentage of d; 0 when d is 0 (small or fresh worlds can
+ *  have empty categories).
+ */
+
+static int
+pct(int n, int d)
+{
+	if (d == 0)
+		return 0;
+	return n * 100 / d;
+}
+
+
 static int
 skill_use_comp(const void *av, const void *bv)
 {
@@ -576,12 +590,12 @@ gm_show_locs_visited(int pl)
 	out_alt_who = OUT_LORE;
 
 	out(pl, "%d/%d provinces visited (%d%%)", n_prov_visit, n_prov,
-					n_prov_visit * 100 / n_prov);
+					pct(n_prov_visit, n_prov));
 	out(pl, "%d/%d sublocs visited (%d%%)", n_sub_visit, n_sub,
-					n_sub_visit * 100 / n_sub);
+					pct(n_sub_visit, n_sub));
 	out(pl, "    %d%% visible, %d%% hidden",
-				vis * 100 / n_sub_visit,
-				hid * 100 / n_sub_visit);
+				pct(vis, n_sub_visit),
+				pct(hid, n_sub_visit));
 
 	loop_loc(i)
 	{
@@ -608,10 +622,10 @@ gm_show_locs_visited(int pl)
 	next_loc;
 
 	out(pl, "    %d%% of visisted province's sublocs found",
-				nf * 100 / nt);
+				pct(nf, nt));
 	out(pl, "    %d%% visible, %d%% hidden",
-				nf_vis * 100 / nf,
-				nf_hid * 100 / nf);
+				pct(nf_vis, nf),
+				pct(nf_hid, nf));
 
 	out(pl, "");
 
@@ -652,10 +666,10 @@ gm_loyalty_stats(int pl)
 
 	out(pl, "%d chars: %d oath (%d%%), %d fear (%d%%), %d contract "
 				"(%d%%), %d unsworn (%d%%)",
-			tot, oath, oath * 100 / tot,
-			fear, fear * 100 / tot,
-			cont, cont * 100 / tot,
-			unsw, unsw * 100 /tot);
+			tot, oath, pct(oath, tot),
+			fear, pct(fear, tot),
+			cont, pct(cont, tot),
+			unsw, pct(unsw, tot));
 
 	out(pl, "");
 
