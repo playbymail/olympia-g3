@@ -57,9 +57,9 @@ sell	trade	c		trade-market	trade-refused	trade-refused
 decree	governance	c		todo	todo	todo
 garrison	governance	c		todo	todo	todo
 ungarrison	governance	c		todo	todo	todo
-build	construction	c		todo	todo	todo
-improve	construction	c		todo	todo	todo
-repair	construction	c		todo	todo	todo
+build	construction	c		construction-build	construction-refused	construction-refused
+improve	construction	c		construction-build	construction-refused	construction-refused
+repair	construction	c		construction-build	construction-refused	construction-refused
 catch	production	c		production-harvest	production-refused	production-refused
 collect	production	c		production-harvest	production-refused	production-refused
 fish	production	c		production-harvest	production-refused	production-refused

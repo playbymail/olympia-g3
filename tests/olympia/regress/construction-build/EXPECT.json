@@ -1,0 +1,28 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Builders",
+   "units": [
+     {"id": 4126, "name": "Builder One", "where": 7036, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 1}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 11, "name": "worker", "qty": 95}],
+      "skills": [{"id": 680, "name": "Construction"}]}],
+   "locations": [
+     {"id": 7036, "name": "New tower", "kind": "loc", "subkind": "tower", "depth": "", "province": 13451,
+      "exits": [{"direction": "out", "destination": 57081, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Builder One", "faction": 300}]}]},
+  {"id": 301, "name": "Improvers",
+   "units": [
+     {"id": 8651, "name": "Improver One", "where": 74170, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 100}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 11, "name": "worker", "qty": 100}],
+      "skills": []}],
+   "locations": [
+     {"id": 74170, "name": "", "kind": "loc", "subkind": "castle", "depth": "", "province": 13451,
+      "exits": [{"direction": "out", "destination": 57081, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8651, "name": "Improver One", "faction": 301}]}]},
+  {"id": 302, "name": "Repairers",
+   "units": [
+     {"id": 8159, "name": "Repairer One", "where": 71524, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 155}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 11, "name": "worker", "qty": 10}],
+      "skills": []}],
+   "locations": [
+     {"id": 71524, "name": "", "kind": "loc", "subkind": "tower", "depth": "", "province": 13451,
+      "exits": [{"direction": "out", "destination": 57081, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8159, "name": "Repairer One", "faction": 302}]}]}]}

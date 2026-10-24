@@ -1,0 +1,37 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Bunglers",
+   "units": [
+     {"id": 4126, "name": "Bungler One", "where": 74301, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 74301, "name": "", "kind": "loc", "subkind": "castle", "depth": "", "province": 13451,
+      "exits": [{"direction": "out", "destination": 57081, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Bungler One", "faction": 300}, {"id": 8159, "name": "Keeper One", "faction": 302}]}]},
+  {"id": 301, "name": "Masons",
+   "units": [
+     {"id": 8651, "name": "Mason One", "where": 57081, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 680, "name": "Construction"}]}],
+   "locations": [
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 74301, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 73052, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8651, "name": "Mason One", "faction": 301}]}]},
+  {"id": 302, "name": "Keepers",
+   "units": [
+     {"id": 8159, "name": "Keeper One", "where": 74301, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 298}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 11, "name": "worker", "qty": 1}],
+      "skills": []}],
+   "locations": [
+     {"id": 74301, "name": "", "kind": "loc", "subkind": "castle", "depth": "", "province": 13451,
+      "exits": [{"direction": "out", "destination": 57081, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Bungler One", "faction": 300}, {"id": 8159, "name": "Keeper One", "faction": 302}]}]},
+  {"id": 303, "name": "Menders",
+   "units": [
+     {"id": 7012, "name": "Mender One", "where": 73052, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 15}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 11, "name": "worker", "qty": 80}],
+      "skills": []}],
+   "locations": [
+     {"id": 73052, "name": "", "kind": "loc", "subkind": "tower", "depth": "", "province": 13451,
+      "exits": [{"direction": "out", "destination": 57081, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 7012, "name": "Mender One", "faction": 303}]}]}]}
