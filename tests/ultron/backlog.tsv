@@ -85,11 +85,11 @@ trance	magic	c		todo	todo	todo
 hide	stealth	c		stealth-hide	stealth-refused	stealth-refused
 sneak	stealth	c		stealth-hide	stealth-refused	stealth-refused
 torture	stealth	c		stealth-hide	stealth-refused	stealth-refused
-explore	exploration	c		todo	todo	todo
-plugh	exploration	cr		todo	todo	todo
-quest	exploration	c		todo	todo	todo
-seek	exploration	cr		todo	todo	todo
-xyzzy	exploration	cr		todo	todo	todo
+explore	exploration	c		exploration-explore	exploration-refused	n/a
+plugh	exploration	cr		exploration-explore	exploration-refused	n/a
+quest	exploration	c		exploration-explore	exploration-refused	exploration-refused
+seek	exploration	cr		exploration-explore	exploration-refused	exploration-refused
+xyzzy	exploration	cr		exploration-explore	exploration-refused	n/a
 banner	player	cr		player-settings	player-settings	player-settings
 die	player	c		player-die	player-die	n/a
 flag	player	cr		player-settings	player-settings	player-settings
