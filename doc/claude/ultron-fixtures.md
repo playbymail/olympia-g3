@@ -26,9 +26,10 @@ the combat family (#128) by `combat-attack`, `combat-refused` and
 (#144) by `skills-learn` and `skills-refused`, the stealth family
 (#145) by `stealth-hide` and `stealth-refused`, the social family
 (#146) by `social-bribe` and `social-refused`, the construction family
-(#147) by `construction-build` and `construction-refused`, and the
+(#147) by `construction-build` and `construction-refused`, the
 exploration family (#148) by `exploration-explore` and
-`exploration-refused`.
+`exploration-refused`, and the magic family (#149) by `magic-cast` and
+`magic-refused`.
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):

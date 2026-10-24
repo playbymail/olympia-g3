@@ -79,9 +79,9 @@ forget	skills	c		skills-learn	skills-refused	skills-refused
 research	skills	c		skills-learn	skills-refused	skills-refused
 study	skills	c		skills-learn	skills-refused	skills-refused
 use	skills	c		trade-routes	skills-refused	skills-refused
-bind	magic	c		todo	todo	todo
-breed	magic	c		todo	todo	todo
-trance	magic	c		todo	todo	todo
+bind	magic	c		magic-cast	magic-refused	magic-refused
+breed	magic	c		magic-cast	magic-refused	magic-refused
+trance	magic	c		magic-cast	magic-refused	magic-refused
 hide	stealth	c		stealth-hide	stealth-refused	stealth-refused
 sneak	stealth	c		stealth-hide	stealth-refused	stealth-refused
 torture	stealth	c		stealth-hide	stealth-refused	stealth-refused
