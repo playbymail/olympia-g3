@@ -11,8 +11,9 @@ The code originally targeted **32-bit** systems. A phased warning ladder
 sanitizers) drove each 32→64-bit hazard class to zero and locked it as
 `-Werror`. That ladder is **complete** — every targeted class is enforced across
 all three targets (`olympia-g3`, `mapgen-g3`, `island-g3`), the golden flow runs
-clean under AddressSanitizer + UndefinedBehaviorSanitizer, and the remaining work
-is the actual 32→64-bit refactoring the ladder cleared the way for. This file is
+clean under AddressSanitizer + UndefinedBehaviorSanitizer. The 32→64-bit
+refactoring the ladder cleared the way for (converting the entity lists to work
+on 64-bit; see issues #1/#2 below) is **complete** as well. This file is
 the full phase-by-phase record; the [warning policy](#warning-policy) at the end
 governs how new warnings are triaged from here.
 

@@ -140,8 +140,9 @@ Every targeted warning class is enforced as `-Werror` via
 `olympia_compile_flags()` in `CMakeLists.txt` (applied to all three targets:
 `olympia-g3`, `mapgen-g3`, `island-g3`), and the golden flow runs clean under
 AddressSanitizer + UndefinedBehaviorSanitizer. The per-phase scaffolding has been
-removed; the remaining work is the actual 32→64-bit refactoring the ladder
-cleared the way for.
+removed. The 32→64-bit refactoring the ladder cleared the way for (converting
+the entity lists to work on 64-bit, issues #1/#2) is also **complete**; the
+forward track is test coverage ahead of the Go port.
 
 Enforced classes (all `-Werror`):
 
