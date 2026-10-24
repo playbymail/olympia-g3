@@ -131,7 +131,7 @@ direct-to-`main` as of the #25 groundwork). Conventions:
   PR bodies are **GitHub issue numbers**.
 - **Squash-merge** to keep `main` linear. The squashed commit keeps the
   `type(scope): subject (#NN)` subject and the
-  `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>` trailer.
+  `Co-Authored-By: Claude Opus <noreply@anthropic.com>` trailer.
 
 ## Modernization status
 
