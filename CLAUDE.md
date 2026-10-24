@@ -187,10 +187,34 @@ is correct-on-principle hardening of dead code and **no black-box fixture can
 pin it** (write-up in
 [tests/olympia/regress/guard-pillage/README.md](tests/olympia/regress/guard-pillage/README.md)).
 
-### Next track: Ultron groundwork (#25 — ✅ COMPLETE)
+### Next track: the Ultron fixture backlog (ahead of the Go port)
 
-The forward track is the [Project Ultron](doc/agentic-project-ultron.md)
-test-coverage initiative, which was gated by **#25 — RNG-state granularity**.
+The work left before the Go port is **fixture coverage**. The golden output is the
+only spec a port can be checked against, so a verb or outcome without a fixture is
+behavior the port can get wrong without anyone noticing. The to-do list is
+[`tests/ultron/backlog.tsv`](tests/ultron/README.md): one row per `cmd_tbl` verb,
+with the fixture that exercises each outcome (`ok` / `rejected` / `fail`) or
+`todo`. As of 2026-10-24 only 4 `ok` cells are covered (`move` and `wait` by the
+golden turn, `pillage` by guard-pillage, `use` by trade-routes) and no
+`rejected`/`fail` cell is.
+
+The harness to work through it is in place
+([doc/ultron-harness-architecture.md §7](doc/ultron-harness-architecture.md#7-first-cut-scope-proposed)):
+the `do_command` coverage hook and `--coverage` dump (#98, #100), the
+`--state-export` JSON snapshot (#104), the Chaos Goblin brain (#105, #110), and the
+`tests/ultron/loop.py` driver that freezes crashes as fixtures (#106). New fixtures
+go under `tests/olympia/regress/<name>/`, following guard-pillage and
+trade-routes; land each fixture with its backlog update, and keep
+`tests/ultron/check.sh` printing `YES`. Two known gaps beyond the per-verb table:
+`use` dispatches every usable skill and item, so its single `ok` cell says little,
+and the hook does not see the non-command turn phases (NPC/savage movement,
+weather, upkeep, region spawns, month-end) listed in
+[doc/turn-execution-order.md](doc/turn-execution-order.md).
+
+### Ultron groundwork (#25 — ✅ COMPLETE)
+
+The [Project Ultron](doc/agentic-project-ultron.md) test-coverage initiative was
+gated by **#25 — RNG-state granularity**.
 **#25 is now complete**: the engine no longer draws from the process-global serial
 stream for any gameplay or world-build randomness — every subsystem reseeds its own
 addressable stream off the turn root, so a reordered/added draw no longer re-bakes
@@ -202,7 +226,8 @@ primitive the `rng` layer is built on, and a standing audit gate in
 `lib/rng.{c,h}` (`rng_seed`/`rng_stream_of`/`rng_draw`/`rng_keyed`). For **when** each
 draw fires during a turn — the fixed phase order the driver walks, and which stream
 each draw is on — see [doc/turn-execution-order.md](doc/turn-execution-order.md).
-**#46 is the next stream ticket** (begins now that #25 has landed).
+The follow-up stream ticket **#46** (per-game trade-route buyer secret) landed in
+PR #71.
 
 **#25 is COMPLETE — the engine has ZERO gameplay/world-build draws on the global
 `rnd()`** (it survives only as the low-level MD5 primitive the `rng` layer is built
@@ -468,5 +493,4 @@ counts 0 on `-i`/`-r`/`-s`/`-a`/`-R` and both guard-pillage twins); the global
 The full per-unit plan is [doc/rng-endgame-to-zero.md](doc/rng-endgame-to-zero.md);
 the migration order and per-subsystem keying live in
 [doc/rng-state-granularity.md](doc/rng-state-granularity.md). A PCG32 generator swap
-stays deferred behind the TAG 64-bit work; **#46 is the next stream ticket** (begins
-only after #25).
+stays deferred behind the TAG 64-bit work; the follow-up **#46** landed in PR #71.
