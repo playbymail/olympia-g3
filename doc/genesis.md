@@ -183,6 +183,40 @@ The whole thing is deterministic given seed + input map + flags: distance field 
 Mt. Olympus is the 'O' glyph surrounded by 'M' glyphs.
 It overwrites the cell at the center of the map and the 8 adjacent neighbors.
 
+## Place start cities
+
+`mapgen` creates safe-haven start cities only from the digit glyphs in `Map`, and
+`olympia-g3 -a` can't add a player without one (an empty `lib/startloc` aborts on
+`valid_box(where)`; issue #85). So the last terrain step writes start-city digits
+onto the land. It runs after every island/Olympus/ocean step (including
+`--defer-oceans`) on its own PCG stream (`STEP_START_CITIES`), so it changes nothing
+upstream of itself.
+
+The `--start-cities N` flag (0..16, default 6) sets the count; `0` turns placement
+off and reproduces the pre-#85 output byte for byte.
+
+- **Candidates.** Plains and forest cells, or any land terrain if there are none.
+  Never ocean, Mt. Olympus (`O`/`M`), or a cell touching it, and never the
+  first (anchor) cell of a land mass. `Regions` and `Land` name each mass at that
+  cell, and `Land`'s clump type must match its glyph, while a start city is its
+  own one-cell clump in mapgen. Excluding the anchor also leaves every land
+  region at least one non-safe-haven province. mapgen's
+  `random_tile_from_each_region` redraws until it finds one, so a region made
+  only of start cities would spin forever.
+- **Spacing.** The same best-candidate sampling as the deferred-ocean origins:
+  each city is the farthest-from-existing of up to `N·N` random candidates, with a
+  floor of `~0.65 · sqrt(candidates / N)` cells, never under 2, so no two cities
+  touch. Distance wraps across columns, as mapgen's columns do. If a city can't
+  clear the floor, `N` drops by one and placement restarts, with the floor held fixed.
+  One city always fits.
+- **Digits.** In placement order: `1` Drassa, `2` Rimmon, `3` Harn, `4` Imperial
+  City, `5` Port Aurnos, `6` Greyfell, `7` Yellowleaf, then alternating `9`/`0`
+  (random-name start cities). `8` (Golden City) is never written: it is a city but
+  not a safe haven, so it isn't a start location.
+
+A digit cell is still land (mapgen makes it forest), so the land masses, their
+anchors, and the `Regions`/`Land` output are unchanged.
+
 ## Generate Regions
 
 ### Seas

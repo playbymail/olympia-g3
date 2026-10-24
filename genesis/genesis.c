@@ -4,7 +4,7 @@
  * Implements doc/genesis.md: build a blank square ocean canvas, partition it
  * into distinct oceans, 4-color them so mapgen reads each as its own region,
  * grow islands (the island-g3 algorithm, re-derived here on PCG), drop in
- * Mt. Olympus, then emit the full mapgen input set: Map, Regions, Land, Cities,
+ * Mt. Olympus, place the start cities, then emit the full mapgen input set: Map, Regions, Land, Cities,
  * randseed.
  *
  * genesis is UPSTREAM of the golden gate: its output is the *input* to mapgen,
@@ -22,6 +22,8 @@
  *   - Terrain: 'p' plains, 'f' forest, 'm' mountain, 'd' desert, 's' swamp.
  *   - Mt. Olympus is 'O' (mapgen.c:552), NOT '0' (which mapgen reads as a
  *     random-name starting city); doc/genesis.md says '0' in error.
+ *   - Start cities are digits: '1'..'7' named safe havens, '9'/'0' random-name
+ *     safe havens.  '8' (Golden City, not a safe haven) is never written.
  *   - The 4-color adjacency mirrors mapgen's flood rule exactly
  *     (adjacent_tile_sup / flood_water_inside: 8-neighbor, columns wrap, rows
  *     clamp, group by ->color) so each painted ocean reads back as one region.
@@ -53,6 +55,7 @@
 #define STEP_CITIES		3
 #define STEP_RANDSEED		4
 #define STEP_ORIGINS		5	/* --defer-oceans origin selection + frontier */
+#define STEP_START_CITIES	6	/* start-city placement (issue #85) */
 #define STEP_ISLAND_BASE	100	/* island streams: STEP_ISLAND_BASE + iteration */
 
 /*
@@ -393,29 +396,33 @@ dist2(int r1, int c1, int r2, int c2)
 	return dr * dr + dc * dc;
 }
 
+/* Squared distance with mapgen's column wrap (rows clamp, so no row wrap). */
+static long
+dist2_wrap(int r1, int c1, int r2, int c2)
+{
+	long dr = r1 - r2;
+	long dc = c1 > c2 ? c1 - c2 : c2 - c1;
+
+	if (dc > g_size - dc)
+		dc = g_size - dc;
+	return dr * dr + dc * dc;
+}
+
 /*
- * Pick n ocean-origin cells among the water (' ') cells, spaced at least
- * sqrt(r2) apart, using Mitchell's best-candidate sampling: each origin is the
- * farthest-from-existing of up to n*n random candidates, accepted early once it
- * clears the spacing floor.  Returns 1 with origins in orow/ocol, or 0 if some
- * origin couldn't clear r2 within budget (the caller then reduces n).  r2 is held
- * fixed across reductions, so fewer points at the same spacing is strictly easier.
+ * Mitchell's best-candidate sampling over the wn candidate cells (wr,wc): pick
+ * n points spaced at least sqrt(r2) apart, each the farthest-from-existing of up
+ * to n*n random candidates, accepted early once it clears the spacing floor.
+ * wrap selects dist2_wrap over plain dist2.  Returns 1 with the points in
+ * orow/ocol, or 0 if some point couldn't clear r2 within budget (the caller then
+ * reduces n).  r2 is held fixed across reductions, so fewer points at the same
+ * spacing is strictly easier.
  */
 static int
-place_origins(int n, long r2, pcg32_t *rng, int *orow, int *ocol)
+best_candidates(int n, long r2, int wrap, pcg32_t *rng,
+	const int *wr, const int *wc, int wn, int *orow, int *ocol)
 {
-	static int wr[MAX_DIM * MAX_DIM];
-	static int wc[MAX_DIM * MAX_DIM];
-	int wn = 0;
-	int r, c, i;
+	int i;
 
-	for (r = 0; r < g_size; r++)
-		for (c = 0; c < g_size; c++)
-			if (map[r][c] == ' ') {
-				wr[wn] = r;
-				wc[wn] = c;
-				wn++;
-			}
 	if (wn < n)
 		return 0;
 
@@ -433,7 +440,9 @@ place_origins(int n, long r2, pcg32_t *rng, int *orow, int *ocol)
 				long d2 = LONG_MAX;
 				int j;
 				for (j = 0; j < i; j++) {
-					long dd = dist2(wr[cand], wc[cand], orow[j], ocol[j]);
+					long dd = wrap ?
+						dist2_wrap(wr[cand], wc[cand], orow[j], ocol[j]) :
+						dist2(wr[cand], wc[cand], orow[j], ocol[j]);
 					if (dd < d2)
 						d2 = dd;
 				}
@@ -451,6 +460,29 @@ place_origins(int n, long r2, pcg32_t *rng, int *orow, int *ocol)
 		ocol[i] = wc[best];
 	}
 	return 1;
+}
+
+/*
+ * Pick n ocean-origin cells among the water (' ') cells, spaced at least
+ * sqrt(r2) apart (best_candidates, no wrap).  Returns 1 with origins in
+ * orow/ocol, or 0 if they couldn't be spaced (the caller then reduces n).
+ */
+static int
+place_origins(int n, long r2, pcg32_t *rng, int *orow, int *ocol)
+{
+	static int wr[MAX_DIM * MAX_DIM];
+	static int wc[MAX_DIM * MAX_DIM];
+	int wn = 0;
+	int r, c;
+
+	for (r = 0; r < g_size; r++)
+		for (c = 0; c < g_size; c++)
+			if (map[r][c] == ' ') {
+				wr[wn] = r;
+				wc[wn] = c;
+				wn++;
+			}
+	return best_candidates(n, r2, 0, rng, wr, wc, wn, orow, ocol);
 }
 
 /*
@@ -1143,6 +1175,134 @@ flood_land(int sr, int sc, int lab)
 }
 
 /* ------------------------------------------------------------------------- */
+/* Step: start cities (issue #85).                                           */
+/*                                                                           */
+/* mapgen makes safe-haven start cities only from the digit glyphs, so a     */
+/* world without them gets an empty startloc and olympia -a can't add        */
+/* players.  Runs last, after every terrain/ocean step, on its own stream.   */
+/* ------------------------------------------------------------------------- */
+
+/*
+ * Digit glyph for the i'th placed city: the named safe havens 1..7 (Drassa,
+ * Rimmon, Harn, Imperial City, Port Aurnos, Greyfell, Yellowleaf), then the
+ * random-name 9/0 alternately.  Never '8': Golden City is not a safe haven.
+ */
+static char
+start_city_glyph(int i)
+{
+	if (i < 7)
+		return (char)('1' + i);
+	return (i - 7) % 2 == 0 ? '9' : '0';
+}
+
+static int
+is_land_terrain(char c)
+{
+	switch (c) {
+	case 'p': case 'f': case 'm': case 'd': case 's': case 'o':
+		return 1;
+	default:
+		return 0;
+	}
+}
+
+/*
+ * Write up to n start-city digits onto land, spaced like the --defer-oceans
+ * origins: floor ~0.65*sqrt(candidates/n), never under 2 cells (so no two
+ * cities touch), held fixed while n is reduced on a spacing failure.
+ * Candidates are plains/forest (any land terrain if there is none), never on or
+ * touching Mt. Olympus, and never a land mass's Regions/Land anchor cell -- the
+ * anchor's glyph is the Land clump type mapgen checks, and a city is its own
+ * clump; it also keeps one non-safe-haven cell in every land region, which
+ * mapgen's random_tile_from_each_region spins on.  A digit cell stays land, so the land masses and their anchors are
+ * unchanged.  Returns the number placed.
+ */
+static int
+place_start_cities(int n0, uint64_t seed)
+{
+	static char excl[MAX_DIM][MAX_DIM];
+	static int wr[MAX_DIM * MAX_DIM];
+	static int wc[MAX_DIM * MAX_DIM];
+	static int orow[MAX_DIM * MAX_DIM];
+	static int ocol[MAX_DIM * MAX_DIM];
+	int wn = 0;
+	int r, c, d, i, n, pass;
+	long r2;
+
+	if (n0 < 1)
+		return 0;
+
+	for (r = 0; r < g_size; r++)
+		for (c = 0; c < g_size; c++)
+			excl[r][c] = 0;
+
+	/* Mt. Olympus and every cell touching it. */
+	for (r = 0; r < g_size; r++)
+		for (c = 0; c < g_size; c++) {
+			if (map[r][c] != 'O' && map[r][c] != 'M')
+				continue;
+			excl[r][c] = 1;
+			for (d = 0; d < 8; d++) {
+				int nr, nc;
+				if (neighbor8(r, c, d, &nr, &nc))
+					excl[nr][nc] = 1;
+			}
+		}
+
+	/* Anchors: write_regions' (first land cell) and write_land's (skips 'O'). */
+	for (pass = 0; pass < 2; pass++) {
+		for (r = 0; r < g_size; r++)
+			for (c = 0; c < g_size; c++)
+				label[r][c] = -1;
+		for (r = 0; r < g_size; r++)
+			for (c = 0; c < g_size; c++)
+				if (label[r][c] == -1 && !is_ocean_glyph(map[r][c]) &&
+				    (pass == 0 || map[r][c] != 'O')) {
+					excl[r][c] = 1;
+					flood_land(r, c, 0);
+				}
+	}
+
+	/* Prefer plains/forest; fall back to any land terrain. */
+	for (pass = 0; pass < 2 && wn == 0; pass++)
+		for (r = 0; r < g_size; r++)
+			for (c = 0; c < g_size; c++) {
+				char g = map[r][c];
+				if (excl[r][c])
+					continue;
+				if (pass == 0 ? (g != 'p' && g != 'f') : !is_land_terrain(g))
+					continue;
+				wr[wn] = r;
+				wc[wn] = c;
+				wn++;
+			}
+	if (wn < 1) {
+		fprintf(stderr, "genesis: no land for start cities; placed none\n");
+		return 0;
+	}
+
+	r2 = (long)(ALPHA_SQ * (double)wn / (double)n0);
+	if (r2 < 4)
+		r2 = 4;	/* >= 2 cells apart: start cities never touch */
+
+	for (n = n0; n >= 1; n--) {
+		pcg32_t rng;
+		pcg32_seed_step(&rng, seed, STEP_START_CITIES, (uint64_t)n);
+		if (best_candidates(n, r2, 1, &rng, wr, wc, wn, orow, ocol))
+			break;
+		fprintf(stderr,
+			"genesis: couldn't space %d start cities; retrying with %d\n",
+			n, n - 1);
+	}
+	assert(n >= 1);	/* one point always clears the floor */
+
+	for (i = 0; i < n; i++)
+		map[orow[i]][ocol[i]] = start_city_glyph(i);
+	fprintf(stderr, "genesis: placed %d start cities (spacing^2 >= %ld)\n", n, r2);
+	return n;
+}
+
+/* ------------------------------------------------------------------------- */
 /* Name pool (region/continent names), drawn without replacement via PCG.    */
 /* ------------------------------------------------------------------------- */
 
@@ -1433,11 +1593,15 @@ usage(const char *prog)
 	fprintf(stderr,
 		"Usage: %s [--seed N] [--size 10..99] [--number-of-oceans N]\n"
 		"          [--island-iterations 2..10] [--defer-oceans]\n"
+		"          [--start-cities 0..16]\n"
 		"          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]\n"
 		"  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to\n"
 		"  fit; larger requests are reduced with a warning.\n"
 		"  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus\n"
 		"  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.\n"
+		"  --start-cities places up to N safe-haven start cities on land (default\n"
+		"  6; fewer if they can't be spaced; 0 = none).  Without at least one,\n"
+		"  olympia-g3 can't add players.  See issue #85.\n"
 		"  --image dumps the generated Map as a 24-bit BMP for eyeballing the\n"
 		"  world (debug aid, issue #81; emitted only when given, never affects\n"
 		"  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per\n"
@@ -1453,19 +1617,21 @@ main(int argc, char *argv[])
 	int size = 99;
 	int oceans = 9;
 	int iterations = 10;
+	int start_cities = 6;
 	uint64_t seed = 0;
 	int opt;
 	const char *image_path = NULL;	/* issue #81: --image debug BMP (NULL = off) */
 	int image_pixels = 8;		/* --pixels: N x N pixels per province */
 	int image_grid = 0;		/* --grid: black grid-line thickness */
 
-	enum { OPT_IMAGE = 256, OPT_PIXELS, OPT_GRID };
+	enum { OPT_IMAGE = 256, OPT_PIXELS, OPT_GRID, OPT_START_CITIES };
 	static struct option longopts[] = {
 		{ "size",              required_argument, 0, 's' },
 		{ "number-of-oceans",  required_argument, 0, 'n' },
 		{ "island-iterations", required_argument, 0, 'i' },
 		{ "seed",              required_argument, 0, 'd' },
 		{ "defer-oceans",      no_argument,       0, 'D' },
+		{ "start-cities",      required_argument, 0, OPT_START_CITIES },
 		{ "image",             required_argument, 0, OPT_IMAGE },
 		{ "pixels",            required_argument, 0, OPT_PIXELS },
 		{ "grid",              required_argument, 0, OPT_GRID },
@@ -1483,6 +1649,7 @@ main(int argc, char *argv[])
 		case OPT_IMAGE:  image_path = optarg; break;
 		case OPT_PIXELS: image_pixels = atoi(optarg); break;
 		case OPT_GRID:   image_grid = atoi(optarg); break;
+		case OPT_START_CITIES: start_cities = atoi(optarg); break;
 		case 'h': usage(argv[0]); return 0;
 		default:  usage(argv[0]); return 1;
 		}
@@ -1509,6 +1676,10 @@ main(int argc, char *argv[])
 	 */
 	if (iterations < 2 || iterations > 10) {
 		fprintf(stderr, "genesis: --island-iterations must be 2..10 (got %d)\n", iterations);
+		return 1;
+	}
+	if (start_cities < 0 || start_cities > 16) {
+		fprintf(stderr, "genesis: --start-cities must be 0..16 (got %d)\n", start_cities);
 		return 1;
 	}
 	/* --image tuning bounds (issue #81); only checked when --image is given. */
@@ -1541,6 +1712,8 @@ main(int argc, char *argv[])
 		add_islands(iterations, seed);
 		add_olympus();
 	}
+	/* Last terrain step: the land/ocean layout is final, so anchors are too. */
+	place_start_cities(start_cities, seed);
 
 	init_region_names(seed);
 	write_map();
