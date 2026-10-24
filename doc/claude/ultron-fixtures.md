@@ -19,8 +19,9 @@ the inventory family (#127) by `inventory-give` and `inventory-refused`,
 the combat family (#128) by `combat-attack`, `combat-refused` and
 `guard-pillage`, the attitude family (#129) by `attitude-set` and
 `attitude-refused`, the recruitment family (#130) by
-`recruitment-raise` and `recruitment-refused`, and the stacking family
-(#141) by `stacking-stack` and `stacking-refused`.
+`recruitment-raise` and `recruitment-refused`, the stacking family
+(#141) by `stacking-stack` and `stacking-refused`, and the trade family
+(#142) by `trade-market` and `trade-refused`.
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):

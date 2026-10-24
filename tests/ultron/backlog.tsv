@@ -51,9 +51,9 @@ give	inventory	cr		inventory-give	inventory-refused	inventory-refused
 pay	inventory	cr		inventory-give	inventory-refused	inventory-refused
 reclaim	inventory	c		inventory-give	inventory-refused	n/a
 take	inventory	cr	get	inventory-give	inventory-refused	inventory-refused
-buy	trade	c		todo	todo	todo
-fee	trade	c		move-ship	todo	todo
-sell	trade	c		todo	todo	todo
+buy	trade	c		trade-market	trade-refused	trade-refused
+fee	trade	c		move-ship	trade-refused	n/a
+sell	trade	c		trade-market	trade-refused	trade-refused
 decree	governance	c		todo	todo	todo
 garrison	governance	c		todo	todo	todo
 ungarrison	governance	c		todo	todo	todo
