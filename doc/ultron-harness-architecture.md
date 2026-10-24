@@ -283,7 +283,7 @@ Smallest end-to-end slice that proves the architecture, in dependency order:
    legal-ish orders at random) writing order files out of process. **✅ Done**
    (#105) — see [§7.3](#73-chaos-goblin-brain--landed).
 4. **Loop driver** wiring §4 steps 1–6, and freezing any crash as a regress
-   fixture.
+   fixture. **✅ Done** (#106) — see [§7.4](#74-loop-driver--landed).
 
 Each step is independently testable and the first two are valuable on their own.
 
@@ -397,3 +397,52 @@ unit fired 110 verbs on each of trade-routes and guard-pillage (baseline: 3 and
 4), reaching `rejected` and `fail` as well as `ok`. Nothing crashed, and seeds
 1–20 ran clean under ASan/UBSan. Driving this across turns and freezing any crash
 as a fixture is step 4 (#106).
+
+### 7.4 Loop driver — landed
+
+`tests/ultron/loop.py` (#106) runs the whole loop in one command:
+
+```bash
+tests/ultron/loop.py --scenario tests/olympia/regress/trade-routes/scenario.tgz \
+                     --turns 5 --seed 1 [--preset asan-ubsan] [--orders-per-unit 8]
+```
+
+- **Scenario.** A `scenario.tgz`, or an `olyscript-g3` `.lua` run on the
+  bare-map fixture (`tests/olympia/fixtures/lib.tgz`), the way `check-lua.sh`
+  does. It is unpacked into the work directory, by default
+  `run/ultron/<scenario>-s<seed>` (git-ignored). An existing work directory needs
+  `--force`, and one under `tests/` is refused, so the golden trees are never
+  written.
+- **Per turn** it keeps `turn-NNN/{state.json, orders/, coverage.tsv, turn.log}`.
+  The brain seed for turn *t* is `seed × 1000003 + t`. The brain's `--coverage`
+  is `coverage-total.tsv`, the sum over the turns so far, so each turn steers away
+  from what earlier turns already hit (step 6). Turn 1 is steered by the backlog
+  alone.
+- **Failures** are a non-zero exit, a signal, an assert message, any ASan/UBSan
+  diagnostic, a run past `--timeout` (600 s), or a missing export or coverage
+  file. The state export run is checked the same way as the turn. On the first
+  failure the loop stops and freezes `fixtures/<name>/`, named
+  `ultron-<scenario>-s<seed>-t<turn>-<signature>` (for example
+  `…-t002-assert-code.c-42` or `…-asan-heap-buffer-overflow`). The fixture holds:
+  - `scenario.tgz`: the pre-run `lib` with its order files
+  - `orders/`: those order files, for reading
+  - `meta.json`: the signature and the exact engine arguments
+  - `failure.log`: the engine's output
+  - `check.sh`: replays the run through `loop.py --replay` and prints `YES` while
+    it still fails with the same signature
+
+  To promote one, move it under `tests/olympia/regress/` and turn `check.sh` into
+  a pinned check once the bug is fixed.
+- **Summary.** At the end it prints the backlog `todo` cells that the run hit
+  at least once, and writes them to `newly-hit.tsv`.
+- **Testing the freeze.** `--inject TURN:FACTION:UNIT:ORDER` appends a raw order
+  line after the brain. `--engine tests/ultron/inject-crash.sh` runs the real
+  engine but aborts like a failed assert on any `ultron-crash` order. Together
+  they plant a crash that depends only on the order files.
+  `tests/ultron/check-loop.sh` uses them, and also checks that two runs with one
+  seed give identical per-turn orders, state and coverage.
+
+**First runs (2026-10-24).** Three turns of trade-routes at seed 1 fired 22 verbs
+and hit 21 backlog `todo` cells. Four turns of `guard-pillage.lua` at seed 3, 20
+orders per unit, on `asan-ubsan`, fired 83 verbs and hit 104 `todo` cells (21
+`ok`, 42 `rejected`, 41 `fail`). Both ran clean.

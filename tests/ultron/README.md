@@ -43,8 +43,11 @@ other verb has one.
 ## Working through it
 
 The Chaos Goblin brain in [`brain/`](brain/README.md) generates order files
-weighted toward the `todo` cells below; a turn it drives shows which cells a
-scenario can reach before a fixture is built for them.
+weighted toward the `todo` cells below. `loop.py` runs it for N turns on a
+scenario and lists the `todo` cells the run hit, which shows what a scenario can
+reach before a fixture is built for it. It also freezes any crash it finds as a
+candidate fixture ([harness doc §7.4](../../doc/ultron-harness-architecture.md#74-loop-driver--landed)).
+`./check-loop.sh` checks the loop itself.
 
 1. **Pick a `todo` cell.** Prefer rows with an empty `alias_of`: an alias runs
    the same `start` as its target, so it adds little once the target is covered.

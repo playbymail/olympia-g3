@@ -20,3 +20,6 @@ build32/
 
 # keep golden-test fixtures (overrides *.tgz above)
 !tests/**/*.tgz
+
+# python bytecode
+__pycache__/
