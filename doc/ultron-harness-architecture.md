@@ -277,7 +277,8 @@ Smallest end-to-end slice that proves the architecture, in dependency order:
    *today's* golden turn exercise." **✅ Done** (#98, #100) — see
    [§7.1](#71-coverage-hook--landed).
 2. **State export** — a minimal read-only dump (location, inventory, skills) via
-   the oracle bindings or a `-state-export` mode.
+   the oracle bindings or a `-state-export` mode. **✅ Done** (#104) — see
+   [§7.2](#72-state-export--landed).
 3. **A trivial brain** — one archetype (the Chaos Goblin is the cheapest: pick
    legal-ish orders at random) writing order files out of process.
 4. **Loop driver** wiring §4 steps 1–6, and freezing any crash as a regress
@@ -320,4 +321,52 @@ The `move`/`wait` rows are NPC and savage orders. Every other verb, and every
 `rejected`/`fail` path, is unexercised: that list is the fixture backlog ahead of
 the Go port, tracked per verb and outcome in
 [`tests/ultron/backlog.tsv`](../tests/ultron/README.md).
+
+### 7.2 State export — landed
+
+`olympia-g3 ... --state-export <path>` (#104) writes a JSON snapshot of what each
+regular player faction can act on. It is the engine-mode form of the oracle; the
+format below is the contract, so a Lua dump through the `oly.*` bindings can
+produce the same file later if in-process branching is ever needed.
+
+- **When.** At the end of `main()`, after `save_db()`, so nothing it touches can
+  reach the saved database. It only reads and draws no random numbers. With `-r`
+  it shows the post-turn state; without (`olympia-g3 -l lib --state-export
+  <path>`) it shows the state the next orders will run against.
+- **Opt-in**, like `--coverage`: without the flag nothing is written. Keep the path
+  outside `lib/`.
+- **Deterministic**: every list is in entity-id order. Names are 8-bit, so bytes
+  outside printable ASCII are written as `\u00XX` (read as Latin-1).
+- **Note:** every engine run rewrites `lib/times_0` (the Times masthead), with or
+  without this flag. Pass `test-use-const-report-date`, or export from a scratch
+  copy of `lib`, when the tree must stay untouched.
+
+```json
+{"turn": 2, "factions": [
+  {"id": 400, "name": "Trade Test",
+   "units": [
+     {"id": 4126, "name": "…", "where": 10113, "stacked_under": 0,
+      "items":  [{"id": 1, "name": "gold", "qty": 200}],
+      "skills": [{"id": 730, "name": "Trade"}]}],
+   "locations": [
+     {"id": 10113, "name": "", "kind": "loc", "subkind": "plain",
+      "depth": "province", "province": 10113,
+      "exits": [{"direction": "north", "destination": 10013, "distance": 2,
+                 "road": 0, "impassable": 0, "hidden": 0}],
+      "here":  [{"id": 4126, "name": "…", "faction": 400}]}]}]}
+```
+
+| Field | Meaning |
+|---|---|
+| `units[].where` | the unit's immediate location or ship (`subloc()`) |
+| `units[].stacked_under` | the unit it is stacked under, or 0 if it leads its own stack |
+| `units[].skills` | skills it knows (`SKILL_know`), not ones in progress |
+| `locations` | every location the faction's units are in |
+| `exits` | the exits the faction's lowest-numbered unit there can see; exits hidden from it are left out |
+| `exits[].direction` | `north` … `out`, or `road` for a road |
+| `exits[].hidden` | 1 for a hidden destination the unit knows about |
+| `here[].faction` | the owning faction of each character present |
+
+Faction relations (attitudes, allies) and studyable-skill lists are not in the
+first cut.
 

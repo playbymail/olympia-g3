@@ -323,6 +323,7 @@ target_sources(olympia-g3 PRIVATE
     olympia/pw.c olympia/quest.c olympia/relig.c
     olympia/report.c olympia/rnd.c olympia/savage.c
     olympia/scry.c olympia/seed.c olympia/sout.c
+    olympia/state_export.c
     olympia/stack.c olympia/stealth.c olympia/storm.c
     olympia/summary.c olympia/swear.c olympia/tunnel.c
     olympia/u.c olympia/use.c olympia/z.c
@@ -401,6 +402,7 @@ target_sources(olyscript-g3 PRIVATE
     olympia/pw.c olympia/quest.c olympia/relig.c
     olympia/report.c olympia/rnd.c olympia/savage.c
     olympia/scry.c olympia/seed.c olympia/sout.c
+    olympia/state_export.c
     olympia/stack.c olympia/stealth.c olympia/storm.c
     olympia/summary.c olympia/swear.c olympia/tunnel.c
     olympia/u.c olympia/use.c olympia/z.c

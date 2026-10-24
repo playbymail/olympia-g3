@@ -1187,6 +1187,9 @@ extern char *coverage_path;
 #define	COV_FAIL	3	/* start returned FALSE */
 #define	COV_MAX		4
 
+/* issue #104: "--state-export <path>" set by main.c, NULL = no export */
+extern char *state_export_path;
+
 /*
  *  Saved in libdir/system:
  */

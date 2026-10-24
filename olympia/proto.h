@@ -265,6 +265,9 @@ extern void mint_shuffle(ilist l);				/* add.c: pick_starting_city "empty" candi
 extern void coverage_count(int cmd, int outcome);
 extern void write_coverage(void);
 
+/* olympia/state_export.c */
+extern void write_state_export(void);
+
 /* olympia/combat.c */
 extern int cannot_take_booty(int who);
 extern int d_pillage(struct command *c);
