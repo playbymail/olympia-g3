@@ -1177,6 +1177,9 @@ extern char *libdir;
 extern int trade_route_seed_pending;
 extern uint64_t trade_route_seed_value;
 
+/* issue #100: "--coverage <path>" set by main.c, NULL = no coverage dump */
+extern char *coverage_path;
+
 /*
  *  Saved in libdir/system:
  */

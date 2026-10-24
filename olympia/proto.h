@@ -261,6 +261,9 @@ extern int mint_password(int pl, int i, int n);			/* add.c: per-player password 
 extern int mint_city(void);					/* add.c: get_city_id start-line pick, sequential */
 extern void mint_shuffle(ilist l);				/* add.c: pick_starting_city "empty" candidate shuffle */
 
+/* olympia/coverage.c */
+extern void write_coverage(void);
+
 /* olympia/combat.c */
 extern int cannot_take_booty(int who);
 extern int d_pillage(struct command *c);

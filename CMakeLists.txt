@@ -312,7 +312,7 @@ target_sources(olympia-g3 PRIVATE
     olympia/add.c olympia/adv.c olympia/alchem.c olympia/art.c
     olympia/basic.c olympia/beast.c olympia/build.c
     olympia/buy.c olympia/c1.c olympia/c2.c olympia/check.c
-    olympia/cloud.c olympia/code.c olympia/combat.c
+    olympia/cloud.c olympia/code.c olympia/combat.c olympia/coverage.c
     olympia/day.c olympia/dir.c olympia/display.c olympia/eat.c
     olympia/faery.c olympia/garr.c olympia/gate.c
     olympia/glob.c olympia/gm.c olympia/hades.c
@@ -390,7 +390,7 @@ target_sources(olyscript-g3 PRIVATE
     olympia/add.c olympia/adv.c olympia/alchem.c olympia/art.c
     olympia/basic.c olympia/beast.c olympia/build.c
     olympia/buy.c olympia/c1.c olympia/c2.c olympia/check.c
-    olympia/cloud.c olympia/code.c olympia/combat.c
+    olympia/cloud.c olympia/code.c olympia/combat.c olympia/coverage.c
     olympia/day.c olympia/dir.c olympia/display.c olympia/eat.c
     olympia/faery.c olympia/garr.c olympia/gate.c
     olympia/glob.c olympia/gm.c olympia/hades.c

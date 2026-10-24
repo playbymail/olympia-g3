@@ -670,15 +670,24 @@ main(int argc, char **argv)
 	call_init_routines();
 
 	/*
-	 *  Pull the long-form testing flag "test-use-const-report-date" out of
-	 *  argv before getopt() (which only handles single-char options) sees it,
-	 *  compacting argv so the remaining options parse normally.
+	 *  Pull the long-form arguments out of argv before getopt() (which only
+	 *  handles single-char options) sees them, compacting argv so the
+	 *  remaining options parse normally:
+	 *
+	 *	test-use-const-report-date	fixed Times masthead date
+	 *	--coverage <path>		write the Ultron coverage dump (#100)
 	 */
 	{
 		int ai, aj = 1;
 		for (ai = 1; ai < argc; ai++) {
 			if (strcmp(argv[ai], "test-use-const-report-date") == 0)
 				test_use_const_report_date = TRUE;
+			else if (strcmp(argv[ai], "--coverage") == 0) {
+				if (ai + 1 < argc && *argv[ai + 1])
+					coverage_path = str_save(argv[++ai]);
+				else
+					errflag++;
+			}
 			else
 				argv[aj++] = argv[ai];
 		}
@@ -792,6 +801,7 @@ main(int argc, char **argv)
 		fprintf(stderr, "	-M		Mail reports and order acks\n");
 		fprintf(stderr, "	-A		Charge player accounts\n");
 		fprintf(stderr, "	-G seed		Set per-game trade-route seed (game creation only)\n");
+		fprintf(stderr, "	--coverage path	Write the command coverage dump to path\n");
 		return 1;
 	}
 
@@ -858,6 +868,8 @@ main(int argc, char **argv)
 		immediate_commands();
 		close_logfile();
 	}
+
+	write_coverage();
 
 	check_db();									 /* check database integrity */
 
