@@ -11,7 +11,9 @@ behavior the port can get wrong without anyone noticing. The to-do list is
 with the fixture that exercises each outcome (`ok` / `rejected` / `fail`) or
 `todo`. The work is split into one child issue per verb family under the parent
 **#116**. The movement family (#117) is covered by `move-go`, `move-land` and
-`move-ship`. No `rejected`/`fail` cell is covered yet.
+`move-ship`, and the player family (#118) by `player-settings`, `player-press`,
+`player-die` and `player-quit`. Those are also the first fixtures to cover
+`rejected`/`fail` cells.
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):
@@ -26,8 +28,11 @@ base world `tests/olympia/fixtures/world.tgz` (#121; see
 `tests/ultron/check.sh` printing `YES`.
 
 **Author new fixtures in Lua** (`olyscript-g3`, `olympia/lua_bindings.c`) when
-the bindings cover them; guard-pillage and move-ship show the pattern
-(`<name>.lua` + `check-lua.sh`). If a binding is missing, add it in that
+the bindings cover them. A fixture authored in Lua from the start has a
+`<name>.lua` that its `build-scenario.sh` runs and freezes as `scenario.patch`
+(the `player-*` fixtures; the script also takes `world.tgz`'s `lib/log`, which
+a turn discards). guard-pillage and move-ship were built in bash first and keep
+a Lua copy checked by `check-lua.sh`. If a binding is missing, add it in that
 fixture's PR. A verb that a third fixture's bash build drives through `-i` is
 the signal to add one. Bindings are C engine code under the full `-Werror`
 build, and the Go port may have to reproduce them, so none are added
