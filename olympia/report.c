@@ -1693,8 +1693,17 @@ player_banner(void)
 		{
 			int month, year;
 
+			/*
+			 *  At turn 0 (no turn has run yet)
+			 *  oly_month() underflows to -1 and month_names[-1]
+			 *  reads before the array (#90; cf. #3 in c2.c).
+			 *  Clamp to month 0; turn >= 1 is unaffected.
+			 */
 			month = oly_month(sysclock);
+			if (month < 0)
+				month = 0;
 			year = oly_year(sysclock);
+			assert(month >= 0 && month < NUM_MONTHS);
 
 			wout(pl, "{<i>}Season \"%s\", month %d, in the year %d.{</i>}",
 					month_names[month],
