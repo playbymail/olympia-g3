@@ -21,7 +21,8 @@
  *  additem, guard, order, save, plus the loc/has_item query reads and the
  *  name/id registry. subitem, know, makeloc and restart followed for the
  *  move-ship fixture (issue #120); add_player's `unformed` list for the
- *  inventory-give fixture (issue #127). Everything else in the design (kill, credit, the
+ *  inventory-give fixture and the garrison query for inventory-refused
+ *  (issue #127). Everything else in the design (kill, credit, the
  *  wider query set, the declarative format, RNG bindings) is deferred; a
  *  binding is added when a fixture needs it, not speculatively.
  */
@@ -526,6 +527,27 @@ l_has_item(lua_State *L)
 	return 1;
 }
 
+/*
+ *  oly.garrison(where)  -- query: the garrison guarding where, or nil.
+ *  load_db() has already seeded the city garrisons (seed_phase_two).
+ */
+static int
+l_garrison(lua_State *L)
+{
+	int where = (int) luaL_checkinteger(L, 1);
+	int garr;
+
+	if (!valid_box(where))
+		return luaL_error(L, "oly.garrison: %d not a valid box", where);
+
+	garr = garrison_here(where);
+	if (garr == 0)
+		lua_pushnil(L);
+	else
+		lua_pushinteger(L, garr);
+	return 1;
+}
+
 /* oly.id("grok")  -- resolve a registry name to its id (error if unbound). */
 static int
 l_id(lua_State *L)
@@ -574,6 +596,7 @@ static const luaL_Reg oly_funcs[] = {
 	{ "restart",		l_restart },
 	{ "loc",		l_loc },
 	{ "has_item",		l_has_item },
+	{ "garrison",		l_garrison },
 	{ "id",			l_id },
 	{ "name",		l_name },
 	{ NULL,			NULL }

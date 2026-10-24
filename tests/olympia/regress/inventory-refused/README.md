@@ -2,7 +2,8 @@
 
 Pins the `fail` and `rejected` outcomes of the inventory-family verbs
 (issue #127, backlog parent #116): `give`, `get`, `take`, `pay`, `claim`,
-`discard` and `drop` fail and are rejected, and `reclaim` is rejected.
+`discard` and `drop` fail and are rejected, and `reclaim` and `accept` are
+rejected.
 
 ## Scenario
 
@@ -24,11 +25,13 @@ The player entity issues the same seven orders and `reclaim`, and each one is
 refused (rejected): `claim`, `discard` and `reclaim` are noble-only (`c`), and
 the rest are `cr`, which a player entity may not issue either.
 
-## Cells this fixture can't fill
+The garrison [1009] of Catchclaw (58706) orders `accept 0 0 0`.
+`accept` is `cpr`, so the player entity may issue it, but a garrison (`g`) may
+not, and it is rejected. `oly.load` seeds the city garrisons, and the script
+finds this one with `oly.garrison`. The rejection goes to the garrison
+player's report, so only the coverage dump pins it.
 
-- `accept` and `reclaim` always return TRUE, so their `fail` cells are `n/a`.
-- `accept` is `cpr`, so the player entity may issue it. Its `rejected` cell
-  needs a garrison (`g`), and stays `todo`.
+`accept` and `reclaim` always return TRUE, so their `fail` cells are `n/a`.
 
 ## What `check.sh` asserts
 

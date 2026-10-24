@@ -173,6 +173,10 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  9276	2.64	fact/207	
  9294	2.64	fact/207	
 --- /dev/null
++++ b/lib/orders/207
+@@ -0,0 +1 @@
++1009:accept 0 0 0
+--- /dev/null
 +++ b/lib/orders/300
 @@ -0,0 +1,15 @@
 +4126:give 8651 10 1

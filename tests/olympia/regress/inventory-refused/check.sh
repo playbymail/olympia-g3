@@ -5,7 +5,8 @@
 # Extracts the frozen scenario (scenario.patch over the shared
 # tests/olympia/fixtures/world.tgz) and runs one turn. A noble orders give,
 # get, take, pay, claim, discard and drop, and each fails; its player entity
-# orders the same verbs and reclaim, and check_allow() rejects each.
+# orders the same verbs and reclaim, and a seeded city garrison orders
+# accept; check_allow() rejects each.
 # See inventory-refused.lua and README.md.
 #
 # Three checks, all required:
@@ -30,7 +31,7 @@ BIN="${ROOT}/build/${PRESET}/olympia-g3"
 FILES=(save/1/300 save/1/301 fact/300 fact/301)
 CELLS=(give:fail get:fail take:fail pay:fail claim:fail discard:fail drop:fail
 	give:rejected get:rejected take:rejected pay:rejected claim:rejected
-	discard:rejected drop:rejected reclaim:rejected)
+	discard:rejected drop:rejected reclaim:rejected accept:rejected)
 
 [ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }
 

@@ -610,6 +610,10 @@ the registry), and `oly.restart()`, which emulates a fresh engine process
 (mint stream restarted, GM active again, a just-saved `save` left running) so
 `move-ship.lua` can match the multi-process `move-ship/build-scenario.sh`.
 
+**Since landed (#127):** `oly.add_player` also returns `unformed`, the
+faction's unformed noble ids in FORM order, and `oly.garrison(where)` returns
+the garrison guarding `where` (seeded by `oly.load`), or nil.
+
 **Explicitly deferred:** `kill`, `credit`, the full query set
 (`here`/`all`/`chars_here`/`knows`), the declarative format, RNG bindings, and
 any production-engine integration. Path (B) direct-handler calls are deferred

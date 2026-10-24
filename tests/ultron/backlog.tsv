@@ -42,7 +42,7 @@ terrorize	social	cr		todo	todo	todo
 promote	stacking	cr		todo	todo	todo
 stack	stacking	cr		todo	todo	todo
 unstack	stacking	cr		todo	todo	todo
-accept	inventory	cpr		inventory-give	todo	n/a
+accept	inventory	cpr		inventory-give	inventory-refused	n/a
 claim	inventory	c		inventory-give	inventory-refused	inventory-refused
 discard	inventory	c		inventory-give	inventory-refused	inventory-refused
 drop	inventory	cr	discard	inventory-give	inventory-refused	inventory-refused

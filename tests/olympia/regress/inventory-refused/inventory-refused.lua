@@ -12,14 +12,16 @@
 --   discard, drop  the fumbler has no fish
 --
 -- The fumblers' player entity orders the same verbs plus reclaim (rejected:
--- noble-only verbs). accept and reclaim always return TRUE, so they have no
--- fail outcome.
+-- noble-only verbs). The garrison of Catchclaw, seeded by oly.load, orders
+-- accept (rejected: a garrison may issue no accept). accept and reclaim
+-- always return TRUE, so they have no fail outcome.
 
 local oly = require "oly"
 
 local GOLD, PEASANT, FISH = 1, 10, 87	-- items
 
 local GREYFELL = 57081			-- start city 0
+local CATCHCLAW = 58706			-- a city with a seeded garrison
 
 oly.load("./lib")
 oly.extract_startlocs()
@@ -38,6 +40,8 @@ end
 local fumblers = faction(300, "Fumblers", "fumbler", "Fumbler One")
 local strangers = faction(301, "Strangers", "stranger", "Stranger One")
 local fumbler, stranger = fumblers.noble, strangers.noble
+local garrison = oly.garrison(CATCHCLAW)
+assert(garrison, "Catchclaw must have a garrison")
 
 assert(not oly.has_item(fumbler, FISH), "the fumbler must have no fish")
 assert(not oly.has_item(fumblers.player, FISH), "the faction must have no fish")
@@ -59,8 +63,10 @@ for _, o in ipairs(orders) do
 	oly.order(fumblers.player, o)
 end
 oly.order(fumblers.player, "reclaim")
+oly.order(garrison, "accept 0 0 0")
 
 oly.save("./lib")
 
 print(string.format("built inventory-refused: player=%d fumbler=%d "
-	.. "stranger=%d", fumblers.player, fumbler, stranger))
+	.. "stranger=%d garrison=%d", fumblers.player, fumbler, stranger,
+	garrison))
