@@ -40,6 +40,6 @@ and the captain's report are what pin the voyage.
 ```bash
 ./check.sh                              # prints YES
 OLYMPIA_PRESET=asan-ubsan ./check.sh    # same, clean under ASan/UBSan
-./build-scenario.sh                     # regenerate scenario.tgz (authoring only)
+./build-scenario.sh                     # regenerate scenario.patch (authoring only)
 ./check.sh --update                     # re-baseline after a deliberate change
 ```

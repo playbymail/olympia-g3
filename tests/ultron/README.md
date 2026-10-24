@@ -55,7 +55,9 @@ candidate fixture ([harness doc §7.4](../../doc/ultron-harness-architecture.md#
    `todo` cells.
 2. **Build a fixture** under `tests/olympia/regress/<name>/`, following
    `guard-pillage` and `trade-routes`: a GM-built scenario (`build-scenario.sh` or
-   an `olyscript-g3` `.lua`), the player order files, a `scenario.tgz`, and a
+   an `olyscript-g3` `.lua`), the player order files, a `scenario.patch` over the
+   shared base world (see [`tests/olympia/fixtures`](../olympia/fixtures/README.md);
+   a multi-turn setup like `trade-routes` keeps a full `scenario.tgz`), and a
    `check.sh` that runs one `-r -S` turn and compares a hashed manifest with
    `EXPECT.sha256` and the `--state-export` snapshot with `EXPECT.json`. The
    hashes (reports included) are the strict gate; the JSON shows what changed

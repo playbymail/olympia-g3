@@ -2,7 +2,8 @@
 ###########################################################################
 # Regression: land movement and flight (issue #117).
 #
-# Extracts the frozen scenario (scenario.tgz) and runs one turn. Two walkers
+# Extracts the frozen scenario (scenario.patch over the shared
+# tests/olympia/fixtures/world.tgz) and runs one turn. Two walkers
 # loop Greyfell -> Forest -> Plain -> Forest -> Plain -> Forest, one with the
 # long verbs (enter, exit, s, north, west, east) and one with their aliases
 # (in, out, south, n, w, e); a rider on a winged horse flies to the Plain and
@@ -24,16 +25,16 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${HERE}/../../../.." && pwd)"
 PRESET="${OLYMPIA_PRESET:-debug}"
 BIN="${ROOT}/build/${PRESET}/olympia-g3"
+. "${ROOT}/tests/olympia/fixtures/scenario.sh"
 
 FILES=(save/1/300 save/1/301 save/1/302 fact/300 fact/301 fact/302)
 VERBS=(enter exit s north west east in out south n w e fly)
 
 [ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }
-[ -f "${HERE}/scenario.tgz" ] || { echo "error: missing scenario.tgz (run ./build-scenario.sh)"; exit 2; }
 
 WORK="$(mktemp -d)"
 trap 'rm -rf "${WORK}"' EXIT
-tar zxf "${HERE}/scenario.tgz" -C "${WORK}" || exit 2
+scenario_unpack "${HERE}" "${WORK}" || exit 2
 
 ( cd "${WORK}" && "${BIN}" -r -l ./lib -S test-use-const-report-date \
 	--coverage "${WORK}/coverage.tsv" \

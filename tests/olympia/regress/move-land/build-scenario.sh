@@ -1,6 +1,6 @@
 #!/bin/bash
 ###########################################################################
-# Regenerate scenario.tgz for the move-land fixture (issue #117).
+# Regenerate scenario.patch for the move-land fixture (issue #117).
 #
 # This is a ONE-TIME authoring tool, NOT run by check.sh. Starting from the
 # bare-map fixture (tests/olympia/fixtures) it builds three regular factions,
@@ -15,7 +15,7 @@
 # Plain 13551 and back. Every order starts within the month, so every verb
 # reaches its `ok` outcome (check.sh asserts it from the coverage dump).
 #
-# Usage:  ./build-scenario.sh      (writes ./scenario.tgz)
+# Usage:  ./build-scenario.sh      (writes ./scenario.patch)
 ###########################################################################
 set -eu
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -23,6 +23,7 @@ ROOT="$(cd "${HERE}/../../../.." && pwd)"
 PRESET="${OLYMPIA_PRESET:-debug}"
 BIN="${ROOT}/build/${PRESET}/olympia-g3"
 SEED_LIB="${ROOT}/tests/olympia/fixtures/lib.tgz"
+. "${ROOT}/tests/olympia/fixtures/scenario.sh"
 
 FOREST=13451		# Forest [bs51], outer province of Greyfell
 PEASANT=10		# item: peasants (every new noble starts with 25)
@@ -63,5 +64,5 @@ printf '%s:%s\n' "${W1}" enter "${W1}" exit "${W1}" s "${W1}" north "${W1}" west
 printf '%s:%s\n' "${W2}" in "${W2}" out "${W2}" south "${W2}" n "${W2}" w "${W2}" e > lib/orders/301
 printf '%s:%s\n' "${R1}" "fly south" "${R1}" "fly north" > lib/orders/302
 
-tar czf "${HERE}/scenario.tgz" lib
-echo "wrote ${HERE}/scenario.tgz  (walkers=${W1},${W2} rider=${R1} forest=${FOREST})"
+scenario_write "${WORK}" "${HERE}"
+echo "wrote ${HERE}/scenario.patch  (walkers=${W1},${W2} rider=${R1} forest=${FOREST})"

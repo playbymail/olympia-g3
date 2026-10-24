@@ -1,6 +1,6 @@
 #!/bin/bash
 ###########################################################################
-# Regenerate scenario.tgz for the move-ship fixture (issue #117).
+# Regenerate scenario.patch for the move-ship fixture (issue #117).
 #
 # This is a ONE-TIME authoring tool, NOT run by check.sh. Starting from the
 # bare-map fixture (tests/olympia/fixtures) it builds two regular factions in
@@ -17,7 +17,7 @@
 # Ocean [bs52] and back to Greyfell, and put the passenger ashore. check.sh
 # asserts that board, unload, ferry, sail (and fee) each reach `ok`.
 #
-# Usage:  ./build-scenario.sh      (writes ./scenario.tgz)
+# Usage:  ./build-scenario.sh      (writes ./scenario.patch)
 ###########################################################################
 set -eu
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -25,6 +25,7 @@ ROOT="$(cd "${HERE}/../../../.." && pwd)"
 PRESET="${OLYMPIA_PRESET:-debug}"
 BIN="${ROOT}/build/${PRESET}/olympia-g3"
 SEED_LIB="${ROOT}/tests/olympia/fixtures/lib.tgz"
+. "${ROOT}/tests/olympia/fixtures/scenario.sh"
 
 PEASANT=10		# item: peasants (every new noble starts with 25)
 SAILOR=19		# item: sailors
@@ -72,5 +73,5 @@ printf '%s:%s\n' "${CAP}" "fee 1" "${CAP}" ferry "${CAP}" "wait time 1" \
 	"${CAP}" "sail east" "${CAP}" "sail west" "${CAP}" unload > lib/orders/300
 printf '%s:%s\n' "${PAS}" "wait ferry ${SHIP}" "${PAS}" "board ${SHIP}" > lib/orders/301
 
-tar czf "${HERE}/scenario.tgz" lib
-echo "wrote ${HERE}/scenario.tgz  (captain=${CAP} passenger=${PAS} ship=${SHIP})"
+scenario_write "${WORK}" "${HERE}"
+echo "wrote ${HERE}/scenario.patch  (captain=${CAP} passenger=${PAS} ship=${SHIP})"

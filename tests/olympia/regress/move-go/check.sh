@@ -2,7 +2,8 @@
 ###########################################################################
 # Regression: the GO order, by direction and by destination (issue #117).
 #
-# Extracts the frozen scenario (scenario.tgz) and runs one turn. One noble
+# Extracts the frozen scenario (scenario.patch over the shared
+# tests/olympia/fixtures/world.tgz) and runs one turn. One noble
 # issues `go south`, `go <province id>` and `go <city id>`. GO shares v_move
 # with MOVE (whose ok the main golden turn covers through NPCs); this pins GO
 # through a player's order file. See build-scenario.sh and README.md.
@@ -23,16 +24,16 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${HERE}/../../../.." && pwd)"
 PRESET="${OLYMPIA_PRESET:-debug}"
 BIN="${ROOT}/build/${PRESET}/olympia-g3"
+. "${ROOT}/tests/olympia/fixtures/scenario.sh"
 
 FILES=(save/1/300 fact/300)
 VERBS=(go)
 
 [ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }
-[ -f "${HERE}/scenario.tgz" ] || { echo "error: missing scenario.tgz (run ./build-scenario.sh)"; exit 2; }
 
 WORK="$(mktemp -d)"
 trap 'rm -rf "${WORK}"' EXIT
-tar zxf "${HERE}/scenario.tgz" -C "${WORK}" || exit 2
+scenario_unpack "${HERE}" "${WORK}" || exit 2
 
 ( cd "${WORK}" && "${BIN}" -r -l ./lib -S test-use-const-report-date \
 	--coverage "${WORK}/coverage.tsv" \

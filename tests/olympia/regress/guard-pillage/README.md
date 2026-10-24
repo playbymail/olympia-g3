@@ -18,7 +18,7 @@ pillage migration and once by the NPC migration (the troop count is now keyed an
 the turn also runs `init_savage_attacks`), each moving the pillage *reports*
 (`save/1/300`, `save/1/301`) while the battle dice and `fact/{300,301}` stayed
 unchanged. The committed `EXPECT.sha256` is the current re-baselined result;
-`scenario.tgz` is unchanged (the NPC draws never fire during the pre-turn world
+frozen scenario was unchanged (the NPC draws never fire during the pre-turn world
 init it freezes).
 
 ## The scenario
@@ -52,9 +52,11 @@ so a failing run shows *what* changed and not just *that* it changed.
 OLYMPIA_PRESET=asan-ubsan ./tests/olympia/regress/guard-pillage/check.sh
 ```
 
-`build-scenario.sh` regenerates `scenario.tgz` (a one-time authoring tool, not
-run by the test). The frozen `scenario.tgz` is pure data, so the test —
-extract, run a turn, diff report bytes — ports directly to a future engine.
+`build-scenario.sh` regenerates `scenario.patch` (a one-time authoring tool, not
+run by the test): the frozen pre-turn `lib` as a plain-text patch over the shared
+base world `tests/olympia/fixtures/world.tgz` (#121; see
+[`../../fixtures/README.md`](../../fixtures/README.md)). It is pure data, so the
+test — unpack, run a turn, diff report bytes — ports directly to a future engine.
 
 ## Same scenario, authored as one Lua script (issue #31)
 
@@ -86,7 +88,7 @@ mechanics worth flagging:
   standard turn never reaches it, so the engine build is left byte-for-byte
   unchanged.
 
-Both `build-scenario.sh`/`check.sh` (the frozen `scenario.tgz`) and the Lua pair
+Both `build-scenario.sh`/`check.sh` (the frozen `scenario.patch`) and the Lua pair
 are kept side by side — the rollout is incremental; `-i`/`-a` stay load-bearing.
 
 ### Determinism & the hashed passwords

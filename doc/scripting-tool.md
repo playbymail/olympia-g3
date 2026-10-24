@@ -156,7 +156,8 @@ is the concrete pain. End to end:
    10113; additem 12 20; guard 1; save`.
 7. Hand-write `lib/orders/300` and `…/301` as `<unit>:<order>` lines
    (`order.c` `save_player_orders` / `load_player_orders`).
-8. `tar czf scenario.tgz lib` — freeze the pre-turn world; the regress runs
+8. `tar czf scenario.tgz lib` — freeze the pre-turn world (since #121, a
+   `scenario.patch` over the shared `fixtures/world.tgz` instead); the regress runs
    `oly -r … -S` and hashes the result.
 
 Six tools, two file formats hand-authored, one `awk` over an internal save

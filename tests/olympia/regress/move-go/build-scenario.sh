@@ -1,6 +1,6 @@
 #!/bin/bash
 ###########################################################################
-# Regenerate scenario.tgz for the move-go fixture (issue #117).
+# Regenerate scenario.patch for the move-go fixture (issue #117).
 #
 # This is a ONE-TIME authoring tool, NOT run by check.sh. Starting from the
 # bare-map fixture (tests/olympia/fixtures) it builds one regular faction,
@@ -14,7 +14,7 @@
 # through NPC movement; this fixture pins GO itself through a player's order
 # file. check.sh asserts it reaches `ok`.
 #
-# Usage:  ./build-scenario.sh      (writes ./scenario.tgz)
+# Usage:  ./build-scenario.sh      (writes ./scenario.patch)
 ###########################################################################
 set -eu
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -22,6 +22,7 @@ ROOT="$(cd "${HERE}/../../../.." && pwd)"
 PRESET="${OLYMPIA_PRESET:-debug}"
 BIN="${ROOT}/build/${PRESET}/olympia-g3"
 SEED_LIB="${ROOT}/tests/olympia/fixtures/lib.tgz"
+. "${ROOT}/tests/olympia/fixtures/scenario.sh"
 
 FOREST=13451		# Forest [bs51], outer province of Greyfell
 GREYFELL=57081		# port city inside the Forest
@@ -51,5 +52,5 @@ printf 'be %s\npoof %s\nsubitem %s 25\nsave\n' "${NOB}" "${FOREST}" "${PEASANT}"
 mkdir -p lib/orders
 printf '%s:%s\n' "${NOB}" "go south" "${NOB}" "go ${FOREST}" "${NOB}" "go ${GREYFELL}" > lib/orders/300
 
-tar czf "${HERE}/scenario.tgz" lib
-echo "wrote ${HERE}/scenario.tgz  (noble=${NOB} forest=${FOREST} city=${GREYFELL})"
+scenario_write "${WORK}" "${HERE}"
+echo "wrote ${HERE}/scenario.patch  (noble=${NOB} forest=${FOREST} city=${GREYFELL})"

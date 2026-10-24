@@ -1,0 +1,782 @@
+world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
+--- a/lib/fact/200
++++ b/lib/fact/200
+@@ -3,8 +3,8 @@
+ PL
+  pw crusty7
+ CO
+- li save
+- ar 0 0 0 0 0 0 0 0
+- cs 2
++ li be 4126
++ ar 4126 0 0 0 0 0 0 0
++ st 1
+  pr 1
+ 
+--- /dev/null
++++ b/lib/fact/300
+@@ -0,0 +1,36 @@
++300 player pl_regular
++na Long Walkers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player300@example.com
++ pw OYCpEMJQ
++ np 18
++ fs 198
++ ft 1
++ kn 13451 
++ un 4126 
++ uf 1375 3743 8127 8535 2769 
++
++4126 char 0
++na Walker One
++il	1 200
++LI
++ wh 13451
++CH
++ lo 300
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 8651
++ ar 8651 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/301
+@@ -0,0 +1,36 @@
++301 player pl_regular
++na Short Walkers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player301@example.com
++ pw j2tStUJc
++ np 18
++ fs 198
++ ft 1
++ kn 13451 
++ un 8651 
++ uf 8533 8078 5691 9254 3229 
++
++8651 char 0
++na Walker Two
++il	1 200
++LI
++ wh 13451
++CH
++ lo 301
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 8159
++ ar 8159 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/302
+@@ -0,0 +1,38 @@
++302 player pl_regular
++na Sky Riders
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player302@example.com
++ pw lXS3fLN8
++ np 18
++ fs 198
++ ft 1
++ kn 13451 
++ un 8159 
++ uf 9655 6087 6523 7473 3056 
++
++8159 char 0
++na Rider One
++il	1 200 \
++	54 1
++LI
++ wh 13451
++CH
++ lo 302
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li save
++ ar 0 0 0 0 0 0 0 0
++ cs 2
++ st 1
++ pr 1
++
+--- a/lib/loc
++++ b/lib/loc
+@@ -44846,7 +44846,7 @@
+ 	274 1
+ LI
+  wh 58762
+- hl 57081 
++ hl 57081 4126 8651 8159 
+ LO
+  pd 13351 13452 13551 13450 
+  dg 4
+--- /dev/null
++++ b/lib/log/300
+@@ -0,0 +1,141 @@
++57081:0::0::Routes leaving Greyfell: 
++57081:0::3::North, to Ocean~[br51], Great Sea, 1~day
++57081:0::3::East, to Ocean~[bs52], Great Sea, 1~day
++57081:0::3::Out, to Forest~[bs51], 1~day
++57081:0::0::
++57081:0::0::Cities rumored to be nearby:
++57081:0::3::Adalgar~[k65], in Mountain~[bz51]
++57081:0::3::Aeltra~[m19], in Plain~[bx48]
++57081:0::3::Kerreck~[m25], in Mountain~[bm49]
++57081:0::3::Alaris~[p05], in Mountain~[bk51]
++57081:0::3::Anniun~[t65], in Forest~[bt55]
++57081:0::3::Dencede~[z47], in Forest~[bv51]
++57081:0::0::
++57081:0::0::Skills taught here:
++57081:0::3::Shipcraft~[600], Combat~[610], Construction~[680], Forestry~[700], Trade~[730], Magic~[800], Gatecraft~[860]
++57081:0::0::
++57081:0::0::Market report:
++57081:0::3::
++57081:0::3::{<b>}trade    who   price    qty     wt/ea   item{</b>}               
++57081:0::3::-----    ---   -----    ---     -----   ----                     
++57081:0::3::  buy    d21       4     30         1   woven baskets~[94]       
++57081:0::3::  buy    d21       2    100         2   fish~[87]                
++57081:0::3::  buy    d21     126      4        50   hides~[99]               
++57081:0::3::  buy    d21       7     25        30   wood~[77]                
++57081:0::3:: sell    d21      50     10       100   pitch~[261]              
++57081:0::3:: sell    d21      14     25        30   wood~[77]                
++57081:0::0::
++57081:0::0::Seen here:
++57081:0::0/3::   Rider One~[8159], with 25~peasants
++57081:0::0/3::   Walker Two~[8651], with 25~peasants
++57081:0::0/3:: * Walker One~[4126], with 25~peasants
++13451:0::0::Routes leaving Forest: 
++13451:0::3::North, to Ocean~[br51], Great Sea, impassable
++13451:0::3::East, to Ocean~[bs52], Great Sea, impassable
++13451:0::3::South, to Plain~[bt51], 7~days
++13451:0::3::West, to Plain~[bs50], 7~days
++13451:0::0::
++13451:0::0::Inner locations:
++13451:0::3::Greyfell~[d21], port city, safe haven, 1 day
++4126:0::3/16::Location:       Greyfell~[d21], in province Forest~[bs51], in Provinia
++4126:0::3::Loyalty:        Oath-2
++4126:0::3::Health:         100%
++4126:0::3::Combat:         attack 80, defense 80, missile 0
++4126:0::3::                behind 0  (front line in combat)
++4126:0::3::Break point:    50%
++4126:0::3::
++4126:0::3::Skills known:
++4126:0::6::none
++4126:0::3::
++4126:0::3::Inventory:
++4126:0::3::{<b>}      qty  name                              weight{</b>}
++4126:0::3::      ---  ----                              ------
++4126:0::3::      200  gold~[1]                               0  
++4126:0::3::       25  peasants~[10]                      2,500  cap 2,500 (1,1,0)
++4126:0::3::                                             ======
++4126:0::3::                                              2,500
++4126:0::3::
++4126:0::3/11::Capacity:  0/2,600 land (0%)
++4126:0::3::
++0:2::0::<pre>
++0:2::0::<center>
++0:2::0::<img src="../head.gif" align=middle width=100 height=100 alt="">
++0:2::0::<h1>
++0:0::0::Olympia G3 turn 0
++0:0::0::Initial Position Report for Long Walkers~[300].
++0:2::0::</h1>
++0:0::0::{<i>}Season "Fierce winds", month 1, in the year 1.{</i>}
++0:2::0::</center>
++0:0::0::
++0:0::0::Welcome to Olympia G3!
++0:0::0::
++0:0::0::This is an initial position report for your new faction.
++0:0::0::You are player 300, "Long Walkers".
++0:0::0::
++0:0::0::The next turn will be turn 1.
++0:0::0::
++0:2::0::<hr><center><font size=+1>
++0:2::0::<a href="http://oly.v-labs.be/g3/node/11">Rules</a>   <a href="http://oly.v-labs.be/g3/node/409"><i>The Olympia Times</i></a>
++0:2::0::</font></center>
++0:0::0::
++0:0::0::Noble points:  18     (0 gained, 0 spent)
++0:0::0::The next NP will be received at the end of turn 8.
++0:0::0::
++0:0::0::The next five nobles formed will be:  1375 3743 8127 8535 2769
++0:0::0::
++0:0::0::198 fast study days are left.
++0:0::0::
++300:0::0::
++300:0::0::Unclaimed items:
++300:0::0::
++300:0::0::      qty  name                              weight
++300:0::0::      ---  ----                              ------
++300:0::0::    5,000  gold~[1]                               0  
++300:0::0::        5  riding horses~[52]                 5,000  ride 750
++300:0::0::       50  wood~[77]                          1,500  
++300:0::0::      100  stone~[78]                        10,000  
++5:0::0::
++5:0::0::begin 300 "OYCpEMJQ"  # Long Walkers
++5:0::0::
++5:0::0::unit 300  # Long Walkers
++5:0::0::
++5:0::0::unit 4126  # Walker One in Greyfell~[d21]
++5:0::0::
++5:0::0::end
++1:0::0::#include 0
++1:0::0::
++1:2::0::
++1:2::0::<name="Long Walkers~[300]"><font size=+1><b>Long Walkers~[300]</b></font>
++1:2::0::<hr>
++1:1::0::Long Walkers~[300]
++1:1::0::------------------------------------------------------------------------
++1:0::0::#include 300
++1:0::0::
++1:0::0::
++1:2::0::
++1:2::0::<name="Walker One~[4126]"><font size=+1><b>Walker One~[4126]</b></font>
++1:2::0::<hr>
++1:1::0::Walker One~[4126]
++1:1::0::------------------------------------------------------------------------
++1:0::0::#include 4126
++1:2::0::
++1:2::0::<name="Forest~[bs51]"><font size=+1><b>Forest~[bs51]</b>, forest, in Provinia, safe haven, civ-2</font>
++1:2::0::<hr>
++1:1::0::Forest~[bs51], forest, in Provinia, safe haven, civ-2
++1:1::0::------------------------------------------------------------------------
++1:0::0::#include 13451
++1:0::0::
++1:2::0::
++1:2::0::<name="Greyfell~[d21]"><font size=+1><b>Greyfell~[d21]</b>, port city, in province Forest~[bs51], safe haven</font>
++1:2::0::<hr>
++1:1::0::Greyfell~[d21], port city, in province Forest~[bs51], safe haven
++1:1::0::------------------------------------------------------------------------
++1:0::0::#include 57081
++1:0::0::
++1:2::0::
++1:2::0::<name="Order template"><font size=+1><b>Order template</b></font>
++1:2::0::<hr>
++1:1::0::Order template
++1:1::0::------------------------------------------------------------------------
++1:0::0::#include 5
++1:0::0::
+--- /dev/null
++++ b/lib/log/301
+@@ -0,0 +1,141 @@
++57081:0::0::Routes leaving Greyfell: 
++57081:0::3::North, to Ocean~[br51], Great Sea, 1~day
++57081:0::3::East, to Ocean~[bs52], Great Sea, 1~day
++57081:0::3::Out, to Forest~[bs51], 1~day
++57081:0::0::
++57081:0::0::Cities rumored to be nearby:
++57081:0::3::Adalgar~[k65], in Mountain~[bz51]
++57081:0::3::Aeltra~[m19], in Plain~[bx48]
++57081:0::3::Kerreck~[m25], in Mountain~[bm49]
++57081:0::3::Alaris~[p05], in Mountain~[bk51]
++57081:0::3::Anniun~[t65], in Forest~[bt55]
++57081:0::3::Dencede~[z47], in Forest~[bv51]
++57081:0::0::
++57081:0::0::Skills taught here:
++57081:0::3::Shipcraft~[600], Combat~[610], Construction~[680], Forestry~[700], Trade~[730], Magic~[800], Gatecraft~[860]
++57081:0::0::
++57081:0::0::Market report:
++57081:0::3::
++57081:0::3::{<b>}trade    who   price    qty     wt/ea   item{</b>}               
++57081:0::3::-----    ---   -----    ---     -----   ----                     
++57081:0::3::  buy    d21       4     30         1   woven baskets~[94]       
++57081:0::3::  buy    d21       2    100         2   fish~[87]                
++57081:0::3::  buy    d21     126      4        50   hides~[99]               
++57081:0::3::  buy    d21       7     25        30   wood~[77]                
++57081:0::3:: sell    d21      50     10       100   pitch~[261]              
++57081:0::3:: sell    d21      14     25        30   wood~[77]                
++57081:0::0::
++57081:0::0::Seen here:
++57081:0::0/3::   Rider One~[8159], with 25~peasants
++57081:0::0/3:: * Walker Two~[8651], with 25~peasants
++57081:0::0/3::   Walker One~[4126], with 25~peasants
++13451:0::0::Routes leaving Forest: 
++13451:0::3::North, to Ocean~[br51], Great Sea, impassable
++13451:0::3::East, to Ocean~[bs52], Great Sea, impassable
++13451:0::3::South, to Plain~[bt51], 7~days
++13451:0::3::West, to Plain~[bs50], 7~days
++13451:0::0::
++13451:0::0::Inner locations:
++13451:0::3::Greyfell~[d21], port city, safe haven, 1 day
++8651:0::3/16::Location:       Greyfell~[d21], in province Forest~[bs51], in Provinia
++8651:0::3::Loyalty:        Oath-2
++8651:0::3::Health:         100%
++8651:0::3::Combat:         attack 80, defense 80, missile 0
++8651:0::3::                behind 0  (front line in combat)
++8651:0::3::Break point:    50%
++8651:0::3::
++8651:0::3::Skills known:
++8651:0::6::none
++8651:0::3::
++8651:0::3::Inventory:
++8651:0::3::{<b>}      qty  name                              weight{</b>}
++8651:0::3::      ---  ----                              ------
++8651:0::3::      200  gold~[1]                               0  
++8651:0::3::       25  peasants~[10]                      2,500  cap 2,500 (1,1,0)
++8651:0::3::                                             ======
++8651:0::3::                                              2,500
++8651:0::3::
++8651:0::3/11::Capacity:  0/2,600 land (0%)
++8651:0::3::
++0:2::0::<pre>
++0:2::0::<center>
++0:2::0::<img src="../head.gif" align=middle width=100 height=100 alt="">
++0:2::0::<h1>
++0:0::0::Olympia G3 turn 0
++0:0::0::Initial Position Report for Short Walkers~[301].
++0:2::0::</h1>
++0:0::0::{<i>}Season "Fierce winds", month 1, in the year 1.{</i>}
++0:2::0::</center>
++0:0::0::
++0:0::0::Welcome to Olympia G3!
++0:0::0::
++0:0::0::This is an initial position report for your new faction.
++0:0::0::You are player 301, "Short Walkers".
++0:0::0::
++0:0::0::The next turn will be turn 1.
++0:0::0::
++0:2::0::<hr><center><font size=+1>
++0:2::0::<a href="http://oly.v-labs.be/g3/node/11">Rules</a>   <a href="http://oly.v-labs.be/g3/node/409"><i>The Olympia Times</i></a>
++0:2::0::</font></center>
++0:0::0::
++0:0::0::Noble points:  18     (0 gained, 0 spent)
++0:0::0::The next NP will be received at the end of turn 8.
++0:0::0::
++0:0::0::The next five nobles formed will be:  8533 8078 5691 9254 3229
++0:0::0::
++0:0::0::198 fast study days are left.
++0:0::0::
++301:0::0::
++301:0::0::Unclaimed items:
++301:0::0::
++301:0::0::      qty  name                              weight
++301:0::0::      ---  ----                              ------
++301:0::0::    5,000  gold~[1]                               0  
++301:0::0::        5  riding horses~[52]                 5,000  ride 750
++301:0::0::       50  wood~[77]                          1,500  
++301:0::0::      100  stone~[78]                        10,000  
++5:0::0::
++5:0::0::begin 301 "j2tStUJc"  # Short Walkers
++5:0::0::
++5:0::0::unit 301  # Short Walkers
++5:0::0::
++5:0::0::unit 8651  # Walker Two in Greyfell~[d21]
++5:0::0::
++5:0::0::end
++1:0::0::#include 0
++1:0::0::
++1:2::0::
++1:2::0::<name="Short Walkers~[301]"><font size=+1><b>Short Walkers~[301]</b></font>
++1:2::0::<hr>
++1:1::0::Short Walkers~[301]
++1:1::0::------------------------------------------------------------------------
++1:0::0::#include 301
++1:0::0::
++1:0::0::
++1:2::0::
++1:2::0::<name="Walker Two~[8651]"><font size=+1><b>Walker Two~[8651]</b></font>
++1:2::0::<hr>
++1:1::0::Walker Two~[8651]
++1:1::0::------------------------------------------------------------------------
++1:0::0::#include 8651
++1:2::0::
++1:2::0::<name="Forest~[bs51]"><font size=+1><b>Forest~[bs51]</b>, forest, in Provinia, safe haven, civ-2</font>
++1:2::0::<hr>
++1:1::0::Forest~[bs51], forest, in Provinia, safe haven, civ-2
++1:1::0::------------------------------------------------------------------------
++1:0::0::#include 13451
++1:0::0::
++1:2::0::
++1:2::0::<name="Greyfell~[d21]"><font size=+1><b>Greyfell~[d21]</b>, port city, in province Forest~[bs51], safe haven</font>
++1:2::0::<hr>
++1:1::0::Greyfell~[d21], port city, in province Forest~[bs51], safe haven
++1:1::0::------------------------------------------------------------------------
++1:0::0::#include 57081
++1:0::0::
++1:2::0::
++1:2::0::<name="Order template"><font size=+1><b>Order template</b></font>
++1:2::0::<hr>
++1:1::0::Order template
++1:1::0::------------------------------------------------------------------------
++1:0::0::#include 5
++1:0::0::
+--- /dev/null
++++ b/lib/log/302
+@@ -0,0 +1,141 @@
++57081:0::0::Routes leaving Greyfell: 
++57081:0::3::North, to Ocean~[br51], Great Sea, 1~day
++57081:0::3::East, to Ocean~[bs52], Great Sea, 1~day
++57081:0::3::Out, to Forest~[bs51], 1~day
++57081:0::0::
++57081:0::0::Cities rumored to be nearby:
++57081:0::3::Adalgar~[k65], in Mountain~[bz51]
++57081:0::3::Aeltra~[m19], in Plain~[bx48]
++57081:0::3::Kerreck~[m25], in Mountain~[bm49]
++57081:0::3::Alaris~[p05], in Mountain~[bk51]
++57081:0::3::Anniun~[t65], in Forest~[bt55]
++57081:0::3::Dencede~[z47], in Forest~[bv51]
++57081:0::0::
++57081:0::0::Skills taught here:
++57081:0::3::Shipcraft~[600], Combat~[610], Construction~[680], Forestry~[700], Trade~[730], Magic~[800], Gatecraft~[860]
++57081:0::0::
++57081:0::0::Market report:
++57081:0::3::
++57081:0::3::{<b>}trade    who   price    qty     wt/ea   item{</b>}               
++57081:0::3::-----    ---   -----    ---     -----   ----                     
++57081:0::3::  buy    d21       4     30         1   woven baskets~[94]       
++57081:0::3::  buy    d21       2    100         2   fish~[87]                
++57081:0::3::  buy    d21     126      4        50   hides~[99]               
++57081:0::3::  buy    d21       7     25        30   wood~[77]                
++57081:0::3:: sell    d21      50     10       100   pitch~[261]              
++57081:0::3:: sell    d21      14     25        30   wood~[77]                
++57081:0::0::
++57081:0::0::Seen here:
++57081:0::0/3:: * Rider One~[8159], with 25~peasants
++57081:0::0/3::   Walker Two~[8651], with 25~peasants
++57081:0::0/3::   Walker One~[4126], with 25~peasants
++13451:0::0::Routes leaving Forest: 
++13451:0::3::North, to Ocean~[br51], Great Sea, impassable
++13451:0::3::East, to Ocean~[bs52], Great Sea, impassable
++13451:0::3::South, to Plain~[bt51], 7~days
++13451:0::3::West, to Plain~[bs50], 7~days
++13451:0::0::
++13451:0::0::Inner locations:
++13451:0::3::Greyfell~[d21], port city, safe haven, 1 day
++8159:0::3/16::Location:       Greyfell~[d21], in province Forest~[bs51], in Provinia
++8159:0::3::Loyalty:        Oath-2
++8159:0::3::Health:         100%
++8159:0::3::Combat:         attack 80, defense 80, missile 0
++8159:0::3::                behind 0  (front line in combat)
++8159:0::3::Break point:    50%
++8159:0::3::
++8159:0::3::Skills known:
++8159:0::6::none
++8159:0::3::
++8159:0::3::Inventory:
++8159:0::3::{<b>}      qty  name                              weight{</b>}
++8159:0::3::      ---  ----                              ------
++8159:0::3::      200  gold~[1]                               0  
++8159:0::3::       25  peasants~[10]                      2,500  cap 2,500 (1,1,0)
++8159:0::3::                                             ======
++8159:0::3::                                              2,500
++8159:0::3::
++8159:0::3/11::Capacity:  0/2,600 land (0%)
++8159:0::3::
++0:2::0::<pre>
++0:2::0::<center>
++0:2::0::<img src="../head.gif" align=middle width=100 height=100 alt="">
++0:2::0::<h1>
++0:0::0::Olympia G3 turn 0
++0:0::0::Initial Position Report for Sky Riders~[302].
++0:2::0::</h1>
++0:0::0::{<i>}Season "Fierce winds", month 1, in the year 1.{</i>}
++0:2::0::</center>
++0:0::0::
++0:0::0::Welcome to Olympia G3!
++0:0::0::
++0:0::0::This is an initial position report for your new faction.
++0:0::0::You are player 302, "Sky Riders".
++0:0::0::
++0:0::0::The next turn will be turn 1.
++0:0::0::
++0:2::0::<hr><center><font size=+1>
++0:2::0::<a href="http://oly.v-labs.be/g3/node/11">Rules</a>   <a href="http://oly.v-labs.be/g3/node/409"><i>The Olympia Times</i></a>
++0:2::0::</font></center>
++0:0::0::
++0:0::0::Noble points:  18     (0 gained, 0 spent)
++0:0::0::The next NP will be received at the end of turn 8.
++0:0::0::
++0:0::0::The next five nobles formed will be:  9655 6087 6523 7473 3056
++0:0::0::
++0:0::0::198 fast study days are left.
++0:0::0::
++302:0::0::
++302:0::0::Unclaimed items:
++302:0::0::
++302:0::0::      qty  name                              weight
++302:0::0::      ---  ----                              ------
++302:0::0::    5,000  gold~[1]                               0  
++302:0::0::        5  riding horses~[52]                 5,000  ride 750
++302:0::0::       50  wood~[77]                          1,500  
++302:0::0::      100  stone~[78]                        10,000  
++5:0::0::
++5:0::0::begin 302 "lXS3fLN8"  # Sky Riders
++5:0::0::
++5:0::0::unit 302  # Sky Riders
++5:0::0::
++5:0::0::unit 8159  # Rider One in Greyfell~[d21]
++5:0::0::
++5:0::0::end
++1:0::0::#include 0
++1:0::0::
++1:2::0::
++1:2::0::<name="Sky Riders~[302]"><font size=+1><b>Sky Riders~[302]</b></font>
++1:2::0::<hr>
++1:1::0::Sky Riders~[302]
++1:1::0::------------------------------------------------------------------------
++1:0::0::#include 302
++1:0::0::
++1:0::0::
++1:2::0::
++1:2::0::<name="Rider One~[8159]"><font size=+1><b>Rider One~[8159]</b></font>
++1:2::0::<hr>
++1:1::0::Rider One~[8159]
++1:1::0::------------------------------------------------------------------------
++1:0::0::#include 8159
++1:2::0::
++1:2::0::<name="Forest~[bs51]"><font size=+1><b>Forest~[bs51]</b>, forest, in Provinia, safe haven, civ-2</font>
++1:2::0::<hr>
++1:1::0::Forest~[bs51], forest, in Provinia, safe haven, civ-2
++1:1::0::------------------------------------------------------------------------
++1:0::0::#include 13451
++1:0::0::
++1:2::0::
++1:2::0::<name="Greyfell~[d21]"><font size=+1><b>Greyfell~[d21]</b>, port city, in province Forest~[bs51], safe haven</font>
++1:2::0::<hr>
++1:1::0::Greyfell~[d21], port city, in province Forest~[bs51], safe haven
++1:1::0::------------------------------------------------------------------------
++1:0::0::#include 57081
++1:0::0::
++1:2::0::
++1:2::0::<name="Order template"><font size=+1><b>Order template</b></font>
++1:2::0::<hr>
++1:1::0::Order template
++1:1::0::------------------------------------------------------------------------
++1:0::0::#include 5
++1:0::0::
+--- a/lib/master
++++ b/lib/master
+@@ -96,6 +96,9 @@
+ 293	4.0	item		faery
+ 294	4.0	item		petty thief cookie
+ 295	4.0	item		hound
++300	1.49	fact/300	Long Walkers
++301	1.49	fact/301	Short Walkers
++302	1.49	fact/302	Sky Riders
+ 401	4.69	item		Imperial Throne
+ 402	4.69	item		Crown of Prosperity
+ 403	4.69	item		Skull of Bastrestric
+@@ -275,6 +278,7 @@
+ 1306	2.64	fact/207	
+ 1321	2.64	fact/207	
+ 1335	2.64	fact/207	
++1375	12.0	unform		
+ 1383	2.64	fact/207	
+ 1416	2.64	fact/207	
+ 1501	2.64	fact/207	
+@@ -338,6 +342,7 @@
+ 2724	2.64	fact/207	
+ 2743	2.64	fact/207	
+ 2763	2.64	fact/207	
++2769	12.0	unform		
+ 2774	2.64	fact/207	
+ 2788	2.64	fact/207	
+ 2811	2.64	fact/207	
+@@ -354,6 +359,7 @@
+ 3020	2.64	fact/207	
+ 3021	2.64	fact/207	
+ 3030	2.64	fact/207	
++3056	12.0	unform		
+ 3078	2.64	fact/207	
+ 3082	2.64	fact/207	
+ 3088	2.64	fact/207	
+@@ -366,6 +372,7 @@
+ 3175	2.64	fact/207	
+ 3199	2.64	fact/207	
+ 3228	2.64	fact/207	
++3229	12.0	unform		
+ 3230	2.64	fact/207	
+ 3235	2.64	fact/207	
+ 3252	2.64	fact/207	
+@@ -384,6 +391,7 @@
+ 3596	2.64	fact/207	
+ 3597	2.64	fact/207	
+ 3711	2.64	fact/207	
++3743	12.0	unform		
+ 3754	2.64	fact/207	
+ 3780	2.64	fact/207	
+ 3791	2.64	fact/207	
+@@ -405,6 +413,7 @@
+ 4047	2.64	fact/207	
+ 4069	2.64	fact/207	
+ 4104	2.64	fact/207	
++4126	2.0	fact/300	Walker One
+ 4139	2.64	fact/207	
+ 4152	2.64	fact/207	
+ 4165	2.64	fact/207	
+@@ -476,6 +485,7 @@
+ 5669	2.64	fact/207	
+ 5676	2.64	fact/207	
+ 5688	2.64	fact/207	
++5691	12.0	unform		
+ 5697	2.64	fact/207	
+ 5728	2.64	fact/207	
+ 5730	2.64	fact/207	
+@@ -498,6 +508,7 @@
+ 6027	2.64	fact/207	
+ 6073	2.64	fact/207	
+ 6082	2.64	fact/207	
++6087	12.0	unform		
+ 6094	2.64	fact/207	
+ 6103	2.64	fact/207	
+ 6169	2.64	fact/207	
+@@ -516,6 +527,7 @@
+ 6440	2.64	fact/207	
+ 6450	2.64	fact/207	
+ 6500	2.64	fact/207	
++6523	12.0	unform		
+ 6527	2.64	fact/207	
+ 6558	2.64	fact/207	
+ 6581	2.64	fact/207	
+@@ -566,6 +578,7 @@
+ 7401	2.64	fact/207	
+ 7421	2.64	fact/207	
+ 7441	2.64	fact/207	
++7473	12.0	unform		
+ 7481	2.64	fact/207	
+ 7518	2.64	fact/207	
+ 7577	2.64	fact/207	
+@@ -594,11 +607,14 @@
+ 7987	2.64	fact/207	
+ 8000	2.64	fact/207	
+ 8007	2.64	fact/207	
++8078	12.0	unform		
+ 8093	2.64	fact/207	
+ 8105	2.64	fact/207	
+ 8122	2.64	fact/207	
++8127	12.0	unform		
+ 8151	2.64	fact/207	
+ 8155	2.64	fact/207	
++8159	2.0	fact/302	Rider One
+ 8177	2.64	fact/207	
+ 8178	2.64	fact/207	
+ 8182	2.64	fact/207	
+@@ -617,11 +633,14 @@
+ 8494	2.64	fact/207	
+ 8499	2.64	fact/207	
+ 8508	2.64	fact/207	
++8533	12.0	unform		
++8535	12.0	unform		
+ 8575	2.64	fact/207	
+ 8604	2.64	fact/207	
+ 8612	2.64	fact/207	
+ 8635	2.64	fact/207	
+ 8650	2.64	fact/207	
++8651	2.0	fact/301	Walker Two
+ 8730	2.64	fact/207	
+ 8780	2.64	fact/207	
+ 8839	2.64	fact/207	
+@@ -647,6 +666,7 @@
+ 9185	2.64	fact/207	
+ 9205	2.64	fact/207	
+ 9248	2.64	fact/207	
++9254	12.0	unform		
+ 9258	2.64	fact/207	
+ 9276	2.64	fact/207	
+ 9294	2.64	fact/207	
+@@ -663,6 +683,7 @@
+ 9554	2.64	fact/207	
+ 9622	2.64	fact/207	
+ 9654	2.64	fact/207	
++9655	12.0	unform		
+ 9676	2.64	fact/207	
+ 9685	2.64	fact/207	
+ 9714	2.64	fact/207	
+--- /dev/null
++++ b/lib/orders/300
+@@ -0,0 +1,6 @@
++4126:enter
++4126:exit
++4126:s
++4126:north
++4126:west
++4126:east
+--- /dev/null
++++ b/lib/orders/301
+@@ -0,0 +1,6 @@
++8651:in
++8651:out
++8651:south
++8651:n
++8651:w
++8651:e
+--- /dev/null
++++ b/lib/orders/302
+@@ -0,0 +1,2 @@
++8159:fly south
++8159:fly north
+--- a/lib/times_0
++++ b/lib/times_0
+@@ -5,7 +5,7 @@
+    | The Olympia Times                                Fierce winds year 1 |
+    | October 24, 2026                                                     |
+    |                                                                      |
+-   | turn 0, 0 players                     skrenta@pbm.com (Rich skrenta) |
++   | turn 0, 3 players                     skrenta@pbm.com (Rich skrenta) |
+    +----------------------------------------------------------------------+
+ 
+      Questions, comments, to play: http://olympia.v-labs.be/g3
+--- a/lib/unform
++++ b/lib/unform
+@@ -0,0 +1,30 @@
++1375 unform 0
++
++2769 unform 0
++
++3056 unform 0
++
++3229 unform 0
++
++3743 unform 0
++
++5691 unform 0
++
++6087 unform 0
++
++6523 unform 0
++
++7473 unform 0
++
++8078 unform 0
++
++8127 unform 0
++
++8533 unform 0
++
++8535 unform 0
++
++9254 unform 0
++
++9655 unform 0
++

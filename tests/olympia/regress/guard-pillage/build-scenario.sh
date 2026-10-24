@@ -1,6 +1,6 @@
 #!/bin/bash
 ###########################################################################
-# Regenerate scenario.tgz for the guard-pillage combat regression test.
+# Regenerate scenario.patch for the guard-pillage combat regression test.
 #
 # This is a ONE-TIME authoring tool, NOT run by check.sh. It drives the
 # engine's own bootstrap to build a tiny, valid game, then freezes the
@@ -21,7 +21,7 @@
 # through the pillage path (a guard found by loop_here(province) can never be
 # in the pillager's stack-only l_a). See README.md.
 #
-# Usage:  ./build-scenario.sh      (writes ./scenario.tgz)
+# Usage:  ./build-scenario.sh      (writes ./scenario.patch)
 ###########################################################################
 set -eu
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -29,6 +29,7 @@ ROOT="$(cd "${HERE}/../../../.." && pwd)"
 PRESET="${OLYMPIA_PRESET:-debug}"
 BIN="${ROOT}/build/${PRESET}/olympia-g3"
 SEED_LIB="${ROOT}/tests/olympia/fixtures/lib.tgz"
+. "${ROOT}/tests/olympia/fixtures/scenario.sh"
 
 [ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }
 
@@ -63,5 +64,5 @@ printf '%s:pillage 1\n' "${PIL}" > lib/orders/300
 printf '%s:guard 1\n'   "${GRD}" > lib/orders/301
 
 # freeze the pre-turn world
-tar czf "${HERE}/scenario.tgz" lib
-echo "wrote ${HERE}/scenario.tgz  (pillager=${PIL} guard=${GRD} province=10113)"
+scenario_write "${WORK}" "${HERE}"
+echo "wrote ${HERE}/scenario.patch  (pillager=${PIL} guard=${GRD} province=10113)"

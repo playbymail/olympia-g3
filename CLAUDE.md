@@ -203,8 +203,11 @@ The harness to work through it is in place
 the `do_command` coverage hook and `--coverage` dump (#98, #100), the
 `--state-export` JSON snapshot (#104), the Chaos Goblin brain (#105, #110), and the
 `tests/ultron/loop.py` driver that freezes crashes as fixtures (#106). New fixtures
-go under `tests/olympia/regress/<name>/`, following guard-pillage and
-trade-routes; land each fixture with its backlog update, and keep
+go under `tests/olympia/regress/<name>/`, following guard-pillage and the move-*
+fixtures. A one-turn fixture commits a plain-text `scenario.patch` over the shared
+base world `tests/olympia/fixtures/world.tgz` (#121; see
+[tests/olympia/fixtures/README.md](tests/olympia/fixtures/README.md)), not a full
+`scenario.tgz`. Land each fixture with its backlog update, and keep
 `tests/ultron/check.sh` printing `YES`. Two known gaps beyond the per-verb table:
 `use` dispatches every usable skill and item, so its single `ok` cell says little,
 and the hook does not see the non-command turn phases (NPC/savage movement,

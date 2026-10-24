@@ -2,7 +2,8 @@
 ###########################################################################
 # Regression: guard-pillage combat + per-battle keyed RNG (issue #25).
 #
-# Extracts the frozen scenario (scenario.tgz) and runs one turn. The pillager
+# Extracts the frozen scenario (scenario.patch over the shared
+# tests/olympia/fixtures/world.tgz) and runs one turn. The pillager
 # (Warlord Grok, faction 300) issues `pillage 1` in a province guarded by a
 # different faction's unit (Captain Vigil, faction 301, `guard 1`). That drives
 #     v_pillage -> attack_guard_units -> combat_top
@@ -30,13 +31,13 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${HERE}/../../../.." && pwd)"
 PRESET="${OLYMPIA_PRESET:-debug}"
 BIN="${ROOT}/build/${PRESET}/olympia-g3"
+. "${ROOT}/tests/olympia/fixtures/scenario.sh"
 
 [ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }
-[ -f "${HERE}/scenario.tgz" ] || { echo "error: missing scenario.tgz (run ./build-scenario.sh)"; exit 2; }
 
 WORK="$(mktemp -d)"
 trap 'rm -rf "${WORK}"' EXIT
-tar zxf "${HERE}/scenario.tgz" -C "${WORK}" || exit 2
+scenario_unpack "${HERE}" "${WORK}" || exit 2
 
 ( cd "${WORK}" && "${BIN}" -r -l ./lib -S test-use-const-report-date \
 	--state-export "${WORK}/state.json" </dev/null >/dev/null 2>&1 )
