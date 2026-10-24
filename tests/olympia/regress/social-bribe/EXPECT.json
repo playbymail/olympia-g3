@@ -1,0 +1,40 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Inciters",
+   "units": [
+     {"id": 4126, "name": "Inciter One", "where": 13449, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 670, "name": "Persuasion"}, {"id": 675, "name": "Incite mob violence"}]}],
+   "locations": [
+     {"id": 13449, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13449,
+      "exits": [{"direction": "north", "destination": 13349, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13450, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13549, "distance": 14, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13448, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Inciter One", "faction": 300}, {"id": 8159, "name": "Briber One", "faction": 302}, {"id": 8651, "name": "Mark One", "faction": 301}, {"id": 139904, "name": "Mob", "faction": 100}]}]},
+  {"id": 301, "name": "Marks",
+   "units": [
+     {"id": 8651, "name": "Mark One", "where": 13449, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 200}],
+      "skills": []}],
+   "locations": [
+     {"id": 13449, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13449,
+      "exits": [{"direction": "north", "destination": 13349, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13450, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13549, "distance": 14, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13448, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Inciter One", "faction": 300}, {"id": 8159, "name": "Briber One", "faction": 302}, {"id": 8651, "name": "Mark One", "faction": 301}, {"id": 139904, "name": "Mob", "faction": 100}]}]},
+  {"id": 302, "name": "Bribers",
+   "units": [
+     {"id": 8159, "name": "Briber One", "where": 13449, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 75}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 671, "name": "Bribe noble"}]}],
+   "locations": [
+     {"id": 13449, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13449,
+      "exits": [{"direction": "north", "destination": 13349, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13450, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13549, "distance": 14, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13448, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Inciter One", "faction": 300}, {"id": 8159, "name": "Briber One", "faction": 302}, {"id": 8651, "name": "Mark One", "faction": 301}, {"id": 139904, "name": "Mob", "faction": 100}]}]},
+  {"id": 303, "name": "Terrorizers",
+   "units": [
+     {"id": 6133, "name": "Hireling", "where": 57081, "stacked_under": 7012,
+      "items": [],
+      "skills": []},
+     {"id": 7012, "name": "Terrorizer One", "where": 57081, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 6133, "name": "Hireling", "faction": 303}, {"id": 7012, "name": "Terrorizer One", "faction": 303}]}]}]}

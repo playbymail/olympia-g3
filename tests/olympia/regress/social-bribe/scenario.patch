@@ -1,0 +1,481 @@
+world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
+--- a/lib/fact/100
++++ b/lib/fact/100
+@@ -2,4 +2,21 @@
+ na Independent player
+ PL
+  pw crusty7
++ un 139904 
+ 
++139904 char ni
++na Mob
++il	23 36
++LI
++ wh 13449
++CH
++ ni 23
++ lo 100
++ he -1
++ lk 4
++ at 60
++ df 60
++MI
++ mh 13449
++ co 101
++
+--- a/lib/fact/200
++++ b/lib/fact/200
+@@ -3,8 +3,8 @@
+ PL
+  pw crusty7
+ CO
+- li save
+- ar 0 0 0 0 0 0 0 0
+- cs 2
++ li be 8159
++ ar 8159 0 0 0 0 0 0 0
++ st 1
+  pr 1
+ 
+--- /dev/null
++++ b/lib/fact/300
+@@ -0,0 +1,40 @@
++300 player pl_regular
++na Inciters
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player300@example.com
++ pw OYCpEMJQ
++ np 18
++ fs 198
++ ft 1
++ kn 13449 
++ un 4126 
++ uf 1375 3743 8127 8535 2769 
++
++4126 char 0
++na Inciter One
++il	1 200 \
++	10 25
++LI
++ wh 13449
++CH
++ lo 300
++ he 100
++ lk 2
++ lr 2
++ sl	670 2 0 0 0 \
++	675 2 0 0 0
++ bp 50
++ at 80
++ df 80
++CO
++ li save
++ ar 0 0 0 0 0 0 0 0
++ cs 2
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/301
+@@ -0,0 +1,37 @@
++301 player pl_regular
++na Marks
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player301@example.com
++ pw j2tStUJc
++ np 18
++ fs 198
++ ft 1
++ kn 13449 
++ un 8651 
++ uf 8533 8078 5691 9254 3229 
++
++8651 char 0
++na Mark One
++il	1 200 \
++	10 25
++LI
++ wh 13449
++CH
++ lo 301
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 4126
++ ar 4126 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/302
+@@ -0,0 +1,38 @@
++302 player pl_regular
++na Bribers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player302@example.com
++ pw lXS3fLN8
++ np 18
++ fs 198
++ ft 1
++ kn 13449 
++ un 8159 
++ uf 9655 6087 6523 7473 3056 
++
++8159 char 0
++na Briber One
++il	1 200 \
++	10 25
++LI
++ wh 13449
++CH
++ lo 302
++ he 100
++ lk 2
++ lr 2
++ sl	671 2 0 0 0
++ bp 50
++ at 80
++ df 80
++CO
++ li be 8651
++ ar 8651 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/303
+@@ -0,0 +1,31 @@
++303 player pl_regular
++na Terrorizers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player303@example.com
++ pw RmYOD3ZC
++ np 18
++ fs 198
++ ft 1
++ un 7012 
++ uf 6133 9236 5303 7474 8867 
++
++7012 char 0
++na Terrorizer One
++il	1 200 \
++	10 25
++LI
++ wh 57081
++CH
++ lo 303
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++
+--- a/lib/loc
++++ b/lib/loc
+@@ -44809,12 +44809,11 @@
+ il	77 30 \
+ 	10 10 \
+ 	96 50 \
+-	101 1 \
+ 	276 1 \
+ 	274 1
+ LI
+  wh 58762
+- hl 74717 73119 74976 
++ hl 74717 73119 74976 8159 8651 4126 139904 
+ LO
+  pd 13349 13450 13549 13448 
+  dg 4
+@@ -261607,7 +261606,7 @@
+ 	1 77 25 7 0 0 0 0
+ LI
+  wh 13451
+- hl 77708 
++ hl 7012 77708 
+ SL
+  te 600 610 680 700 730 800 860 
+  sh 1
+--- a/lib/master
++++ b/lib/master
+@@ -96,6 +96,10 @@
+ 293	4.0	item		faery
+ 294	4.0	item		petty thief cookie
+ 295	4.0	item		hound
++300	1.49	fact/300	Inciters
++301	1.49	fact/301	Marks
++302	1.49	fact/302	Bribers
++303	1.49	fact/303	Terrorizers
+ 401	4.69	item		Imperial Throne
+ 402	4.69	item		Crown of Prosperity
+ 403	4.69	item		Skull of Bastrestric
+@@ -275,6 +279,7 @@
+ 1306	2.64	fact/207	
+ 1321	2.64	fact/207	
+ 1335	2.64	fact/207	
++1375	12.0	unform		
+ 1383	2.64	fact/207	
+ 1416	2.64	fact/207	
+ 1501	2.64	fact/207	
+@@ -338,6 +343,7 @@
+ 2724	2.64	fact/207	
+ 2743	2.64	fact/207	
+ 2763	2.64	fact/207	
++2769	12.0	unform		
+ 2774	2.64	fact/207	
+ 2788	2.64	fact/207	
+ 2811	2.64	fact/207	
+@@ -354,6 +360,7 @@
+ 3020	2.64	fact/207	
+ 3021	2.64	fact/207	
+ 3030	2.64	fact/207	
++3056	12.0	unform		
+ 3078	2.64	fact/207	
+ 3082	2.64	fact/207	
+ 3088	2.64	fact/207	
+@@ -366,6 +373,7 @@
+ 3175	2.64	fact/207	
+ 3199	2.64	fact/207	
+ 3228	2.64	fact/207	
++3229	12.0	unform		
+ 3230	2.64	fact/207	
+ 3235	2.64	fact/207	
+ 3252	2.64	fact/207	
+@@ -384,6 +392,7 @@
+ 3596	2.64	fact/207	
+ 3597	2.64	fact/207	
+ 3711	2.64	fact/207	
++3743	12.0	unform		
+ 3754	2.64	fact/207	
+ 3780	2.64	fact/207	
+ 3791	2.64	fact/207	
+@@ -405,6 +414,7 @@
+ 4047	2.64	fact/207	
+ 4069	2.64	fact/207	
+ 4104	2.64	fact/207	
++4126	2.0	fact/300	Inciter One
+ 4139	2.64	fact/207	
+ 4152	2.64	fact/207	
+ 4165	2.64	fact/207	
+@@ -461,6 +471,7 @@
+ 5289	2.64	fact/207	
+ 5292	2.64	fact/207	
+ 5295	2.64	fact/207	
++5303	12.0	unform		
+ 5322	2.64	fact/207	
+ 5340	2.64	fact/207	
+ 5352	2.64	fact/207	
+@@ -476,6 +487,7 @@
+ 5669	2.64	fact/207	
+ 5676	2.64	fact/207	
+ 5688	2.64	fact/207	
++5691	12.0	unform		
+ 5697	2.64	fact/207	
+ 5728	2.64	fact/207	
+ 5730	2.64	fact/207	
+@@ -498,8 +510,10 @@
+ 6027	2.64	fact/207	
+ 6073	2.64	fact/207	
+ 6082	2.64	fact/207	
++6087	12.0	unform		
+ 6094	2.64	fact/207	
+ 6103	2.64	fact/207	
++6133	12.0	unform		
+ 6169	2.64	fact/207	
+ 6170	2.64	fact/207	
+ 6198	2.64	fact/207	
+@@ -516,6 +530,7 @@
+ 6440	2.64	fact/207	
+ 6450	2.64	fact/207	
+ 6500	2.64	fact/207	
++6523	12.0	unform		
+ 6527	2.64	fact/207	
+ 6558	2.64	fact/207	
+ 6581	2.64	fact/207	
+@@ -541,6 +556,7 @@
+ 6966	2.64	fact/207	
+ 6993	2.64	fact/207	
+ 6999	2.64	fact/207	
++7012	2.0	fact/303	Terrorizer One
+ 7017	2.64	fact/207	
+ 7021	2.64	fact/207	
+ 7046	2.64	fact/207	
+@@ -566,6 +582,8 @@
+ 7401	2.64	fact/207	
+ 7421	2.64	fact/207	
+ 7441	2.64	fact/207	
++7473	12.0	unform		
++7474	12.0	unform		
+ 7481	2.64	fact/207	
+ 7518	2.64	fact/207	
+ 7577	2.64	fact/207	
+@@ -594,11 +612,14 @@
+ 7987	2.64	fact/207	
+ 8000	2.64	fact/207	
+ 8007	2.64	fact/207	
++8078	12.0	unform		
+ 8093	2.64	fact/207	
+ 8105	2.64	fact/207	
+ 8122	2.64	fact/207	
++8127	12.0	unform		
+ 8151	2.64	fact/207	
+ 8155	2.64	fact/207	
++8159	2.0	fact/302	Briber One
+ 8177	2.64	fact/207	
+ 8178	2.64	fact/207	
+ 8182	2.64	fact/207	
+@@ -617,15 +638,19 @@
+ 8494	2.64	fact/207	
+ 8499	2.64	fact/207	
+ 8508	2.64	fact/207	
++8533	12.0	unform		
++8535	12.0	unform		
+ 8575	2.64	fact/207	
+ 8604	2.64	fact/207	
+ 8612	2.64	fact/207	
+ 8635	2.64	fact/207	
+ 8650	2.64	fact/207	
++8651	2.0	fact/301	Mark One
+ 8730	2.64	fact/207	
+ 8780	2.64	fact/207	
+ 8839	2.64	fact/207	
+ 8848	2.64	fact/207	
++8867	12.0	unform		
+ 8905	2.64	fact/207	
+ 8910	2.64	fact/207	
+ 8935	2.64	fact/207	
+@@ -646,7 +671,9 @@
+ 9159	2.64	fact/207	
+ 9185	2.64	fact/207	
+ 9205	2.64	fact/207	
++9236	12.0	unform		
+ 9248	2.64	fact/207	
++9254	12.0	unform		
+ 9258	2.64	fact/207	
+ 9276	2.64	fact/207	
+ 9294	2.64	fact/207	
+@@ -663,6 +690,7 @@
+ 9554	2.64	fact/207	
+ 9622	2.64	fact/207	
+ 9654	2.64	fact/207	
++9655	12.0	unform		
+ 9676	2.64	fact/207	
+ 9685	2.64	fact/207	
+ 9714	2.64	fact/207	
+@@ -36571,6 +36599,7 @@
+ 78991	3.21	loc		
+ 78992	3.13	loc		
+ 78999	3.15	loc		
++139904	2.54	fact/100	Mob
+ 931	13.0	misc	
+ 932	13.0	misc	
+ 933	13.0	misc	
+--- /dev/null
++++ b/lib/orders/100
+@@ -0,0 +1 @@
++139904:guard 1
+--- /dev/null
++++ b/lib/orders/300
+@@ -0,0 +1,2 @@
++4126:incite 139904 8651
++4126:use 675 139904 8651
+--- /dev/null
++++ b/lib/orders/302
+@@ -0,0 +1 @@
++8159:bribe 8651 100
+--- /dev/null
++++ b/lib/orders/303
+@@ -0,0 +1,2 @@
++7012:form 6133 Hireling
++7012:terrorize 6133 3
+--- a/lib/times_0
++++ b/lib/times_0
+@@ -1,14 +1,15 @@
+-From: skrenta@pbm.com (Rich skrenta)
+-Subject: Olympia G3 - The Olympia Times - Issue 0
++From: olympia@pbm.com (Olympia PBEM)
++Subject: Olympia Times g2-0
++To: totimes@pbm.com
+ 
+    +----------------------------------------------------------------------+
+-   | The Olympia Times                                Fierce winds year 1 |
+-   | October 24, 2026                                                     |
++   | The Olympia Times                                         issue g2-0 |
++   | August 31, 1996                                                      |
+    |                                                                      |
+-   | turn 0, 0 players                     skrenta@pbm.com (Rich skrenta) |
++   | turn 0  0 players                      http://www.pbm.com/oly/times/ |
+    +----------------------------------------------------------------------+
+ 
+-     Questions, comments, to play: http://olympia.v-labs.be/g3
++               Questions, comments, to play:  info@pbm.com
+ 
+                              Olympia PBEM
+ 
+--- a/lib/unform
++++ b/lib/unform
+@@ -0,0 +1,40 @@
++1375 unform 0
++
++2769 unform 0
++
++3056 unform 0
++
++3229 unform 0
++
++3743 unform 0
++
++5303 unform 0
++
++5691 unform 0
++
++6087 unform 0
++
++6133 unform 0
++
++6523 unform 0
++
++7473 unform 0
++
++7474 unform 0
++
++8078 unform 0
++
++8127 unform 0
++
++8533 unform 0
++
++8535 unform 0
++
++8867 unform 0
++
++9236 unform 0
++
++9254 unform 0
++
++9655 unform 0
++

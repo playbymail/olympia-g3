@@ -36,9 +36,9 @@ honour	loyalty	c	honor	loyalty-bind	loyalty-refused	loyalty-refused
 oath	loyalty	c		loyalty-bind	loyalty-refused	loyalty-refused
 pledge	loyalty	c		loyalty-bind	loyalty-refused	loyalty-refused
 swear	loyalty	c		n/a	loyalty-refused	loyalty-refused
-bribe	social	c		todo	todo	todo
-incite	social	c		todo	todo	todo
-terrorize	social	cr		todo	todo	todo
+bribe	social	c		social-bribe	social-refused	social-refused
+incite	social	c		social-bribe	social-refused	social-refused
+terrorize	social	cr		social-bribe	social-refused	social-refused
 promote	stacking	cr		stacking-stack	stacking-refused	stacking-refused
 stack	stacking	cr		stacking-stack	stacking-refused	stacking-refused
 unstack	stacking	cr		stacking-stack	stacking-refused	stacking-refused

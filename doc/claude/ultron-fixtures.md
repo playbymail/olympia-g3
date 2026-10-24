@@ -23,8 +23,9 @@ the combat family (#128) by `combat-attack`, `combat-refused` and
 (#141) by `stacking-stack` and `stacking-refused`, the trade family
 (#142) by `trade-market` and `trade-refused`, the loyalty family
 (#143) by `loyalty-bind` and `loyalty-refused`, the skills family
-(#144) by `skills-learn` and `skills-refused`, and the stealth family
-(#145) by `stealth-hide` and `stealth-refused`.
+(#144) by `skills-learn` and `skills-refused`, the stealth family
+(#145) by `stealth-hide` and `stealth-refused`, and the social family
+(#146) by `social-bribe` and `social-refused`.
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):
