@@ -35,8 +35,10 @@ Castle [74301] and Castle [72332], and a tower, Tower [73052], in the city.
 A tower made by `oly.makeloc` has defense 0, under the tower default of 40,
 so the mender's first `repair` starts (`ok`): 80 workers restore 40 points
 (2 worker-days each) on its first day, day 1. Its second `repair` finds the
-tower whole. The bungler's `build tower` mints an unformed id before the
-skill check fails (`v_build` mints first).
+tower whole. No failed `build` mints an id: `start_build` mints the new
+structure's id only after the location, skill and material checks pass
+(#163). Before that fix the bungler's `build tower` and the mason's two
+builds each left an orphan unformed box in `lib/unform`.
 
 Rejected: all three verbs are for nobles (`c`), so the Bunglers' player
 entity orders all three, and `check_allow()` refuses each.
@@ -53,8 +55,9 @@ the next fifth, the unit left the building). Those are `d_` outcomes, not
 
 1. Each of the three verbs reaches `fail` and `rejected` in the turn's
    `--coverage` dump.
-2. Each faction's report and unit state (`save/1/30x`, `fact/30x`) match
-   `EXPECT.sha256`.
+2. Each faction's report and unit state (`save/1/30x`, `fact/30x`) and
+   `lib/unform` match `EXPECT.sha256`. `lib/unform` pins #163: an orphan
+   box from a failed build changes it.
 3. The post-turn `--state-export` snapshot matches `EXPECT.json`.
 
 ## Authored in Lua

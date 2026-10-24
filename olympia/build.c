@@ -482,6 +482,17 @@ start_build(struct command *c, struct build_ent *bi, int new)
 	if (!instant_build && !build_materials_check(c, bi))
 		return FALSE;
 
+	if (new == 0)
+		new = new_ent(T_unform, 0);
+
+	if (new < 0)
+	{
+		wout(c->who, "Out of new entity codes.");
+		return FALSE;
+	}
+
+	ilist_rem_value(&p_player(pl)->unformed, new);
+
 	change_box_kind(new, bi->kind);
 	change_box_subkind(new, bi->unfinished_subkind);
 
@@ -773,16 +784,10 @@ v_build(struct command *c)
 		new = p->unformed[0];
 #endif
 
-	if (new == 0)
-		new = new_ent(T_unform, 0);
-
-	if (new < 0)
-	{
-		wout(c->who, "Out of new entity codes.");
-		return FALSE;
-	}
-
-	ilist_rem_value(&p->unformed, new);
+/*
+ *  new is 0 or a valid unformed code here; start_build mints or
+ *  claims it only once every check has passed.
+ */
 
 	return build_structure(c, t, new);
 }

@@ -15,8 +15,9 @@
 #   1. coverage: every verb:outcome in CELLS has a nonzero count in the
 #      turn's --coverage dump, so the backlog cells this fixture claims stay
 #      true;
-#   2. EXPECT.sha256: each faction's report and unit state, byte for byte
-#      (the strict gate);
+#   2. EXPECT.sha256: each faction's report and unit state, and lib/unform
+#      (no failed build leaves an orphan id, #163), byte for byte (the
+#      strict gate);
 #   3. EXPECT.json: the post-turn --state-export snapshot (shows *what*
 #      changed when the hashes fail).
 #
@@ -30,7 +31,7 @@ PRESET="${OLYMPIA_PRESET:-debug}"
 BIN="${ROOT}/build/${PRESET}/olympia-g3"
 . "${ROOT}/tests/olympia/fixtures/scenario.sh"
 
-FILES=(save/1/300 save/1/301 save/1/302 save/1/303 save/1/304 fact/300 fact/301 fact/302 fact/303 fact/304)
+FILES=(save/1/300 save/1/301 save/1/302 save/1/303 save/1/304 fact/300 fact/301 fact/302 fact/303 fact/304 unform)
 CELLS=(build:fail build:rejected improve:fail improve:rejected repair:fail repair:rejected)
 
 [ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }
