@@ -1,0 +1,64 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Quarry Guild",
+   "units": [
+     {"id": 4126, "name": "Quarryman One", "where": 13349, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 171}, {"id": 10, "name": "peasant", "qty": 21}, {"id": 11, "name": "worker", "qty": 4}, {"id": 78, "name": "stone", "qty": 6}],
+      "skills": [{"id": 682, "name": "Stone quarrying"}]}],
+   "locations": [
+     {"id": 13349, "name": "", "kind": "loc", "subkind": "mountain", "depth": "province", "province": 13349,
+      "exits": [{"direction": "north", "destination": 13249, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "east", "destination": 13350, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "south", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13348, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 59916, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Quarryman One", "faction": 300}]}]},
+  {"id": 301, "name": "Woodcutters",
+   "units": [
+     {"id": 8651, "name": "Woodcutter One", "where": 13451, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 171}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 11, "name": "worker", "qty": 2}, {"id": 77, "name": "wood", "qty": 2}],
+      "skills": [{"id": 702, "name": "Harvest lumber"}]}],
+   "locations": [
+     {"id": 13451, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "south", "destination": 13551, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13450, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 57081, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8651, "name": "Woodcutter One", "faction": 301}]}]},
+  {"id": 302, "name": "Bowyers",
+   "units": [
+     {"id": 8159, "name": "Bowyer One", "where": 62199, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 171}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 11, "name": "worker", "qty": 2}, {"id": 68, "name": "yew", "qty": 2}],
+      "skills": [{"id": 703, "name": "Harvest yew"}]}],
+   "locations": [
+     {"id": 62199, "name": "", "kind": "loc", "subkind": "yew grove", "depth": "subloc", "province": 13349,
+      "exits": [{"direction": "out", "destination": 13349, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8159, "name": "Bowyer One", "faction": 302}]}]},
+  {"id": 303, "name": "Mallorn Friends",
+   "units": [
+     {"id": 7012, "name": "Elf-friend One", "where": 74976, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 70, "name": "mallorn wood", "qty": 1}],
+      "skills": [{"id": 705, "name": "Harvest mallorn wood"}]}],
+   "locations": [
+     {"id": 74976, "name": "", "kind": "loc", "subkind": "mallorn grove", "depth": "subloc", "province": 13449,
+      "exits": [{"direction": "out", "destination": 13449, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 7012, "name": "Elf-friend One", "faction": 303}]}]},
+  {"id": 304, "name": "Poppy Growers",
+   "units": [
+     {"id": 6947, "name": "Poppy One", "where": 13549, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 93, "name": "opium", "qty": 2}],
+      "skills": [{"id": 706, "name": "Harvest opium"}]}],
+   "locations": [
+     {"id": 13549, "name": "", "kind": "loc", "subkind": "swamp", "depth": "province", "province": 13549,
+      "exits": [{"direction": "north", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13649, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13548, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 6947, "name": "Poppy One", "faction": 304}]}]},
+  {"id": 305, "name": "Wranglers",
+   "units": [
+     {"id": 8731, "name": "Wrangler One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 51, "name": "wild horse", "qty": 1}],
+      "skills": [{"id": 655, "name": "Catch wild horses"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8731, "name": "Wrangler One", "faction": 305}]}]},
+  {"id": 306, "name": "Fisherfolk",
+   "units": [
+     {"id": 8761, "name": "Fisher One", "where": 60294, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 171}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 19, "name": "sailor", "qty": 2}, {"id": 87, "name": "fish", "qty": 2}],
+      "skills": [{"id": 603, "name": "Fishing"}]}],
+   "locations": [
+     {"id": 60294, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13350,
+      "exits": [],
+      "here": [{"id": 8761, "name": "Fisher One", "faction": 306}]}]}]}

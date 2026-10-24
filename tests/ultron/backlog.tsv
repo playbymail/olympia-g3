@@ -60,21 +60,21 @@ ungarrison	governance	c		todo	todo	todo
 build	construction	c		todo	todo	todo
 improve	construction	c		todo	todo	todo
 repair	construction	c		todo	todo	todo
-catch	production	c		todo	todo	todo
-collect	production	c		todo	todo	todo
-fish	production	c		todo	todo	todo
-make	production	c		todo	todo	todo
-mallorn	production	c		todo	todo	todo
-opium	production	c		todo	todo	todo
-quarry	production	c		todo	todo	todo
-stone	production	c	quarry	todo	todo	todo
-wood	production	c		todo	todo	todo
-yew	production	c		todo	todo	todo
+catch	production	c		production-harvest	production-refused	production-refused
+collect	production	c		production-harvest	production-refused	production-refused
+fish	production	c		production-harvest	production-refused	production-refused
+make	production	c		production-harvest	production-refused	production-refused
+mallorn	production	c		production-harvest	production-refused	production-refused
+opium	production	c		production-harvest	production-refused	production-refused
+quarry	production	c		production-harvest	production-refused	production-refused
+stone	production	c	quarry	production-harvest	production-refused	production-refused
+wood	production	c		production-harvest	production-refused	production-refused
+yew	production	c		production-harvest	production-refused	production-refused
 form	recruitment	c		todo	todo	todo
 raise	recruitment	c		todo	todo	todo
 rally	recruitment	c		todo	todo	todo
 recruit	recruitment	c		todo	todo	todo
-train	recruitment	c	make	todo	todo	todo
+train	recruitment	c	make	production-harvest	production-refused	production-refused
 forget	skills	c		todo	todo	todo
 research	skills	c		todo	todo	todo
 study	skills	c		todo	todo	todo
