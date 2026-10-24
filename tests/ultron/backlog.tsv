@@ -82,9 +82,9 @@ use	skills	c		trade-routes	skills-refused	skills-refused
 bind	magic	c		todo	todo	todo
 breed	magic	c		todo	todo	todo
 trance	magic	c		todo	todo	todo
-hide	stealth	c		todo	todo	todo
-sneak	stealth	c		todo	todo	todo
-torture	stealth	c		todo	todo	todo
+hide	stealth	c		stealth-hide	stealth-refused	stealth-refused
+sneak	stealth	c		stealth-hide	stealth-refused	stealth-refused
+torture	stealth	c		stealth-hide	stealth-refused	stealth-refused
 explore	exploration	c		todo	todo	todo
 plugh	exploration	cr		todo	todo	todo
 quest	exploration	c		todo	todo	todo
