@@ -194,9 +194,9 @@ only spec a port can be checked against, so a verb or outcome without a fixture 
 behavior the port can get wrong without anyone noticing. The to-do list is
 [`tests/ultron/backlog.tsv`](tests/ultron/README.md): one row per `cmd_tbl` verb,
 with the fixture that exercises each outcome (`ok` / `rejected` / `fail`) or
-`todo`. As of 2026-10-24 only 4 `ok` cells are covered (`move` and `wait` by the
-golden turn, `pillage` by guard-pillage, `use` by trade-routes) and no
-`rejected`/`fail` cell is.
+`todo`. The work is split into one child issue per verb family under the parent
+**#116**. The movement family (#117) is covered by `move-go`, `move-land` and
+`move-ship`. No `rejected`/`fail` cell is covered yet.
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](doc/ultron-harness-architecture.md#7-first-cut-scope-proposed)):

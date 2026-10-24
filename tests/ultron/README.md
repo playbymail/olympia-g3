@@ -63,7 +63,9 @@ candidate fixture ([harness doc §7.4](../../doc/ultron-harness-architecture.md#
    normal turn, never through immediate mode.
 3. **Prove the cell.** Run the fixture's turn with `--coverage <path>` and confirm
    the target verb has a nonzero count in the target column. One fixture can
-   clear several cells; record it in each.
+   clear several cells; record it in each. Have `check.sh` assert it too (run
+   the turn with `--coverage` and fail when a target verb's count is zero, as
+   the `move-*` fixtures do), so the cell stays true as the engine changes.
 4. **Record it.** Replace `todo` with the fixture name, run `./check.sh`, and land
    the fixture and the backlog update in the same PR.
 

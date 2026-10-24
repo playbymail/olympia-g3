@@ -1,0 +1,28 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Long Walkers",
+   "units": [
+     {"id": 4126, "name": "Walker One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 200}],
+      "skills": []}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Walker One", "faction": 300}, {"id": 8651, "name": "Walker Two", "faction": 301}]}]},
+  {"id": 301, "name": "Short Walkers",
+   "units": [
+     {"id": 8651, "name": "Walker Two", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 200}],
+      "skills": []}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Walker One", "faction": 300}, {"id": 8651, "name": "Walker Two", "faction": 301}]}]},
+  {"id": 302, "name": "Sky Riders",
+   "units": [
+     {"id": 8159, "name": "Rider One", "where": 13451, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 200}, {"id": 54, "name": "winged horse", "qty": 1}],
+      "skills": []}],
+   "locations": [
+     {"id": 13451, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "south", "destination": 13551, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13450, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 57081, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8159, "name": "Rider One", "faction": 302}]}]}]}

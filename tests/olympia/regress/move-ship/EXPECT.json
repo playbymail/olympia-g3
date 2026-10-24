@@ -1,0 +1,19 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Ferry Line",
+   "units": [
+     {"id": 4126, "name": "Captain One", "where": 61102, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 185}, {"id": 19, "name": "sailor", "qty": 8}],
+      "skills": [{"id": 600, "name": "Shipcraft"}, {"id": 601, "name": "Sailing"}]}],
+   "locations": [
+     {"id": 61102, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13451,
+      "exits": [],
+      "here": [{"id": 4126, "name": "Captain One", "faction": 300}]}]},
+  {"id": 301, "name": "Travellers",
+   "units": [
+     {"id": 8651, "name": "Passenger One", "where": 57081, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 199}],
+      "skills": []}],
+   "locations": [
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 61102, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8651, "name": "Passenger One", "faction": 301}]}]}]}

@@ -1,23 +1,23 @@
 verb	family	allow	alias_of	ok	rejected	fail
-board	movement	c		todo	todo	todo
-e	movement	cr	east	todo	todo	todo
-east	movement	cr		todo	todo	todo
-enter	movement	cr		todo	todo	todo
-exit	movement	cr		todo	todo	todo
-ferry	movement	c		todo	todo	todo
-fly	movement	c		todo	todo	todo
-go	movement	cr		todo	todo	todo
-in	movement	cr	enter	todo	todo	todo
+board	movement	c		move-ship	todo	todo
+e	movement	cr	east	move-land	todo	todo
+east	movement	cr		move-land	todo	todo
+enter	movement	cr		move-land	todo	todo
+exit	movement	cr		move-land	todo	todo
+ferry	movement	c		move-ship	todo	todo
+fly	movement	c		move-land	todo	todo
+go	movement	cr		move-go	todo	todo
+in	movement	cr	enter	move-land	todo	todo
 move	movement	cr	go	golden	todo	todo
-n	movement	cr	north	todo	todo	todo
-north	movement	cr		todo	todo	todo
-out	movement	cr	exit	todo	todo	todo
-s	movement	cr		todo	todo	todo
-sail	movement	c		todo	todo	todo
-south	movement	cr	s	todo	todo	todo
-unload	movement	c		todo	todo	todo
-w	movement	cr	west	todo	todo	todo
-west	movement	cr		todo	todo	todo
+n	movement	cr	north	move-land	todo	todo
+north	movement	cr		move-land	todo	todo
+out	movement	cr	exit	move-land	todo	todo
+s	movement	cr		move-land	todo	todo
+sail	movement	c		move-ship	todo	todo
+south	movement	cr	s	move-land	todo	todo
+unload	movement	c		move-ship	todo	todo
+w	movement	cr	west	move-land	todo	todo
+west	movement	cr		move-land	todo	todo
 attack	combat	cr		todo	todo	todo
 behind	combat	cr		todo	todo	todo
 execute	combat	cr		todo	todo	todo
@@ -52,7 +52,7 @@ pay	inventory	cr		todo	todo	todo
 reclaim	inventory	c		todo	todo	todo
 take	inventory	cr	get	todo	todo	todo
 buy	trade	c		todo	todo	todo
-fee	trade	c		todo	todo	todo
+fee	trade	c		move-ship	todo	todo
 sell	trade	c		todo	todo	todo
 decree	governance	c		todo	todo	todo
 garrison	governance	c		todo	todo	todo
