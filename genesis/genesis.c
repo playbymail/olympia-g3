@@ -108,6 +108,7 @@ static int  flood_stack[MAX_DIM * MAX_DIM];
  * (N seeded survivors + any origin-less water bodies discovered by the sweep).
  */
 static int  g_defer_oceans;
+static int  g_ocean_bfs;		/* --ocean-growth bfs (issue #87); 0 = frontier */
 static int  defer_n;
 static int  ocean_size[MAX_DIM];
 static int  ocean_origin_r[MAX_DIM];	/* tie-break point + output anchor (a region cell) */
@@ -486,6 +487,48 @@ place_origins(int n, long r2, pcg32_t *rng, int *orow, int *ocol)
 }
 
 /*
+ * --ocean-growth bfs (issue #87): multi-source BFS over the water subgraph.  All
+ * origins grow outward one ring at a time, so every reachable water cell joins
+ * the ocean whose origin is nearest THROUGH THE WATER (cardinal steps) -- a
+ * geodesic Voronoi partition.  Cardinal-only and claim-only-unclaimed-' ', like
+ * the frontier flood, so the #86 no-checkerboard property holds.  Ties (a cell
+ * equidistant from two origins) go to whichever ring cell is expanded first;
+ * each ring is Fisher-Yates shuffled on the partition stream so the seed, not
+ * the origin order, decides them.  ring holds the rn seeded origins on entry.
+ */
+static void
+grow_oceans_bfs(int *ring, int rn, pcg32_t *rng)
+{
+	static int next[MAX_DIM * MAX_DIM];
+	int nn, i, d;
+
+	while (rn > 0) {
+		for (i = rn - 1; i > 0; i--) {
+			int j = pcg32_range(rng, 0, i);
+			int t = ring[i];
+			ring[i] = ring[j];
+			ring[j] = t;
+		}
+		nn = 0;
+		for (i = 0; i < rn; i++) {
+			int cr = ring[i] / g_size;
+			int cc = ring[i] % g_size;
+			for (d = 0; d < 8; d += 2) {	/* cardinal only (#86) */
+				int nr, nc;
+				if (!neighbor8(cr, cc, d, &nr, &nc))
+					continue;
+				if (map[nr][nc] == ' ' && ocean_id[nr][nc] == -1) {
+					ocean_id[nr][nc] = ocean_id[cr][cc];
+					next[nn++] = nr * g_size + nc;
+				}
+			}
+		}
+		memcpy(ring, next, (size_t)nn * sizeof next[0]);
+		rn = nn;
+	}
+}
+
+/*
  * Partition the water into oceans: seed ocean_id[][] at the n origins and grow
  * each via randomized-frontier flood, claiming only unclaimed water (' ') cells.
  * Growth uses CARDINAL (4-neighbor) steps, not diagonals: two oceans racing into a
@@ -499,7 +542,8 @@ place_origins(int n, long r2, pcg32_t *rng, int *orow, int *ocol)
  * ocean -- an island-/Olympus-enclosed body, or water beyond a diagonal pinch, that
  * no origin reached.  Sets defer_n.
  *
- * TODO(#80): try multi-source BFS Voronoi over the water subgraph as an alt.
+ * Under --ocean-growth bfs (issue #87) the frontier flood is replaced by
+ * grow_oceans_bfs; the discovery sweep is shared.
  */
 static void
 partition_oceans_deferred(int n, const int *orow, const int *ocol, pcg32_t *rng)
@@ -517,7 +561,9 @@ partition_oceans_deferred(int n, const int *orow, const int *ocol, pcg32_t *rng)
 		frontier[fn++] = orow[i] * g_size + ocol[i];
 	}
 
-	while (fn > 0) {
+	if (g_ocean_bfs)
+		grow_oceans_bfs(frontier, fn, rng);
+	else while (fn > 0) {
 		int fi = pcg32_range(rng, 0, fn - 1);
 		int cell = frontier[fi];
 		int cr = cell / g_size;
@@ -1593,12 +1639,16 @@ usage(const char *prog)
 	fprintf(stderr,
 		"Usage: %s [--seed N] [--size 10..99] [--number-of-oceans N]\n"
 		"          [--island-iterations 2..10] [--defer-oceans]\n"
+		"          [--ocean-growth frontier|bfs]\n"
 		"          [--start-cities 0..16]\n"
 		"          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]\n"
 		"  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to\n"
 		"  fit; larger requests are reduced with a warning.\n"
 		"  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus\n"
 		"  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.\n"
+		"  --ocean-growth picks how --defer-oceans grows each ocean from its\n"
+		"  origin: frontier (default; random frontier flood, ragged seas) or bfs\n"
+		"  (ring-by-ring, nearest origin through the water).  See issue #87.\n"
 		"  --start-cities places up to N safe-haven start cities on land (default\n"
 		"  6; fewer if they can't be spaced; 0 = none).  Without at least one,\n"
 		"  olympia-g3 can't add players.  See issue #85.\n"
@@ -1624,7 +1674,7 @@ main(int argc, char *argv[])
 	int image_pixels = 8;		/* --pixels: N x N pixels per province */
 	int image_grid = 0;		/* --grid: black grid-line thickness */
 
-	enum { OPT_IMAGE = 256, OPT_PIXELS, OPT_GRID, OPT_START_CITIES };
+	enum { OPT_IMAGE = 256, OPT_PIXELS, OPT_GRID, OPT_START_CITIES, OPT_OCEAN_GROWTH };
 	static struct option longopts[] = {
 		{ "size",              required_argument, 0, 's' },
 		{ "number-of-oceans",  required_argument, 0, 'n' },
@@ -1632,6 +1682,7 @@ main(int argc, char *argv[])
 		{ "seed",              required_argument, 0, 'd' },
 		{ "defer-oceans",      no_argument,       0, 'D' },
 		{ "start-cities",      required_argument, 0, OPT_START_CITIES },
+		{ "ocean-growth",      required_argument, 0, OPT_OCEAN_GROWTH },
 		{ "image",             required_argument, 0, OPT_IMAGE },
 		{ "pixels",            required_argument, 0, OPT_PIXELS },
 		{ "grid",              required_argument, 0, OPT_GRID },
@@ -1650,6 +1701,16 @@ main(int argc, char *argv[])
 		case OPT_PIXELS: image_pixels = atoi(optarg); break;
 		case OPT_GRID:   image_grid = atoi(optarg); break;
 		case OPT_START_CITIES: start_cities = atoi(optarg); break;
+		case OPT_OCEAN_GROWTH:
+			if (strcmp(optarg, "bfs") == 0)
+				g_ocean_bfs = 1;
+			else if (strcmp(optarg, "frontier") == 0)
+				g_ocean_bfs = 0;
+			else {
+				fprintf(stderr, "genesis: --ocean-growth must be frontier or bfs (got %s)\n", optarg);
+				return 1;
+			}
+			break;
 		case 'h': usage(argv[0]); return 0;
 		default:  usage(argv[0]); return 1;
 		}
@@ -1678,6 +1739,10 @@ main(int argc, char *argv[])
 		fprintf(stderr, "genesis: --island-iterations must be 2..10 (got %d)\n", iterations);
 		return 1;
 	}
+	if (g_ocean_bfs && !g_defer_oceans) {
+		fprintf(stderr, "genesis: --ocean-growth bfs requires --defer-oceans\n");
+		return 1;
+	}
 	if (start_cities < 0 || start_cities > 16) {
 		fprintf(stderr, "genesis: --start-cities must be 0..16 (got %d)\n", start_cities);
 		return 1;
@@ -1695,7 +1760,7 @@ main(int argc, char *argv[])
 	g_size = size;
 	fprintf(stderr, "genesis: seed=%llu size=%d oceans=%d iterations=%d%s\n",
 		(unsigned long long)seed, size, oceans, iterations,
-		g_defer_oceans ? " (defer-oceans)" : "");
+		g_defer_oceans ? (g_ocean_bfs ? " (defer-oceans, bfs)" : " (defer-oceans)") : "");
 
 	/* Each step reseeds its own stream off the user seed (see doc/genesis.md). */
 	if (g_defer_oceans) {

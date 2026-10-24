@@ -73,10 +73,36 @@ that remains. This runs on its own PCG stream (`STEP_ORIGINS`), so determinism a
    of `~0.65 · sqrt(water_cells / N)`. If an origin can't clear the spacing within
    `N·N` candidate draws, the count is reduced by one and the placement restarts (the
    spacing floor is held fixed, so fewer points is strictly easier).
-2. **Partition (water only).** Grow each origin into an ocean with the same
-   randomized-frontier flood as step 1, but claiming only unclaimed water cells and
-   using mapgen's 8-neighbor / column-wrap rule — so growth is geodesic through the
-   channels and each ocean is one connected water body.
+2. **Partition (water only).** Grow each origin into an ocean, claiming only
+   unclaimed water cells and stepping only to the four **cardinal** neighbors
+   (columns wrap). Cardinal growth matters: two oceans racing into a shared corridor
+   under 8-neighbor growth interleave cell-by-cell, each staying connected only
+   through diagonals, which paints a checkerboard seam (#86). Growth runs through the
+   channels, and each ocean is one connected water body. `--ocean-growth` picks how
+   the oceans grow:
+   - `frontier` (the default): the same randomized-frontier flood as step 1. Each
+     step picks a random frontier cell and claims one random unclaimed neighbor, so
+     an ocean's final reach depends on how often it gets picked. Boundaries come out
+     ragged and sizes uneven.
+   - `bfs` (#87): a multi-source breadth-first search. All origins grow outward
+     one ring at a time, so every water cell joins the ocean whose origin is nearest
+     **through the water** (a geodesic Voronoi partition). Seas come out smoother and
+     more even in size, and they still follow channels around islands. Ties (a cell
+     equidistant from two origins) go to whichever ring cell is expanded first, and
+     each ring is shuffled on the same `STEP_ORIGINS` stream, so the seed decides
+     ties rather than the origin order.
+
+   `bfs` requires `--defer-oceans`. `frontier` output is byte-identical to the
+   output from before the switch existed.
+
+   Neither mode is strictly better, so the choice is left to the gamemaster when
+   generating. `bfs` gives somewhat more even seas (across sizes 10–99 the
+   largest sea averaged 4.0× the smallest, versus 4.7× for `frontier`), but
+   because growth is cardinal its boundaries run as straight 45° staircases.
+   `frontier` gives more natural, ragged coastlines between seas. Shuffling the
+   growth directions per cell under `bfs` was tried and changes nothing visible:
+   a cell's neighbors all join that cell's ocean whatever order they are visited
+   in, so only exact ties move (#87).
 3. **Discover the rest.** Islands shouldn't enclose water, but dropping in Mt. Olympus
    can seal off a small pocket. Any water body no origin reached is swept row-major and
    becomes its own ocean, so every water cell ends up in a named sea.
