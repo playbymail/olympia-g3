@@ -1,0 +1,10 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Bunglers",
+   "units": [
+     {"id": 4126, "name": "Bungler One", "where": 61319, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 61319, "name": "", "kind": "loc", "subkind": "tower", "depth": "", "province": 13451,
+      "exits": [{"direction": "out", "destination": 57081, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Bungler One", "faction": 300}]}]}]}

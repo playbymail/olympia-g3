@@ -70,10 +70,10 @@ quarry	production	c		production-harvest	production-refused	production-refused
 stone	production	c	quarry	production-harvest	production-refused	production-refused
 wood	production	c		production-harvest	production-refused	production-refused
 yew	production	c		production-harvest	production-refused	production-refused
-form	recruitment	c		inventory-give	todo	todo
-raise	recruitment	c		todo	todo	todo
-rally	recruitment	c		todo	todo	todo
-recruit	recruitment	c		todo	todo	todo
+form	recruitment	c		inventory-give	recruitment-refused	recruitment-refused
+raise	recruitment	c		recruitment-raise	recruitment-refused	recruitment-refused
+rally	recruitment	c		recruitment-raise	recruitment-refused	recruitment-refused
+recruit	recruitment	c		recruitment-raise	recruitment-refused	recruitment-refused
 train	recruitment	c	make	production-harvest	production-refused	production-refused
 forget	skills	c		todo	todo	todo
 research	skills	c		todo	todo	todo

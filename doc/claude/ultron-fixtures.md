@@ -17,8 +17,9 @@ with the fixture that exercises each outcome (`ok` / `rejected` / `fail`) or
 `production-harvest` (`ok`) and `production-refused` (`fail`/`rejected`), and
 the inventory family (#127) by `inventory-give` and `inventory-refused`,
 the combat family (#128) by `combat-attack`, `combat-refused` and
-`guard-pillage`, and the attitude family (#129) by `attitude-set` and
-`attitude-refused`.
+`guard-pillage`, the attitude family (#129) by `attitude-set` and
+`attitude-refused`, and the recruitment family (#130) by
+`recruitment-raise` and `recruitment-refused`.
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):
