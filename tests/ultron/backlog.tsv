@@ -18,13 +18,13 @@ south	movement	cr	s	move-land	todo	todo
 unload	movement	c		move-ship	todo	todo
 w	movement	cr	west	move-land	todo	todo
 west	movement	cr		move-land	todo	todo
-attack	combat	cr		todo	todo	todo
-behind	combat	cr		todo	todo	todo
-execute	combat	cr		todo	todo	todo
-guard	combat	c		todo	todo	todo
-pillage	combat	cr		guard-pillage	todo	todo
-raze	combat	cr		todo	todo	todo
-surrender	combat	c		todo	todo	todo
+attack	combat	cr		combat-attack	combat-refused	combat-refused
+behind	combat	cr		combat-attack	combat-refused	n/a
+execute	combat	cr		combat-attack	combat-refused	combat-refused
+guard	combat	c		combat-attack	combat-refused	n/a
+pillage	combat	cr		guard-pillage	combat-refused	combat-refused
+raze	combat	cr		combat-attack	combat-refused	combat-refused
+surrender	combat	c		combat-attack	combat-refused	combat-refused
 admit	attitude	cpr		todo	todo	todo
 contact	attitude	cr		todo	todo	todo
 default	attitude	cpr		todo	todo	todo

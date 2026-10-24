@@ -1,0 +1,34 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Raiders",
+   "units": [
+     {"id": 4126, "name": "Raider One", "where": 10113, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 287}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 12, "name": "soldier", "qty": 44}],
+      "skills": []}],
+   "locations": [
+     {"id": 10113, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 10113,
+      "exits": [{"direction": "north", "destination": 10013, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 10114, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 10213, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 10112, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 62791, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Raider One", "faction": 300}, {"id": 6947, "name": "Razer One", "faction": 304}, {"id": 7012, "name": "Captor One", "faction": 303}]}]},
+  {"id": 301, "name": "Victims",
+   "units": [],
+   "locations": []},
+  {"id": 302, "name": "Yielders",
+   "units": [],
+   "locations": []},
+  {"id": 303, "name": "Captors",
+   "units": [
+     {"id": 7012, "name": "Captor One", "where": 10113, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 350}, {"id": 10, "name": "peasant", "qty": 50}],
+      "skills": []}],
+   "locations": [
+     {"id": 10113, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 10113,
+      "exits": [{"direction": "north", "destination": 10013, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 10114, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 10213, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 10112, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 62791, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Raider One", "faction": 300}, {"id": 6947, "name": "Razer One", "faction": 304}, {"id": 7012, "name": "Captor One", "faction": 303}]}]},
+  {"id": 304, "name": "Razers",
+   "units": [
+     {"id": 6947, "name": "Razer One", "where": 10113, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 10113, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 10113,
+      "exits": [{"direction": "north", "destination": 10013, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 10114, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 10213, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 10112, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 62791, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Raider One", "faction": 300}, {"id": 6947, "name": "Razer One", "faction": 304}, {"id": 7012, "name": "Captor One", "faction": 303}]}]}]}
