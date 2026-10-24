@@ -36,6 +36,9 @@ this turn, and the fisher would fish all month for nothing. The `ok` cell
 would still count, since only `start` decides it, but 13350's roll hits, so
 the fixture shows a catch.
 
+Whether the same roll every day is intended is an open question (#132). Until
+it's settled, the fixture treats it as intended.
+
 ## What `check.sh` asserts
 
 1. Every cell above reaches `ok` in the turn's `--coverage` dump.
