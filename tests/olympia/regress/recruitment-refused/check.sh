@@ -6,13 +6,15 @@
 # tests/olympia/fixtures/world.tgz) and runs one turn. One faction's noble,
 # in a tower with no peasants and with no recruitment skill, issues every
 # recruitment verb and each start fails; the player entity issues them too
-# and is refused. See recruitment-refused.lua and README.md.
+# and is refused. A second faction's skilled noble, where oly.mob has spent
+# the mob cookie, fails raise and rally past the skill check.
+# See recruitment-refused.lua and README.md.
 #
 # Three checks, all required:
 #   1. coverage: every verb:outcome in CELLS has a nonzero count in the
 #      turn's --coverage dump, so the backlog cells this fixture claims stay
 #      true;
-#   2. EXPECT.sha256: the faction's report and unit state, byte for byte
+#   2. EXPECT.sha256: each faction's report and unit state, byte for byte
 #      (the strict gate);
 #   3. EXPECT.json: the post-turn --state-export snapshot (shows *what*
 #      changed when the hashes fail).
@@ -27,7 +29,7 @@ PRESET="${OLYMPIA_PRESET:-debug}"
 BIN="${ROOT}/build/${PRESET}/olympia-g3"
 . "${ROOT}/tests/olympia/fixtures/scenario.sh"
 
-FILES=(save/1/300 fact/300)
+FILES=(save/1/300 save/1/301 fact/300 fact/301)
 CELLS=()
 for v in recruit form raise rally; do
 	CELLS+=("${v}:fail" "${v}:rejected")

@@ -22,7 +22,8 @@
  *  name/id registry. subitem, know, makeloc and restart followed for the
  *  move-ship fixture (issue #120); add_player's `unformed` list for the
  *  inventory-give fixture and the garrison query for inventory-refused
- *  (issue #127). Everything else in the design (kill, credit, the
+ *  (issue #127); mob for recruitment-raise's rally target (issue #139).
+ *  Everything else in the design (kill, credit, the
  *  wider query set, the declarative format, RNG bindings) is deferred; a
  *  binding is added when a fixture needs it, not speculatively.
  */
@@ -419,6 +420,46 @@ l_makeloc(lua_State *L)
 	return 1;
 }
 
+/*
+ *  oly.mob(where [, name])  -> <id>
+ *
+ *  Raise a peasant mob at where, as a pillage does (create_peasant_mob):
+ *  do_cookie_npc() mints the mob, spends where's mob cookie, and draws its
+ *  size from the per-location npc stream, then the mob is queued to guard.
+ *  No GM verb makes a mob, so this is the one binding that calls the engine
+ *  directly instead of going through script_cmd(). The mob is always named
+ *  "Mob", skipping create_peasant_mob's Mob/Crowd draw, so no stream but the
+ *  mint is touched. `name`, when given, binds the id in the registry.
+ */
+static int
+l_mob(lua_State *L)
+{
+	int where = (int) luaL_checkinteger(L, 1);
+	const char *name = luaL_optstring(L, 2, NULL);
+	int mob;
+
+	if (!valid_box(where))
+		return luaL_error(L, "oly.mob: %d not a valid box", where);
+
+	if (!may_cookie_npc(0, where, item_mob_cookie))
+		return luaL_error(L, "oly.mob: no mob may be raised at %d",
+				where);
+
+	mob = do_cookie_npc(0, where, item_mob_cookie, where);
+	if (mob <= 0)
+		return luaL_error(L, "oly.mob: could not raise a mob at %d",
+				where);
+
+	set_name(mob, "Mob");
+	queue(mob, "guard 1");
+
+	if (name != NULL)
+		reg_bind(str_save((char *) name), mob);
+
+	lua_pushinteger(L, mob);
+	return 1;
+}
+
 /* oly.guard(who, on)  -- the `guard` order set via v_guard. */
 static int
 l_guard(lua_State *L)
@@ -590,6 +631,7 @@ static const luaL_Reg oly_funcs[] = {
 	{ "subitem",		l_subitem },
 	{ "know",		l_know },
 	{ "makeloc",		l_makeloc },
+	{ "mob",		l_mob },
 	{ "guard",		l_guard },
 	{ "order",		l_order },
 	{ "save",		l_save },

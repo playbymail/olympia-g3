@@ -21,14 +21,21 @@ The noble's orders all fail:
 The player entity issues the same four orders and each one is refused
 (rejected): every recruitment verb is noble-only (`c`).
 
-The skill is the first check in `v_raise` and `v_rally`, so their other
-failures (no mob cookie here, no peasant mob to rally) aren't pinned.
+A second faction, **301** "Latecomers", has a noble Latecomer One [4947]
+that knows Raise and Rally peasant mob. It stands in Forest [13449], where
+`oly.mob` (#139) raised a mob before the turn, so its orders fail after the
+skill check:
+
+| Order | Outcome |
+|---|---|
+| `raise` | fail: "A mob has already been raised from this place." (the cookie is spent) |
+| `rally 4947` | fail: it names the noble itself, which is not a peasant mob |
 
 ## What `check.sh` asserts
 
 1. Every cell above reaches its outcome in the turn's `--coverage` dump.
-2. The faction's report and unit state (`save/1/300`, `fact/300`) match
-   `EXPECT.sha256`.
+2. Both factions' reports and unit state (`save/1/30{0,1}`, `fact/30{0,1}`)
+   match `EXPECT.sha256`.
 3. The post-turn `--state-export` snapshot matches `EXPECT.json`.
 
 ## Authored in Lua

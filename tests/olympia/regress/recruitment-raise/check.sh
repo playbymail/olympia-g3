@@ -4,8 +4,9 @@
 #
 # Extracts the frozen scenario (scenario.patch over the shared
 # tests/olympia/fixtures/world.tgz) and runs one turn. On Plain [13450] one
-# noble recruits peasants, and another raises a peasant mob and then rallies
-# it, so the mob stacks under it. See recruitment-raise.lua and README.md.
+# noble recruits peasants and another raises a peasant mob; in Forest [13449]
+# a third rallies a mob seeded there by oly.mob, so the mob stacks under it.
+# See recruitment-raise.lua and README.md.
 #
 # Three checks, all required:
 #   1. coverage: every verb:outcome in CELLS has a nonzero count in the
@@ -26,7 +27,7 @@ PRESET="${OLYMPIA_PRESET:-debug}"
 BIN="${ROOT}/build/${PRESET}/olympia-g3"
 . "${ROOT}/tests/olympia/fixtures/scenario.sh"
 
-FILES=(save/1/300 save/1/301 fact/300 fact/301)
+FILES=(save/1/300 save/1/301 save/1/302 fact/300 fact/301 fact/302)
 CELLS=(recruit:ok raise:ok rally:ok)
 
 [ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }

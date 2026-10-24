@@ -6,34 +6,31 @@ Pins the `ok` outcome of the recruitment-family verbs `recruit`, `raise` and
 
 ## Scenario
 
-Two factions start in Greyfell (57081) and are poofed to Plain [13450], a
-province with peasants and a mob cookie.
+Three factions start in Greyfell (57081) and are poofed to provinces with
+peasants and a mob cookie.
 
-| Unit | Orders |
-|---|---|
-| Recruiter One [4126] (300 "Recruiters") | `recruit 2` |
-| Agitator One [8651] (301 "Agitators"), knows Raise and Rally peasant mob | `raise`, `rally 122602` |
+| Unit | Where | Orders |
+|---|---|---|
+| Recruiter One [4126] (300 "Recruiters") | Plain [13450] | `recruit 2` |
+| Agitator One [8651] (301 "Agitators"), knows Raise peasant mob | Plain [13450] | `raise` |
+| Rallier One [8159] (302 "Ralliers"), knows Rally peasant mob | Forest [13449] | `rally 101396` |
 
 `recruit` re-parses as `collect 10 2` and takes two of the plain's peasants.
 `raise` takes seven days and creates Angry peasant [122602], a mob of 18.
-`rally` then starts against it, and when it finishes the mob stacks beneath
-the agitator.
-
-The mob's id is minted during the turn (`new_ent` draws from the per-turn
-`mint` stream), so `rally` names the id this frozen scenario gives it. If
-an engine change moves the id, `check.sh` reports `rally` missing its `ok`
-cell; read the new id from the agitator's report and update `MOB` in
-`recruitment-raise.lua`.
+Mob [101396] is seeded in the forest before the turn by `oly.mob` (#139),
+so `rally` starts against it and, when it finishes, the mob stacks beneath
+the rallier. Seeding the mob spends the forest's mob cookie, which is why the
+agitator raises on the plain instead.
 
 ## What `check.sh` asserts
 
 1. `recruit`, `raise` and `rally` reach `ok` in the turn's `--coverage` dump.
-2. Both factions' reports and unit state (`save/1/30{0,1}`, `fact/30{0,1}`)
-   match `EXPECT.sha256`. The mob stacking beneath the agitator is in
-   `save/1/301`.
+2. The three factions' reports and unit state (`save/1/30{0,1,2}`,
+   `fact/30{0,1,2}`) match `EXPECT.sha256`. The mob stacking beneath the
+   rallier is in `save/1/302`.
 3. The post-turn `--state-export` snapshot matches `EXPECT.json`. It lists
-   the mob in Plain's `here`, but the mob belongs to the independent player,
-   so its stack and loyalty are not exported (#114).
+   both mobs in their province's `here`, but they belong to the independent
+   player, so their stacks and loyalty are not exported (#114).
 
 ## Authored in Lua
 

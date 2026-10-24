@@ -7,4 +7,13 @@
    "locations": [
      {"id": 61319, "name": "", "kind": "loc", "subkind": "tower", "depth": "", "province": 13451,
       "exits": [{"direction": "out", "destination": 57081, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
-      "here": [{"id": 4126, "name": "Bungler One", "faction": 300}]}]}]}
+      "here": [{"id": 4126, "name": "Bungler One", "faction": 300}]}]},
+  {"id": 301, "name": "Latecomers",
+   "units": [
+     {"id": 4947, "name": "Latecomer One", "where": 13449, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 673, "name": "Raise peasant mob"}, {"id": 674, "name": "Rally peasant mob"}]}],
+   "locations": [
+     {"id": 13449, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13449,
+      "exits": [{"direction": "north", "destination": 13349, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13450, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13549, "distance": 14, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13448, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4947, "name": "Latecomer One", "faction": 301}, {"id": 134507, "name": "Mob", "faction": 100}]}]}]}

@@ -614,6 +614,13 @@ the registry), and `oly.restart()`, which emulates a fresh engine process
 faction's unformed noble ids in FORM order, and `oly.garrison(where)` returns
 the garrison guarding `where` (seeded by `oly.load`), or nil.
 
+**Since landed (#139):** `oly.mob(where [, name])` raises a peasant mob named
+"Mob" at `where`, spending its mob cookie, queues it to `guard 1`, and returns
+its id (optionally bound in the registry). It errors where `may_cookie_npc`
+refuses a mob. No GM verb makes a mob, so this is the first path (B) binding:
+it calls `do_cookie_npc` directly, the way `create_peasant_mob` does, without
+that function's Mob/Crowd name draw.
+
 **Explicitly deferred:** `kill`, `credit`, the full query set
 (`here`/`all`/`chars_here`/`knows`), the declarative format, RNG bindings, and
 any production-engine integration. Path (B) direct-handler calls are deferred
