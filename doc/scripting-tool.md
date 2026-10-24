@@ -603,7 +603,13 @@ as a script**, to validate the approach before committing to the full surface:
    **byte-identically**. That byte-match against the *current* fixture is the
    prototype's pass/fail gate.
 
-**Explicitly deferred:** `make_loc`, `know`, `kill`, `credit`, the full query set
+**Since landed (#120):** `oly.know(who, skill)`, `oly.subitem(who, item, qty)`,
+`oly.makeloc(who, subkind [, name])` (returns the new id, optionally bound in
+the registry), and `oly.restart()`, which emulates a fresh engine process
+(mint stream restarted, GM active again, a just-saved `save` left running) so
+`move-ship.lua` can match the multi-process `move-ship/build-scenario.sh`.
+
+**Explicitly deferred:** `kill`, `credit`, the full query set
 (`here`/`all`/`chars_here`/`knows`), the declarative format, RNG bindings, and
 any production-engine integration. Path (B) direct-handler calls are deferred
 unless path (A) proves clumsy.

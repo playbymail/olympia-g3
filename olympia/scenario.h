@@ -33,4 +33,11 @@ extern int scenario_add_player(int pl, char *faction, char *character,
  */
 extern void scenario_sort_items(int who);
 
+/*
+ *  Restart the per-turn `mint` stream from counter zero, as a fresh engine
+ *  process would (code.c). Only needed to reproduce a fixture that the legacy
+ *  flow built across several processes (issue #120).
+ */
+extern void scenario_reset_mint(void);
+
 #endif /* OLYMPIA_SCENARIO_H */

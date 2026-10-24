@@ -23,7 +23,19 @@ fixtures. A one-turn fixture commits a plain-text `scenario.patch` over the shar
 base world `tests/olympia/fixtures/world.tgz` (#121; see
 [tests/olympia/fixtures/README.md](../../tests/olympia/fixtures/README.md)), not a full
 `scenario.tgz`. Land each fixture with its backlog update, and keep
-`tests/ultron/check.sh` printing `YES`. Two known gaps beyond the per-verb table:
+`tests/ultron/check.sh` printing `YES`.
+
+**Author new fixtures in Lua** (`olyscript-g3`, `olympia/lua_bindings.c`) when
+the bindings cover them; guard-pillage and move-ship show the pattern
+(`<name>.lua` + `check-lua.sh`). If a binding is missing, add it in that
+fixture's PR. A verb that a third fixture's bash build drives through `-i` is
+the signal to add one. Bindings are C engine code under the full `-Werror`
+build, and the Go port may have to reproduce them, so none are added
+speculatively (#120). `oly.restart()` exists only so a Lua script can
+reproduce an older multi-process bash build byte for byte; a fixture authored
+in Lua from the start does not call it.
+
+Two known gaps beyond the per-verb table:
 `use` dispatches every usable skill and item, so its single `ok` cell says little,
 and the hook does not see the non-command turn phases (NPC/savage movement,
 weather, upkeep, region spawns, month-end) listed in

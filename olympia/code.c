@@ -771,6 +771,24 @@ mint_shuffle(ilist l)
 	begin_mint();
 	ilist_shuffle_rng(l, &mint_rng);
 }
+
+#ifdef OLYSCRIPT_HOST
+/*
+ *  olyscript-g3 host hook (issue #120): forget the seeded mint stream, so the
+ *  next mint re-seeds it from counter zero -- the state a freshly started
+ *  engine process is in, since the counter lives only in this static and is
+ *  never saved. Lets a single script reproduce a legacy authoring flow that
+ *  split its mints across several olympia-g3 processes. Compiled only for
+ *  olyscript-g3; code.c is byte-identical for the engine target.
+ */
+#include "scenario.h"
+
+void
+scenario_reset_mint(void)
+{
+	mint_rng_turn = -1;
+}
+#endif	/* OLYSCRIPT_HOST */
  
 
 static int

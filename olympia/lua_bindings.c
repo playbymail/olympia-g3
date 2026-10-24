@@ -19,9 +19,10 @@
  *
  *  Prototype surface (doc §9): load, extract_startlocs, add_player, poof,
  *  additem, guard, order, save, plus the loc/has_item query reads and the
- *  name/id registry. Everything else in the design (make_loc, know, kill,
- *  credit, the wider query set, the declarative format, RNG bindings) is
- *  deferred.
+ *  name/id registry. subitem, know, makeloc and restart followed for the
+ *  move-ship fixture (issue #120). Everything else in the design (kill, credit, the
+ *  wider query set, the declarative format, RNG bindings) is deferred; a
+ *  binding is added when a fixture needs it, not speculatively.
  */
 
 #include <stdio.h>
@@ -158,11 +159,20 @@ req_field_int(lua_State *L, int t, const char *key)
  *  command state matches the committed fixture.
  * ------------------------------------------------------------------------- */
 
+/*
+ *  The subject whose `save` was the last command run, or 0. The db that save
+ *  wrote holds that command still in STATE_RUN (v_save runs inside it), which
+ *  is what a new process would load -- see l_restart().
+ */
+static int saved_who = 0;
+
 static void
 script_cmd(lua_State *L, char *line)
 {
 	struct command *c;
 	char buf[LEN];
+
+	saved_who = 0;
 
 	c = p_command(immediate);
 	c->who = immediate;
@@ -328,6 +338,72 @@ l_additem(lua_State *L)
 	return 0;
 }
 
+/* oly.subitem(who, item, qty)  -- v_sub_item / consume_item. */
+static int
+l_subitem(lua_State *L)
+{
+	int who = (int) luaL_checkinteger(L, 1);
+	int item = (int) luaL_checkinteger(L, 2);
+	int qty = (int) luaL_checkinteger(L, 3);
+
+	be_subject(L, who);
+	script_cmd(L, sout("subitem %d %d", item, qty));
+	return 0;
+}
+
+/* oly.know(who, skill)  -- v_know / learn_skill. */
+static int
+l_know(lua_State *L)
+{
+	int who = (int) luaL_checkinteger(L, 1);
+	int skill = (int) luaL_checkinteger(L, 2);
+
+	if (kind(skill) != T_skill)
+		return luaL_error(L, "oly.know: %d is not a skill", skill);
+
+	be_subject(L, who);
+	script_cmd(L, sout("know %d", skill));
+	return 0;
+}
+
+/*
+ *  oly.makeloc(who, "roundship" [, name])  -> <id>
+ *
+ *  v_makeloc: create a location/ship of the given subkind inside who's
+ *  subloc. The verb reports the new box only as text, but set_where() appends
+ *  it to the end of that subloc's here_list, so the id is read back from
+ *  there -- the scripted replacement for awk'ing lib/ship. `name`, when
+ *  given, binds the id in the registry.
+ */
+static int
+l_makeloc(lua_State *L)
+{
+	int who = (int) luaL_checkinteger(L, 1);
+	const char *sk = luaL_checkstring(L, 2);
+	const char *name = luaL_optstring(L, 3, NULL);
+	int where, before, n;
+
+	if (!valid_box(who))
+		return luaL_error(L, "oly.makeloc: %d not a valid box", who);
+
+	be_subject(L, who);
+
+	where = subloc(who);
+	before = ilist_len(rp_loc_info(where)->here_list);
+	script_cmd(L, sout("makeloc %s", sk));
+
+	if (ilist_len(rp_loc_info(where)->here_list) != before + 1)
+		return luaL_error(L, "oly.makeloc: could not make '%s'", sk);
+
+	n = rp_loc_info(where)->here_list[before];
+
+	if (name != NULL)
+		reg_bind(str_save((char *) name), n);
+
+	lua_pushinteger(L, n);
+	return 1;
+}
+
 /* oly.guard(who, on)  -- the `guard` order set via v_guard. */
 static int
 l_guard(lua_State *L)
@@ -374,6 +450,38 @@ l_save(lua_State *L)
 		libdir = str_save((char *) path);
 
 	script_cmd(L, sout("save"));
+	saved_who = immediate;
+	return 0;
+}
+
+/*
+ *  oly.restart()  -- carry on as a freshly started olympia-g3 process would.
+ *
+ *  The legacy fixture builds ran each step as its own process against the
+ *  saved lib, and three pieces of state differ after the restart:
+ *
+ *    - the per-turn `mint` stream's counter is never saved, so it starts over;
+ *    - every -i run starts as the GM, so its first `be` is recorded on the
+ *      GM's box;
+ *    - a `save` command writes the db while it is itself still running, so
+ *      the subject that saved loads with that command in STATE_RUN (and the
+ *      turn then spends that unit's first day finishing it).
+ *
+ *  A script reproducing such a build byte for byte calls this where the old
+ *  flow started a new process, straight after an oly.save() if the old flow
+ *  saved there. A scenario authored in Lua from the start never needs it.
+ */
+static int
+l_restart(lua_State *L)
+{
+	(void) L;
+
+	if (saved_who > 0)
+		rp_command(saved_who)->state = STATE_RUN;
+	saved_who = 0;
+
+	scenario_reset_mint();
+	immediate = gm_player;
 	return 0;
 }
 
@@ -443,9 +551,13 @@ static const luaL_Reg oly_funcs[] = {
 	{ "add_player",		l_add_player },
 	{ "poof",		l_poof },
 	{ "additem",		l_additem },
+	{ "subitem",		l_subitem },
+	{ "know",		l_know },
+	{ "makeloc",		l_makeloc },
 	{ "guard",		l_guard },
 	{ "order",		l_order },
 	{ "save",		l_save },
+	{ "restart",		l_restart },
 	{ "loc",		l_loc },
 	{ "has_item",		l_has_item },
 	{ "id",			l_id },
