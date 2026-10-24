@@ -25,12 +25,12 @@ guard	combat	c		combat-attack	combat-refused	n/a
 pillage	combat	cr		guard-pillage	combat-refused	combat-refused
 raze	combat	cr		combat-attack	combat-refused	combat-refused
 surrender	combat	c		combat-attack	combat-refused	combat-refused
-admit	attitude	cpr		todo	todo	todo
-contact	attitude	cr		todo	todo	todo
-default	attitude	cpr		todo	todo	todo
-defend	attitude	cpr		todo	todo	todo
-hostile	attitude	cpr		todo	todo	todo
-neutral	attitude	cpr		todo	todo	todo
+admit	attitude	cpr		attitude-set	attitude-refused	attitude-refused
+contact	attitude	cr		attitude-set	attitude-refused	n/a
+default	attitude	cpr		attitude-set	attitude-refused	n/a
+defend	attitude	cpr		attitude-set	attitude-refused	n/a
+hostile	attitude	cpr		attitude-set	attitude-refused	n/a
+neutral	attitude	cpr		attitude-set	attitude-refused	n/a
 honor	loyalty	c		todo	todo	todo
 honour	loyalty	c	honor	todo	todo	todo
 oath	loyalty	c		todo	todo	todo
