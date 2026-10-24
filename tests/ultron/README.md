@@ -42,6 +42,10 @@ other verb has one.
 
 ## Working through it
 
+The Chaos Goblin brain in [`brain/`](brain/README.md) generates order files
+weighted toward the `todo` cells below; a turn it drives shows which cells a
+scenario can reach before a fixture is built for them.
+
 1. **Pick a `todo` cell.** Prefer rows with an empty `alias_of`: an alias runs
    the same `start` as its target, so it adds little once the target is covered.
    Within that, prefer `ok` before `rejected`/`fail`, and families with the most

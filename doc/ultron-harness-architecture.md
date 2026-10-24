@@ -280,7 +280,8 @@ Smallest end-to-end slice that proves the architecture, in dependency order:
    the oracle bindings or a `-state-export` mode. **✅ Done** (#104) — see
    [§7.2](#72-state-export--landed).
 3. **A trivial brain** — one archetype (the Chaos Goblin is the cheapest: pick
-   legal-ish orders at random) writing order files out of process.
+   legal-ish orders at random) writing order files out of process. **✅ Done**
+   (#105) — see [§7.3](#73-chaos-goblin-brain--landed).
 4. **Loop driver** wiring §4 steps 1–6, and freezing any crash as a regress
    fixture.
 
@@ -370,3 +371,29 @@ produce the same file later if in-process branching is ever needed.
 Faction relations (attitudes, allies) and studyable-skill lists are not in the
 first cut.
 
+### 7.3 Chaos Goblin brain — landed
+
+`tests/ultron/brain/chaos_goblin.py` (#105) is the first brain: Python 3, standard
+library only, out of process. It reads the state export, `backlog.tsv` and, if
+given, the latest `coverage.tsv`, and writes `lib/orders/<faction>` for every
+faction in the export. Usage and details are in its
+[README](../tests/ultron/brain/README.md). Decisions taken in the first cut:
+
+- **One pick per order, over `(verb, outcome)` cells.** A cell weighs more when
+  its backlog cell is `todo` or the coverage dump counts it zero. Alias verbs
+  weigh half; the `gm-immediate` and `directive` families are skipped, and `quit`
+  is excluded by default.
+- **The picked outcome shapes the order.** `ok` uses arguments from the state;
+  `rejected` issues the order from an entity the `allow` string leaves out (the
+  faction for a unit verb), since `check_allow()` keys on the issuer's kind; `fail`
+  garbles the arguments. This answers open question 1's legality half: the brain
+  attempts and observes, and the state only informs the pick.
+- **Seeded:** the same seed and inputs give byte-identical order files.
+- `tests/ultron/brain/check.sh` checks reproducibility and that a turn on the
+  goblin's orders exits 0 and fires more than the baseline verbs.
+
+**First rounds (2026-10-24).** One turn per seed for seeds 1–40 at 20 orders per
+unit fired 110 verbs on each of trade-routes and guard-pillage (baseline: 3 and
+4), reaching `rejected` and `fail` as well as `ok`. Nothing crashed, and seeds
+1–20 ran clean under ASan/UBSan. Driving this across turns and freezing any crash
+as a fixture is step 4 (#106).
