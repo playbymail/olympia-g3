@@ -381,8 +381,9 @@ faction in the export. Usage and details are in its
 
 - **One pick per order, over `(verb, outcome)` cells.** A cell weighs more when
   its backlog cell is `todo` or the coverage dump counts it zero. Alias verbs
-  weigh half; the `gm-immediate` and `directive` families are skipped, and `quit`
-  is excluded by default.
+  weigh half; the `gm-immediate` and `directive` families are skipped, and `die`
+  and `quit` are excluded by default (#110). `--exclude`/`--allow` take
+  comma-separated or repeated verbs to change that without editing the script.
 - **The picked outcome shapes the order.** `ok` uses arguments from the state;
   `rejected` issues the order from an entity the `allow` string leaves out (the
   faction for a unit verb), since `check_allow()` keys on the issuer's kind; `fail`
@@ -435,6 +436,8 @@ tests/ultron/loop.py --scenario tests/olympia/regress/trade-routes/scenario.tgz 
   a pinned check once the bug is fixed.
 - **Summary.** At the end it prints the backlog `todo` cells that the run hit
   at least once, and writes them to `newly-hit.tsv`.
+- **Brain flags.** `--exclude` and `--allow` (comma-separated or repeated) are
+  passed through to the brain, e.g. `--exclude wait,move --allow die` (#110).
 - **Testing the freeze.** `--inject TURN:FACTION:UNIT:ORDER` appends a raw order
   line after the brain. `--engine tests/ultron/inject-crash.sh` runs the real
   engine but aborts like a failed assert on any `ultron-crash` order. Together

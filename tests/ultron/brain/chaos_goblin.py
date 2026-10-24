@@ -39,9 +39,10 @@ OUTCOMES = ("ok", "rejected", "fail")
 # Families with no player-order-path fixture wanted (backlog "n/a" rows).
 SKIP_FAMILIES = ("gm-immediate", "directive")
 
-# Verbs the goblin leaves alone unless asked: QUIT drops the faction, which
-# ends the run for every later turn of the loop.
-DEFAULT_EXCLUDE = ("quit",)
+# Verbs the goblin leaves alone unless --allow names them. QUIT drops the
+# faction and DIE kills the noble, so either leaves later turns of the loop
+# with fewer units to order.
+DEFAULT_EXCLUDE = ("die", "quit")
 
 # Argument templates per verb. Tokens are filled from the state:
 #   UNIT  another character the unit can see (else any known unit)
@@ -385,6 +386,21 @@ def write_orders(goblin, state, out_dir, per_unit):
     return written
 
 
+def verb_list(ap, flag, values, known):
+    """Flatten repeated, comma-separated flag values into a verb list."""
+    verbs = []
+    for value in values:
+        for v in value.split(","):
+            v = v.strip()
+            if not v:
+                continue
+            if v not in known:
+                ap.error("%s: unknown verb '%s'" % (flag, v))
+            if v not in verbs:
+                verbs.append(v)
+    return verbs
+
+
 def main(argv):
     ap = argparse.ArgumentParser(
         description="Chaos Goblin: write player order files from a "
@@ -402,17 +418,22 @@ def main(argv):
     ap.add_argument("--orders-per-unit", type=int, default=8,
             help="orders to pick for each unit (default 8)")
     ap.add_argument("--allow", action="append", default=[],
-            metavar="VERB",
-            help="let the goblin pick a default-excluded verb (quit)")
+            metavar="VERB[,VERB...]",
+            help="let the goblin pick a default-excluded verb (%s); "
+                 "repeatable" % ", ".join(DEFAULT_EXCLUDE))
     ap.add_argument("--exclude", action="append", default=[],
-            metavar="VERB", help="never pick VERB")
+            metavar="VERB[,VERB...]", help="never pick VERB; repeatable")
     a = ap.parse_args(argv)
+
+    backlog = load_backlog(a.backlog)
+    known = [row["verb"] for row in backlog]
+    allow = verb_list(ap, "--allow", a.allow, known)
+    exclude = [v for v in DEFAULT_EXCLUDE if v not in allow] + \
+        verb_list(ap, "--exclude", a.exclude, known)
 
     with open(a.state, encoding="latin-1") as f:
         state = json.load(f)
-    exclude = [v for v in DEFAULT_EXCLUDE if v not in a.allow] + a.exclude
-    cells = build_cells(load_backlog(a.backlog),
-                load_coverage(a.coverage), exclude)
+    cells = build_cells(backlog, load_coverage(a.coverage), exclude)
     if not cells:
         print("chaos_goblin: no verbs to pick from", file=sys.stderr)
         return 2

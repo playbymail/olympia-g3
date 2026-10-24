@@ -270,6 +270,13 @@ def main(argv):
     ap.add_argument("--engine",
                     help="engine to run in place of build/<preset>/olympia-g3")
     ap.add_argument("--orders-per-unit", type=int, default=8)
+    ap.add_argument("--allow", action="append", default=[],
+                    metavar="VERB[,VERB...]",
+                    help="passed to the brain: re-enable a default-excluded "
+                         "verb; repeatable")
+    ap.add_argument("--exclude", action="append", default=[],
+                    metavar="VERB[,VERB...]",
+                    help="passed to the brain: never pick VERB; repeatable")
     ap.add_argument("--timeout", type=int, default=600,
                     help="seconds before a run counts as a hang")
     ap.add_argument("--inject", action="append", default=[],
@@ -339,7 +346,9 @@ def main(argv):
                             "--out", os.path.join(lib, "orders"),
                             "--seed", str(a.seed * 1000003 + turn),
                             "--orders-per-unit", str(a.orders_per_unit)] +
-                           (["--coverage", total_path] if total else []),
+                           (["--coverage", total_path] if total else []) +
+                           [x for v in a.allow for x in ("--allow", v)] +
+                           [x for v in a.exclude for x in ("--exclude", v)],
                            capture_output=True, text=True)
         if r.returncode != 0:
             sys.exit("loop: brain failed on turn %d:\n%s" % (turn, r.stderr))

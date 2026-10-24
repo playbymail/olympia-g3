@@ -23,9 +23,20 @@ immediate mode or `oly.order()`.
 Every order is one weighted pick of a **cell**, a `(verb, outcome)` pair from
 `backlog.tsv`. A cell weighs 1, plus 4 if its backlog cell is `todo`, plus 4 if
 `--coverage` is given and counts it zero. Alias verbs weigh half, and the
-`gm-immediate` and `directive` families are skipped. `quit` is left out unless
-`--allow quit` is given, because it would end the faction for later turns.
-`--exclude VERB` leaves out others.
+`gm-immediate` and `directive` families are skipped.
+
+`die` and `quit` are left out by default: they kill the noble or drop the
+faction, which leaves later turns of a loop with fewer units to order.
+`--allow` puts them back, and `--exclude` leaves out any other verb. Both flags
+take a comma-separated list, can be repeated, or both. These are the same:
+
+```bash
+--exclude wait,move --allow die
+--exclude wait --exclude move --allow die
+```
+
+A verb that is not in `backlog.tsv` is a usage error, so a typo cannot quietly
+exclude nothing.
 
 The order is then shaped toward the picked outcome:
 
