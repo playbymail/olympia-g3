@@ -48,7 +48,8 @@ the same PR as the fixture. Group 1 (shipcraft, construction, mining, trade; #19
 covered by `use-crafts` and `use-crafts-refused`; group 2 (combat, stealth,
 persuasion, alchemy, forestry, religion; #192) by `use-<school>` and
 `use-<school>-refused` for each (combat has no refused fixture: none of its
-starts can fail).
+starts can fail); group 3 (beastmastery; #194) by `use-beast` and
+`use-beast-refused`.
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):

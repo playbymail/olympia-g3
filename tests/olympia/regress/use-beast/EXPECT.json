@@ -1,0 +1,28 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Wranglers",
+   "units": [
+     {"id": 4126, "name": "Wrangler One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 51, "name": "wild horse", "qty": 5}, {"id": 52, "name": "riding horse", "qty": 1}, {"id": 53, "name": "warmount", "qty": 1}],
+      "skills": [{"id": 650, "name": "Beastmastery"}, {"id": 651, "name": "Bird spy"}, {"id": 654, "name": "Breed beasts"}, {"id": 655, "name": "Catch wild horses"}, {"id": 656, "name": "Train wild horse to riding horse"}, {"id": 657, "name": "Train wild horse to warmount"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Wrangler One", "faction": 300}, {"id": 8651, "name": "Drummer One", "faction": 301}, {"id": 91968, "name": "", "faction": 100}]}]},
+  {"id": 301, "name": "Drummers",
+   "units": [
+     {"id": 8651, "name": "Drummer One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 98, "name": "drum", "qty": 1}],
+      "skills": [{"id": 650, "name": "Beastmastery"}, {"id": 658, "name": "Summon wild men"}, {"id": 659, "name": "Persuade wild men to remain"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Wrangler One", "faction": 300}, {"id": 8651, "name": "Drummer One", "faction": 301}, {"id": 91968, "name": "", "faction": 100}]}]},
+  {"id": 302, "name": "Kennels",
+   "units": [
+     {"id": 8159, "name": "Kennel One", "where": 57081, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 295, "name": "hound", "qty": 1}],
+      "skills": [{"id": 650, "name": "Beastmastery"}, {"id": 661, "name": "Breed hound"}]}],
+   "locations": [
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8159, "name": "Kennel One", "faction": 302}]}]}]}

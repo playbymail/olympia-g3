@@ -1,0 +1,10 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Bunglers",
+   "units": [
+     {"id": 4126, "name": "Bungler One", "where": 13451, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 650, "name": "Beastmastery"}, {"id": 651, "name": "Bird spy"}, {"id": 654, "name": "Breed beasts"}, {"id": 655, "name": "Catch wild horses"}, {"id": 656, "name": "Train wild horse to riding horse"}, {"id": 657, "name": "Train wild horse to warmount"}, {"id": 658, "name": "Summon wild men"}, {"id": 659, "name": "Persuade wild men to remain"}]}],
+   "locations": [
+     {"id": 13451, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "south", "destination": 13551, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13450, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 57081, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Bungler One", "faction": 300}]}]}]}

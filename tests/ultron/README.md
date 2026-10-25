@@ -137,9 +137,9 @@ either: one fixture pins those for all skills.
   function exists").
 - `ok` of `shipbuilding` (602): `v_shipbuild` always fails ("Use the BUILD
   order to build ships.").
-- `fail` of the 8 skills whose start always returns TRUE: `fight_to_death`,
-  `defense`, `archery`, `swordplay`, the three brews (`v_brew`) and
-  `vision_protect`. A missing requirement (a brew's ingredient) fails in
+- `fail` of the 9 skills whose start always returns TRUE: `fight_to_death`,
+  `defense`, `archery`, `swordplay`, `breed_hound`, the three brews
+  (`v_brew`) and `vision_protect`. A missing requirement (a brew's ingredient) fails in
   `meets_requirements`, under `checks`.
 - `fail` of the 4 `(produce)` skills (`make_catapult`, `make_siege`,
   `extract_venom`, `make_ram`). With no start function, `v_use` counts every
