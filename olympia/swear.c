@@ -547,6 +547,10 @@ thanks_for_gift(int who, int target)
  *	30%	pocket			50% report
  *	25%	report bribe
  *	10%	go independent
+ *
+ *  A bribe is a gold sink (#159): charge() takes the gold from the briber and
+ *  no outcome gives it to the target, even where the message says the target
+ *  "pockets the gold". Only REPORT refunds it. G1, G2 and TAG do the same.
  */
 
 #define		SWITCH		1

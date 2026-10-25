@@ -21,7 +21,7 @@ Four factions start in Greyfell (57081); three are poofed to Forest
   [doc/claude/rng-streams.md](../../../../doc/claude/rng-streams.md)),
   keyed on (briber, mark). Here the mark pockets it. The gold is charged
   to the briber but never given to the mark: it leaves the game (the mark
-  ends the turn with its 200 gold).
+  ends the turn with its 200 gold). That is the rule, not a bug (#159).
 - **incite.** `incite`'s `cmd_tbl` row has a start (`v_incite`) but no
   finish, so the order checks its arguments, starts (`ok`), spends seven
   days and does nothing. The same skill used through `use 675` runs
