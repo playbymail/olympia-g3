@@ -264,6 +264,9 @@ extern void mint_shuffle(ilist l);				/* add.c: pick_starting_city "empty" candi
 /* olympia/coverage.c */
 extern void coverage_count(int cmd, int outcome);
 extern void write_coverage(void);
+extern void use_coverage_skill(int ent, int outcome);
+extern void use_coverage_item(int key, int outcome);
+extern void write_use_coverage(void);
 
 /* olympia/state_export.c */
 extern void write_state_export(void);
@@ -843,6 +846,7 @@ extern int d_use(struct command *c);
 extern int d_use_item(struct command *c);
 extern int i_use(struct command *c);
 extern int skill_cost(int sk);
+extern int use_tbl_skill(int ent);
 extern int v_forget(struct command *c);
 extern int v_research(struct command *c);
 extern int v_study(struct command *c);

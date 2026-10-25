@@ -676,6 +676,7 @@ main(int argc, char **argv)
 	 *
 	 *	test-use-const-report-date	fixed Times masthead date
 	 *	--coverage <path>		write the Ultron coverage dump (#100)
+	 *	--use-coverage <path>		write the Ultron use coverage dump (#181)
 	 *	--state-export <path>		write the Ultron state export (#104)
 	 */
 	{
@@ -686,6 +687,12 @@ main(int argc, char **argv)
 			else if (strcmp(argv[ai], "--coverage") == 0) {
 				if (ai + 1 < argc && *argv[ai + 1])
 					coverage_path = str_save(argv[++ai]);
+				else
+					errflag++;
+			}
+			else if (strcmp(argv[ai], "--use-coverage") == 0) {
+				if (ai + 1 < argc && *argv[ai + 1])
+					use_coverage_path = str_save(argv[++ai]);
 				else
 					errflag++;
 			}
@@ -809,6 +816,7 @@ main(int argc, char **argv)
 		fprintf(stderr, "	-A		Charge player accounts\n");
 		fprintf(stderr, "	-G seed		Set per-game trade-route seed (game creation only)\n");
 		fprintf(stderr, "	--coverage path	Write the command coverage dump to path\n");
+		fprintf(stderr, "	--use-coverage path	Write the use coverage dump to path\n");
 		fprintf(stderr, "	--state-export path	Write the faction state export to path\n");
 		return 1;
 	}
@@ -878,6 +886,7 @@ main(int argc, char **argv)
 	}
 
 	write_coverage();
+	write_use_coverage();
 
 	check_db();									 /* check database integrity */
 

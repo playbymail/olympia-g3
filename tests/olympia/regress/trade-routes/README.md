@@ -61,6 +61,8 @@ and additionally requires:
   `EXPECT.json`, a readable view of the noble's units, items and location that
   shows what changed when a hash fails. The buyer verdict itself is only in the
   report, so the hashes stay the strict gate.
+- the default run's `--use-coverage` dump shows Find market for tradegood
+  (733) reaching `ok`, the use-backlog cell this fixture claims (#181).
 
 A regression in the secret derivation, the `splitmix64` fold, the persistence, or
 the `md5_int` keying flips one of these and fails the gate — in this subsystem's

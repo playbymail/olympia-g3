@@ -36,6 +36,16 @@ exploration family (#148) by `exploration-explore` and
 `movement-refused` and `player-refused` (#152); with them no cell is
 `todo`.
 
+**The `use` backlog (#180).** `use` dispatches every usable skill and item, so
+its row in `backlog.tsv` says little. `tests/ultron/use-backlog.tsv` tracks
+them: one row per `use_tbl` skill and item use key, with `ok`/`fail` cells
+proved by the `--use-coverage` dump (#181,
+[harness doc §7.5](../ultron-harness-architecture.md#75-use-coverage--landed)).
+A fixture's `check.sh` passes `--use-coverage` and asserts its cells with
+`use_cells` from `tests/olympia/fixtures/coverage.sh`. Children of #180 are one
+per school group. A child that needs a new Lua binding implements it itself, in
+the same PR as the fixture.
+
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):
 the `do_command` coverage hook and `--coverage` dump (#98, #100), the
@@ -61,8 +71,7 @@ speculatively (#120). `oly.restart()` exists only so a Lua script can
 reproduce an older multi-process bash build byte for byte; a fixture authored
 in Lua from the start does not call it.
 
-Two known gaps beyond the per-verb table:
-`use` dispatches every usable skill and item, so its single `ok` cell says little,
-and the hook does not see the non-command turn phases (NPC/savage movement,
-weather, upkeep, region spawns, month-end) listed in
+One known gap beyond the two tables: the hook does not see the non-command
+turn phases (NPC/savage movement, weather, upkeep, region spawns, month-end)
+listed in
 [doc/turn-execution-order.md](../turn-execution-order.md).

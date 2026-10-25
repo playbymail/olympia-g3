@@ -102,5 +102,43 @@ The grouping is a first proposal for the vision doc's verb→system map
 | gm-immediate | immediate-mode GM tools (`n/a`) |
 | directive | order-file directives (`n/a`) |
 
-`use` is a single verb but dispatches every usable skill and item, so its `ok`
-cell is only the start: per-skill coverage of `use` is a later refinement.
+`use` is a single verb but dispatches every usable skill and item, so its
+cells say little about them. Those have their own tracker, below.
+
+## The use backlog
+
+`use-backlog.tsv` (#181, parent #180) has one row per `use_tbl` skill in
+`olympia/use.c` and one per item use key dispatched by `v_use_item()`. Its cells
+match the outcome columns of the `--use-coverage` dump
+([harness doc §7.5](../../doc/ultron-harness-architecture.md#75-use-coverage--landed)),
+and `./check.sh` keeps it honest the same way: every skill and use key has
+exactly one row, keyed and named by its `sk_`/`use_` define, and every fixture a
+cell names exists.
+
+| Column | Meaning |
+|---|---|
+| `kind` | `skill` or `item` |
+| `key` | the skill id, or the item use key (the `use_*` defines in `olympia/oly.h`) |
+| `name` | the `sk_`/`use_` define without its prefix |
+| `school` | the skill's school, from the `rs` chain in the world's `lib/skill` (`-` for an item) |
+| `start` | the start function `use` dispatches to; `(produce)` for a `use_tbl` row with no start, which `v_use` hands to `skill_produce` |
+| `ok` | fixture where the use returns TRUE |
+| `fail` | fixture where it returns FALSE |
+
+Cells hold `todo`, `golden`, a fixture name or `n/a`, as in `backlog.tsv`. There
+is no `rejected` column: every `use_tbl` allow string is `"c"`, the same as `use`
+itself, so `check_allow()` refuses a `use` before it reaches a skill. The dump's
+`checks` column (shared checks that fail before dispatch) has no backlog column
+either: one fixture pins those for all skills.
+
+`n/a` so far:
+
+- `ok` of the 10 `v_implicit` skills, which always fail ("No direct USE
+  function exists").
+- both cells of `add_ram` (997), `save_quick` (998) and `quick_cast` (999).
+  These skills are in `use_tbl` but not in the world's `lib/skill`, so `use`
+  rejects them as not a valid skill and counts them under `invalid`.
+
+To prove a cell, run the turn with `--use-coverage <path>` and have the fixture's
+`check.sh` assert it with `use_cells` from `tests/olympia/fixtures/coverage.sh`,
+as social-bribe and trade-routes do.

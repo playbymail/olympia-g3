@@ -36,7 +36,8 @@ Four factions start in Greyfell (57081); three are poofed to Forest
 ## What `check.sh` asserts
 
 1. `bribe`, `incite` and `terrorize` reach `ok` in the turn's `--coverage`
-   dump.
+   dump, and Incite mob (675) reaches `ok` in its `--use-coverage` dump
+   (#181).
 2. Each faction's report and unit state (`save/1/30x`, `fact/30x`) match
    `EXPECT.sha256`. Loyalty, health and the mob are not in the state export
    (#114); the reports pin them.

@@ -417,6 +417,7 @@ typedef		signed char	schar;
 #define		use_orc_kill		13
 #define		use_skeleton_kill	14
 #define		use_bta_skull		15
+#define		USE_KEY_MAX		15	/* highest use key (issue #181) */
 
 
 
@@ -1186,6 +1187,15 @@ extern char *coverage_path;
 #define	COV_OK		2	/* start returned TRUE */
 #define	COV_FAIL	3	/* start returned FALSE */
 #define	COV_MAX		4
+
+/* issue #181: "--use-coverage <path>" set by main.c, NULL = no use dump */
+extern char *use_coverage_path;
+
+/* issue #181: v_use()/v_use_item() outcomes counted per skill and item */
+#define	UCOV_CHECKS	0	/* a shared check failed before dispatch */
+#define	UCOV_OK		1	/* the skill or item use returned TRUE */
+#define	UCOV_FAIL	2	/* the skill or item use returned FALSE */
+#define	UCOV_MAX	3
 
 /* issue #104: "--state-export <path>" set by main.c, NULL = no export */
 extern char *state_export_path;

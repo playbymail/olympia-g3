@@ -5,6 +5,7 @@
 | `lib.tgz` | The bare map: a `lib` from before world init. `./run/olympia-g3.sh`, `check-lua.sh` and every `build-scenario.sh` start here. |
 | `world.tgz` | The shared base world: `lib.tgz` after world init only (`-s`, then `-a` with no players). Built by `build-world.sh`. |
 | `scenario.sh` | Helpers sourced by the regress fixtures: `scenario_unpack` and `scenario_write`. |
+| `coverage.sh` | Coverage helpers sourced by the regress fixtures: `use_cells` asserts `--use-coverage` cells (#181). |
 
 ## Fixtures as a patch over one base world (#121)
 

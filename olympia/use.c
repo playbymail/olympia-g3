@@ -262,6 +262,19 @@ find_use_entry(int skill)
 
 
 /*
+ *  The skill of use_tbl entry ent, or 0 past the end of the table
+ *  (issue #181: lets coverage.c walk use_tbl without its layout).
+ */
+
+int
+use_tbl_skill(int ent)
+{
+
+	return use_tbl[ent].skill;
+}
+
+
+/*
  *  If we know the skill, return the skill number
  *
  *  If an artifact grants us the ability to use the skill,
@@ -522,6 +535,7 @@ v_use(struct command *c)
 	if (!valid_box(sk))
 	{
 		wout(c->who, "%s is not a valid skill to use.", c->parse[1]);
+		use_coverage_skill(0, UCOV_CHECKS);
 		return FALSE;
 	}
 
@@ -534,6 +548,7 @@ v_use(struct command *c)
 	if (kind(sk) != T_skill)
 	{
 		wout(c->who, "%s is not a valid skill to use.", c->parse[1]);
+		use_coverage_skill(0, UCOV_CHECKS);
 		return FALSE;
 	}
 
@@ -543,15 +558,18 @@ v_use(struct command *c)
 	{
 		wout(c->who, "Skill schools have no direct use.  "
 			"Only subskills within a school may be used.");
+		use_coverage_skill(0, UCOV_CHECKS);
 		return FALSE;
 	}
 
+	ent = find_use_entry(sk);
 	basis = may_use_skill(c->who, sk);
 
 	if (!basis)
 	{
 		wout(c->who, "%s does not know %s.",
 					just_name(c->who), box_code(sk));
+		use_coverage_skill(ent, UCOV_CHECKS);
 		return FALSE;
 	}
 
@@ -566,22 +584,23 @@ v_use(struct command *c)
 				"%s may be used.",
 					box_name(parent),
 					box_code(sk));
+		use_coverage_skill(ent, UCOV_CHECKS);
 		return FALSE;
 	}
-
-	ent = find_use_entry(sk);
 
 	if (ent <= 0)
 	{
 		fprintf(stderr, "v_use: no use table entry for %s\n",
 					c->parse[1]);
 		out(c->who, "Internal error.");
+		use_coverage_skill(0, UCOV_CHECKS);
 		return FALSE;
 	}
 
 	if (magic_skill(sk) && in_safe_now(c->who))
 	{
 		wout(c->who, "Magic may not be used in safe havens.");
+		use_coverage_skill(ent, UCOV_CHECKS);
 		return FALSE;
 	}
 
@@ -596,13 +615,17 @@ v_use(struct command *c)
 	experience_use_speedup(c);
 
 	if (!meets_requirements(c->who, sk))
+	{
+		use_coverage_skill(ent, UCOV_CHECKS);
 		return FALSE;
+	}
 
 	if (use_tbl[ent].start != NULL)
 	{
 		int ret;
 
 		ret = (*use_tbl[ent].start)(c);
+		use_coverage_skill(ent, ret ? UCOV_OK : UCOV_FAIL);
 
 		if (ret)
 			magically_speed_casting(c, sk);
@@ -625,6 +648,7 @@ v_use(struct command *c)
 		assert(FALSE);
 	}
 
+	use_coverage_skill(ent, UCOV_OK);
 	return TRUE;
 }
 
@@ -772,6 +796,7 @@ v_use_item(struct command *c)
 	{
 		wout(c->who, "%s has no %s.", just_name(c->who),
 						box_code(item));
+		use_coverage_item(item_use_key(item), UCOV_CHECKS);
 		return FALSE;
 	}
 
@@ -780,6 +805,7 @@ v_use_item(struct command *c)
 	if (n == 0)
 	{
 		wout(c->who, "Nothing special happens.");
+		use_coverage_item(0, UCOV_CHECKS);
 		return FALSE;
 	}
 
@@ -809,6 +835,7 @@ v_use_item(struct command *c)
 			wout(c->who, "Magic may not be used in safe havens.");
 			c->wait = 0;
 			c->inhibit_finish = TRUE;
+			use_coverage_item(n, UCOV_CHECKS);
 			return FALSE;
 		}
 	}
@@ -879,6 +906,8 @@ v_use_item(struct command *c)
 		fprintf(stderr, "bad use key: %d\n", n);
 		assert(FALSE);
 	}
+
+	use_coverage_item(n, ret ? UCOV_OK : UCOV_FAIL);
 
 	if (ret != TRUE || c->wait == 0)
 	{

@@ -449,3 +449,39 @@ tests/ultron/loop.py --scenario tests/olympia/regress/trade-routes/scenario.tgz 
 and hit 21 backlog `todo` cells. Four turns of `guard-pillage.lua` at seed 3, 20
 orders per unit, on `asan-ubsan`, fired 83 verbs and hit 104 `todo` cells (21
 `ok`, 42 `rejected`, 41 `fail`). Both ran clean.
+
+### 7.5 Use coverage — landed
+
+The verb hook counts every `use` in one `use` row, whatever it dispatched: 135
+`use_tbl` skills and 15 item use keys. `olympia-g3 ... --use-coverage <path>`
+(#181) writes a second dump, `use-coverage.tsv`, counted inside `v_use()` and
+`v_use_item()` (`olympia/use.c`, `olympia/coverage.c`). `run/olympia-g3.sh`
+passes it through from `OLYMPIA_USE_COVERAGE`. Like `--coverage`, it is opt-in
+and changes nothing under `lib/`.
+
+- **Rows:** one per `use_tbl` skill (`kind` `skill`, `key` the skill id), sorted
+  by id, then one per item use key (`kind` `item`, `key` the use key from the
+  `use_*` defines in `oly.h`), plus one `invalid` row. An item is counted by its
+  use key, not its id, because unique items such as the palantir are minted per
+  game. `name` is the skill's name from the database, or the use key's name.
+- **`invalid`** counts a target with no row: not a box, a skill school, a skill
+  with no `use_tbl` entry, or an item with use key 0. A scroll used by its item
+  number is redirected to the spell it holds, so it is counted on that skill.
+- **Outcomes:** `checks` (a shared check failed before dispatch: skill or
+  school not known, magic in a safe haven, unmet requirements; for items, not
+  held or a safe haven), `ok` and `fail` (what the skill's start function, the
+  `skill_produce` path, or the item's use function returned). Keeping `checks`
+  apart means a "does not know" can't fill a skill's own `fail` cell.
+- **Start time only**, like the verb hook, and turn-runner commands only.
+- **Invariant:** every `use` the verb dump counts as `ok` or `fail` is counted
+  in exactly one row here, so the rows sum to the `use` row's `ok` + `fail`.
+
+The per-skill and per-item cells are tracked in
+[`tests/ultron/use-backlog.tsv`](../tests/ultron/README.md#the-use-backlog), under
+parent issue #180. A fixture asserts its cells with `use_cells` from
+`tests/olympia/fixtures/coverage.sh`.
+
+**Baseline (2026-10-25).** Across the main golden turn and every regress
+fixture, `use` reaches only 2 of 150 rows: `incite_mob` (675) `ok` in
+social-bribe and `find_buy` (733) `ok` in trade-routes. skills-refused also
+reaches `invalid`.

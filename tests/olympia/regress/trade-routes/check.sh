@@ -23,6 +23,9 @@
 # additionally checks the seed-persistence side effect: lib/trade_routes is
 # written (with the seed) under -G and absent under the default.
 #
+# The default run's --use-coverage dump must show skill 733 reaching ok, the
+# use backlog cell this fixture claims (#181).
+#
 # EXPECT.json pins the default run's post-turn --state-export snapshot (#104).
 # The hashes stay the strict gate; the JSON diff shows which unit, item or
 # location moved when they fail.
@@ -35,6 +38,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${HERE}/../../../.." && pwd)"
 PRESET="${OLYMPIA_PRESET:-debug}"
 BIN="${ROOT}/build/${PRESET}/olympia-g3"
+. "${ROOT}/tests/olympia/fixtures/coverage.sh"
 
 [ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }
 [ -f "${HERE}/scenario.tgz" ] || { echo "error: missing scenario.tgz (run ./build-scenario.sh)"; exit 2; }
@@ -68,7 +72,8 @@ STATE_DIR="$(mktemp -d)"
 trap 'rm -rf "${STATE_DIR}"' EXIT
 STATE="${STATE_DIR}/state.json"
 
-H_DEFAULT="$(report_hash --state-export "${STATE}")"
+H_DEFAULT="$(report_hash --state-export "${STATE}" \
+	--use-coverage "${STATE_DIR}/use-coverage.tsv")"
 H_SEEDED="$(report_hash -G 1)"
 H_SEEDED2="$(report_hash -G 1)"
 RF_DEFAULT="$(routes_file)"
@@ -86,6 +91,7 @@ EXP_DEFAULT="$(cat "${HERE}/EXPECT.sha256" 2>/dev/null)"
 EXP_SEEDED="$(cat "${HERE}/EXPECT-seeded.sha256" 2>/dev/null)"
 
 fail=0
+use_cells "${STATE_DIR}/use-coverage.tsv" skill:733:ok || fail=1
 [ "${H_DEFAULT}" = "${EXP_DEFAULT}" ] || { echo "NO  (default-secret report changed vs EXPECT.sha256)"; fail=1; }
 [ "${H_SEEDED}"  = "${EXP_SEEDED}"  ] || { echo "NO  (-G 1 report changed vs EXPECT-seeded.sha256)"; fail=1; }
 [ "${H_SEEDED}"  = "${H_SEEDED2}"   ] || { echo "NO  (-G 1 not deterministic across runs)"; fail=1; }
