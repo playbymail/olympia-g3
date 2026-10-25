@@ -1,0 +1,28 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Implicits",
+   "units": [
+     {"id": 4126, "name": "Implicit One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 610, "name": "Combat"}, {"id": 617, "name": "Weaponsmithing"}, {"id": 630, "name": "Stealth"}, {"id": 635, "name": "Conceal faction"}, {"id": 650, "name": "Beastmastery"}, {"id": 652, "name": "Capture beasts in battle"}, {"id": 653, "name": "Use beasts in battle"}, {"id": 670, "name": "Persuasion"}, {"id": 676, "name": "Train angry peasants"}, {"id": 690, "name": "Alchemy"}, {"id": 695, "name": "Collect rare elements"}, {"id": 700, "name": "Forestry"}, {"id": 704, "name": "Collect rare foliage"}, {"id": 706, "name": "Harvest opium"}, {"id": 900, "name": "Necromancy"}, {"id": 902, "name": "Summon ghost warriors"}, {"id": 911, "name": "Transcend death"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Implicit One", "faction": 300}, {"id": 8651, "name": "Checker One", "faction": 301}]}]},
+  {"id": 301, "name": "Checkers",
+   "units": [
+     {"id": 8651, "name": "Checker One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 610, "name": "Combat"}, {"id": 611, "name": "Survive fatal wound"}, {"id": 613, "name": "Construct catapult"}, {"id": 631, "name": "Petty thievery"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Implicit One", "faction": 300}, {"id": 8651, "name": "Checker One", "faction": 301}]}]},
+  {"id": 302, "name": "Haveners",
+   "units": [
+     {"id": 8159, "name": "Havener One", "where": 57081, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 74170, "name": "Orb", "qty": 1}],
+      "skills": [{"id": 800, "name": "Magic"}, {"id": 801, "name": "Meditate"}]}],
+   "locations": [
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8159, "name": "Havener One", "faction": 302}]}]}]}

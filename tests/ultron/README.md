@@ -129,9 +129,9 @@ Cells hold `todo`, `golden`, a fixture name or `n/a`, as in `backlog.tsv`. There
 is no `rejected` column: every `use_tbl` allow string is `"c"`, the same as `use`
 itself, so `check_allow()` refuses a `use` before it reaches a skill. The dump's
 `checks` column (shared checks that fail before dispatch) has no backlog column
-either: one fixture pins those for all skills.
+either: one fixture, `use-checks` (#224), pins those for all skills and items.
 
-`n/a` so far:
+No cell is `todo`. The `n/a` cells:
 
 - `ok` of the 10 `v_implicit` skills, which always fail ("No direct USE
   function exists").

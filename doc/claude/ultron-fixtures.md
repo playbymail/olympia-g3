@@ -61,7 +61,9 @@ binding; group 8 (advanced sorcery; #216) by `use-sorcery` alone, since
 neither of its `fail` cells is reachable; group 9 (items; #218) by
 `use-items` and `use-items-refused`, with unique items from the
 `oly.potion`, `oly.orb`, `oly.ring`, `oly.palantir` and `oly.relic`
-bindings.
+bindings; and group 10 (the shared `v_use`/`v_use_item` checks and the
+`v_implicit` skills; #224) by `use-checks`. With it no use-backlog cell is
+`todo`.
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):
