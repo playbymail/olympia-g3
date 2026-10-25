@@ -12,5 +12,9 @@ extern int has_prisoner(int who, int pris);
 extern int give_prisoner(int who, int target, int pris);
 extern int move_prisoner(int who, int target, int pris);
 extern void promote(int who, int new_pos);
-extern int check_prisoner_escape(int who, int chance);
+#define	ESC_WEEKLY	0	/* check_prisoner_escape sub: weekly check */
+#define	ESC_MOVE	1	/* captor move, at most one a day */
+#define	ESC_GIVE	2	/* ESC_GIVE + n: the prisoner's nth give today */
+
+extern int check_prisoner_escape(int who, int chance, int sub);
 extern void prisoner_escapes(int who);

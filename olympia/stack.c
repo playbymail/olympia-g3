@@ -253,7 +253,7 @@ join_stack(int who, int target)
 
 
 int
-check_prisoner_escape(int who, int chance)
+check_prisoner_escape(int who, int chance, int sub)
 {
 	int leader = stack_parent(who);
 	int hound = stack_has_item(who, item_hound);
@@ -264,7 +264,7 @@ check_prisoner_escape(int who, int chance)
 	if (hound)
 		chance /= 2;
 
-	n = ent_prisoner(who);
+	n = ent_prisoner(who, sub);
 
 	if (n > chance)
 	{
@@ -336,7 +336,7 @@ prisoner_movement_escape_check(int who)
 	loop_char_here(who, i)
 	{
 		if (is_prisoner(i))
-			(void) check_prisoner_escape(i, 2);
+			(void) check_prisoner_escape(i, 2, ESC_MOVE);
 	}
 	next_char_here;
 }
@@ -362,7 +362,7 @@ weekly_prisoner_escape_check(void)
 		if (kind(i) == T_char && is_prisoner(i) && !release_swear(i))
 		{
 			chance = loc_depth(subloc(who)) >= LOC_build ? 1 : 2;
-			(void) check_prisoner_escape(i, chance);
+			(void) check_prisoner_escape(i, chance, ESC_WEEKLY);
 		}
 	    }
 	    next_here;
@@ -646,11 +646,43 @@ move_prisoner(int who, int target, int pris)
 }
 
 
+/*
+ *  #188: GIVE takes no time, so one prisoner can be given many times in a
+ *  day. Count each prisoner's gives today so every give's escape check
+ *  draws its own leaf (ESC_GIVE + n); keyed on the day alone, every give
+ *  after the first would replay its roll.
+ */
+static ilist gives_today = NULL;
+static int gives_turn = -1;
+static int gives_day = -1;
+
+static int
+prisoner_gives_today(int pris)
+{
+	int i, n = 0;
+
+	if (gives_turn != sysclock.turn || gives_day != sysclock.day)
+	{
+		ilist_clear(&gives_today);
+		gives_turn = sysclock.turn;
+		gives_day = sysclock.day;
+	}
+
+	for (i = 0; i < ilist_len(gives_today); i++)
+		if (gives_today[i] == pris)
+			n++;
+
+	ilist_append(&gives_today, pris);
+
+	return n;
+}
+
+
 int
 give_prisoner(int who, int target, int pris)
 {
 
-	if (check_prisoner_escape(pris, 2))
+	if (check_prisoner_escape(pris, 2, ESC_GIVE + prisoner_gives_today(pris)))
 		return FALSE;
 
 	move_prisoner(who, target, pris);

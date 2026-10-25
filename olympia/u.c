@@ -92,12 +92,17 @@ ent_today(int k1, int k2, uint32_t tag, int low, int high)
 	return rng_keyed(&day, k1, k2, tag, low, high);
 }
 
-/* stack.c: prisoner-escape roll [1,1000], keyed on the prisoner-holder. */
+/*
+ *  stack.c: prisoner-escape roll [1,1000], keyed on (prisoner, sub). The sub
+ *  names the check (#188): ESC_WEEKLY, ESC_MOVE, or ESC_GIVE + n for the
+ *  prisoner's nth give that day, so the weekly check, a captor move and each
+ *  give on one day roll apart.
+ */
 int
-ent_prisoner(int who)
+ent_prisoner(int who, int sub)
 {
 	begin_entity();
-	return ent_today(who, 0, ENTAG_PRISON, 1, 1000);
+	return ent_today(who, sub, ENTAG_PRISON, 1, 1000);
 }
 
 /* stack.c: swear-on-release pledge gate (sub 0, [1,5]) + farewell (sub 1, [1,3]), keyed (who, prisoner). */

@@ -1584,9 +1584,16 @@ cases found since #25 closed, and what was decided about each:
     trio (each arrival in a Faery or Hades province).
   - **Left alone:** the flavor-only leaves (`soc_gift`, `magc_omen`, the
     `wthr_storm` fog excuse), and every leaf that runs once per turn or
-    already carries a day or attempt counter. A prisoner escape check that
-    runs twice on one day (a weekly check plus a captor move) still shares
-    that day's roll.
+    already carries a day or attempt counter.
+  - **Prisoner escape (#188).** `ent_prisoner(who, sub)` names the check:
+    `ESC_WEEKLY` (0), `ESC_MOVE` (1; a captor moves at most once a day) or
+    `ESC_GIVE + n` for the prisoner's nth give that day. GIVE takes no time,
+    so `stack.c` counts each prisoner's gives per day in memory
+    (`prisoner_gives_today`), and every give rolls afresh, as the original
+    `rnd()` did. This also covers one pair bouncing a prisoner back and
+    forth, which keying on giver and receiver would not. Byte-identical on
+    every tree: the weekly check kept sub 0, and no fixture moves or gives
+    a prisoner.
   - **Spec for the Go port: as for #167, independent draws per actor, per
     day; item-keyed for consumables.** New fixture
     `tests/olympia/regress/rng-repeat-leaves` repeats archery and research
