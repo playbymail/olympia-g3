@@ -51,7 +51,9 @@ persuasion, alchemy, forestry, religion; #192) by `use-<school>` and
 starts can fail); group 3 (beastmastery; #194) by `use-beast` and
 `use-beast-refused`; group 4 (basic magic, weather, scrying; #196) by
 `use-basic`, `use-weather` and `use-scry` and a `-refused` fixture for
-each.
+each; group 5 (gatecraft; #202) by `use-gate` and `use-gate-refused`, on
+gates the base world already has (the ring of stones [64135] holds sealed
+ones), so it needed no binding.
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):

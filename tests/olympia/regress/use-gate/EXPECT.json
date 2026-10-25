@@ -1,0 +1,37 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Jumpers",
+   "units": [
+     {"id": 4126, "name": "Jumper One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 200}],
+      "skills": [{"id": 841, "name": "Scry location"}, {"id": 860, "name": "Gatecraft"}, {"id": 861, "name": "Detect gates"}, {"id": 862, "name": "Jump through gate"}, {"id": 863, "name": "Language of the Ancients"}, {"id": 864, "name": "Seal gate"}, {"id": 865, "name": "Unseal gate with key"}, {"id": 866, "name": "Notify if gate unsealed"}, {"id": 867, "name": "Forcefully unseal gate"}, {"id": 868, "name": "Reveal gate key"}, {"id": 869, "name": "Notify of gate jumps"}, {"id": 871, "name": "Teleport"}, {"id": 872, "name": "Reverse jump through gate"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Jumper One", "faction": 300}]}]},
+  {"id": 301, "name": "Sealers",
+   "units": [
+     {"id": 8651, "name": "Sealer One", "where": 13343, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 84, "name": "blank scroll", "qty": 1}],
+      "skills": [{"id": 860, "name": "Gatecraft"}, {"id": 861, "name": "Detect gates"}, {"id": 862, "name": "Jump through gate"}, {"id": 863, "name": "Language of the Ancients"}, {"id": 864, "name": "Seal gate"}, {"id": 865, "name": "Unseal gate with key"}, {"id": 866, "name": "Notify if gate unsealed"}, {"id": 867, "name": "Forcefully unseal gate"}, {"id": 868, "name": "Reveal gate key"}, {"id": 869, "name": "Notify of gate jumps"}, {"id": 871, "name": "Teleport"}, {"id": 872, "name": "Reverse jump through gate"}]}],
+   "locations": [
+     {"id": 13343, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13343,
+      "exits": [{"direction": "north", "destination": 13243, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13344, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13443, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13342, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8651, "name": "Sealer One", "faction": 301}]}]},
+  {"id": 302, "name": "Keyfinders",
+   "units": [
+     {"id": 8159, "name": "Keyfinder One", "where": 64135, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 860, "name": "Gatecraft"}, {"id": 861, "name": "Detect gates"}, {"id": 862, "name": "Jump through gate"}, {"id": 863, "name": "Language of the Ancients"}, {"id": 864, "name": "Seal gate"}, {"id": 865, "name": "Unseal gate with key"}, {"id": 866, "name": "Notify if gate unsealed"}, {"id": 867, "name": "Forcefully unseal gate"}, {"id": 868, "name": "Reveal gate key"}, {"id": 869, "name": "Notify of gate jumps"}, {"id": 871, "name": "Teleport"}, {"id": 872, "name": "Reverse jump through gate"}]}],
+   "locations": [
+     {"id": 64135, "name": "", "kind": "loc", "subkind": "ring of stones", "depth": "subloc", "province": 12239,
+      "exits": [{"direction": "out", "destination": 12239, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 7012, "name": "Watcher One", "faction": 303}, {"id": 8159, "name": "Keyfinder One", "faction": 302}]}]},
+  {"id": 303, "name": "Watchers",
+   "units": [
+     {"id": 7012, "name": "Watcher One", "where": 64135, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 841, "name": "Scry location"}, {"id": 860, "name": "Gatecraft"}, {"id": 861, "name": "Detect gates"}, {"id": 862, "name": "Jump through gate"}, {"id": 863, "name": "Language of the Ancients"}, {"id": 864, "name": "Seal gate"}, {"id": 865, "name": "Unseal gate with key"}, {"id": 866, "name": "Notify if gate unsealed"}, {"id": 867, "name": "Forcefully unseal gate"}, {"id": 868, "name": "Reveal gate key"}, {"id": 869, "name": "Notify of gate jumps"}, {"id": 871, "name": "Teleport"}, {"id": 872, "name": "Reverse jump through gate"}]}],
+   "locations": [
+     {"id": 64135, "name": "", "kind": "loc", "subkind": "ring of stones", "depth": "subloc", "province": 12239,
+      "exits": [{"direction": "out", "destination": 12239, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 7012, "name": "Watcher One", "faction": 303}, {"id": 8159, "name": "Keyfinder One", "faction": 302}]}]}]}
