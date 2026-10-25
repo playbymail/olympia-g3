@@ -107,9 +107,9 @@ split	player	cp		n/a	todo	player-settings
 stop	player	cpr		player-settings	todo	n/a
 times	player	cp		player-press	todo	n/a
 wait	player	crm		golden	todo	todo
-credit	gm	m		todo	todo	todo
-emote	gm	m		todo	todo	todo
-relore	gm	m		todo	todo	todo
+credit	gm	m		gm-credit	gm-refused	gm-refused
+emote	gm	m		gm-credit	gm-refused	gm-refused
+relore	gm	m		gm-credit	gm-refused	gm-refused
 additem	gm-immediate	i		n/a	n/a	n/a
 be	gm-immediate	i		n/a	n/a	n/a
 ct	gm-immediate	i		n/a	n/a	n/a

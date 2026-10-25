@@ -661,6 +661,15 @@ minted from the mint stream and is the same on every run of a script.
 `governance-refused` uses it for "There is already a garrison here." and the
 level-0 castle's five-garrison cap.
 
+**Since landed (#151):** `oly.seen(who, num)` marks lore sheet `num` as seen
+by `who`'s faction (`set_known` on its player), as a sheet delivered in an
+earlier turn's report would be. The sheet itself is not delivered:
+`deliver_lore` is not saved, and the turn's `scan_char_skill_lore` skips a
+sheet the faction already knows. It errors when `who` has no player or `num`
+is not a box. No GM verb marks a sheet seen, so it is a path (B) binding.
+`gm-credit` uses it so that Shipcraft's lore reaches the faction's report only
+through `relore`.
+
 **Explicitly deferred:** `kill`, `credit`, the full query set
 (`here`/`all`/`chars_here`/`knows`), the declarative format, RNG bindings, and
 any production-engine integration. Path (B) direct-handler calls are deferred

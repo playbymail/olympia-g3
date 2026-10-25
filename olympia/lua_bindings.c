@@ -614,6 +614,33 @@ l_add_garrison(lua_State *L)
 	return 1;
 }
 
+/*
+ *  oly.seen(who, num)  -- mark lore sheet num as seen by who's faction.
+ *
+ *  set_known() on who's player, as queue_lore() does when it delivers a
+ *  sheet. The sheet itself is never delivered: deliver_lore is not saved, so
+ *  the faction looks as if an earlier turn's report carried it, and the
+ *  turn's scan_char_skill_lore() will not send it again. Only `relore`
+ *  (queue_lore with anyway) does. No GM verb marks a sheet seen, so this is
+ *  a path (B) binding, like mob.
+ */
+static int
+l_seen(lua_State *L)
+{
+	int who = (int) luaL_checkinteger(L, 1);
+	int num = (int) luaL_checkinteger(L, 2);
+	int pl;
+
+	if (!valid_box(who) || (pl = player(who)) == 0)
+		return luaL_error(L, "oly.seen: %d has no player", who);
+
+	if (!valid_box(num))
+		return luaL_error(L, "oly.seen: %d is not a box", num);
+
+	set_known(pl, num);
+	return 0;
+}
+
 /* oly.guard(who, on)  -- the `guard` order set via v_guard. */
 static int
 l_guard(lua_State *L)
@@ -810,6 +837,7 @@ static const luaL_Reg oly_funcs[] = {
 	{ "storm",		l_storm },
 	{ "castle_level",	l_castle_level },
 	{ "add_garrison",	l_add_garrison },
+	{ "seen",		l_seen },
 	{ "guard",		l_guard },
 	{ "order",		l_order },
 	{ "save",		l_save },
