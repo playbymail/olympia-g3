@@ -150,10 +150,6 @@ either: one fixture pins those for all skills.
   These skills are in `use_tbl` but not in the world's `lib/skill`, so `use`
   rejects them as not a valid skill and counts them under `invalid`.
 
-One cell is `todo` for want of a fix, not a fixture: the `ok` of
-`rem_art_cloak` (893). `v_rem_art_cloak` returns FALSE after "Attempt to remove
-all cloaking spells", so the start never succeeds (#205).
-
 To prove a cell, run the turn with `--use-coverage <path>` and have the fixture's
 `check.sh` assert it with `use_cells` from `tests/olympia/fixtures/coverage.sh`,
 as social-bribe and trade-routes do.

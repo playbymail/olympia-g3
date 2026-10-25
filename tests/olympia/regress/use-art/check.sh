@@ -4,12 +4,12 @@
 # backlog parent #180).
 #
 # Extracts the frozen scenario (scenario.patch over the shared
-# tests/olympia/fixtures/world.tgz) and runs one turn. Four mages on a
+# tests/olympia/fixtures/world.tgz) and runs one turn. Five mages on a
 # plain use the Artifact construction skills: one forges a sword, armor,
 # a bow and a palantir; one forges an auraculum and scribes a spell; one
 # learns who made its palantir and where, and cloaks both; one curses its
-# palantir and destroys it. Every use starts. See use-art.lua and
-# README.md.
+# palantir and destroys it; one cloaks its palantir and dispels the cloaks.
+# Every use starts. See use-art.lua and README.md.
 #
 # Three checks, all required:
 #   1. coverage: every verb:outcome in CELLS has a nonzero count in the
@@ -32,9 +32,9 @@ BIN="${ROOT}/build/${PRESET}/olympia-g3"
 . "${ROOT}/tests/olympia/fixtures/scenario.sh"
 . "${ROOT}/tests/olympia/fixtures/coverage.sh"
 
-FILES=(save/1/300 save/1/301 save/1/302 save/1/303 fact/300 fact/301 fact/302 fact/303)
+FILES=(save/1/300 save/1/301 save/1/302 save/1/303 save/1/304 fact/300 fact/301 fact/302 fact/303 fact/304)
 CELLS=(use:ok)
-USE_CELLS=(skill:881:ok skill:882:ok skill:883:ok skill:884:ok skill:885:ok skill:886:ok skill:887:ok skill:888:ok skill:889:ok skill:891:ok skill:892:ok skill:894:ok)
+USE_CELLS=(skill:881:ok skill:882:ok skill:883:ok skill:884:ok skill:885:ok skill:886:ok skill:887:ok skill:888:ok skill:889:ok skill:891:ok skill:892:ok skill:893:ok skill:894:ok)
 
 [ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }
 

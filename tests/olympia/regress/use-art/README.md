@@ -4,21 +4,22 @@ Pins the `ok` cells of the Artifact construction school, use group 6 (issue
 #204, use backlog parent #180): `forge_aura` (881), `write_art` (882),
 `forge_weapon` (883), `forge_armor` (884), `forge_bow` (885),
 `curse_noncreat` (886), `show_art_creat` (887), `show_art_reg` (888),
-`destroy_art` (889), `cloak_creat` (891), `cloak_reg` (892) and
-`forge_palantir` (894).
+`destroy_art` (889), `cloak_creat` (891), `cloak_reg` (892),
+`rem_art_cloak` (893) and `forge_palantir` (894).
 
-`rem_art_cloak` (893) is not here: `v_rem_art_cloak` returns FALSE after its
-"Attempt to remove all cloaking spells" message, so its `ok` cell can't be
-reached until #205 is fixed.
+`rem_art_cloak` joined with #205: `v_rem_art_cloak` used to return FALSE
+after its "Attempt to remove all cloaking spells" message, so the spell never
+ran. The dispeller was added for it; every other faction's report changed
+only because the dispeller is now seen on the plain.
 
 ## Scenario
 
-Four factions, 300–303, start in Greyfell (57081) and are poofed to Plain
+Five factions, 300–304, start in Greyfell (57081) and are poofed to Plain
 [13450], since magic may not be used in a safe haven. Each noble knows the
 Artifact construction school and all its skills; each skill known adds one
-aura, so each has 14. The curator's and the curser's palantirs come from
-`oly.palantir`: a palantir forged in the turn has an id minted in the turn,
-which no order can name.
+aura, so each has 14. The curator's, the curser's and the dispeller's
+palantirs come from `oly.palantir`: a palantir forged in the turn has an id
+minted in the turn, which no order can name.
 
 | Faction | Noble | Setup | Orders |
 |---|---|---|---|
@@ -26,6 +27,7 @@ which no order can name.
 | 301 Auramakers | Auramaker One [8651] | 525 gold, a mithril, a blank scroll | `use 881 1`, `use 882 887` |
 | 302 Curators | Curator One [8159] | Palantir [74170], 5 mithril | `use 887 74170`, `use 888 74170`, `use 891 74170`, `use 892 74170` |
 | 303 Cursers | Curser One [7719] | Palantir [73052], a blank scroll | `use 886 73052`, `use 889 73052` |
+| 304 Dispellers | Dispeller One [9463] | Palantir [72332], 5 mithril | `use 891 72332`, `use 892 72332`, `use 893 72332` |
 
 Every start returns TRUE:
 
@@ -38,6 +40,9 @@ Every start returns TRUE:
   cloaks its creator and its region of creation at one aura each.
 - The curser lays a noncreator curse of one aura on its palantir, then
   destroys it and gets a gate crystal from the shards.
+- The dispeller cloaks its palantir's creator and region at one aura each,
+  then dispels both cloaks for 8 aura; the dispel takes 10 days and
+  finishes on day 25. (The curator's month is full: four 7-day uses.)
 
 Each noble starts with 200 gold. The forger and the auramaker get 25 gold
 beyond their forging, so they can pay their month-end upkeep. Cloaking the

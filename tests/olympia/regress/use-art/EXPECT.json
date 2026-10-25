@@ -7,7 +7,7 @@
    "locations": [
      {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
       "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
-      "here": [{"id": 4126, "name": "Forger One", "faction": 300}, {"id": 7719, "name": "Curser One", "faction": 303}, {"id": 8159, "name": "Curator One", "faction": 302}, {"id": 8651, "name": "Auramaker One", "faction": 301}]}]},
+      "here": [{"id": 4126, "name": "Forger One", "faction": 300}, {"id": 7719, "name": "Curser One", "faction": 303}, {"id": 8159, "name": "Curator One", "faction": 302}, {"id": 8651, "name": "Auramaker One", "faction": 301}, {"id": 9463, "name": "Dispeller One", "faction": 304}]}]},
   {"id": 301, "name": "Auramakers",
    "units": [
      {"id": 8651, "name": "Auramaker One", "where": 13450, "stacked_under": 0,
@@ -16,7 +16,7 @@
    "locations": [
      {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
       "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
-      "here": [{"id": 4126, "name": "Forger One", "faction": 300}, {"id": 7719, "name": "Curser One", "faction": 303}, {"id": 8159, "name": "Curator One", "faction": 302}, {"id": 8651, "name": "Auramaker One", "faction": 301}]}]},
+      "here": [{"id": 4126, "name": "Forger One", "faction": 300}, {"id": 7719, "name": "Curser One", "faction": 303}, {"id": 8159, "name": "Curator One", "faction": 302}, {"id": 8651, "name": "Auramaker One", "faction": 301}, {"id": 9463, "name": "Dispeller One", "faction": 304}]}]},
   {"id": 302, "name": "Curators",
    "units": [
      {"id": 8159, "name": "Curator One", "where": 13450, "stacked_under": 0,
@@ -25,7 +25,7 @@
    "locations": [
      {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
       "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
-      "here": [{"id": 4126, "name": "Forger One", "faction": 300}, {"id": 7719, "name": "Curser One", "faction": 303}, {"id": 8159, "name": "Curator One", "faction": 302}, {"id": 8651, "name": "Auramaker One", "faction": 301}]}]},
+      "here": [{"id": 4126, "name": "Forger One", "faction": 300}, {"id": 7719, "name": "Curser One", "faction": 303}, {"id": 8159, "name": "Curator One", "faction": 302}, {"id": 8651, "name": "Auramaker One", "faction": 301}, {"id": 9463, "name": "Dispeller One", "faction": 304}]}]},
   {"id": 303, "name": "Cursers",
    "units": [
      {"id": 7719, "name": "Curser One", "where": 13450, "stacked_under": 0,
@@ -34,4 +34,13 @@
    "locations": [
      {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
       "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
-      "here": [{"id": 4126, "name": "Forger One", "faction": 300}, {"id": 7719, "name": "Curser One", "faction": 303}, {"id": 8159, "name": "Curator One", "faction": 302}, {"id": 8651, "name": "Auramaker One", "faction": 301}]}]}]}
+      "here": [{"id": 4126, "name": "Forger One", "faction": 300}, {"id": 7719, "name": "Curser One", "faction": 303}, {"id": 8159, "name": "Curator One", "faction": 302}, {"id": 8651, "name": "Auramaker One", "faction": 301}, {"id": 9463, "name": "Dispeller One", "faction": 304}]}]},
+  {"id": 304, "name": "Dispellers",
+   "units": [
+     {"id": 9463, "name": "Dispeller One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 75}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 72332, "name": "Palantir", "qty": 1}],
+      "skills": [{"id": 880, "name": "Artifact construction"}, {"id": 881, "name": "Forge auraculum"}, {"id": 882, "name": "Arcane symbols"}, {"id": 883, "name": "Forge magical weapon"}, {"id": 884, "name": "Forge magical armor"}, {"id": 885, "name": "Forge magical bow"}, {"id": 886, "name": "Curse noncreator loyalty"}, {"id": 887, "name": "Reveal creator of artifact"}, {"id": 888, "name": "Reveal where artifact was created"}, {"id": 889, "name": "Destroy artifact"}, {"id": 891, "name": "Cloak creator of artifact"}, {"id": 892, "name": "Cloak region of artifact creation"}, {"id": 893, "name": "Dispel cloaking from artifact"}, {"id": 894, "name": "Forge palantir"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Forger One", "faction": 300}, {"id": 7719, "name": "Curser One", "faction": 303}, {"id": 8159, "name": "Curator One", "faction": 302}, {"id": 8651, "name": "Auramaker One", "faction": 301}, {"id": 9463, "name": "Dispeller One", "faction": 304}]}]}]}

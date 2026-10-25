@@ -196,7 +196,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 +
 --- /dev/null
 +++ b/lib/fact/303
-@@ -0,0 +1,58 @@
+@@ -0,0 +1,57 @@
 +303 player pl_regular
 +na Cursers
 +il	1 5000 \
@@ -249,6 +249,66 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 + ma 14
 + ca 14
 +CO
++ li be 9463
++ ar 9463 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/304
+@@ -0,0 +1,58 @@
++304 player pl_regular
++na Dispellers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player304@example.com
++ pw h10b4I52
++ np 18
++ fs 198
++ ft 1
++ kn 13450 
++ un 9463 
++ uf 7942 4751 1215 8731 2176 
++
++9463 char 0
++na Dispeller One
++il	1 200 \
++	10 25 \
++	82 5 \
++	72332 1
++LI
++ wh 13450
++CH
++ lo 304
++ he 100
++ lk 2
++ lr 2
++ sl	880 2 0 0 0 \
++	881 2 0 0 0 \
++	882 2 0 0 0 \
++	883 2 0 0 0 \
++	884 2 0 0 0 \
++	885 2 0 0 0 \
++	886 2 0 0 0 \
++	887 2 0 0 0 \
++	888 2 0 0 0 \
++	889 2 0 0 0 \
++	891 2 0 0 0 \
++	892 2 0 0 0 \
++	893 2 0 0 0 \
++	894 2 0 0 0
++ bp 50
++ at 80
++ df 80
++CM
++ im 1
++ ma 14
++ ca 14
++CO
 + li save
 + ar 0 0 0 0 0 0 0 0
 + cs 2
@@ -257,10 +317,20 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 +
 --- a/lib/item
 +++ b/lib/item
-@@ -846,4 +846,24 @@
+@@ -846,4 +846,34 @@
  IM
   uk 15
   lo 403
++
++72332 item palantir
++na Palantir
++IT
++ wt 2
++ un 9463
++IM
++ uk 4
++ rc 13450
++ ct 9463
 +
 +73052 item palantir
 +na Palantir
@@ -271,7 +341,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 + uk 4
 + rc 13450
 + ct 7719
-+
+ 
 +74170 item palantir
 +na Palantir
 +IT
@@ -281,7 +351,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 + uk 4
 + rc 13450
 + ct 8159
- 
++
 --- a/lib/loc
 +++ b/lib/loc
 @@ -44829,7 +44829,7 @@
@@ -289,13 +359,13 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  LI
   wh 58762
 - hl 73045 74516 
-+ hl 73045 74516 4126 8651 8159 7719 
++ hl 73045 74516 4126 8651 8159 7719 9463 
  LO
   pd 13350 13451 13550 13449 
   dg 3
 --- a/lib/master
 +++ b/lib/master
-@@ -96,6 +96,10 @@
+@@ -96,6 +96,11 @@
  293	4.0	item		faery
  294	4.0	item		petty thief cookie
  295	4.0	item		hound
@@ -303,10 +373,16 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 +301	1.49	fact/301	Auramakers
 +302	1.49	fact/302	Curators
 +303	1.49	fact/303	Cursers
++304	1.49	fact/304	Dispellers
  401	4.69	item		Imperial Throne
  402	4.69	item		Crown of Prosperity
  403	4.69	item		Skull of Bastrestric
-@@ -275,6 +279,7 @@
+@@ -271,10 +276,12 @@
+ 1188	2.64	fact/207	
+ 1209	2.64	fact/207	
+ 1211	2.64	fact/207	
++1215	12.0	unform		
+ 1287	2.64	fact/207	
  1306	2.64	fact/207	
  1321	2.64	fact/207	
  1335	2.64	fact/207	
@@ -314,7 +390,15 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  1383	2.64	fact/207	
  1416	2.64	fact/207	
  1501	2.64	fact/207	
-@@ -338,6 +343,7 @@
+@@ -307,6 +314,7 @@
+ 2150	2.64	fact/207	
+ 2164	2.64	fact/207	
+ 2167	2.64	fact/207	
++2176	12.0	unform		
+ 2189	2.64	fact/207	
+ 2196	2.64	fact/207	
+ 2200	2.64	fact/207	
+@@ -338,6 +346,7 @@
  2724	2.64	fact/207	
  2743	2.64	fact/207	
  2763	2.64	fact/207	
@@ -322,7 +406,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  2774	2.64	fact/207	
  2788	2.64	fact/207	
  2811	2.64	fact/207	
-@@ -354,6 +360,7 @@
+@@ -354,6 +363,7 @@
  3020	2.64	fact/207	
  3021	2.64	fact/207	
  3030	2.64	fact/207	
@@ -330,7 +414,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  3078	2.64	fact/207	
  3082	2.64	fact/207	
  3088	2.64	fact/207	
-@@ -366,6 +373,7 @@
+@@ -366,6 +376,7 @@
  3175	2.64	fact/207	
  3199	2.64	fact/207	
  3228	2.64	fact/207	
@@ -338,7 +422,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  3230	2.64	fact/207	
  3235	2.64	fact/207	
  3252	2.64	fact/207	
-@@ -384,6 +392,7 @@
+@@ -384,6 +395,7 @@
  3596	2.64	fact/207	
  3597	2.64	fact/207	
  3711	2.64	fact/207	
@@ -346,7 +430,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  3754	2.64	fact/207	
  3780	2.64	fact/207	
  3791	2.64	fact/207	
-@@ -405,6 +414,7 @@
+@@ -405,6 +417,7 @@
  4047	2.64	fact/207	
  4069	2.64	fact/207	
  4104	2.64	fact/207	
@@ -354,7 +438,15 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  4139	2.64	fact/207	
  4152	2.64	fact/207	
  4165	2.64	fact/207	
-@@ -461,6 +471,7 @@
+@@ -438,6 +451,7 @@
+ 4599	2.64	fact/207	
+ 4622	2.64	fact/207	
+ 4750	2.64	fact/207	
++4751	12.0	unform		
+ 4767	2.64	fact/207	
+ 4820	2.64	fact/207	
+ 4851	2.64	fact/207	
+@@ -461,6 +475,7 @@
  5289	2.64	fact/207	
  5292	2.64	fact/207	
  5295	2.64	fact/207	
@@ -362,7 +454,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  5322	2.64	fact/207	
  5340	2.64	fact/207	
  5352	2.64	fact/207	
-@@ -476,6 +487,7 @@
+@@ -476,6 +491,7 @@
  5669	2.64	fact/207	
  5676	2.64	fact/207	
  5688	2.64	fact/207	
@@ -370,7 +462,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  5697	2.64	fact/207	
  5728	2.64	fact/207	
  5730	2.64	fact/207	
-@@ -498,6 +510,7 @@
+@@ -498,6 +514,7 @@
  6027	2.64	fact/207	
  6073	2.64	fact/207	
  6082	2.64	fact/207	
@@ -378,7 +470,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  6094	2.64	fact/207	
  6103	2.64	fact/207	
  6169	2.64	fact/207	
-@@ -516,6 +529,7 @@
+@@ -516,6 +533,7 @@
  6440	2.64	fact/207	
  6450	2.64	fact/207	
  6500	2.64	fact/207	
@@ -386,7 +478,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  6527	2.64	fact/207	
  6558	2.64	fact/207	
  6581	2.64	fact/207	
-@@ -536,6 +550,7 @@
+@@ -536,6 +554,7 @@
  6894	2.64	fact/207	
  6903	2.64	fact/207	
  6946	2.64	fact/207	
@@ -394,7 +486,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  6951	2.64	fact/207	
  6955	2.64	fact/207	
  6966	2.64	fact/207	
-@@ -566,6 +581,8 @@
+@@ -566,6 +585,8 @@
  7401	2.64	fact/207	
  7421	2.64	fact/207	
  7441	2.64	fact/207	
@@ -403,7 +495,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  7481	2.64	fact/207	
  7518	2.64	fact/207	
  7577	2.64	fact/207	
-@@ -575,6 +592,7 @@
+@@ -575,6 +596,7 @@
  7665	2.64	fact/207	
  7700	2.64	fact/207	
  7710	2.64	fact/207	
@@ -411,7 +503,15 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  7747	2.64	fact/207	
  7757	2.64	fact/207	
  7766	2.64	fact/207	
-@@ -594,11 +612,14 @@
+@@ -587,6 +609,7 @@
+ 7902	2.64	fact/207	
+ 7919	2.64	fact/207	
+ 7938	2.64	fact/207	
++7942	12.0	unform		
+ 7949	2.64	fact/207	
+ 7971	2.64	fact/207	
+ 7974	2.64	fact/207	
+@@ -594,11 +617,14 @@
  7987	2.64	fact/207	
  8000	2.64	fact/207	
  8007	2.64	fact/207	
@@ -426,7 +526,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  8177	2.64	fact/207	
  8178	2.64	fact/207	
  8182	2.64	fact/207	
-@@ -617,15 +638,19 @@
+@@ -617,15 +643,20 @@
  8494	2.64	fact/207	
  8499	2.64	fact/207	
  8508	2.64	fact/207	
@@ -439,6 +539,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  8650	2.64	fact/207	
 +8651	2.0	fact/301	Auramaker One
  8730	2.64	fact/207	
++8731	12.0	unform		
  8780	2.64	fact/207	
  8839	2.64	fact/207	
  8848	2.64	fact/207	
@@ -446,7 +547,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  8905	2.64	fact/207	
  8910	2.64	fact/207	
  8935	2.64	fact/207	
-@@ -646,7 +671,9 @@
+@@ -646,7 +677,9 @@
  9159	2.64	fact/207	
  9185	2.64	fact/207	
  9205	2.64	fact/207	
@@ -456,7 +557,14 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  9258	2.64	fact/207	
  9276	2.64	fact/207	
  9294	2.64	fact/207	
-@@ -663,6 +690,7 @@
+@@ -657,12 +690,14 @@
+ 9432	2.64	fact/207	
+ 9433	2.64	fact/207	
+ 9453	2.64	fact/207	
++9463	2.0	fact/304	Dispeller One
+ 9484	2.64	fact/207	
+ 9515	2.64	fact/207	
+ 9552	2.64	fact/207	
  9554	2.64	fact/207	
  9622	2.64	fact/207	
  9654	2.64	fact/207	
@@ -464,7 +572,15 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  9676	2.64	fact/207	
  9685	2.64	fact/207	
  9714	2.64	fact/207	
-@@ -33746,6 +33774,7 @@
+@@ -33411,6 +33446,7 @@
+ 72325	3.11	loc		
+ 72327	3.13	loc		
+ 72331	3.18	loc		Ancient battlefield
++72332	4.44	item		Palantir
+ 72335	3.11	loc		
+ 72339	6.0	gate		
+ 72342	3.24	loc		
+@@ -33746,6 +33782,7 @@
  73045	3.13	loc		
  73047	3.13	loc		
  73048	3.9	loc		
@@ -472,7 +588,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  73056	3.25	loc		
  73059	3.26	loc		
  73060	3.16	loc		
-@@ -34288,6 +34317,7 @@
+@@ -34288,6 +34325,7 @@
  74167	3.22	loc		Cursed Pits
  74168	3.19	loc		
  74169	3.12	loc		
@@ -504,6 +620,12 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 @@ -0,0 +1,2 @@
 +7719:use 886 73052
 +7719:use 889 73052
+--- /dev/null
++++ b/lib/orders/304
+@@ -0,0 +1,3 @@
++9463:use 891 72332
++9463:use 892 72332
++9463:use 893 72332
 --- a/lib/times_0
 +++ b/lib/times_0
 @@ -1,14 +1,15 @@
@@ -530,8 +652,12 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  
 --- a/lib/unform
 +++ b/lib/unform
-@@ -0,0 +1,40 @@
+@@ -0,0 +1,50 @@
++1215 unform 0
++
 +1375 unform 0
++
++2176 unform 0
 +
 +2769 unform 0
 +
@@ -540,6 +666,8 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 +3229 unform 0
 +
 +3743 unform 0
++
++4751 unform 0
 +
 +5303 unform 0
 +
@@ -555,6 +683,8 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 +
 +7474 unform 0
 +
++7942 unform 0
++
 +8078 unform 0
 +
 +8127 unform 0
@@ -562,6 +692,8 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 +8533 unform 0
 +
 +8535 unform 0
++
++8731 unform 0
 +
 +8867 unform 0
 +

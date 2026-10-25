@@ -1,7 +1,7 @@
 -- use-art.lua -- build the use-art scenario (issue #204).
 --
 -- Run by build-scenario.sh against the bare-map fixture; the lib it saves is
--- frozen as scenario.patch. Four factions start in Greyfell (start city 0)
+-- frozen as scenario.patch. Five factions start in Greyfell (start city 0)
 -- and are moved to Plain [13450], since magic may not be used in a safe
 -- haven. Each noble knows the Artifact construction school and all its
 -- skills; each skill known adds one aura, so each has 14. Each starts with
@@ -16,16 +16,16 @@
 --                                       use 892 P
 --   curser      a palantir, a blank     use 886 Q, use 889 Q
 --               scroll
+--   dispeller   a palantir, 5 mithril   use 891 D, use 892 D, use 893 D
 --
 -- Every start returns TRUE (ok). The forger forges a sword, armor and a
 -- bow at one aura each, then a palantir. The auramaker forges an auraculum
 -- of one aura and scribes Reveal creator of artifact. The curator learns
 -- who made its palantir and where, then cloaks both. The curser lays a
--- noncreator curse on its palantir and destroys it. The palantirs come
--- from oly.palantir: one forged in the turn has an id minted in the turn.
---
--- rem_art_cloak (893) is not here: v_rem_art_cloak never returns TRUE
--- (issue #205).
+-- noncreator curse on its palantir and destroys it. The dispeller cloaks
+-- its palantir's creator and region, then dispels both cloaks. The
+-- palantirs come from oly.palantir: one forged in the turn has an id minted
+-- in the turn.
 
 local oly = require "oly"
 
@@ -86,6 +86,10 @@ local curated = oly.palantir(curator, "curated")
 local curser = noble(303, "Cursers", "curser", "Curser One")
 oly.additem(curser, BLANK_SCROLL, 1)
 local cursed = oly.palantir(curser, "cursed")
+-- cloaking the creator needs 100 gold and 5 mithril in hand
+local dispeller = noble(304, "Dispellers", "dispeller", "Dispeller One")
+oly.additem(dispeller, MITHRIL, 5)
+local dispelled = oly.palantir(dispeller, "dispelled")
 
 oly.order(forger, "use " .. FORGE_WEAPON .. " 1")
 oly.order(forger, "use " .. FORGE_ARMOR .. " 1")
@@ -99,8 +103,11 @@ oly.order(curator, "use " .. CLOAK_CREAT .. " " .. curated)
 oly.order(curator, "use " .. CLOAK_REG .. " " .. curated)
 oly.order(curser, "use " .. CURSE .. " " .. cursed)
 oly.order(curser, "use " .. DESTROY .. " " .. cursed)
+oly.order(dispeller, "use " .. CLOAK_CREAT .. " " .. dispelled)
+oly.order(dispeller, "use " .. CLOAK_REG .. " " .. dispelled)
+oly.order(dispeller, "use " .. REM_CLOAK .. " " .. dispelled)
 
 oly.save("./lib")
 
-print(string.format("built use-art: forger=%d auramaker=%d curator=%d curser=%d curated=%d cursed=%d",
-	forger, auramaker, curator, curser, curated, cursed))
+print(string.format("built use-art: forger=%d auramaker=%d curator=%d curser=%d dispeller=%d curated=%d cursed=%d dispelled=%d",
+	forger, auramaker, curator, curser, dispeller, curated, cursed, dispelled))

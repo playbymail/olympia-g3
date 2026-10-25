@@ -117,7 +117,7 @@ skill	888	show_art_reg	artifact	v_show_art_reg	use-art	use-art-refused
 skill	889	destroy_art	artifact	v_destroy_art	use-art	use-art-refused
 skill	891	cloak_creat	artifact	v_cloak_creat	use-art	use-art-refused
 skill	892	cloak_reg	artifact	v_cloak_reg	use-art	use-art-refused
-skill	893	rem_art_cloak	artifact	v_rem_art_cloak	todo	use-art-refused
+skill	893	rem_art_cloak	artifact	v_rem_art_cloak	use-art	use-art-refused
 skill	894	forge_palantir	artifact	v_forge_palantir	use-art	use-art-refused
 skill	901	raise_corpses	necromancy	v_raise_corpses	todo	todo
 skill	902	summon_ghost	necromancy	v_implicit	n/a	todo

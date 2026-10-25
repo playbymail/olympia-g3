@@ -514,7 +514,7 @@ v_rem_art_cloak(struct command *c)
 
 	wout(c->who, "Attempt to remove all cloaking spells from %s.",
 					box_name(item));
-	return FALSE;
+	return TRUE;
 }
 
 
