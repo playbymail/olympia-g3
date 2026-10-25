@@ -1333,7 +1333,7 @@ v_forge_art_x(struct command *c)
 	}
 	c->d = rare_item;
 
-	if (!has_item(c->who, rare_item) >= 1)
+	if (has_item(c->who, rare_item) < 1)
 	{
 		wout(c->who, "Requires %s.", box_name_qty(rare_item, 1));
 		return FALSE;
@@ -1361,7 +1361,7 @@ d_forge_art_x(struct command *c)
 		return FALSE;
 	}
 
-	if (!has_item(c->who, rare_item) >= 1)
+	if (has_item(c->who, rare_item) < 1)
 	{
 		wout(c->who, "Requires %s.", box_name_qty(rare_item, 1));
 		return FALSE;
