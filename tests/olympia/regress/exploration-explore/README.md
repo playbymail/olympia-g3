@@ -18,8 +18,9 @@ forest, hides a cave [73045] and a ruins [74516]:
 - **explore.** `v_explore` always starts. The find is up to `d_explore`, and
   each of its draws is on the explore stream (`expl`, see
   [doc/claude/rng-streams.md](../../../../doc/claude/rng-streams.md)), keyed
-  on (explorer, province). The gate draw succeeds, and on day 7 the explorer
-  finds the hidden cave [73045]. The hash pins the find.
+  on (explorer, province) under a per-day stream (#167). The gate draw
+  succeeds, and on day 7 the explorer finds the hidden cave [73045]. The hash
+  pins the find.
 - **seek.** `plugh` and `xyzzy` are developer no-ops that take no time.
   `seek 8159` names a noble who is here, so the seeker contacts it at once.
   `seek 4126` names a noble in another place: the 7-day search runs and
@@ -28,9 +29,10 @@ forest, hides a cave [73045] and a ruins [74516]:
   draws nothing and finds nothing.
 - **quest.** The ruins are not a safe haven, the quester leads its own
   stack, and ruins have rows in `quest_monster`, so the quest starts. The
-  quest stream (`qest`), keyed on the ruins, raises 4 minotaurs on day 8.
-  The quester attacks and loses. It is wounded, taken prisoner, falls ill
-  and dies on day 14. The hash pins the monster and the battle.
+  quest stream (`qest`), keyed on the ruins, the quester and the day
+  (#167), comes up empty on day 8: "Nothing of interest was found." The
+  quest's monster and battle path is pinned by `exploration-refused` and
+  `rng-repeat`.
 
 ## What `check.sh` asserts
 

@@ -6,7 +6,7 @@
 # tests/olympia/fixtures/world.tgz) and runs one turn. An explorer in Plain
 # finds a hidden cave; a seeker in Greyfell runs plugh and xyzzy and seeks a
 # noble here, one elsewhere and anyone; a quester in Plain's hidden ruins
-# raises minotaurs and loses to them. Each order starts. See
+# finds nothing. Each order starts. See
 # exploration-explore.lua and README.md.
 #
 # Three checks, all required:

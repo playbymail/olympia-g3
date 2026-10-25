@@ -27,14 +27,20 @@
       "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
       "here": [{"id": 8159, "name": "Follower One", "faction": 302}, {"id": 8651, "name": "Leader One", "faction": 301}]}]},
   {"id": 303, "name": "Questers",
-   "units": [],
-   "locations": []},
-  {"id": 304, "name": "Latecomers",
    "units": [
-     {"id": 6947, "name": "Latecomer One", "where": 74516, "stacked_under": 0,
-      "items": [{"id": 1, "name": "gold", "qty": 1304}, {"id": 10, "name": "peasant", "qty": 48}],
+     {"id": 7012, "name": "Quester One", "where": 74516, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 1327}, {"id": 10, "name": "peasant", "qty": 25}],
       "skills": []}],
    "locations": [
      {"id": 74516, "name": "", "kind": "loc", "subkind": "ruins", "depth": "subloc", "province": 13450,
       "exits": [{"direction": "out", "destination": 13450, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
-      "here": [{"id": 6947, "name": "Latecomer One", "faction": 304}]}]}]}
+      "here": [{"id": 6947, "name": "Latecomer One", "faction": 304}, {"id": 7012, "name": "Quester One", "faction": 303}]}]},
+  {"id": 304, "name": "Latecomers",
+   "units": [
+     {"id": 6947, "name": "Latecomer One", "where": 74516, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 74516, "name": "", "kind": "loc", "subkind": "ruins", "depth": "subloc", "province": 13450,
+      "exits": [{"direction": "out", "destination": 13450, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 6947, "name": "Latecomer One", "faction": 304}, {"id": 7012, "name": "Quester One", "faction": 303}]}]}]}

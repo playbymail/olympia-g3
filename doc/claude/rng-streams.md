@@ -37,7 +37,9 @@ reseeds a stream off the turn root (`rng_master_seed()` → turn → its own 4-c
 tag) and draws from it instead of the global `rnd()`:
 
 - **combat** — per-battle stream on `(turn, location)`, `begin_battle()`/`crnd()`
-  in `olympia/combat.c` (sequential `rng_draw`).
+  in `olympia/combat.c` (sequential `rng_draw`). Since #167 also keyed on both
+  lead characters and the day, so two battles at one place in a turn draw
+  independently; pillage likewise adds the pillager and the day.
 - **pillage** — sibling per-pillage stream, `begin_pillage()`/`prnd()`
   (`combat.c`) plus the mob-name draw in `create_peasant_mob()` (`npc.c`).
 - **economy/market** — `begin_economy()`/`econ_*` (`buy.c`, `seed.c`), keyed leaf
@@ -72,10 +74,12 @@ tag) and draws from it instead of the global `rnd()`:
   chain is a sequential ~20-draw run (monster pick, gold/loot switch, artifact
   assembly, teach-book shuffle via `ilist_shuffle_rng`); keyed on the sublocation
   (`d_quest`) or the actor (`v_use_bta_skull`) — there is no first-class quest
-  entity. Shared infra on the path (`new_char`/`gen_item`/`create_unique_item`/
+  entity. Since #167 the stream also keys on the questing noble and the day, so
+  a repeated quest in one subloc draws afresh. Shared infra on the path (`new_char`/`gen_item`/`create_unique_item`/
   `new_orb`/`create_npc_token`) stays global; `quest_decay` draws nothing.
 - **explore** — **one per-turn** stream (tag `expl`), seeded once via the
-  turn-guarded `begin_explore()` (`c1.c`); keyed-leaf helpers `expl_find`/
+  turn-guarded `begin_explore()` (`c1.c`) — since #167 **one per day**, so a
+  repeated EXPLORE and each daily SEEK poll draw afresh; keyed-leaf helpers `expl_find`/
   `expl_gate`/`expl_flavor`/`expl_pick` (EXPLORE command, `c1.c`) and
   `expl_seek`/`expl_detect` (SEEK detect, `stealth.c` `d_seek`, exposed via
   `proto.h`). The upkeep model (keyed leaves, actor in the leaf key `k1`) because

@@ -20,14 +20,16 @@ Four factions start in Greyfell (57081); three are poofed to Forest
   reporting the bribe. The draw is on the social stream (`socl`, see
   [doc/claude/rng-streams.md](../../../../doc/claude/rng-streams.md)),
   keyed on (briber, mark). Here the mark pockets it. The gold is charged
-  to the briber but never given to the mark: it leaves the game (the mark
-  ends the turn with its 200 gold). That is the rule, not a bug (#159).
+  to the briber but never given to the mark: it leaves the game (the mob
+  that takes the mark prisoner on day 16 finds only its starting 200 gold).
+  That is the rule, not a bug (#159).
 - **incite.** `incite`'s `cmd_tbl` row has a start (`v_incite`) but no
   finish, so the order checks its arguments, starts (`ok`), spends seven
   days and does nothing. The same skill used through `use 675` runs
   `d_incite`. Its social-stream draws are keyed on (inciter, target). With
   the inciters added first the ids make it succeed: on day 16 the mob
-  attacks the mark, wins, kills the mark's 25 peasants and wounds it.
+  attacks the mark, wins, kills the mark's 25 peasants, wounds it and takes
+  it prisoner.
 - **terrorize.** A formed noble is contract-500 and stacked beneath its
   former (`form_new_noble`), so once the 7-day `form` makes the hireling
   (day 8), the terrorizer's next order terrorizes it: 3 damage and fear-3

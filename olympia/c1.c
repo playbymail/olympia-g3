@@ -26,6 +26,9 @@
  *  both golden trees (no explore/seek order is issued on the bare-map or
  *  guard-pillage turns, and none of these fire at world-init).
  *
+ *  #167: the stream is now reseeded once per DAY (see begin_explore below),
+ *  so the leaves are keyed on (actor, context, day).
+ *
  *  Deliberately NOT migrated here (documented residuals):
  *    - tunnel.c dungeon/subworld generation -- pure world-gen, fires at INIT
  *      (~409,727 rnd() draws), no actor; deferred to worldgen (step 11, "wgen"),
@@ -51,30 +54,39 @@
 #define	XTAG_SEEK	0x7365656bu	/* "seek" -- d_seek targeted detect            */
 #define	XTAG_DETECT	0x64746374u	/* "dtct" -- d_seek hidden-noble scan          */
 
+#define	TAG_DAY		0x64617920u	/* "day " */
+
 static rng_stream explore_rng;
-static int explore_rng_turn = -1;	/* seed explore_rng once per turn */
+static int explore_rng_turn = -1;	/* seed explore_rng once per day */
+static int explore_rng_day = -1;
 
 /*
- *  Seed the per-turn explore stream once per turn. Self-seeded by every helper
- *  below (including the cross-file expl_seek/expl_detect), so the first explore
- *  or detect draw of the turn cannot read an unseeded stream regardless of which
+ *  Seed the explore stream once per day. Self-seeded by every helper below
+ *  (including the cross-file expl_seek/expl_detect), so the first explore or
+ *  detect draw of the day cannot read an unseeded stream regardless of which
  *  command fires first.
+ *
+ *  #167: the stream is keyed on the day as well as the turn. With one stream
+ *  per turn, SEEK (which polls daily) drew the same detect roll every day, and
+ *  a second EXPLORE of a province in the same month replayed the first.
  */
 static void
 begin_explore(void)
 {
 	uint32_t m[4];
-	rng_stream root, turn;
+	rng_stream root, turn, s;
 
-	if (explore_rng_turn == sysclock.turn)
-		return;			/* already seeded this turn */
+	if (explore_rng_turn == sysclock.turn && explore_rng_day == sysclock.day)
+		return;			/* already seeded today */
 
 	rng_master_seed(m);
 	root = rng_seed(m);
 	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
-	explore_rng = rng_stream_of(&turn, 0, TAG_EXPLORE);
+	s = rng_stream_of(&turn, 0, TAG_EXPLORE);
+	explore_rng = rng_stream_of(&s, sysclock.day, TAG_DAY);
 
 	explore_rng_turn = sysclock.turn;
+	explore_rng_day = sysclock.day;
 }
 
 /* find_lost_items: chance to recover a unique item, keyed on (who, where). */

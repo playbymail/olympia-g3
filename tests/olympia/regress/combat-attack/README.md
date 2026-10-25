@@ -17,8 +17,10 @@ haven, so combat is allowed:
 | 303 Captors | Captor One [7012] | `wait time 2`, `execute 8159` |
 | 304 Razers | Razer One [6947], in Tower [67765] | `raze` |
 
-On day 1 the raider wins the battle and takes the victim prisoner. The
-battle draws from the per-battle `begin_battle()` stream (see
+On day 1 the raider wins the battle. The victim loses its 25 peasants, is
+wounded to health 78 and falls ill, but is not taken prisoner; it loses ten
+health a week for the rest of the turn. The battle draws from the per-battle
+`begin_battle()` stream, keyed on the place, both leaders and the day (see
 `doc/claude/rng-streams.md`), so the result is pinned by the hashes.
 
 The yielder surrenders to the captor on day 1. The captor waits two days so

@@ -1,0 +1,55 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Questers",
+   "units": [
+     {"id": 4126, "name": "Quester One", "where": 59001, "stacked_under": 130093,
+      "items": [],
+      "skills": []}],
+   "locations": [
+     {"id": 59001, "name": "Ancient battlefield", "kind": "loc", "subkind": "battlefield", "depth": "subloc", "province": 19647,
+      "exits": [{"direction": "out", "destination": 19647, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Quester One", "faction": 300}, {"id": 130093, "name": "", "faction": 206}]}]},
+  {"id": 301, "name": "Explorers",
+   "units": [
+     {"id": 8651, "name": "Explorer One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 73045, "distance": 1, "road": 0, "impassable": 0, "hidden": 1}],
+      "here": [{"id": 8651, "name": "Explorer One", "faction": 301}]}]},
+  {"id": 302, "name": "Raiders A",
+   "units": [
+     {"id": 8159, "name": "Raider A", "where": 10113, "stacked_under": 6947,
+      "items": [],
+      "skills": []}],
+   "locations": [
+     {"id": 10113, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 10113,
+      "exits": [{"direction": "north", "destination": 10013, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 10114, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 10213, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 10112, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 62791, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 6947, "name": "Victim A", "faction": 304}, {"id": 7012, "name": "Raider B", "faction": 303}, {"id": 8159, "name": "Raider A", "faction": 302}, {"id": 8731, "name": "Victim B", "faction": 305}]}]},
+  {"id": 303, "name": "Raiders B",
+   "units": [
+     {"id": 7012, "name": "Raider B", "where": 10113, "stacked_under": 8731,
+      "items": [],
+      "skills": []}],
+   "locations": [
+     {"id": 10113, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 10113,
+      "exits": [{"direction": "north", "destination": 10013, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 10114, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 10213, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 10112, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 62791, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 6947, "name": "Victim A", "faction": 304}, {"id": 7012, "name": "Raider B", "faction": 303}, {"id": 8159, "name": "Raider A", "faction": 302}, {"id": 8731, "name": "Victim B", "faction": 305}]}]},
+  {"id": 304, "name": "Victims A",
+   "units": [
+     {"id": 6947, "name": "Victim A", "where": 10113, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 331}, {"id": 10, "name": "peasant", "qty": 39}, {"id": 12, "name": "soldier", "qty": 15}],
+      "skills": []}],
+   "locations": [
+     {"id": 10113, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 10113,
+      "exits": [{"direction": "north", "destination": 10013, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 10114, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 10213, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 10112, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 62791, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 6947, "name": "Victim A", "faction": 304}, {"id": 7012, "name": "Raider B", "faction": 303}, {"id": 8159, "name": "Raider A", "faction": 302}, {"id": 8731, "name": "Victim B", "faction": 305}]}]},
+  {"id": 305, "name": "Victims B",
+   "units": [
+     {"id": 8731, "name": "Victim B", "where": 10113, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 327}, {"id": 10, "name": "peasant", "qty": 39}, {"id": 12, "name": "soldier", "qty": 17}],
+      "skills": []}],
+   "locations": [
+     {"id": 10113, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 10113,
+      "exits": [{"direction": "north", "destination": 10013, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 10114, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 10213, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 10112, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 62791, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 6947, "name": "Victim A", "faction": 304}, {"id": 7012, "name": "Raider B", "faction": 303}, {"id": 8159, "name": "Raider A", "faction": 302}, {"id": 8731, "name": "Victim B", "faction": 305}]}]}]}

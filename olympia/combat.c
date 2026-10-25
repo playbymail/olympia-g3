@@ -24,6 +24,10 @@
  *  unrelated subsystem can't perturb a combat's outcome. begin_battle() reseeds
  *  it at the single battle chokepoint (combat_top); crnd() replaces rnd() at the
  *  resolution sites. Everything outside combat still uses the legacy rnd().
+ *
+ *  #167: the stream is also keyed on the two lead characters and the day.
+ *  Keyed on (turn, location) alone, every battle fought at one place in a turn
+ *  replayed the same dice.
  */
 static rng_stream combat_rng;
 
@@ -34,23 +38,29 @@ static rng_stream combat_rng;
  *  (turn, location). begin_pillage() reseeds it at the top of d_pillage; prnd()
  *  replaces rnd() at the mob-formation sites. The shared NPC troop-count draw
  *  (do_cookie_npc) stays on the global rnd() -- it is not pillage-specific.
+ *  Like the battle stream it is also keyed on the pillager and the day (#167),
+ *  so two pillages of one province in a turn draw independently.
  */
 static rng_stream pillage_rng;
 
 #define	TAG_TURN	0x7475726eu	/* "turn" */
 #define	TAG_COMBAT	0x636f6d62u	/* "comb" */
 #define	TAG_PILLAGE	0x70696c6cu	/* "pill" */
+#define	TAG_DAY		0x64617920u	/* "day " */
 
 static void
-begin_battle(int where)
+begin_battle(int where, int attacker, int defender)
 {
 	uint32_t m[4];
-	rng_stream root, turn;
+	rng_stream root, turn, s;
 
 	rng_master_seed(m);
 	root = rng_seed(m);
 	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
-	combat_rng = rng_stream_of(&turn, where, TAG_COMBAT);
+	s = rng_stream_of(&turn, where, TAG_COMBAT);
+	s = rng_stream_of(&s, attacker, TAG_COMBAT);
+	s = rng_stream_of(&s, defender, TAG_COMBAT);
+	combat_rng = rng_stream_of(&s, sysclock.day, TAG_DAY);
 }
 
 static int
@@ -60,15 +70,17 @@ crnd(int low, int high)
 }
 
 static void
-begin_pillage(int where)
+begin_pillage(int where, int who)
 {
 	uint32_t m[4];
-	rng_stream root, turn;
+	rng_stream root, turn, s;
 
 	rng_master_seed(m);
 	root = rng_seed(m);
 	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
-	pillage_rng = rng_stream_of(&turn, where, TAG_PILLAGE);
+	s = rng_stream_of(&turn, where, TAG_PILLAGE);
+	s = rng_stream_of(&s, who, TAG_PILLAGE);
+	pillage_rng = rng_stream_of(&s, sysclock.day, TAG_DAY);
 }
 
 static int
@@ -2406,7 +2418,7 @@ combat_top(fights_list l_a, fights_list l_b, int force_win)
 		int where = subloc(lead_char(l_a));
 		int where2 = subloc(lead_char(l_b));
 
-		begin_battle(where);	/* issue #25: reseed the per-battle stream */
+		begin_battle(where, lead_char(l_a), lead_char(l_b));	/* #25, #167 */
 
 		if (weather_here(where, sub_rain))
 			combat_rain = TRUE;
@@ -2891,7 +2903,7 @@ d_pillage(struct command *c)
 		return FALSE;
 	}
 
-	begin_pillage(where);	/* issue #25: reseed the per-pillage stream */
+	begin_pillage(where, c->who);	/* #25, #167: reseed the per-pillage stream */
 
 	amount = has;
 	consume_item(where, item_tax_cookie, amount);

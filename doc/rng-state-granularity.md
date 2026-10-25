@@ -1525,11 +1525,11 @@ re-baseline plan first, and kept both golden gates green on both presets.
 
 ## Post-#25 keying corrections
 
-A keyed leaf returns the same value for the same key. Where a key leaves out
-something that varies in play, such as the day or the acting unit, every repeat of
-the action replays the same roll. The golden trees could not catch this, because
-neither repeats these actions. The cases found since #25 closed, and what was
-decided about each:
+A keyed leaf, or a stream reseeded from a fixed key, returns the same draws for
+the same key. Where a key leaves out something that varies in play, such as the
+day or the acting unit, every repeat of the action replays the same roll. The
+golden trees could not catch this, because neither repeats these actions. The
+cases found since #25 closed, and what was decided about each:
 
 - **Harvest and mine (#132): bug, fixed.** `econ_harvest` and `econ_mine` were keyed
   on `(item, where)` under the per-turn market stream. Every day of a multi-day
@@ -1539,6 +1539,24 @@ decided about each:
   tag)`) and key the draw on `(item, sysclock.day)`. **Spec for the Go port: an
   independent roll per unit, per day.** Re-baselined `production-harvest` only; the
   main manifest and every other fixture were unchanged.
+- **Quest, explore/seek, battle and pillage (#167): bug, fixed.**
+  - `begin_quest(key, who)` derives the quest stream from (turn, subloc or
+    actor, quester, day). Keyed on the subloc alone, every quest there that
+    turn replayed the same draws. After one "Nothing of interest was found.",
+    every retry that month, by any noble, found nothing too.
+  - `begin_explore()` reseeds once per day, from (turn, day). With one stream
+    per turn, a repeated EXPLORE of a province replayed its gate roll, and SEEK,
+    which polls daily, drew the same detect roll every day.
+  - `begin_battle(where, attacker, defender)` and `begin_pillage(where, who)`
+    add the lead characters and the day. Keyed on the location alone, every
+    battle (or pillage) at one place in a turn replayed the same dice.
+  - **Spec for the Go port: independent draws per actor, per day.** The new
+    `tests/olympia/regress/rng-repeat` fixture repeats each action in one
+    turn. Re-baselined: `combat-attack`, `exploration-explore`,
+    `exploration-refused`, `guard-pillage` and `social-bribe` (its incited mob
+    fights through the battle stream). The main manifest is unchanged. The
+    `v_use_bta_skull` entry also picks up the day; the skull is consumed on
+    use, so it could not repeat anyway.
 
 ## Migration & re-baseline cost
 

@@ -10,8 +10,8 @@
       "here": [{"id": 4126, "name": "Inciter One", "faction": 300}, {"id": 8159, "name": "Briber One", "faction": 302}, {"id": 8651, "name": "Mark One", "faction": 301}, {"id": 139904, "name": "Mob", "faction": 100}]}]},
   {"id": 301, "name": "Marks",
    "units": [
-     {"id": 8651, "name": "Mark One", "where": 13449, "stacked_under": 0,
-      "items": [{"id": 1, "name": "gold", "qty": 200}],
+     {"id": 8651, "name": "Mark One", "where": 13449, "stacked_under": 139904,
+      "items": [],
       "skills": []}],
    "locations": [
      {"id": 13449, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13449,

@@ -9,15 +9,17 @@ It also pins the **second** issue #25 consumer: the **pillage loot/mob path**
 (`d_pillage`), migrated onto its own per-pillage stream
 (`begin_pillage()`/`prnd()` in `combat.c`, plus the mob-name draw in
 `create_peasant_mob()`, `olympia/npc.c`) — a sibling of the battle stream keyed
-on `(master seed, turn, location, TAG_PILLAGE)`. The mob's troop-count draw
-(shared `do_cookie_npc`) was the one pillage draw left on the global `rnd()` at
-the time; it has since been **absorbed by the fourth consumer, NPC spawning** —
+on `(master seed, turn, location, TAG_PILLAGE)`, plus the pillager and the day
+since #167. The mob's troop-count draw (shared `do_cookie_npc`) was the one
+pillage draw left on the global `rnd()` at the time; it has since been **absorbed by the fourth consumer, NPC spawning** —
 it now draws from the per-location `npcs` stream keyed on `(cookie, entity)`. See
 `doc/rng-state-granularity.md`. This tree was re-baselined twice: once by the
 pillage migration and once by the NPC migration (the troop count is now keyed and
 the turn also runs `init_savage_attacks`), each moving the pillage *reports*
 (`save/1/300`, `save/1/301`) while the battle dice and `fact/{300,301}` stayed
-unchanged. The committed `EXPECT.sha256` is the current re-baselined result;
+unchanged. #167 re-baselined it a third time, moving the battle dice and
+`fact/{300,301}` too, once the battle and pillage streams were keyed on the
+leaders and the day. The committed `EXPECT.sha256` is the current re-baselined result;
 frozen scenario was unchanged (the NPC draws never fire during the pre-turn world
 init it freezes).
 
@@ -34,13 +36,15 @@ Built by `build-scenario.sh` from the bare-map fixture
 
 Running a turn drives `v_pillage → attack_guard_units → combat_top`, so the
 battle's dice come from the per-battle stream keyed on (master seed, turn,
-location). `check.sh` runs the turn and hashes the two faction reports
+location, both leaders, day) (#167). The pillager wins on day 1 but does not
+capture the guard; on day 7 the pillage forms a mob, which attacks on day 8 and is
+destroyed. `check.sh` runs the turn and hashes the two faction reports
 (`save/1/300`, `save/1/301`) plus final unit state (`fact/300`, `fact/301`)
 against `EXPECT.sha256`.
 
 It also diffs the post-turn `--state-export` snapshot (#104) against
 `EXPECT.json`. The hashes are the strict gate; the JSON is a readable view of the
-same outcome (the pillager's gold and men, the captured guard stacked under him),
+same outcome (the pillager's gold and men, the guard left in the province),
 so a failing run shows *what* changed and not just *that* it changed.
 `check-lua.sh` checks the Lua-built turn against the same `EXPECT.json`.
 

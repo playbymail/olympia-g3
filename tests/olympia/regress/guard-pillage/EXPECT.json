@@ -2,7 +2,7 @@
   {"id": 300, "name": "Pillager Horde",
    "units": [
      {"id": 4126, "name": "Warlord Grok", "where": 10113, "stacked_under": 0,
-      "items": [{"id": 1, "name": "gold", "qty": 359}, {"id": 10, "name": "peasant", "qty": 27}, {"id": 12, "name": "soldier", "qty": 32}],
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 21}, {"id": 12, "name": "soldier", "qty": 27}],
       "skills": []}],
    "locations": [
      {"id": 10113, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 10113,
@@ -10,8 +10,8 @@
       "here": [{"id": 4126, "name": "Warlord Grok", "faction": 300}, {"id": 8651, "name": "Captain Vigil", "faction": 301}]}]},
   {"id": 301, "name": "Guard Order",
    "units": [
-     {"id": 8651, "name": "Captain Vigil", "where": 10113, "stacked_under": 4126,
-      "items": [],
+     {"id": 8651, "name": "Captain Vigil", "where": 10113, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 190}, {"id": 10, "name": "peasant", "qty": 2}, {"id": 12, "name": "soldier", "qty": 4}],
       "skills": []}],
    "locations": [
      {"id": 10113, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 10113,

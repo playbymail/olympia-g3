@@ -23,22 +23,30 @@
  *  Shared infra reached on the quest path (new_char/gen_item/create_unique_item/
  *  new_orb/create_npc_token) keeps the legacy rnd() -- those are other
  *  subsystems' draws (mint/item), migrated under their own tracks.
+ *
+ *  #167: begin_quest() also keys the stream on the acting noble and the day.
+ *  Keyed on the subloc alone, every quest there in a turn replayed the same
+ *  draws, so after one "Nothing of interest was found." every retry that month,
+ *  by any noble, found nothing too.
  */
 static rng_stream quest_rng;
 
 #define	TAG_TURN	0x7475726eu	/* "turn" */
 #define	TAG_QUEST	0x71657374u	/* "qest" */
+#define	TAG_DAY		0x64617920u	/* "day " */
 
 void
-begin_quest(int key)
+begin_quest(int key, int who)
 {
 	uint32_t m[4];
-	rng_stream root, turn;
+	rng_stream root, turn, s;
 
 	rng_master_seed(m);
 	root = rng_seed(m);
 	turn = rng_stream_of(&root, sysclock.turn, TAG_TURN);
-	quest_rng = rng_stream_of(&turn, key, TAG_QUEST);
+	s = rng_stream_of(&turn, key, TAG_QUEST);
+	s = rng_stream_of(&s, who, TAG_QUEST);
+	quest_rng = rng_stream_of(&s, sysclock.day, TAG_DAY);
 }
 
 int
@@ -626,7 +634,7 @@ d_quest(struct command *c)
 		return TRUE;
 	}
 
-	begin_quest(where);	/* issue #25: reseed the per-quest stream */
+	begin_quest(where, c->who);	/* #25, #167: reseed the per-quest stream */
 
 	if (qrnd(1,100) <= 50)
 	{
@@ -661,7 +669,7 @@ v_use_bta_skull(struct command *c)
 
 	assert(item == RELIC_BTA_SKULL);
 
-	begin_quest(c->who);	/* issue #25: reseed the per-quest stream (actor-keyed) */
+	begin_quest(c->who, c->who);	/* #25, #167: reseed the per-quest stream (actor-keyed) */
 
 	p_item_magic(item)->relic_decay = 0;
 	move_item(c->who, nowhere_loc, item, 1);

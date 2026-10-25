@@ -27,11 +27,10 @@ of Greyfell's forest, is not a safe haven and hides a ruins [74516]:
 
 The leader admits the follower, and the follower stacks beneath it before
 its quest. The quester's quest in the ruins starts (`ok`). On day 7 it
-raises 4 minotaurs (the same ruins draw as in `exploration-explore`, on
-the `qest` stream), attacks them and loses, and it dies. The quest also
-marks the ruins as quested. On day 8 the minotaurs attack the latecomer,
-who wins and takes their gold. The latecomer waits until day 10, so its
-quest finds the ruins already quested.
+raises 2 bandits (a draw on the `qest` stream, keyed on the ruins, the
+quester and the day), attacks them, wins and takes their 1,152 gold. The
+quest also marks the ruins as quested. The latecomer waits until day 10,
+so its quest finds the ruins already quested.
 
 Rejected: every exploration verb is for nobles (`c` or `cr`), so the
 Bunglers' player entity orders `explore`, `seek`, `quest`, `plugh` and
