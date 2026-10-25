@@ -31,7 +31,10 @@ exploration family (#148) by `exploration-explore` and
 `exploration-refused`, the magic family (#149) by `magic-cast` and
 `magic-refused`, the governance family (#150) by `governance-rule` and
 `governance-refused`, and the gm family (#151) by `gm-credit` and
-`gm-refused`. With #151 every `ok` cell is filled.
+`gm-refused`. With #151 every `ok` cell is filled. The last `rejected` and
+`fail` cells, of the movement and player families, are covered by
+`movement-refused` and `player-refused` (#152); with them no cell is
+`todo`.
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):

@@ -1,23 +1,23 @@
 verb	family	allow	alias_of	ok	rejected	fail
-board	movement	c		move-ship	todo	todo
-e	movement	cr	east	move-land	todo	todo
-east	movement	cr		move-land	todo	todo
-enter	movement	cr		move-land	todo	todo
-exit	movement	cr		move-land	todo	todo
-ferry	movement	c		move-ship	todo	todo
-fly	movement	c		move-land	todo	todo
-go	movement	cr		move-go	todo	todo
-in	movement	cr	enter	move-land	todo	todo
-move	movement	cr	go	golden	todo	todo
-n	movement	cr	north	move-land	todo	todo
-north	movement	cr		move-land	todo	todo
-out	movement	cr	exit	move-land	todo	todo
-s	movement	cr		move-land	todo	todo
-sail	movement	c		move-ship	todo	todo
-south	movement	cr	s	move-land	todo	todo
-unload	movement	c		move-ship	todo	todo
-w	movement	cr	west	move-land	todo	todo
-west	movement	cr		move-land	todo	todo
+board	movement	c		move-ship	movement-refused	movement-refused
+e	movement	cr	east	move-land	movement-refused	movement-refused
+east	movement	cr		move-land	movement-refused	movement-refused
+enter	movement	cr		move-land	movement-refused	movement-refused
+exit	movement	cr		move-land	movement-refused	movement-refused
+ferry	movement	c		move-ship	movement-refused	movement-refused
+fly	movement	c		move-land	movement-refused	movement-refused
+go	movement	cr		move-go	movement-refused	movement-refused
+in	movement	cr	enter	move-land	movement-refused	movement-refused
+move	movement	cr	go	golden	movement-refused	movement-refused
+n	movement	cr	north	move-land	movement-refused	movement-refused
+north	movement	cr		move-land	movement-refused	movement-refused
+out	movement	cr	exit	move-land	movement-refused	movement-refused
+s	movement	cr		move-land	movement-refused	movement-refused
+sail	movement	c		move-ship	movement-refused	movement-refused
+south	movement	cr	s	move-land	movement-refused	movement-refused
+unload	movement	c		move-ship	movement-refused	movement-refused
+w	movement	cr	west	move-land	movement-refused	movement-refused
+west	movement	cr		move-land	movement-refused	movement-refused
 attack	combat	cr		combat-attack	combat-refused	combat-refused
 behind	combat	cr		combat-attack	combat-refused	n/a
 execute	combat	cr		combat-attack	combat-refused	combat-refused
@@ -93,20 +93,20 @@ xyzzy	exploration	cr		exploration-explore	exploration-refused	n/a
 banner	player	cr		player-settings	player-settings	player-settings
 die	player	c		player-die	player-die	n/a
 flag	player	cr		player-settings	player-settings	player-settings
-format	player	cp		player-settings	todo	n/a
-message	player	cp		player-press	todo	player-press
-name	player	cpr		player-settings	todo	player-settings
-notab	player	cp		player-settings	todo	n/a
-post	player	c		player-press	todo	player-press
-press	player	cp		player-press	todo	player-press
-public	player	cp		player-settings	todo	player-settings
+format	player	cp		player-settings	player-refused	n/a
+message	player	cp		player-press	player-refused	player-press
+name	player	cpr		player-settings	player-refused	player-settings
+notab	player	cp		player-settings	player-refused	n/a
+post	player	c		player-press	player-refused	player-press
+press	player	cp		player-press	player-refused	player-press
+public	player	cp		player-settings	player-refused	player-settings
 quit	player	p		n/a	player-quit	player-quit
-realname	player	cpr		player-settings	todo	player-settings
-rumor	player	cp		player-press	todo	player-press
-split	player	cp		n/a	todo	player-settings
-stop	player	cpr		player-settings	todo	n/a
-times	player	cp		player-press	todo	n/a
-wait	player	crm		golden	todo	todo
+realname	player	cpr		player-settings	player-refused	player-settings
+rumor	player	cp		player-press	player-refused	player-press
+split	player	cp		n/a	player-refused	player-settings
+stop	player	cpr		player-settings	player-refused	n/a
+times	player	cp		player-press	player-refused	n/a
+wait	player	crm		golden	player-refused	player-refused
 credit	gm	m		gm-credit	gm-refused	gm-refused
 emote	gm	m		gm-credit	gm-refused	gm-refused
 relore	gm	m		gm-credit	gm-refused	gm-refused
