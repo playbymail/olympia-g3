@@ -962,6 +962,20 @@ v_use_orb(struct command *c)
 		alert_scry_generic(c->who, where);
 	}
 
+/*
+ *  A plain crystal orb (290) is not unique and has no use count:
+ *  it shatters after one vision, and only one of the stack is spent.
+ *  Issue #221.
+ */
+
+	if (!item_unique(item))
+	{
+		wout(c->who, "After the vision fades, the orb grows "
+				"dark, and shatters.  The orb is gone");
+		consume_item(c->who, item, 1);
+		return TRUE;
+	}
+
 	p = p_item_magic(item);
 
 	p->orb_use_count--;
