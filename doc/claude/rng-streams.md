@@ -41,7 +41,9 @@ tag) and draws from it instead of the global `rnd()`:
 - **pillage** — sibling per-pillage stream, `begin_pillage()`/`prnd()`
   (`combat.c`) plus the mob-name draw in `create_peasant_mob()` (`npc.c`).
 - **economy/market** — `begin_economy()`/`econ_*` (`buy.c`, `seed.c`), keyed leaf
-  draws on `(item, where, purpose)` via `rng_keyed`.
+  draws on `(item, where, purpose)` via `rng_keyed`. The harvest/mine leaves
+  (`econ_harvest`/`econ_mine`) also key on the unit and the day (#132), so every
+  day of a harvest rolls afresh.
 - **npc** — per-location `npcs` stream, `begin_npc()`/`npc_spawn`/`npc_qty`/
   `npc_behavior` (`npc.c`, `savage.c`); absorbs the pillage troop-count residual
   in the shared `do_cookie_npc()`.

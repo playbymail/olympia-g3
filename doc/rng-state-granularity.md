@@ -866,7 +866,8 @@ not-yet-migrated subsystem and stays on the global `rnd()`:
   **economy** residual. **Landed** as endgame **Unit A**: `finish_generic_mine`/
   `d_generic_harvest` now draw from the per-market `econ` stream via the
   `econ_mine`/`econ_harvest` keyed leaves (on `begin_economy(where)`, keyed on
-  `(item, where)`) — see the [Endgame](#endgame--driving-gameplay-rnd-to-zero) and
+  `(item, where)`; since #132 also on the unit and the day, see
+  [Post-#25 keying corrections](#post-25-keying-corrections)) — see the [Endgame](#endgame--driving-gameplay-rnd-to-zero) and
   [rng-endgame-to-zero.md](rng-endgame-to-zero.md). The cosmetic `mage_menial_how`
   flavor pick (no item/where) was **split out to Unit E** (`enty`, actor-keyed) and
   stays on the global `rnd()` for now. All other skills deferrals landed under magic
@@ -1521,6 +1522,23 @@ re-baseline plan first, and kept both golden gates green on both presets.
 - Each step is **byte-neutral on the main manifest** wherever the bare-map
   standard turn does not exercise it (as combat and pillage were), otherwise a
   one-time re-baseline of just that subsystem's tree.
+
+## Post-#25 keying corrections
+
+A keyed leaf returns the same value for the same key. Where a key leaves out
+something that varies in play, such as the day or the acting unit, every repeat of
+the action replays the same roll. The golden trees could not catch this, because
+neither repeats these actions. The cases found since #25 closed, and what was
+decided about each:
+
+- **Harvest and mine (#132): bug, fixed.** `econ_harvest` and `econ_mine` were keyed
+  on `(item, where)` under the per-turn market stream. Every day of a multi-day
+  harvest drew the same yield roll, and every unit harvesting that item there that
+  month shared it. Before #25 Unit A each day rolled `rnd(1,100)` afresh. Both leaves
+  now derive a per-unit child of `economy_rng` (`rng_stream_of(&economy_rng, who,
+  tag)`) and key the draw on `(item, sysclock.day)`. **Spec for the Go port: an
+  independent roll per unit, per day.** Re-baselined `production-harvest` only; the
+  main manifest and every other fixture were unchanged.
 
 ## Migration & re-baseline cost
 

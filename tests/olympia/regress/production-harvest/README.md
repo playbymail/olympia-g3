@@ -27,17 +27,17 @@ Every harvest verb except `collect` re-parses itself as `collect <item>`, and
 the coverage hook counts the verb the player wrote, so `quarry` and `stone`
 each count once.
 
-### The fishing square
+### Daily yield chance
 
-`mallorn`, `catch` and `fish` have a daily yield chance. `econ_harvest` rolls
-it as a keyed leaf on (item, where, turn), so every day of the month draws the
-same roll (`olympia/buy.c`). On Ocean 13351, 13352 and 13452 the roll misses
-this turn, and the fisher would fish all month for nothing. The `ok` cell
-would still count, since only `start` decides it, but 13350's roll hits, so
-the fixture shows a catch.
+`mallorn`, `catch` and `fish` have a daily yield chance. `econ_harvest`
+(`olympia/buy.c`) rolls it for each unit on each day, so a miss one day says
+nothing about the next (#132). In this turn the mallorn cutter misses days 1–3
+and cuts on day 4, the wrangler catches on day 2, and the fisher catches on
+day 3.
 
-Whether the same roll every day is intended is an open question (#132). Until
-it's settled, the fixture treats it as intended.
+Before #132 the roll was keyed on (item, where, turn) only. Every day of the
+month drew the same roll, and on Ocean 13351, 13352 and 13452 the fisher would
+have fished all month for nothing.
 
 ## What `check.sh` asserts
 

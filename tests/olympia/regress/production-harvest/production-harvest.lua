@@ -16,10 +16,9 @@
 --
 -- Every start returns TRUE (ok).
 --
--- mallorn, catch and fish have a daily yield chance, rolled by econ_harvest
--- as a keyed leaf on (item, where, turn): every day of the month draws the
--- same roll. At Ocean [13351], 13352 and 13452 that roll misses this turn,
--- so the fisher would fish all month for nothing; 13350's roll hits.
+-- mallorn, catch and fish have a daily yield chance. econ_harvest rolls it
+-- fresh for each unit on each day (#132), so a miss one day says nothing
+-- about the next.
 
 local oly = require "oly"
 

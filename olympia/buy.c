@@ -222,22 +222,32 @@ econ_expire(int item, int where, int low, int high)
  *    econ_harvest -- produce.c d_generic_harvest per-harvest yield chance
  *    econ_ring    -- art.c new_suffuse_ring kind pick (per-turn faery/cloud restock)
  *
- *  Because these are keyed leaves (not stream-position draws), the mine/harvest
- *  yield is deterministic per (item, where, turn): a multi-day MINE/HARVEST now
- *  draws the same roll each day rather than an independent roll per day. This is
- *  the documented keyed-leaf consequence and is byte-neutral on both golden trees
- *  (neither issues a MINE/HARVEST command). See doc/rng-state-granularity.md.
+ *  The mine and harvest leaves also carry the acting unit and the day (#132).
+ *  Keyed on (item, where) alone, every day of a multi-day MINE/HARVEST drew the
+ *  same roll, and every unit working the same item in the same place shared it:
+ *  a site's luck was fixed for the month. That was a regression from the
+ *  original independent rnd() per day, so the leaf now derives a per-unit child
+ *  of the market stream and keys the draw on (item, day). Each unit gets a
+ *  fresh roll each day, as before #25. See doc/rng-state-granularity.md.
  */
-int
-econ_mine(int item, int where, int low, int high)
+static int
+econ_unit_day(int item, int who, uint32_t tag, int low, int high)
 {
-	return rng_keyed(&economy_rng, item, where, ETAG_MINE, low, high);
+	rng_stream unit = rng_stream_of(&economy_rng, who, tag);
+
+	return rng_keyed(&unit, item, sysclock.day, tag, low, high);
 }
 
 int
-econ_harvest(int item, int where, int low, int high)
+econ_mine(int item, int who, int low, int high)
 {
-	return rng_keyed(&economy_rng, item, where, ETAG_HARVEST, low, high);
+	return econ_unit_day(item, who, ETAG_MINE, low, high);
+}
+
+int
+econ_harvest(int item, int who, int low, int high)
+{
+	return econ_unit_day(item, who, ETAG_HARVEST, low, high);
 }
 
 int
