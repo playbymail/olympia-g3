@@ -2,9 +2,9 @@
 
 > Split out of [CLAUDE.md](../../CLAUDE.md). Read this when you add or change a regress fixture, work a `tests/ultron/backlog.tsv` cell, or touch the Ultron harness (`--coverage`, `--state-export`, the Chaos Goblin, `loop.py`).
 
-## The backlog (ahead of the Go port)
+## The backlog (ahead of the port)
 
-The work left before the Go port is **fixture coverage**. The golden output is the
+The work before the port (Go + Lua or Rust + Rhai, TBD) is **fixture coverage**. The golden output is the
 only spec a port can be checked against, so a verb or outcome without a fixture is
 behavior the port can get wrong without anyone noticing. The to-do list is
 [`tests/ultron/backlog.tsv`](../../tests/ultron/README.md): one row per `cmd_tbl` verb,
@@ -86,7 +86,7 @@ a turn discards). guard-pillage and move-ship were built in bash first and keep
 a Lua copy checked by `check-lua.sh`. If a binding is missing, add it in that
 fixture's PR. A verb that a third fixture's bash build drives through `-i` is
 the signal to add one. Bindings are C engine code under the full `-Werror`
-build, and the Go port may have to reproduce them, so none are added
+build, and the port may have to reproduce them, so none are added
 speculatively (#120). `oly.restart()` exists only so a Lua script can
 reproduce an older multi-process bash build byte for byte; a fixture authored
 in Lua from the start does not call it.
@@ -94,4 +94,5 @@ in Lua from the start does not call it.
 One known gap beyond the two tables: the hook does not see the non-command
 turn phases (NPC/savage movement, weather, upkeep, region spawns, month-end)
 listed in
-[doc/turn-execution-order.md](../turn-execution-order.md).
+[doc/turn-execution-order.md](../turn-execution-order.md). #227 plans a
+`--phase-coverage` dump and a `tests/ultron/phase-backlog.tsv` to close it.
