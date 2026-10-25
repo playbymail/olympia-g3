@@ -1502,7 +1502,7 @@ d_fierce_wind(struct command *c)
 	if (aura == 0)
 		aura = p->storm_str;
 
-	if (p->storm_str > aura)
+	if (aura > p->storm_str)
 		aura = p->storm_str;
 
 	p->storm_str -= aura;

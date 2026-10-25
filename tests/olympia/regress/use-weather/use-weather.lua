@@ -22,8 +22,8 @@
 --
 -- Every start returns TRUE (ok). The windcaller renews its gale, directs it
 -- west to Forest [13449] for month end, makes it buffet the tower and then
--- scribes Fierce wind. The wind spends the whole gale, whatever aura it is
--- given, so it comes last of the gale's uses. The rainmaker strikes the
+-- scribes Fierce wind. The wind spends one strength of the gale, and the
+-- rest moves west at month end. The rainmaker strikes the
 -- victim with lightning, kills two of its peasants with the fog and
 -- dissipates what is left of the rain. The binder binds its squall to the
 -- ship and summons a wind at sea; the seizer takes the haze. The summoner

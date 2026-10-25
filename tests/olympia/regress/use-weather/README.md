@@ -26,10 +26,10 @@ storms, of strength 6, are raised by `oly.storm` (#170).
 Every start returns TRUE:
 
 - The windcaller renews its wind to strength 10, directs it west to Forest
-  [13449] for month end, and has it buffet the tower (10% damaged). The
-  fierce wind spends the whole storm, whatever aura it is given (see
-  below), so the wind dissipates and is used last. The windcaller then
-  spends three weeks scribing Fierce wind, which does not finish this turn.
+  [13449] for month end, and has it buffet the tower for one strength (1%
+  damaged). The wind moves west at month end, at strength 8 after decay.
+  The windcaller then spends three weeks scribing Fierce wind, which does
+  not finish this turn.
 - The rainmaker strikes the victim with lightning (health 99), kills two of
   its peasants with the fog of death and dissipates the rest of the rain,
   for five aura.
@@ -42,11 +42,9 @@ province, so the victim stands in the forest, not in a building or ship.
 `bind_storm` needs a ship in the storm's province, so the binder's ship is
 built at sea.
 
-**Fierce wind spends the whole storm.** `d_fierce_wind` caps the aura it
-spends with `if (p->storm_str > aura) aura = p->storm_str;`. The comparison is
-inverted (`d_lightning` has `aura > p->storm_str`), so any storm stronger than
-the aura asked for is spent in full. This fixture pins the current behavior;
-the fix is #197.
+**Fierce wind spends only the aura it is given** (#197). Before the fix,
+`d_fierce_wind` capped the aura with an inverted comparison, so the wind spent
+the whole storm and dissipated it, and the direct order had nothing to move.
 
 ## What `check.sh` asserts
 
