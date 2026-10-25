@@ -1,7 +1,7 @@
 -- magic-refused.lua -- build the magic-refused scenario (issue #149).
 --
 -- Run by build-scenario.sh against the bare-map fixture; the lib it saves is
--- frozen as scenario.patch. Four factions start in Greyfell (start city 0):
+-- frozen as scenario.patch. Five factions start in Greyfell (start city 0):
 --
 --   bungler     stays in Greyfell and knows no skills: trance, breed and
 --               bind fail (requires the skill; bind has no storm to name)
@@ -13,6 +13,9 @@
 --   pauper      a mage with 1 aura aboard a roundship in Greyfell's port,
 --               owning a fog storm over the forest: bind fails (too little
 --               aura)
+--   drifter     a weather mage with 3 aura aboard a roundship in Greyfell's
+--               port, owning a rain storm over Ocean [13351], the next
+--               province north: bind fails (storm in another province)
 --
 -- Rejected: trance, breed and bind are for nobles (c), so the player
 -- entity's orders are refused.
@@ -21,6 +24,7 @@ local oly = require "oly"
 
 local GREYFELL = 57081			-- start city 0, a port
 local FOREST = 13451			-- Greyfell's province: a rain and a fog cookie
+local OCEAN = 13351			-- north of FOREST, holds a rain cookie
 local PEASANT, OX = 10, 76		-- items
 local BEAST, BREED = 650, 654		-- skills: Beastmastery, Breed beasts
 local MAGIC, WEATHER = 800, 820		-- skills: Magic, Weather magic
@@ -66,6 +70,19 @@ assert(oly.loc(pauper) == ship, "the pauper must be aboard the ship")
 assert(oly.loc(GREYFELL) == FOREST, "Greyfell must be in the forest")
 local shower = oly.storm(FOREST, "fog", 6, pauper, "shower")
 
+-- added last, so the other factions' ships and storms keep their ids
+local drifters = faction(304, "Drifters", "drifter", "Drifter One")
+local drifter = drifters.noble
+for _, sk in ipairs{ MAGIC, WEATHER, BIND } do
+	oly.know(drifter, sk)
+end
+local raft = oly.makeloc(drifter, "roundship", "raft")
+oly.poof(drifter, raft)
+assert(oly.loc(raft) == GREYFELL, "the raft must be built in Greyfell")
+assert(oly.loc(drifter) == raft, "the drifter must be aboard the raft")
+local squall = oly.storm(OCEAN, "rain", 6, drifter, "squall")
+assert(oly.loc(squall) == OCEAN, "the squall must be over the ocean")
+
 oly.order(bungler, "trance")
 oly.order(bungler, "breed " .. PEASANT .. " " .. OX)
 oly.order(bungler, "bind " .. GREYFELL)
@@ -75,6 +92,7 @@ oly.order(breeder, "breed " .. PEASANT .. " 51")	-- no wild horse
 oly.order(breeder, "breed " .. OX .. " " .. OX)
 oly.order(landlubber, "bind " .. gale)
 oly.order(pauper, "bind " .. shower)
+oly.order(drifter, "bind " .. squall)
 for _, o in ipairs{ "trance", "breed " .. PEASANT .. " " .. OX,
 		"bind " .. GREYFELL } do
 	oly.order(bunglers.player, o)
@@ -83,5 +101,6 @@ end
 oly.save("./lib")
 
 print(string.format("built magic-refused: player=%d bungler=%d breeder=%d "
-	.. "landlubber=%d pauper=%d ship=%d gale=%d shower=%d", bunglers.player,
-	bungler, breeder, landlubber, pauper, ship, gale, shower))
+	.. "landlubber=%d pauper=%d ship=%d gale=%d shower=%d drifter=%d "
+	.. "raft=%d squall=%d", bunglers.player, bungler, breeder, landlubber,
+	pauper, ship, gale, shower, drifter, raft, squall))

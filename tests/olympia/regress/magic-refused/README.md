@@ -5,7 +5,7 @@ Pins the `fail` and `rejected` outcomes of `trance`, `breed` and `bind`
 
 ## Scenario
 
-Four factions start in Greyfell (57081), a safe haven:
+Five factions start in Greyfell (57081), a safe haven:
 
 | Faction | Noble | Set up |
 |---|---|---|
@@ -13,6 +13,7 @@ Four factions start in Greyfell (57081), a safe haven:
 | 301 Breeders | Breeder One [8651] | stays in Greyfell; knows Beastmastery [650] and Breed beasts [654]; one ox [76] |
 | 302 Landlubbers | Landlubber One [8159] | stays in Greyfell; knows Magic, Weather magic, Bind storm (3 aura); owns Rain [139904] over Forest [13451] |
 | 303 Paupers | Pauper One [7012] | knows only Bind storm (1 aura); aboard Roundship [73052] in Greyfell; owns Fog [143336] over Forest [13451] |
+| 304 Drifters | Drifter One [4940] | knows Magic, Weather magic, Bind storm (3 aura); aboard Roundship [65623] in Greyfell; owns Rain [128516] over Ocean [13351] |
 
 | Unit | Order | Day | Fails with |
 |---|---|---|---|
@@ -24,18 +25,20 @@ Four factions start in Greyfell (57081), a safe haven:
 | breeder | `breed 10 51` | 1 | Don't have any [51]. |
 | breeder | `breed 76 76` | 1 | Don't have two [76]. |
 | landlubber | `bind 139904` | 1 | Landlubber One [8159] must be on a ship to bind the storm to. |
-| pauper | `bind 143336` | 2 | Three aura required, current level is one. |
+| pauper | `bind 143336` | 1 | Three aura required, current level is one. |
+| drifter | `bind 128516` | 2 | Storm must be in the same province as the ship it is to be bound to. |
 
-`oly.storm` (#170) raises both storms at build time over Greyfell's
-forest, which holds one rain cookie and one fog cookie, and records each
-mage as its storm's summoner. `bind` checks the storm before the ship and
-the ship before the aura, so each mage reaches a different fail.
+`oly.storm` (#170) raises the storms at build time and records each mage
+as its storm's summoner. The landlubber's and the pauper's storms are over
+Greyfell's forest, which holds one rain cookie and one fog cookie. The
+drifter's storm is over Ocean [13351], the next province north. The
+drifter's ship is in port, so it counts as being in the forest. `bind`
+checks the storm, then the ship, then the province, then the aura, so each
+mage reaches a different fail. The drifter has the 3 aura that bind costs,
+so the province is the only check it fails.
 
 Rejected: `trance`, `breed` and `bind` are for nobles (`c`), so the
 Bunglers' player entity orders all three, and `check_allow()` refuses each.
-
-The one `bind` fail not covered is a storm in another province than the
-ship (#171).
 
 ## What `check.sh` asserts
 
