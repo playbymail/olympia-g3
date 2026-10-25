@@ -351,7 +351,7 @@ v_hinder_med(struct command *c)
 		return FALSE;
 
 	wout(c->who, "Attempt to hinder attempts at meditation by %s.",
-				box_name(c->who));
+				box_code(target));
 
 	return TRUE;
 }
