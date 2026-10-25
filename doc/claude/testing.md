@@ -21,7 +21,7 @@ them for engine changes), on `debug` and with `OLYMPIA_PRESET=asan-ubsan`:
 
 | Gate | Pins |
 |---|---|
-| `tests/olympia/regress/*/check.sh` | one fixture each: guard-pillage (combat/pillage), inventory-give, inventory-refused (inventory), move-go, move-land, move-ship (movement), player-* (player), production-harvest, production-refused (production), trade-routes (#46 buyer secret); `--update` re-baselines |
+| `tests/olympia/regress/*/check.sh` | one fixture each: guard-pillage (combat/pillage), combat-stack-flee (#212 losing stack flees together), inventory-give, inventory-refused (inventory), move-go, move-land, move-ship (movement), player-* (player), production-harvest, production-refused (production), trade-routes (#46 buyer secret); `--update` re-baselines |
 | `tests/olympia/regress/{guard-pillage,move-ship}/check-lua.sh` | the same scenario authored in Lua (`olyscript-g3`) must match the same EXPECT files |
 | `tests/mapgen/regress/secret-sea-route/check.sh` | the mapgen check (`tests/mapgen/golden` is a stale 32-bit baseline, not a gate) |
 | `tests/island/regress/ocean-glyphs/check.sh` | the island generator |

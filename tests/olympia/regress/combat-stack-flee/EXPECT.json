@@ -1,0 +1,28 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Raiders",
+   "units": [
+     {"id": 4126, "name": "Raider One", "where": 10113, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 1}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 12, "name": "soldier", "qty": 103}],
+      "skills": []}],
+   "locations": [
+     {"id": 10113, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 10113,
+      "exits": [{"direction": "north", "destination": 10013, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 10114, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 10213, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 10112, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 62791, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Raider One", "faction": 300}, {"id": 8159, "name": "Follower One", "faction": 302}, {"id": 8651, "name": "Victim One", "faction": 301}]}]},
+  {"id": 301, "name": "Victims",
+   "units": [
+     {"id": 8651, "name": "Victim One", "where": 10113, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 114}, {"id": 10, "name": "peasant", "qty": 86}],
+      "skills": []}],
+   "locations": [
+     {"id": 10113, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 10113,
+      "exits": [{"direction": "north", "destination": 10013, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 10114, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 10213, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 10112, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 62791, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Raider One", "faction": 300}, {"id": 8159, "name": "Follower One", "faction": 302}, {"id": 8651, "name": "Victim One", "faction": 301}]}]},
+  {"id": 302, "name": "Followers",
+   "units": [
+     {"id": 8159, "name": "Follower One", "where": 10113, "stacked_under": 8651,
+      "items": [{"id": 1, "name": "gold", "qty": 191}, {"id": 10, "name": "peasant", "qty": 9}],
+      "skills": []}],
+   "locations": [
+     {"id": 10113, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 10113,
+      "exits": [{"direction": "north", "destination": 10013, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 10114, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 10213, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 10112, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 62791, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Raider One", "faction": 300}, {"id": 8159, "name": "Follower One", "faction": 302}, {"id": 8651, "name": "Victim One", "faction": 301}]}]}]}

@@ -1862,7 +1862,7 @@ demote_units(int winner, fights_list l)
 		if (l[i]->kind != FK_noble ||
 		   l[i]->prisoner ||
 		   !alive(l[i]->unit) ||
-		   !stack_leader(l[i]->unit) == l[i]->unit)
+		   stack_leader(l[i]->unit) != l[i]->unit)
 		{
 			continue;
 		}
