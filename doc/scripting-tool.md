@@ -703,6 +703,14 @@ makes a savage, so it is a path (B) binding like `oly.mob`. It errors when
 `keep_savage`, whose summoned savage would arrive only on day 7 with an id
 minted in the turn.
 
+**Since landed (#196):** `oly.sick(who)` marks the character `who` sick, as
+`add_char_damage` does when a wound makes it fall ill, and leaves its health
+as it is. Below full health, a sick character loses health each month until
+it recovers or is cured. It errors when `who` isn't a character. No GM verb
+makes a character sick, so it is a path (B) binding like `oly.mob`.
+`use-basic` uses it for the patient that `heal` must have: `v_heal` refuses a
+target that is not sick.
+
 **Explicitly deferred:** `credit`, the full query set
 (`here`/`all`/`chars_here`/`knows`), the declarative format, RNG bindings, and
 any production-engine integration. Path (B) direct-handler calls are deferred

@@ -753,6 +753,27 @@ l_kill(lua_State *L)
 	return 1;
 }
 
+/*
+ *  oly.sick(who)  -- mark the character who sick.
+ *
+ *  Sets the sick flag that add_char_damage() sets when a wound makes a
+ *  character fall ill, leaving its health as it is. Below full health, a
+ *  sick character loses health each month until it recovers or is cured,
+ *  and heal works only on one. No GM verb makes a character sick, so this
+ *  is a path (B) binding, like mob.
+ */
+static int
+l_sick(lua_State *L)
+{
+	int who = (int) luaL_checkinteger(L, 1);
+
+	if (!valid_box(who) || kind(who) != T_char)
+		return luaL_error(L, "oly.sick: %d not a character", who);
+
+	p_char(who)->sick = TRUE;
+	return 0;
+}
+
 /* oly.guard(who, on)  -- the `guard` order set via v_guard. */
 static int
 l_guard(lua_State *L)
@@ -953,6 +974,7 @@ static const luaL_Reg oly_funcs[] = {
 	{ "savage",		l_savage },
 	{ "seen",		l_seen },
 	{ "kill",		l_kill },
+	{ "sick",		l_sick },
 	{ "guard",		l_guard },
 	{ "order",		l_order },
 	{ "save",		l_save },

@@ -1,0 +1,28 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Adepts",
+   "units": [
+     {"id": 4126, "name": "Adept One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 84, "name": "blank scroll", "qty": 1}],
+      "skills": [{"id": 800, "name": "Magic"}, {"id": 801, "name": "Meditate"}, {"id": 803, "name": "Appear common"}, {"id": 804, "name": "View current aura level of others"}, {"id": 805, "name": "Heal"}, {"id": 806, "name": "Modern magic script"}, {"id": 807, "name": "Reveal abilities of another mage"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Adept One", "faction": 300}, {"id": 8159, "name": "Shrouder One", "faction": 302}, {"id": 8651, "name": "Patient One", "faction": 301}]}]},
+  {"id": 301, "name": "Patients",
+   "units": [
+     {"id": 8651, "name": "Patient One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 800, "name": "Magic"}, {"id": 801, "name": "Meditate"}, {"id": 808, "name": "Tap health for aura"}, {"id": 811, "name": "Detect ability scry"}, {"id": 813, "name": "Advanced meditation"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Adept One", "faction": 300}, {"id": 8159, "name": "Shrouder One", "faction": 302}, {"id": 8651, "name": "Patient One", "faction": 301}]}]},
+  {"id": 302, "name": "Shrouders",
+   "units": [
+     {"id": 8159, "name": "Shrouder One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 225}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 800, "name": "Magic"}, {"id": 802, "name": "Perform common tasks for gold"}, {"id": 809, "name": "Shroud abilities from scry"}, {"id": 812, "name": "Dispel ability shroud"}, {"id": 814, "name": "Hinder meditation"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Adept One", "faction": 300}, {"id": 8159, "name": "Shrouder One", "faction": 302}, {"id": 8651, "name": "Patient One", "faction": 301}]}]}]}

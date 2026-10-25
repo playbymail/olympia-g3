@@ -49,7 +49,9 @@ covered by `use-crafts` and `use-crafts-refused`; group 2 (combat, stealth,
 persuasion, alchemy, forestry, religion; #192) by `use-<school>` and
 `use-<school>-refused` for each (combat has no refused fixture: none of its
 starts can fail); group 3 (beastmastery; #194) by `use-beast` and
-`use-beast-refused`.
+`use-beast-refused`; group 4 (basic magic, weather, scrying; #196) by
+`use-basic`, `use-weather` and `use-scry` and a `-refused` fixture for
+each.
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):

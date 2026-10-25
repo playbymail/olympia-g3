@@ -1,0 +1,804 @@
+world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
+--- a/lib/fact/200
++++ b/lib/fact/200
+@@ -3,8 +3,8 @@
+ PL
+  pw crusty7
+ CO
+- li save
+- ar 0 0 0 0 0 0 0 0
+- cs 2
++ li be 4126
++ ar 4126 0 0 0 0 0 0 0
++ st 1
+  pr 1
+ 
+--- /dev/null
++++ b/lib/fact/300
+@@ -0,0 +1,48 @@
++300 player pl_regular
++na Windcallers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player300@example.com
++ pw OYCpEMJQ
++ np 18
++ fs 198
++ ft 1
++ kn 13450 
++ un 4126 
++ uf 1375 3743 8127 8535 2769 
++
++4126 char 0
++na Windcaller One
++il	1 200 \
++	10 25 \
++	84 1
++LI
++ wh 13450
++CH
++ lo 300
++ he 100
++ lk 2
++ lr 2
++ sl	820 2 0 0 0 \
++	821 2 0 0 0 \
++	823 2 0 0 0 \
++	827 2 0 0 0 \
++	829 2 0 0 0
++ bp 50
++ at 80
++ df 80
++CM
++ im 1
++ ma 5
++ ca 5
++ kw 1
++CO
++ li be 8533
++ ar 8533 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/301
+@@ -0,0 +1,46 @@
++301 player pl_regular
++na Rainmakers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player301@example.com
++ pw j2tStUJc
++ np 18
++ fs 198
++ ft 1
++ kn 13550 
++ un 8533 
++ uf 5691 9254 3229 8159 7355 
++
++8533 char 0
++na Rainmaker One
++il	1 200 \
++	10 25
++LI
++ wh 13550
++CH
++ lo 301
++ he 100
++ lk 2
++ lr 2
++ sl	820 2 0 0 0 \
++	831 2 0 0 0 \
++	833 2 0 0 0 \
++	828 2 0 0 0
++ bp 50
++ at 80
++ df 80
++CM
++ im 1
++ ma 4
++ ca 4
++ kw 1
++CO
++ li be 6523
++ ar 6523 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/302
+@@ -0,0 +1,37 @@
++302 player pl_regular
++na Victims
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player302@example.com
++ pw lXS3fLN8
++ np 18
++ fs 198
++ ft 1
++ kn 13550 
++ un 6523 
++ uf 3056 7012 7719 6133 9236 
++
++6523 char 0
++na Victim One
++il	1 200 \
++	10 35
++LI
++ wh 13550
++CH
++ lo 302
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 5303
++ ar 5303 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/303
+@@ -0,0 +1,48 @@
++303 player pl_regular
++na Binders
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player303@example.com
++ pw RmYOD3ZC
++ np 18
++ fs 198
++ ft 1
++ kn 13350 61618 
++ un 5303 
++ uf 8867 6947 6895 9463 4940 
++
++5303 char 0
++na Binder One
++il	1 200 \
++	10 25
++LI
++ wh 61618
++CH
++ lo 303
++ he 100
++ lk 2
++ lr 2
++ sl	820 2 0 0 0 \
++	822 2 0 0 0 \
++	824 2 0 0 0 \
++	825 2 0 0 0 \
++	826 2 0 0 0 \
++	821 2 0 0 0
++ bp 50
++ at 80
++ df 80
++CM
++ im 1
++ ma 6
++ ca 6
++ kw 1
++CO
++ li be 8731
++ ar 8731 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/304
+@@ -0,0 +1,47 @@
++304 player pl_regular
++na Seizers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player304@example.com
++ pw h10b4I52
++ np 18
++ fs 198
++ ft 1
++ kn 61618 
++ un 8731 
++ uf 5648 7620 6658 6458 3726 
++
++8731 char 0
++na Seizer One
++il	1 200 \
++	10 25
++LI
++ wh 61618
++CH
++ lo 304
++ he 100
++ lk 2
++ lr 2
++ sl	820 2 0 0 0 \
++	832 2 0 0 0 \
++	824 2 0 0 0 \
++	825 2 0 0 0 \
++	826 2 0 0 0
++ bp 50
++ at 80
++ df 80
++CM
++ im 1
++ ma 5
++ ca 5
++ kw 1
++CO
++ li be 8761
++ ar 8761 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/305
+@@ -0,0 +1,49 @@
++305 player pl_regular
++na Summoners
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player305@example.com
++ pw wjCDbWHh
++ np 18
++ fs 198
++ ft 1
++ kn 13449 
++ un 8761 
++ uf 1348 4977 6287 7223 1016 
++
++8761 char 0
++na Summoner One
++il	1 200 \
++	10 25
++LI
++ wh 13449
++CH
++ lo 305
++ he 100
++ lk 2
++ lr 2
++ sl	820 2 0 0 0 \
++	825 2 0 0 0 \
++	826 2 0 0 0 \
++	824 2 0 0 0 \
++	821 2 0 0 0 \
++	829 2 0 0 0
++ bp 50
++ at 80
++ df 80
++CM
++ im 1
++ ma 6
++ ca 6
++ kw 1
++CO
++ li save
++ ar 0 0 0 0 0 0 0 0
++ cs 2
++ st 1
++ pr 1
++
+--- a/lib/loc
++++ b/lib/loc
+@@ -43505,12 +43505,10 @@
+ 13350 loc ocean
+ il	87 50 \
+ 	59 30 \
+-	274 1 \
+-	275 1 \
+-	276 1
++	275 1
+ LI
+  wh 58761
+- hl 64865 
++ hl 64865 61618 81927 128367 
+ LO
+  pd 13250 13351 13450 13349 
+  dg 2
+@@ -44814,7 +44812,7 @@
+ 	274 1
+ LI
+  wh 58762
+- hl 74717 73119 74976 
++ hl 74717 73119 74976 8761 
+ LO
+  pd 13349 13450 13549 13448 
+  dg 4
+@@ -44825,11 +44823,10 @@
+ 	59 30 \
+ 	277 5 \
+ 	96 100 \
+-	101 1 \
+-	275 1
++	101 1
+ LI
+  wh 58762
+- hl 73045 74516 
++ hl 73045 74516 4126 61319 99374 
+ LO
+  pd 13350 13451 13550 13449 
+  dg 3
+@@ -46132,12 +46129,10 @@
+ il	77 30 \
+ 	10 10 \
+ 	96 50 \
+-	101 1 \
+-	276 1 \
+-	274 1
++	101 1
+ LI
+  wh 58762
+- hl 77310 
++ hl 77310 8533 144746 84087 6523 
+ LO
+  pd 13450 13551 13650 13549 
+  dg 4
+@@ -281964,6 +281959,10 @@
+ LO
+  hi 1
+ 
++61319 loc tower
++LI
++ wh 13450
++
+ 61326 loc graveyard
+ il	31 15 \
+ 	273 1
+--- a/lib/master
++++ b/lib/master
+@@ -96,6 +96,12 @@
+ 293	4.0	item		faery
+ 294	4.0	item		petty thief cookie
+ 295	4.0	item		hound
++300	1.49	fact/300	Windcallers
++301	1.49	fact/301	Rainmakers
++302	1.49	fact/302	Victims
++303	1.49	fact/303	Binders
++304	1.49	fact/304	Seizers
++305	1.49	fact/305	Summoners
+ 401	4.69	item		Imperial Throne
+ 402	4.69	item		Crown of Prosperity
+ 403	4.69	item		Skull of Bastrestric
+@@ -253,6 +259,7 @@
+ 921	5.0	skill		Trance
+ 922	5.0	skill		Teleport items
+ 1009	2.64	fact/207	
++1016	12.0	unform		
+ 1023	2.64	fact/207	
+ 1054	2.64	fact/207	
+ 1061	2.64	fact/207	
+@@ -275,6 +282,8 @@
+ 1306	2.64	fact/207	
+ 1321	2.64	fact/207	
+ 1335	2.64	fact/207	
++1348	12.0	unform		
++1375	12.0	unform		
+ 1383	2.64	fact/207	
+ 1416	2.64	fact/207	
+ 1501	2.64	fact/207	
+@@ -338,6 +347,7 @@
+ 2724	2.64	fact/207	
+ 2743	2.64	fact/207	
+ 2763	2.64	fact/207	
++2769	12.0	unform		
+ 2774	2.64	fact/207	
+ 2788	2.64	fact/207	
+ 2811	2.64	fact/207	
+@@ -354,6 +364,7 @@
+ 3020	2.64	fact/207	
+ 3021	2.64	fact/207	
+ 3030	2.64	fact/207	
++3056	12.0	unform		
+ 3078	2.64	fact/207	
+ 3082	2.64	fact/207	
+ 3088	2.64	fact/207	
+@@ -366,6 +377,7 @@
+ 3175	2.64	fact/207	
+ 3199	2.64	fact/207	
+ 3228	2.64	fact/207	
++3229	12.0	unform		
+ 3230	2.64	fact/207	
+ 3235	2.64	fact/207	
+ 3252	2.64	fact/207	
+@@ -384,6 +396,8 @@
+ 3596	2.64	fact/207	
+ 3597	2.64	fact/207	
+ 3711	2.64	fact/207	
++3726	12.0	unform		
++3743	12.0	unform		
+ 3754	2.64	fact/207	
+ 3780	2.64	fact/207	
+ 3791	2.64	fact/207	
+@@ -405,6 +419,7 @@
+ 4047	2.64	fact/207	
+ 4069	2.64	fact/207	
+ 4104	2.64	fact/207	
++4126	2.0	fact/300	Windcaller One
+ 4139	2.64	fact/207	
+ 4152	2.64	fact/207	
+ 4165	2.64	fact/207	
+@@ -442,8 +457,10 @@
+ 4820	2.64	fact/207	
+ 4851	2.64	fact/207	
+ 4924	2.64	fact/207	
++4940	12.0	unform		
+ 4945	2.64	fact/207	
+ 4950	2.64	fact/207	
++4977	12.0	unform		
+ 4989	2.64	fact/207	
+ 5007	2.64	fact/207	
+ 5039	2.64	fact/207	
+@@ -461,6 +478,7 @@
+ 5289	2.64	fact/207	
+ 5292	2.64	fact/207	
+ 5295	2.64	fact/207	
++5303	2.0	fact/303	Binder One
+ 5322	2.64	fact/207	
+ 5340	2.64	fact/207	
+ 5352	2.64	fact/207	
+@@ -473,9 +491,11 @@
+ 5496	2.64	fact/207	
+ 5504	2.64	fact/207	
+ 5611	2.64	fact/207	
++5648	12.0	unform		
+ 5669	2.64	fact/207	
+ 5676	2.64	fact/207	
+ 5688	2.64	fact/207	
++5691	12.0	unform		
+ 5697	2.64	fact/207	
+ 5728	2.64	fact/207	
+ 5730	2.64	fact/207	
+@@ -500,6 +520,7 @@
+ 6082	2.64	fact/207	
+ 6094	2.64	fact/207	
+ 6103	2.64	fact/207	
++6133	12.0	unform		
+ 6169	2.64	fact/207	
+ 6170	2.64	fact/207	
+ 6198	2.64	fact/207	
+@@ -507,6 +528,7 @@
+ 6256	2.64	fact/207	
+ 6266	2.64	fact/207	
+ 6282	2.64	fact/207	
++6287	12.0	unform		
+ 6290	2.64	fact/207	
+ 6307	2.64	fact/207	
+ 6310	2.64	fact/207	
+@@ -515,7 +537,9 @@
+ 6376	2.64	fact/207	
+ 6440	2.64	fact/207	
+ 6450	2.64	fact/207	
++6458	12.0	unform		
+ 6500	2.64	fact/207	
++6523	2.0	fact/302	Victim One
+ 6527	2.64	fact/207	
+ 6558	2.64	fact/207	
+ 6581	2.64	fact/207	
+@@ -523,6 +547,7 @@
+ 6613	2.64	fact/207	
+ 6643	2.64	fact/207	
+ 6648	2.64	fact/207	
++6658	12.0	unform		
+ 6672	2.64	fact/207	
+ 6675	2.64	fact/207	
+ 6679	2.64	fact/207	
+@@ -534,13 +559,16 @@
+ 6812	2.64	fact/207	
+ 6844	2.64	fact/207	
+ 6894	2.64	fact/207	
++6895	12.0	unform		
+ 6903	2.64	fact/207	
+ 6946	2.64	fact/207	
++6947	12.0	unform		
+ 6951	2.64	fact/207	
+ 6955	2.64	fact/207	
+ 6966	2.64	fact/207	
+ 6993	2.64	fact/207	
+ 6999	2.64	fact/207	
++7012	12.0	unform		
+ 7017	2.64	fact/207	
+ 7021	2.64	fact/207	
+ 7046	2.64	fact/207	
+@@ -556,11 +584,13 @@
+ 7151	2.64	fact/207	
+ 7171	2.64	fact/207	
+ 7222	2.64	fact/207	
++7223	12.0	unform		
+ 7238	2.64	fact/207	
+ 7263	2.64	fact/207	
+ 7290	2.64	fact/207	
+ 7300	2.64	fact/207	
+ 7341	2.64	fact/207	
++7355	12.0	unform		
+ 7374	2.64	fact/207	
+ 7388	2.64	fact/207	
+ 7401	2.64	fact/207	
+@@ -570,11 +600,13 @@
+ 7518	2.64	fact/207	
+ 7577	2.64	fact/207	
+ 7585	2.64	fact/207	
++7620	12.0	unform		
+ 7628	2.64	fact/207	
+ 7637	2.64	fact/207	
+ 7665	2.64	fact/207	
+ 7700	2.64	fact/207	
+ 7710	2.64	fact/207	
++7719	12.0	unform		
+ 7747	2.64	fact/207	
+ 7757	2.64	fact/207	
+ 7766	2.64	fact/207	
+@@ -597,8 +629,10 @@
+ 8093	2.64	fact/207	
+ 8105	2.64	fact/207	
+ 8122	2.64	fact/207	
++8127	12.0	unform		
+ 8151	2.64	fact/207	
+ 8155	2.64	fact/207	
++8159	12.0	unform		
+ 8177	2.64	fact/207	
+ 8178	2.64	fact/207	
+ 8182	2.64	fact/207	
+@@ -617,15 +651,20 @@
+ 8494	2.64	fact/207	
+ 8499	2.64	fact/207	
+ 8508	2.64	fact/207	
++8533	2.0	fact/301	Rainmaker One
++8535	12.0	unform		
+ 8575	2.64	fact/207	
+ 8604	2.64	fact/207	
+ 8612	2.64	fact/207	
+ 8635	2.64	fact/207	
+ 8650	2.64	fact/207	
+ 8730	2.64	fact/207	
++8731	2.0	fact/304	Seizer One
++8761	2.0	fact/305	Summoner One
+ 8780	2.64	fact/207	
+ 8839	2.64	fact/207	
+ 8848	2.64	fact/207	
++8867	12.0	unform		
+ 8905	2.64	fact/207	
+ 8910	2.64	fact/207	
+ 8935	2.64	fact/207	
+@@ -646,7 +685,9 @@
+ 9159	2.64	fact/207	
+ 9185	2.64	fact/207	
+ 9205	2.64	fact/207	
++9236	12.0	unform		
+ 9248	2.64	fact/207	
++9254	12.0	unform		
+ 9258	2.64	fact/207	
+ 9276	2.64	fact/207	
+ 9294	2.64	fact/207	
+@@ -657,6 +698,7 @@
+ 9432	2.64	fact/207	
+ 9433	2.64	fact/207	
+ 9453	2.64	fact/207	
++9463	12.0	unform		
+ 9484	2.64	fact/207	
+ 9515	2.64	fact/207	
+ 9552	2.64	fact/207	
+@@ -28028,6 +28070,7 @@
+ 61316	3.16	loc		Place of the Dead
+ 61317	3.16	loc		
+ 61318	3.13	loc		
++61319	3.46	loc		
+ 61326	3.16	loc		
+ 61327	3.9	loc		
+ 61331	3.26	loc		
+@@ -28159,6 +28202,7 @@
+ 61615	3.21	loc		
+ 61616	6.0	gate		
+ 61617	3.16	loc		
++61618	9.31	ship		
+ 61619	3.22	loc		Cursed Pits
+ 61620	3.18	loc		Old battlefield
+ 61622	3.9	loc		
+@@ -36997,3 +37041,8 @@
+ 78915	7.0	misc	Secret pass
+ 78962	7.0	misc	Secret pass
+ 78982	7.0	misc	Old road
++81927	11.59	misc	
++84087	11.57	misc	
++99374	11.58	misc	
++128367	11.57	misc	
++144746	11.59	misc	
+--- a/lib/misc
++++ b/lib/misc
+@@ -22,3 +22,47 @@
+ 
+ 942 lore 0
+ 
++81927 storm rain
++LI
++ wh 13350
++MI
++ sb 5303
++ ss 6
++ mh 13350
++ co 276
++
++84087 storm fog
++LI
++ wh 13550
++MI
++ sb 8533
++ ss 6
++ mh 13550
++ co 274
++
++99374 storm wind
++LI
++ wh 13450
++MI
++ sb 4126
++ ss 6
++ mh 13450
++ co 275
++
++128367 storm fog
++LI
++ wh 13350
++MI
++ ss 6
++ mh 13350
++ co 274
++
++144746 storm rain
++LI
++ wh 13550
++MI
++ sb 8533
++ ss 6
++ mh 13550
++ co 276
++
+--- /dev/null
++++ b/lib/orders/300
+@@ -0,0 +1,4 @@
++4126:use 829 99374 2
++4126:use 827 99374 13449
++4126:use 821 99374 61319 1
++4126:use 823 821
+--- /dev/null
++++ b/lib/orders/301
+@@ -0,0 +1,3 @@
++8533:use 831 144746 6523 1
++8533:use 833 84087 6523 1
++8533:use 828 144746
+--- /dev/null
++++ b/lib/orders/303
+@@ -0,0 +1,2 @@
++5303:use 822 81927
++5303:use 824
+--- /dev/null
++++ b/lib/orders/304
+@@ -0,0 +1 @@
++8731:use 832 128367
+--- /dev/null
++++ b/lib/orders/305
+@@ -0,0 +1,2 @@
++8761:use 825
++8761:use 826
+--- a/lib/ship
++++ b/lib/ship
+@@ -0,0 +1,5 @@
++61618 ship roundship
++LI
++ wh 13350
++ hl 5303 8731 
++
+--- a/lib/times_0
++++ b/lib/times_0
+@@ -1,14 +1,15 @@
+-From: skrenta@pbm.com (Rich skrenta)
+-Subject: Olympia G3 - The Olympia Times - Issue 0
++From: olympia@pbm.com (Olympia PBEM)
++Subject: Olympia Times g2-0
++To: totimes@pbm.com
+ 
+    +----------------------------------------------------------------------+
+-   | The Olympia Times                                Fierce winds year 1 |
+-   | October 24, 2026                                                     |
++   | The Olympia Times                                         issue g2-0 |
++   | August 31, 1996                                                      |
+    |                                                                      |
+-   | turn 0, 0 players                     skrenta@pbm.com (Rich skrenta) |
++   | turn 0  0 players                      http://www.pbm.com/oly/times/ |
+    +----------------------------------------------------------------------+
+ 
+-     Questions, comments, to play: http://olympia.v-labs.be/g3
++               Questions, comments, to play:  info@pbm.com
+ 
+                              Olympia PBEM
+ 
+--- a/lib/unform
++++ b/lib/unform
+@@ -0,0 +1,60 @@
++1016 unform 0
++
++1348 unform 0
++
++1375 unform 0
++
++2769 unform 0
++
++3056 unform 0
++
++3229 unform 0
++
++3726 unform 0
++
++3743 unform 0
++
++4940 unform 0
++
++4977 unform 0
++
++5648 unform 0
++
++5691 unform 0
++
++6133 unform 0
++
++6287 unform 0
++
++6458 unform 0
++
++6658 unform 0
++
++6895 unform 0
++
++6947 unform 0
++
++7012 unform 0
++
++7223 unform 0
++
++7355 unform 0
++
++7620 unform 0
++
++7719 unform 0
++
++8127 unform 0
++
++8159 unform 0
++
++8535 unform 0
++
++8867 unform 0
++
++9236 unform 0
++
++9254 unform 0
++
++9463 unform 0
++

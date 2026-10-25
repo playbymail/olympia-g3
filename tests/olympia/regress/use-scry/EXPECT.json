@@ -1,0 +1,28 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Barriers",
+   "units": [
+     {"id": 4126, "name": "Barrier One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 84, "name": "blank scroll", "qty": 1}],
+      "skills": [{"id": 840, "name": "Scrying"}, {"id": 841, "name": "Scry location"}, {"id": 842, "name": "Ciphered writing of Areth-Pirn"}, {"id": 845, "name": "Create magical barrier"}, {"id": 846, "name": "Remove magical barrier"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Barrier One", "faction": 300}, {"id": 8159, "name": "Projector One", "faction": 302}, {"id": 8651, "name": "Shrouder One", "faction": 301}]}]},
+  {"id": 301, "name": "Shrouders",
+   "units": [
+     {"id": 8651, "name": "Shrouder One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 840, "name": "Scrying"}, {"id": 841, "name": "Scry location"}, {"id": 842, "name": "Ciphered writing of Areth-Pirn"}, {"id": 843, "name": "Shroud location from magical scry"}, {"id": 844, "name": "Dispel location shroud"}, {"id": 847, "name": "Locate character"}, {"id": 848, "name": "Detect location scry"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Barrier One", "faction": 300}, {"id": 8159, "name": "Projector One", "faction": 302}, {"id": 8651, "name": "Shrouder One", "faction": 301}]}]},
+  {"id": 302, "name": "Projectors",
+   "units": [
+     {"id": 8159, "name": "Projector One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 77326, "name": "Magic potion", "qty": 1}],
+      "skills": [{"id": 840, "name": "Scrying"}, {"id": 841, "name": "Scry location"}, {"id": 845, "name": "Create magical barrier"}, {"id": 849, "name": "Farcasting"}, {"id": 851, "name": "Save farcast state"}, {"id": 852, "name": "Banish undead"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Barrier One", "faction": 300}, {"id": 8159, "name": "Projector One", "faction": 302}, {"id": 8651, "name": "Shrouder One", "faction": 301}]}]}]}
