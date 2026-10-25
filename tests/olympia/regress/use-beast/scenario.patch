@@ -1,4 +1,26 @@
 world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
+--- a/lib/fact/100
++++ b/lib/fact/100
+@@ -2,4 +2,19 @@
+ na Independent player
+ PL
+  pw crusty7
++ un 101396 
+ 
++101396 char ni
++il	98 1 \
++	32 6
++LI
++ wh 13450
++CH
++ ni 32
++ lo 100
++ he 100
++ lk 5
++ lr 3
++ at 60
++ df 60
++
 --- a/lib/fact/200
 +++ b/lib/fact/200
 @@ -3,8 +3,8 @@
@@ -153,7 +175,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  LI
   wh 58762
 - hl 73045 74516 
-+ hl 73045 74516 4126 8651 
++ hl 73045 74516 4126 8651 101396 
  LO
   pd 13350 13451 13550 13449 
   dg 3
@@ -304,6 +326,14 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  9676	2.64	fact/207	
  9685	2.64	fact/207	
  9714	2.64	fact/207	
+@@ -36571,6 +36592,7 @@
+ 78991	3.21	loc		
+ 78992	3.13	loc		
+ 78999	3.15	loc		
++101396	2.54	fact/100	
+ 931	13.0	misc	
+ 932	13.0	misc	
+ 933	13.0	misc	
 --- /dev/null
 +++ b/lib/orders/300
 @@ -0,0 +1,5 @@
@@ -314,10 +344,9 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 +4126:use 657 1
 --- /dev/null
 +++ b/lib/orders/301
-@@ -0,0 +1,3 @@
+@@ -0,0 +1,2 @@
 +8651:use 658
-+8651:wait time 7
-+8651:use 659 91968
++8651:use 659 101396
 --- /dev/null
 +++ b/lib/orders/302
 @@ -0,0 +1 @@

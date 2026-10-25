@@ -6,8 +6,8 @@
 # Extracts the frozen scenario (scenario.patch over the shared
 # tests/olympia/fixtures/world.tgz) and runs one turn. A wrangler with
 # wild horses on a plain uses bird_spy, breed_beasts, catch_horse,
-# train_wild and train_warmount; a drummer summons a savage and keeps it;
-# a third noble breeds a hound. Every use starts. See use-beast.lua and
+# train_wild and train_warmount; a drummer summons savages and keeps a
+# bonded band beside it; a third noble breeds a hound. Every use starts. See use-beast.lua and
 # README.md.
 #
 # Three checks, all required:

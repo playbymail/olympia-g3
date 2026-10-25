@@ -27,7 +27,7 @@
  *  storm for the magic fixtures' bind (issue #170); add_garrison for
  *  governance-refused's pre-existing garrisons (issue #134); mine_depth
  *  for use-shipcraft's mines (issue #190); kill for use-religion's dead
- *  bodies (issue #192).
+ *  bodies (issue #192); savage for use-beast's keep_savage (issue #194).
  *  Everything else in the design (credit, the
  *  wider query set, the declarative format, RNG bindings) is deferred; a
  *  binding is added when a fixture needs it, not speculatively.
@@ -648,6 +648,47 @@ l_add_garrison(lua_State *L)
 }
 
 /*
+ *  oly.savage(where, qty [, name])  -> <id>
+ *
+ *  Mint a band of qty savages at where, bonded as a call to arms leaves one
+ *  (call_savage): new_char() makes an independent savage unit with a drum,
+ *  as create_savage() does, and set_loyal() bonds it (LOY_summon, 3) so
+ *  keep_savage may keep it. qty is given rather than drawn, so no stream
+ *  but the mint is touched. No GM verb makes a savage, so this is a path
+ *  (B) binding, like mob. `name`, when given, binds the id in the registry.
+ */
+static int
+l_savage(lua_State *L)
+{
+	int where = (int) luaL_checkinteger(L, 1);
+	int qty = (int) luaL_checkinteger(L, 2);
+	const char *name = luaL_optstring(L, 3, NULL);
+	int savage;
+
+	if (!valid_box(where) || kind(where) != T_loc)
+		return luaL_error(L, "oly.savage: %d not a location", where);
+
+	if (qty < 1)
+		return luaL_error(L, "oly.savage: qty %d below 1", qty);
+
+	savage = new_char(sub_ni, item_savage, where, 100, indep_player,
+							LOY_npc, 0, NULL);
+	if (savage <= 0)
+		return luaL_error(L, "oly.savage: could not mint a savage at %d",
+				where);
+
+	gen_item(savage, item_drum, 1);
+	gen_item(savage, item_savage, qty);
+	set_loyal(savage, LOY_summon, 3);
+
+	if (name != NULL)
+		reg_bind(str_save((char *) name), savage);
+
+	lua_pushinteger(L, savage);
+	return 1;
+}
+
+/*
  *  oly.seen(who, num)  -- mark lore sheet num as seen by who's faction.
  *
  *  set_known() on who's player, as queue_lore() does when it delivers a
@@ -909,6 +950,7 @@ static const luaL_Reg oly_funcs[] = {
 	{ "castle_level",	l_castle_level },
 	{ "mine_depth",		l_mine_depth },
 	{ "add_garrison",	l_add_garrison },
+	{ "savage",		l_savage },
 	{ "seen",		l_seen },
 	{ "kill",		l_kill },
 	{ "guard",		l_guard },

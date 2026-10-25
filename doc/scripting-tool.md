@@ -691,6 +691,18 @@ character, `holder` isn't another character, or the death leaves no body (an
 NPC, a melted unit, or a noble saved by `survive_fatal` or Transcend death).
 `use-religion` uses it for the bodies its priests resurrect and lay to rest.
 
+**Since landed (#194):** `oly.savage(where, qty [, name])` mints a band of
+`qty` savages at the location `where`, bonded as a call to arms leaves one,
+and returns its id (optionally bound in the registry). It makes the unit as
+`create_savage` (`savage.c`) does, an independent savage with a drum, and
+bonds it as `call_savage` does (`LOY_summon`, 3), so `keep_savage` may keep
+it. `qty` is given rather than drawn from the npc stream, so only the mint
+is touched, and the id is the same on every run of a script. No GM verb
+makes a savage, so it is a path (B) binding like `oly.mob`. It errors when
+`where` isn't a location or `qty` is below 1. `use-beast` uses it for
+`keep_savage`, whose summoned savage would arrive only on day 7 with an id
+minted in the turn.
+
 **Explicitly deferred:** `credit`, the full query set
 (`here`/`all`/`chars_here`/`knows`), the declarative format, RNG bindings, and
 any production-engine integration. Path (B) direct-handler calls are deferred

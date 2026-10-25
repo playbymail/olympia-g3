@@ -15,7 +15,7 @@ beastmastery school and the skills it uses:
 | Faction | Noble | Place | Setup | Orders |
 |---|---|---|---|---|
 | 300 Wranglers | Wrangler One [4126] | Plain [13450] | 4 wild horses | `use 651 13451`, `use 654 51 51`, `use 655 2`, `use 656 1`, `use 657 1` |
-| 301 Drummers | Drummer One [8651] | Plain [13450] | 1 drum | `use 658`, `wait time 7`, `use 659 91968` |
+| 301 Drummers | Drummer One [8651] | Plain [13450] | 1 drum; Savage [101396] beside it | `use 658`, `use 659 101396` |
 | 302 Kennels | Kennel One [8159] | Greyfell | — | `use 661` |
 
 Every start returns TRUE. The wrangler's bird reports on Forest [13451],
@@ -23,10 +23,10 @@ east of the plain. The wrangler then breeds two wild horses (and gets a
 third), catches two more on the plain, and trains one each into a riding
 horse and a warmount.
 
-The drummer's call to arms brings Savage [91968] from the province to the
-west on day 7. The drummer waits for it, then keeps it, and it will remain for 5
-months. The savage is minted in the turn, so the Lua script hardcodes its id; if
-minting ever changes, `use 659` fails and the `skill:659:ok` cell says so.
+The drummer sounds a call to arms, then keeps Savage [101396], a band of 6
+that `oly.savage` mints on the plain, bonded as an earlier call to arms
+would leave it; it will remain for 5 months. (The savage this call brings,
+[91968], arrives from the west only on day 7.)
 
 `breed_hound` takes 28 days, so the kennel does nothing else that month.
 

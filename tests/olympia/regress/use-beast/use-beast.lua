@@ -7,17 +7,16 @@
 --   wrangler    Plain [13450], 4 wild horses   use 651 13451, use 654 51 51,
 --                                              use 655 2, use 656 1,
 --                                              use 657 1
---   drummer     Plain [13450], 1 drum          use 658, wait time 7,
---                                              use 659 91968
+--   drummer     Plain [13450], 1 drum,         use 658, use 659 <savage>
+--               a bonded savage band
 --   kennel      Greyfell                       use 661
 --
 -- Every start returns TRUE (ok). The bird spies on the forest east of the
 -- plain; the wrangler then breeds two wild horses, catches two more on the
--- plain and trains one each to a riding horse and a warmount. The drummer's
--- call to arms brings a savage, 91968, from the province to the west on
--- day 7; the drummer waits for it and keeps it. The savage is minted in the
--- turn, so its id is hardcoded: if minting changes, use 659 fails and
--- check.sh's skill:659:ok cell says so. breed_hound takes 28 days, so the
+-- plain and trains one each to a riding horse and a warmount. The drummer
+-- sounds a call to arms, then keeps a band of savages that oly.savage left
+-- bonded beside it, as an earlier call to arms would have. (The savage this
+-- call brings arrives only on day 7.) breed_hound takes 28 days, so the
 -- kennel does nothing else.
 
 local oly = require "oly"
@@ -30,7 +29,6 @@ local BREED_HOUND = 661
 
 local GREYFELL = 57081			-- start city 0
 local PLAIN, FOREST = 13450, 13451
-local SAVAGE = 91968			-- minted in the turn by the call to arms
 
 oly.load("./lib")
 oly.extract_startlocs()
@@ -64,12 +62,14 @@ for _, sk in ipairs{ BEAST, SUMMON, KEEP } do
 end
 oly.additem(drummer, DRUM, 1)
 oly.poof(drummer, PLAIN)
+local savage = oly.savage(PLAIN, 6, "savage")
 
 oly.know(kennel, BEAST)
 oly.know(kennel, BREED_HOUND)
 
 assert(oly.loc(wrangler) == PLAIN, "the wrangler must be on the plain")
 assert(oly.loc(drummer) == PLAIN, "the drummer must be on the plain")
+assert(oly.loc(savage) == PLAIN, "the savages must be on the plain")
 
 oly.order(wrangler, "use " .. BIRD_SPY .. " " .. FOREST)
 oly.order(wrangler, "use " .. BREED .. " " .. WILD_HORSE .. " " .. WILD_HORSE)
@@ -77,11 +77,10 @@ oly.order(wrangler, "use " .. CATCH .. " 2")
 oly.order(wrangler, "use " .. TRAIN_WILD .. " 1")
 oly.order(wrangler, "use " .. TRAIN_WAR .. " 1")
 oly.order(drummer, "use " .. SUMMON)
-oly.order(drummer, "wait time 7")
-oly.order(drummer, "use " .. KEEP .. " " .. SAVAGE)
+oly.order(drummer, "use " .. KEEP .. " " .. savage)
 oly.order(kennel, "use " .. BREED_HOUND)
 
 oly.save("./lib")
 
-print(string.format("built use-beast: wrangler=%d drummer=%d kennel=%d",
-	wrangler, drummer, kennel))
+print(string.format("built use-beast: wrangler=%d drummer=%d kennel=%d "
+	.. "savage=%d", wrangler, drummer, kennel, savage))
