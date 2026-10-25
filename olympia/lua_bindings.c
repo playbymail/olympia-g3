@@ -24,7 +24,8 @@
  *  inventory-give fixture and the garrison query for inventory-refused
  *  (issue #127); mob for recruitment-raise's rally target (issue #139);
  *  castle_level for construction-refused's level-six improve (issue #162);
- *  storm for the magic fixtures' bind (issue #170).
+ *  storm for the magic fixtures' bind (issue #170); add_garrison for
+ *  governance-refused's pre-existing garrisons (issue #134).
  *  Everything else in the design (kill, credit, the
  *  wider query set, the declarative format, RNG bindings) is deferred; a
  *  binding is added when a fixture needs it, not speculatively.
@@ -562,6 +563,57 @@ l_castle_level(lua_State *L)
 	return 1;
 }
 
+/*
+ *  oly.add_garrison(where, castle, item, qty [, name])  -> <id>
+ *
+ *  Install a garrison of qty item in the province `where`, bound to
+ *  `castle` (0 for none, like the garrisons oly.load seeds in cities).
+ *  new_province_garrison() mints it, as a garrison order does, but without
+ *  v_garrison's checks or its ten soldiers, so a fixture can put a garrison
+ *  anywhere before the turn. No GM verb makes a garrison, so this is a path
+ *  (B) binding, like mob. `name`, when given, binds the id in the registry.
+ */
+static int
+l_add_garrison(lua_State *L)
+{
+	int where = (int) luaL_checkinteger(L, 1);
+	int castle = (int) luaL_checkinteger(L, 2);
+	int item = (int) luaL_checkinteger(L, 3);
+	int qty = (int) luaL_checkinteger(L, 4);
+	const char *name = luaL_optstring(L, 5, NULL);
+	int garr;
+
+	if (!valid_box(where) || loc_depth(where) != LOC_province)
+		return luaL_error(L, "oly.add_garrison: %d not a province",
+				where);
+
+	if (garrison_here(where))
+		return luaL_error(L, "oly.add_garrison: %d already has a "
+				"garrison", where);
+
+	if (castle != 0 && (!valid_box(castle) || subkind(castle) != sub_castle))
+		return luaL_error(L, "oly.add_garrison: %d not a castle",
+				castle);
+
+	if (!valid_box(item) || kind(item) != T_item)
+		return luaL_error(L, "oly.add_garrison: %d not an item", item);
+
+	if (qty < 1)
+		return luaL_error(L, "oly.add_garrison: qty %d not positive",
+				qty);
+
+	garr = new_province_garrison(where, castle, item, qty);
+	if (garr < 0)
+		return luaL_error(L, "oly.add_garrison: could not install a "
+				"garrison at %d", where);
+
+	if (name != NULL)
+		reg_bind(str_save((char *) name), garr);
+
+	lua_pushinteger(L, garr);
+	return 1;
+}
+
 /* oly.guard(who, on)  -- the `guard` order set via v_guard. */
 static int
 l_guard(lua_State *L)
@@ -757,6 +809,7 @@ static const luaL_Reg oly_funcs[] = {
 	{ "mob",		l_mob },
 	{ "storm",		l_storm },
 	{ "castle_level",	l_castle_level },
+	{ "add_garrison",	l_add_garrison },
 	{ "guard",		l_guard },
 	{ "order",		l_order },
 	{ "save",		l_save },

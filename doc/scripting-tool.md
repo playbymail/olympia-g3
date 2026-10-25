@@ -648,6 +648,19 @@ isn't a character. The only difference from a summon in the turn is
 `npc_created`: the build runs at turn 0. `magic-cast` and `magic-refused`
 use it, so their storm ids no longer have to be read from a run.
 
+**Since landed (#134):** `oly.add_garrison(where, castle, item, qty [, name])`
+installs a garrison of `qty` of `item` in the province `where`, bound to
+`castle` (0 for none, like the city garrisons `oly.load` seeds), and returns
+its id (optionally bound in the registry). No GM verb makes a garrison, so it
+is a path (B) binding that calls `new_province_garrison` (`garr.c`) directly,
+the call a `garrison` order ends in, without `v_garrison`'s checks or the ten
+soldiers it spends. It errors when `where` isn't a province or already has a
+garrison, `castle` is nonzero and not a finished castle (`sub_castle`), `item`
+isn't an item, or `qty` is below 1. The id comes from `new_char`, so it is
+minted from the mint stream and is the same on every run of a script.
+`governance-refused` uses it for "There is already a garrison here." and the
+level-0 castle's five-garrison cap.
+
 **Explicitly deferred:** `kill`, `credit`, the full query set
 (`here`/`all`/`chars_here`/`knows`), the declarative format, RNG bindings, and
 any production-engine integration. Path (B) direct-handler calls are deferred

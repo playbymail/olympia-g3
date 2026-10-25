@@ -1,11 +1,11 @@
 {"turn": 1, "factions": [
   {"id": 300, "name": "Lords",
    "units": [
-     {"id": 4126, "name": "Lord One", "where": 67765, "stacked_under": 0,
+     {"id": 4126, "name": "Lord One", "where": 60294, "stacked_under": 0,
       "items": [{"id": 1, "name": "gold", "qty": 300}, {"id": 10, "name": "peasant", "qty": 25}],
       "skills": []}],
    "locations": [
-     {"id": 67765, "name": "", "kind": "loc", "subkind": "castle", "depth": "", "province": 13451,
+     {"id": 60294, "name": "", "kind": "loc", "subkind": "castle", "depth": "", "province": 13451,
       "exits": [{"direction": "out", "destination": 57081, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
       "here": [{"id": 4126, "name": "Lord One", "faction": 300}]}]},
   {"id": 301, "name": "Squires",
@@ -43,4 +43,22 @@
    "locations": [
      {"id": 10113, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 10113,
       "exits": [{"direction": "north", "destination": 10013, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 10114, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 10213, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 10112, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 62791, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
-      "here": [{"id": 6947, "name": "Outlander One", "faction": 304}]}]}]}
+      "here": [{"id": 6947, "name": "Outlander One", "faction": 304}]}]},
+  {"id": 305, "name": "Marshals",
+   "units": [
+     {"id": 8731, "name": "Marshal One", "where": 13457, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 155}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 12, "name": "soldier", "qty": 10}],
+      "skills": []}],
+   "locations": [
+     {"id": 13457, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13457,
+      "exits": [{"direction": "north", "destination": 13357, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13458, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13557, "distance": 14, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13456, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 61927, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 74030, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 72217, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8731, "name": "Marshal One", "faction": 305}]}]},
+  {"id": 306, "name": "Intruders",
+   "units": [
+     {"id": 8761, "name": "Intruder One", "where": 13458, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 155}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 12, "name": "soldier", "qty": 10}],
+      "skills": []}],
+   "locations": [
+     {"id": 13458, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13458,
+      "exits": [{"direction": "north", "destination": 13358, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13459, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13558, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13457, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8700, "name": "", "faction": 207}, {"id": 8761, "name": "Intruder One", "faction": 306}]}]}]}

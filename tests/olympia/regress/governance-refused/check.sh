@@ -3,7 +3,7 @@
 # Regression: the governance family fail and rejected (issue #150).
 #
 # Extracts the frozen scenario (scenario.patch over the shared
-# tests/olympia/fixtures/world.tgz) and runs one turn. Five nobles give
+# tests/olympia/fixtures/world.tgz) and runs one turn. Seven nobles give
 # garrison, ungarrison and decree orders that each fail a different check,
 # and Catchclaw's seeded garrison gives all three, which are refused. See
 # governance-refused.lua and README.md.
@@ -27,7 +27,7 @@ PRESET="${OLYMPIA_PRESET:-debug}"
 BIN="${ROOT}/build/${PRESET}/olympia-g3"
 . "${ROOT}/tests/olympia/fixtures/scenario.sh"
 
-FILES=(save/1/300 save/1/301 save/1/302 save/1/303 save/1/304 fact/300 fact/301 fact/302 fact/303 fact/304)
+FILES=(save/1/300 save/1/301 save/1/302 save/1/303 save/1/304 save/1/305 save/1/306 fact/300 fact/301 fact/302 fact/303 fact/304 fact/305 fact/306)
 CELLS=(garrison:fail ungarrison:fail decree:fail garrison:rejected ungarrison:rejected decree:rejected)
 
 [ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }
