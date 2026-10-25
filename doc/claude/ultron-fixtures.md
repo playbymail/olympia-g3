@@ -58,7 +58,10 @@ ones), so it needed no binding; group 6 (artifact construction; #204) by
 binding; group 7 (necromancy; #214) by `use-necro` and `use-necro-refused`,
 in the base world's graveyards, with a demon lord from the `oly.undead`
 binding; group 8 (advanced sorcery; #216) by `use-sorcery` alone, since
-neither of its `fail` cells is reachable.
+neither of its `fail` cells is reachable; group 9 (items; #218) by
+`use-items` and `use-items-refused`, with unique items from the
+`oly.potion`, `oly.orb`, `oly.ring`, `oly.palantir` and `oly.relic`
+bindings.
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):

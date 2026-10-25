@@ -28,7 +28,8 @@
  *  governance-refused's pre-existing garrisons (issue #134); mine_depth
  *  for use-shipcraft's mines (issue #190); kill for use-religion's dead
  *  bodies (issue #192); savage for use-beast's keep_savage (issue #194);
- *  palantir for use-art's artifacts (issue #204). Everything else in the design (credit, the
+ *  palantir for use-art's artifacts (issue #204); potion, orb, ring and
+ *  relic for use-items' unique items (issue #218). Everything else in the design (credit, the
  *  wider query set, the declarative format, RNG bindings) is deferred; a
  *  binding is added when a fixture needs it, not speculatively.
  */
@@ -856,6 +857,181 @@ l_undead(lua_State *L)
 	return 1;
 }
 
+/*
+ *  oly.potion(who, kind [, value [, name]])  -> <id>
+ *
+ *  Give who a potion, made as new_potion() makes one: a unique item of
+ *  weight 1, created by who in who's province, then given the use key of
+ *  kind, as the brew and save spells do. kind is "heal", "death", "slave",
+ *  "proj_cast" or "quick_cast". value, when given, is the slave potion's
+ *  creator (default who), the proj_cast potion's target location, or the
+ *  quick_cast potion's speedup. new_potion() draws the name; this one is
+ *  always "Magic potion", so no stream but the mint is touched. A potion
+ *  brewed in the turn gets an id minted in the turn, which no order can
+ *  name. No GM verb makes a unique item, so this is a path (B) binding,
+ *  like mob. `name`, when given, binds the id in the registry.
+ */
+static int
+l_potion(lua_State *L)
+{
+	static const char *kinds[] = {
+		"death", "heal", "slave", "proj_cast", "quick_cast", NULL
+	};
+	static const int keys[] = {
+		use_death_potion, use_heal_potion, use_slave_potion,
+		use_proj_cast, use_quick_cast
+	};
+	int who = (int) luaL_checkinteger(L, 1);
+	int key = keys[luaL_checkoption(L, 2, NULL, kinds)];
+	int value = (int) luaL_optinteger(L, 3, 0);
+	const char *name = luaL_optstring(L, 4, NULL);
+	int new;
+	struct item_magic *pm;
+
+	if (!valid_box(who) || kind(who) != T_char)
+		return luaL_error(L, "oly.potion: %d not a character", who);
+
+	if (key == use_proj_cast && !is_loc_or_ship(value))
+		return luaL_error(L, "oly.potion: %d not a location", value);
+
+	if (key == use_slave_potion && value != 0 && kind(value) != T_char)
+		return luaL_error(L, "oly.potion: %d not a character", value);
+
+	new = create_unique_item(who, 0);
+	if (new < 0)
+		return luaL_error(L, "oly.potion: could not mint a potion");
+
+	set_name(new, "Magic potion");
+	p_item(new)->weight = 1;
+
+	pm = p_item_magic(new);
+	pm->use_key = (schar) key;
+	pm->creator = who;
+	pm->region_created = province(who);
+
+	if (key == use_slave_potion && value != 0)
+		pm->creator = value;
+	else if (key == use_proj_cast)
+		pm->project_cast = value;
+	else if (key == use_quick_cast)
+		pm->quick_cast = (short) value;
+
+	if (name != NULL)
+		reg_bind(str_save((char *) name), new);
+
+	lua_pushinteger(L, new);
+	return 1;
+}
+
+/*
+ *  oly.orb(who, uses [, name])  -> <id>
+ *
+ *  Give who an orb, made as new_orb() makes one for quest loot: a unique
+ *  item named Orb, weight 1, with the orb use key and lore. new_orb()
+ *  draws the number of uses; here it is given, so no stream but the mint
+ *  is touched. Only a lair's monster gets one, at an id minted in the
+ *  turn. No GM verb makes a unique item, so this is a path (B) binding,
+ *  like mob. `name`, when given, binds the id in the registry.
+ */
+static int
+l_orb(lua_State *L)
+{
+	int who = (int) luaL_checkinteger(L, 1);
+	int uses = (int) luaL_checkinteger(L, 2);
+	const char *name = luaL_optstring(L, 3, NULL);
+	int new;
+
+	if (!valid_box(who) || kind(who) != T_char)
+		return luaL_error(L, "oly.orb: %d not a character", who);
+
+	if (uses < 1 || uses > 127)
+		return luaL_error(L, "oly.orb: uses %d outside 1..127", uses);
+
+	new = create_unique_item(who, 0);
+	if (new < 0)
+		return luaL_error(L, "oly.orb: could not mint an orb");
+
+	set_name(new, "Orb");
+	p_item(new)->weight = 1;
+	p_item_magic(new)->use_key = use_orb;
+	p_item_magic(new)->lore = lore_orb;
+	p_item_magic(new)->orb_use_count = (schar) uses;
+
+	if (name != NULL)
+		reg_bind(str_save((char *) name), new);
+
+	lua_pushinteger(L, new);
+	return 1;
+}
+
+/*
+ *  oly.ring(who, kind [, name])  -> <id>
+ *
+ *  Give who a golden ring, made as new_suffuse_ring() makes one for a
+ *  market: a unique item (sub_suffuse_ring) named Golden ring, weight 1,
+ *  with the use key and lore of kind. kind is "barbarian", "savage",
+ *  "corpse", "orc" or "skeleton", in new_suffuse_ring()'s order. The
+ *  engine draws the kind; here it is given, so no stream but the mint is
+ *  touched. A ring restocked in the turn has an id minted in the turn. No
+ *  GM verb makes a unique item, so this is a path (B) binding, like mob.
+ *  `name`, when given, binds the id in the registry.
+ */
+static int
+l_ring(lua_State *L)
+{
+	static const char *kinds[] = {
+		"barbarian", "savage", "corpse", "orc", "skeleton", NULL
+	};
+	int who = (int) luaL_checkinteger(L, 1);
+	int n = luaL_checkoption(L, 2, NULL, kinds);
+	const char *name = luaL_optstring(L, 3, NULL);
+	int new;
+
+	if (!valid_box(who) || kind(who) != T_char)
+		return luaL_error(L, "oly.ring: %d not a character", who);
+
+	new = create_unique_item(who, sub_suffuse_ring);
+	if (new < 0)
+		return luaL_error(L, "oly.ring: could not mint a ring");
+
+	set_name(new, "Golden ring");
+	p_item(new)->weight = 1;
+	p_item_magic(new)->use_key = (schar) (use_barbarian_kill + n);
+	p_item_magic(new)->lore = lore_barbarian_kill + n;
+
+	if (name != NULL)
+		reg_bind(str_save((char *) name), new);
+
+	lua_pushinteger(L, new);
+	return 1;
+}
+
+/*
+ *  oly.relic(who, id)
+ *
+ *  Move the relic id from Nowhere to who, as quest loot gives one to a
+ *  lair's monster (move_item from nowhere_loc). Loot also sets the relic
+ *  to decay; this one does not decay. No GM verb moves a unique item, so
+ *  this is a path (B) binding, like mob.
+ */
+static int
+l_relic(lua_State *L)
+{
+	int who = (int) luaL_checkinteger(L, 1);
+	int relic = (int) luaL_checkinteger(L, 2);
+
+	if (!valid_box(who) || kind(who) != T_char)
+		return luaL_error(L, "oly.relic: %d not a character", who);
+
+	if (!valid_box(relic) || kind(relic) != T_item ||
+	    subkind(relic) != sub_relic || item_unique(relic) != nowhere_loc)
+		return luaL_error(L, "oly.relic: %d not a relic in Nowhere",
+				relic);
+
+	move_item(nowhere_loc, who, relic, 1);
+	return 0;
+}
+
 /* oly.guard(who, on)  -- the `guard` order set via v_guard. */
 static int
 l_guard(lua_State *L)
@@ -1059,6 +1235,10 @@ static const luaL_Reg oly_funcs[] = {
 	{ "sick",		l_sick },
 	{ "palantir",		l_palantir },
 	{ "undead",		l_undead },
+	{ "potion",		l_potion },
+	{ "orb",		l_orb },
+	{ "ring",		l_ring },
+	{ "relic",		l_relic },
 	{ "guard",		l_guard },
 	{ "order",		l_order },
 	{ "save",		l_save },

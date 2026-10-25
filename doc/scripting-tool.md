@@ -737,6 +737,31 @@ a graveyard with an undead cookie. `use-necro` uses it for the demon lord its
 renewer renews and banishes: one summoned in the turn would have an id minted
 in the turn, which no order can name.
 
+**Since landed (#218):** four bindings give a character the unique usable
+items that the engine makes only in the turn (brewing, quest loot, market
+restock), whose ids no order could name. Each returns the new id
+(optionally bound in the registry) and errors when `who` isn't a character.
+Each mints from the mint stream only: where the engine draws a part at
+random, the binding takes it as an argument or fixes it. No GM verb makes
+or moves a unique item, so all four are path (B) bindings like `oly.mob`.
+`use-items` and `use-items-refused` use them.
+
+- `oly.potion(who, kind [, value [, name]])` makes a potion as
+  `new_potion` (`alchem.c`) does, then sets the use key of `kind`:
+  `"heal"`, `"death"`, `"slave"`, `"proj_cast"` or `"quick_cast"`. It is
+  always named "Magic potion"; `new_potion` draws the name. `value` is the
+  slave potion's creator (default `who`), the proj_cast potion's target
+  location (required), or the quick_cast potion's speedup.
+- `oly.orb(who, uses [, name])` makes an orb as `new_orb` (`art.c`) does,
+  with `uses` (1–127) uses, which `new_orb` draws.
+- `oly.ring(who, kind [, name])` makes a golden ring as `new_suffuse_ring`
+  (`art.c`) does, of `kind` `"barbarian"`, `"savage"`, `"corpse"`, `"orc"`
+  or `"skeleton"`, which `new_suffuse_ring` draws.
+- `oly.relic(who, id)` moves the relic `id` from Nowhere to `who`, as quest
+  loot does, but sets no decay, so it doesn't vanish. It returns nothing,
+  since the id is fixed (the Skull of Bastrestric is 403), and errors when
+  `id` is not a relic in Nowhere.
+
 **Explicitly deferred:** `credit`, the full query set
 (`here`/`all`/`chars_here`/`knows`), the declarative format, RNG bindings, and
 any production-engine integration. Path (B) direct-handler calls are deferred

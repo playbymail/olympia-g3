@@ -150,6 +150,11 @@ either: one fixture pins those for all skills.
   `extract_venom`, `make_ram`). With no start function, `v_use` counts every
   use that passes its shared checks as `ok`; a missing requirement fails in
   `meets_requirements`, which the dump counts under `checks`.
+- `fail` of the 11 item use keys whose start always returns TRUE: the
+  three potions (1–3), the drum (7), the faery stone (8), the five golden
+  rings (10–14) and the Skull of Bastrestric (15). Holding no such item, or
+  using a magic one in a safe haven, fails in `v_use_item` before the start
+  runs, under `checks`.
 - both cells of `add_ram` (997), `save_quick` (998) and `quick_cast` (999).
   These skills are in `use_tbl` but not in the world's `lib/skill`, so `use`
   rejects them as not a valid skill and counts them under `invalid`.
