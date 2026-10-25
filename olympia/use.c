@@ -867,6 +867,7 @@ v_use_item(struct command *c)
 		break;
 
 	case use_drum:
+		c->a = c->b;	/* speed follows the item; cmd_shift is off */
 		ret = v_use_drum(c);
 		break;
 

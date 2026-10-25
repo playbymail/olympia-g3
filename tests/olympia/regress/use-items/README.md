@@ -37,9 +37,10 @@ Every start returns TRUE:
   on day 7.
 - The barbarian ring fizzles ("Nothing happens"). The savage ring kills the
   savage band. Each ring vanishes.
-- The drum sounds, but calls no savages. Through `use`, `v_use_drum` reads
-  the speed from `c->a`, which holds the drum's own item id (98), so the
-  speed is never 0 or 1. Only `summon savage` sets it.
+- The drum sounds a battle challenge: with no speed after the item, the
+  speed is 0 (#220). A band of savages comes in from a neighboring province
+  and attacks Ringer One, who wins, takes the band prisoner and loots its
+  drum.
 - The elfstone opens no faery hill on the plain ("Nothing happens").
 - The skull gives the magician a burst of aura, capped to its limit, and
   vanishes.

@@ -20,7 +20,7 @@
   {"id": 303, "name": "Ringers",
    "units": [
      {"id": 7012, "name": "Ringer One", "where": 13450, "stacked_under": 0,
-      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 69, "name": "elfstone", "qty": 1}, {"id": 98, "name": "drum", "qty": 1}],
+      "items": [{"id": 1, "name": "gold", "qty": 177}, {"id": 10, "name": "peasant", "qty": 23}, {"id": 69, "name": "elfstone", "qty": 1}, {"id": 98, "name": "drum", "qty": 2}],
       "skills": []}],
    "locations": [
      {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
