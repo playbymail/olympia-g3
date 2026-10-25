@@ -4,13 +4,14 @@ Pins the `fail` cells of the Artifact construction school, use group 6
 (issue #204, use backlog parent #180): `forge_aura` (881), `write_art`
 (882), `forge_weapon` (883), `forge_armor` (884), `forge_bow` (885),
 `curse_noncreat` (886), `show_art_creat` (887), `show_art_reg` (888),
-`destroy_art` (889), `cloak_creat` (891), `cloak_reg` (892),
-`rem_art_cloak` (893) and `forge_palantir` (894).
+`destroy_art` (889, start and finish), `cloak_creat` (891), `cloak_reg`
+(892), `rem_art_cloak` (893) and `forge_palantir` (894).
 
 ## Scenario
 
-Two factions, 300 Fumblers and 301 Novices, start in Greyfell (57081) and
-are poofed to Plain [13450], since magic may not be used in a safe haven.
+Three factions, 300 Fumblers, 301 Novices and 302 Losers, start in
+Greyfell (57081) and are poofed to Plain [13450], since magic may not be
+used in a safe haven.
 Each knows the Artifact construction school and starts with 200 gold. Each
 skill known adds one aura. Every use below passes `v_use`'s shared checks
 and reaches its start:
@@ -30,6 +31,7 @@ and reaches its start:
 | | `use 892 83` | cloak_reg | Fumbler One [4126] does not have [83]. |
 | | `use 893 83` | rem_art_cloak | Fumbler One [4126] does not have [83]. |
 | Novice One [8651] | `use 894` | forge_palantir | Eight aura required, current level is two. |
+| Loser One [8159] | `use 889 P` | destroy_art | Finish: Loser One [8159] does not have P. |
 
 The fumbler knows every skill of the school and Scry location (841), of the
 Scrying school, so it has 15 aura. It holds 5 mithril and a blank scroll, and
@@ -39,6 +41,17 @@ requirements ask in `lib/skill`, so each use gets past `meets_requirements`
 to its start: a blank scroll for scribing and destroying, 100 gold and 5
 mithril for cloaking the creator, and a mithril and a gate crystal for a
 palantir.
+
+The loser (#207) knows only Destroy artifact, so it has 2 aura, and holds a
+blank scroll and a palantir P from `oly.palantir`. Nobles are formed only in
+cities, so the loser is poofed on into a city made on the plain
+(`oly.makeloc`), which is no safe haven. The city is a port, which the
+other factions see on the plain and which turns its route north to the
+ocean impassable. It forms a porter (days 1–7), then starts destroying
+P on day 9. The porter waits for day 10 and `get`s P, so on day 15 the
+destroy's finish finds the loser no longer has it. Before the fix the finish
+tested `has_item < 0`, went ahead, and `destroy_unique_item` aborted the
+turn.
 
 ## What `check.sh` asserts
 

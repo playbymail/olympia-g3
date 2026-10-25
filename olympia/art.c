@@ -343,7 +343,7 @@ d_destroy_art(struct command *c)
 {
 	int item = c->a;
 
-	if (has_item(c->who, item) < 0)
+	if (has_item(c->who, item) < 1)
 	{
 		wout(c->who, "%s does not have %s.",
 					box_name(c->who),

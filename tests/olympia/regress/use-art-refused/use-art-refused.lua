@@ -13,6 +13,9 @@
 --                                       use 893 83
 --   novice      2 aura, a mithril, a    use 894
 --               gate crystal
+--   loser       2 aura, a palantir, a   form P, use 889 L
+--               blank scroll
+--   porter      formed by the loser     wait day 10, get loser L 1
 --
 -- Every use is refused (fail). The fumbler knows every skill of the school
 -- and Scry location. It forges an auraculum with no aura level; scribes
@@ -23,6 +26,10 @@
 -- crystal it does not have. The novice knows only Forge palantir and has
 -- too little aura for it. The fumbler's mithril and scroll, and the
 -- novice's mithril and crystal, are what the skills' requirements ask.
+--
+-- The loser forms a porter, then starts destroying its palantir. Mid-cast
+-- the porter gets the palantir, so the destroy's finish is refused: the
+-- loser no longer has it (#207).
 
 local oly = require "oly"
 
@@ -59,7 +66,7 @@ local function noble(id, faction, handle, name, skills)
 	end
 	oly.poof(f.noble, PLAIN)
 	assert(oly.loc(f.noble) == PLAIN, name .. " must be on the plain")
-	return f.noble
+	return f.noble, f
 end
 
 local fumbler = noble(300, "Fumblers", "fumbler", "Fumbler One", {
@@ -73,6 +80,17 @@ local novice = noble(301, "Novices", "novice", "Novice One",
 	{ FORGE_PALANTIR })
 oly.additem(novice, MITHRIL, 1)
 oly.additem(novice, GATE_CRYSTAL, 1)
+local loser, losers = noble(302, "Losers", "loser", "Loser One",
+	{ DESTROY })
+oly.additem(loser, BLANK_SCROLL, 1)
+-- nobles are formed only in a city; a made one on the plain is no haven
+local town = oly.makeloc(loser, "city")
+oly.poof(loser, town)
+assert(oly.loc(loser) == town, "the loser must be in the town")
+local lost = oly.palantir(loser, "lost")
+-- the noble the loser's form makes; it gets the palantir mid-cast
+local porter = losers.unformed[1]
+assert(porter, "the losers need an unformed noble")
 
 oly.order(fumbler, "use " .. FORGE_AURA)
 oly.order(fumbler, "use " .. WRITE_ART .. " " .. SCRY_REGION)
@@ -87,8 +105,13 @@ oly.order(fumbler, "use " .. CLOAK_CREAT .. " " .. GATE_CRYSTAL)
 oly.order(fumbler, "use " .. CLOAK_REG .. " " .. GATE_CRYSTAL)
 oly.order(fumbler, "use " .. REM_CLOAK .. " " .. GATE_CRYSTAL)
 oly.order(novice, "use " .. FORGE_PALANTIR)
+oly.order(loser, "form " .. porter .. " Porter")
+oly.order(loser, "use " .. DESTROY .. " " .. lost)
+oly.order(porter, "wait day 10")
+oly.order(porter, "get " .. loser .. " " .. lost .. " 1")
 
 oly.save("./lib")
 
-print(string.format("built use-art-refused: fumbler=%d novice=%d",
-	fumbler, novice))
+print(string.format("built use-art-refused: fumbler=%d novice=%d "
+	.. "loser=%d porter=%d palantir=%d", fumbler, novice, loser, porter,
+	lost))

@@ -8,7 +8,8 @@
 # plain: one is refused every Artifact construction skill but the palantir
 # (no aura level, a spell of another school, too little gold or aura, not
 # an artifact, an item it does not have); one has too little aura to forge
-# a palantir. See use-art-refused.lua and README.md.
+# a palantir; one loses the palantir it is destroying to a faction-mate
+# mid-cast (#207). See use-art-refused.lua and README.md.
 #
 # Three checks, all required:
 #   1. coverage: every verb:outcome in CELLS has a nonzero count in the
@@ -31,7 +32,7 @@ BIN="${ROOT}/build/${PRESET}/olympia-g3"
 . "${ROOT}/tests/olympia/fixtures/scenario.sh"
 . "${ROOT}/tests/olympia/fixtures/coverage.sh"
 
-FILES=(save/1/300 save/1/301 fact/300 fact/301)
+FILES=(save/1/300 save/1/301 save/1/302 fact/300 fact/301 fact/302)
 CELLS=(use:fail)
 USE_CELLS=(skill:881:fail skill:882:fail skill:883:fail skill:884:fail skill:885:fail skill:886:fail skill:887:fail skill:888:fail skill:889:fail skill:891:fail skill:892:fail skill:893:fail skill:894:fail)
 
