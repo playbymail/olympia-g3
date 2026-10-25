@@ -53,7 +53,10 @@ starts can fail); group 3 (beastmastery; #194) by `use-beast` and
 `use-basic`, `use-weather` and `use-scry` and a `-refused` fixture for
 each; group 5 (gatecraft; #202) by `use-gate` and `use-gate-refused`, on
 gates the base world already has (the ring of stones [64135] holds sealed
-ones), so it needed no binding.
+ones), so it needed no binding; group 6 (artifact construction; #204) by
+`use-art` and `use-art-refused`, with palantirs from the `oly.palantir`
+binding. The `ok` of `rem_art_cloak` (893) waits on #205: its start never
+returns TRUE.
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):

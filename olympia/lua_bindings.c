@@ -27,8 +27,8 @@
  *  storm for the magic fixtures' bind (issue #170); add_garrison for
  *  governance-refused's pre-existing garrisons (issue #134); mine_depth
  *  for use-shipcraft's mines (issue #190); kill for use-religion's dead
- *  bodies (issue #192); savage for use-beast's keep_savage (issue #194).
- *  Everything else in the design (credit, the
+ *  bodies (issue #192); savage for use-beast's keep_savage (issue #194);
+ *  palantir for use-art's artifacts (issue #204). Everything else in the design (credit, the
  *  wider query set, the declarative format, RNG bindings) is deferred; a
  *  binding is added when a fixture needs it, not speculatively.
  */
@@ -774,6 +774,46 @@ l_sick(lua_State *L)
 	return 0;
 }
 
+/*
+ *  oly.palantir(who [, name])  -> <id>
+ *
+ *  Give who a palantir, made as d_forge_palantir makes one: a unique item
+ *  named Palantir, weight 2, with the palantir use key, created by who in
+ *  who's province. No aura or materials are spent. A palantir forged in the
+ *  turn gets an id minted in the turn, which no order can name; this one is
+ *  minted before it. No GM verb makes a unique item, so this is a path (B)
+ *  binding, like mob. `name`, when given, binds the id in the registry.
+ */
+static int
+l_palantir(lua_State *L)
+{
+	int who = (int) luaL_checkinteger(L, 1);
+	const char *name = luaL_optstring(L, 2, NULL);
+	int new;
+	struct item_magic *pm;
+
+	if (!valid_box(who) || kind(who) != T_char)
+		return luaL_error(L, "oly.palantir: %d not a character", who);
+
+	new = create_unique_item(who, sub_palantir);
+	if (new < 0)
+		return luaL_error(L, "oly.palantir: could not mint a palantir");
+
+	set_name(new, "Palantir");
+	p_item(new)->weight = 2;
+
+	pm = p_item_magic(new);
+	pm->use_key = use_palantir;
+	pm->creator = who;
+	pm->region_created = province(who);
+
+	if (name != NULL)
+		reg_bind(str_save((char *) name), new);
+
+	lua_pushinteger(L, new);
+	return 1;
+}
+
 /* oly.guard(who, on)  -- the `guard` order set via v_guard. */
 static int
 l_guard(lua_State *L)
@@ -975,6 +1015,7 @@ static const luaL_Reg oly_funcs[] = {
 	{ "seen",		l_seen },
 	{ "kill",		l_kill },
 	{ "sick",		l_sick },
+	{ "palantir",		l_palantir },
 	{ "guard",		l_guard },
 	{ "order",		l_order },
 	{ "save",		l_save },

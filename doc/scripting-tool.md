@@ -711,6 +711,19 @@ makes a character sick, so it is a path (B) binding like `oly.mob`.
 `use-basic` uses it for the patient that `heal` must have: `v_heal` refuses a
 target that is not sick.
 
+**Since landed (#204):** `oly.palantir(who [, name])` gives the character
+`who` a palantir and returns its id (optionally bound in the registry). It
+makes the item as `d_forge_palantir` (`art.c`) does: a unique item
+(`sub_palantir`) named Palantir, weight 2, with the palantir use key, whose
+creator is `who` and whose region of creation is `who`'s province when the
+binding runs. No aura, mithril or gate crystal is spent. The id comes from
+`create_unique_item`, so it is minted from the mint stream and is the same on
+every run of a script. No GM verb makes a unique item, so it is a path (B)
+binding like `oly.mob`. It errors when `who` isn't a character. `use-art`
+uses it for the artifacts its mages inspect, cloak, curse and destroy: a
+palantir forged in the turn would have an id minted in the turn, which no
+order can name.
+
 **Explicitly deferred:** `credit`, the full query set
 (`here`/`all`/`chars_here`/`knows`), the declarative format, RNG bindings, and
 any production-engine integration. Path (B) direct-handler calls are deferred
