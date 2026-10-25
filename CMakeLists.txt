@@ -47,7 +47,6 @@ function(olympia_compile_flags tgt)
         # -Wformat; issue #20 wrapped the handful of out(who, sout(...)) sites
         # so the non-literal subclass enforces too).
         -Wno-incompatible-library-redeclaration
-        -Wno-logical-not-parentheses
         -Wno-macro-redefined
         -Wno-multichar
         -Wno-non-literal-null-conversion
@@ -114,6 +113,12 @@ function(olympia_compile_flags tgt)
         # just a legacy idiom we are not chasing, so suppress it AFTER -Wformat.
         # Portable spelling (both compilers recognize it; no-op on Clang).
         -Wno-format-zero-length
+        # #212 - logical-not-parentheses. `!x == y` parses as `(!x) == y`, so a
+        # 0/1 is compared with x's partner: demote_units' `!stack_leader(u) == u`
+        # never skipped a follower, and every losing noble fled on its own (#212;
+        # #208 removed the two art.c hits). Portable (GCC + Clang); the class is
+        # 0, so it is locked rather than suppressed.
+        -Wlogical-not-parentheses -Werror=logical-not-parentheses
     )
 
     # Phase 6 (#14) - 64-bit width hazards, Clang-only half.

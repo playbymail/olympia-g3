@@ -536,7 +536,7 @@ This is exactly the method the Phase 1–10 ladder used.
 **Three tiers:**
 
 1. **Enforced (`-Werror`).** Every class on the Phase 1–10 ladder, plus the
-   project-wide format class (Phase 9). Each was driven to **zero** across all
+   project-wide format class (Phase 9) and `logical-not-parentheses` (#212). Each was driven to **zero** across all
    three targets and locked. They are written as an explicit `-Wfoo -Werror=foo`
    pair, one class per line — the bare `-Wfoo` is redundant (the `-Werror=`
    already enables it) but is kept deliberately as a record that the class is at
@@ -552,7 +552,6 @@ This is exactly the method the Phase 1–10 ladder used.
    - `-Wno-extra-tokens` — stray tokens after `#endif`/`#else`.
    - `-Wno-incompatible-library-redeclaration` — engine functions whose names
      collide with libc prototypes.
-   - `-Wno-logical-not-parentheses` — `!x == y`-style legacy idioms.
    - `-Wno-macro-redefined` — macros redefined across headers.
    - `-Wno-multichar` — multi-character character constants.
    - `-Wno-non-literal-null-conversion` — `0`/`'\0'`-as-pointer idioms.
@@ -563,6 +562,17 @@ This is exactly the method the Phase 1–10 ladder used.
    `-Wno-format-security` / `-Wno-format-nonliteral` were **retired** when issue
    #20 wrapped the 6 non-literal format sites, so the whole format class is now
    enforced (see Phase 9).
+
+   `-Wno-logical-not-parentheses` was **retired** by #212. The class was not
+   stylistic: `!x == y` parses as `(!x) == y`, and each of its three hits was a
+   real bug. #208 fixed the two in `art.c` (byte-neutral); #212 fixed
+   `demote_units`' `!stack_leader(u) == u`, which never skipped a follower, so
+   every surviving noble of a beaten stack fled on its own and the stack broke
+   up. That fix changes behavior, but no golden tree or existing fixture has a
+   losing stack with followers, so both stayed byte-identical; the new
+   `tests/olympia/regress/combat-stack-flee` fixture pins it. With the class at
+   0 it is locked as `-Wlogical-not-parentheses -Werror=logical-not-parentheses`
+   (portable, so in the common set).
 
    These stay suppressed until someone opens a dedicated cleanup track and drives
    the whole class to zero in one focused pass, then promotes it to `-Werror` —
