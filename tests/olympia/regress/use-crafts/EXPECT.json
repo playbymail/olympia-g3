@@ -1,0 +1,55 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Ferry Line",
+   "units": [
+     {"id": 4126, "name": "Captain One", "where": 66761, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 184}, {"id": 19, "name": "sailor", "qty": 8}],
+      "skills": [{"id": 600, "name": "Shipcraft"}, {"id": 601, "name": "Sailing"}]}],
+   "locations": [
+     {"id": 66761, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13452,
+      "exits": [],
+      "here": [{"id": 4126, "name": "Captain One", "faction": 300}]}]},
+  {"id": 301, "name": "Fisherfolk",
+   "units": [
+     {"id": 8651, "name": "Fisher One", "where": 61857, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 171}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 19, "name": "sailor", "qty": 2}, {"id": 87, "name": "fish", "qty": 2}],
+      "skills": [{"id": 600, "name": "Shipcraft"}, {"id": 603, "name": "Fishing"}]}],
+   "locations": [
+     {"id": 61857, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13350,
+      "exits": [],
+      "here": [{"id": 8651, "name": "Fisher One", "faction": 301}]}]},
+  {"id": 302, "name": "Siege Works",
+   "units": [
+     {"id": 8159, "name": "Wright One", "where": 57081, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 169}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 11, "name": "worker", "qty": 3}, {"id": 62, "name": "siege tower", "qty": 1}],
+      "skills": [{"id": 680, "name": "Construction"}, {"id": 681, "name": "Construct siege tower"}]}],
+   "locations": [
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8159, "name": "Wright One", "faction": 302}, {"id": 8731, "name": "Trader One", "faction": 305}]}]},
+  {"id": 303, "name": "Quarry Guild",
+   "units": [
+     {"id": 7012, "name": "Quarryman One", "where": 13349, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 171}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 11, "name": "worker", "qty": 2}, {"id": 78, "name": "stone", "qty": 2}],
+      "skills": [{"id": 680, "name": "Construction"}, {"id": 682, "name": "Stone quarrying"}]}],
+   "locations": [
+     {"id": 13349, "name": "", "kind": "loc", "subkind": "mountain", "depth": "province", "province": 13349,
+      "exits": [{"direction": "north", "destination": 13249, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "east", "destination": 13350, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "south", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13348, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 59916, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 59352, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 7012, "name": "Quarryman One", "faction": 303}]}]},
+  {"id": 304, "name": "Deep Delvers",
+   "units": [
+     {"id": 6947, "name": "Miner One", "where": 59352, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 647}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 11, "name": "worker", "qty": 14}, {"id": 79, "name": "iron", "qty": 8}, {"id": 82, "name": "mithril", "qty": 1}],
+      "skills": [{"id": 720, "name": "Mining"}, {"id": 721, "name": "Mine iron"}, {"id": 722, "name": "Mine gold"}, {"id": 723, "name": "Mine mithril"}]}],
+   "locations": [
+     {"id": 59352, "name": "", "kind": "loc", "subkind": "mine", "depth": "", "province": 13349,
+      "exits": [{"direction": "out", "destination": 13349, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 6947, "name": "Miner One", "faction": 304}]}]},
+  {"id": 305, "name": "Merchants",
+   "units": [
+     {"id": 8731, "name": "Trader One", "where": 57081, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 730, "name": "Trade"}, {"id": 732, "name": "Find tradegood for sale"}]}],
+   "locations": [
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8159, "name": "Wright One", "faction": 302}, {"id": 8731, "name": "Trader One", "faction": 305}]}]}]}

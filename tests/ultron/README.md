@@ -135,6 +135,12 @@ either: one fixture pins those for all skills.
 
 - `ok` of the 10 `v_implicit` skills, which always fail ("No direct USE
   function exists").
+- `ok` of `shipbuilding` (602): `v_shipbuild` always fails ("Use the BUILD
+  order to build ships.").
+- `fail` of the 4 `(produce)` skills (`make_catapult`, `make_siege`,
+  `extract_venom`, `make_ram`). With no start function, `v_use` counts every
+  use that passes its shared checks as `ok`; a missing requirement fails in
+  `meets_requirements`, which the dump counts under `checks`.
 - both cells of `add_ram` (997), `save_quick` (998) and `quick_cast` (999).
   These skills are in `use_tbl` but not in the world's `lib/skill`, so `use`
   rejects them as not a valid skill and counts them under `invalid`.

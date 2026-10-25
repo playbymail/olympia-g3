@@ -670,6 +670,17 @@ is not a box. No GM verb marks a sheet seen, so it is a path (B) binding.
 `gm-credit` uses it so that Shipcraft's lore reaches the faction's report only
 through `relore`.
 
+**Since landed (#190):** `oly.mine_depth(mine, depth)` sinks a mine to
+`depth` (1–20, the depth a report shows; `shaft_depth` is three times it) and
+stocks it with that depth's iron, gold and mithril through
+`mine_production`, as a finished `build mine` does at depth one, and returns
+the depth. It errors for anything but a mine (`sub_mine`) or a depth outside
+1–20. A mine `oly.makeloc` creates has no shaft, and the month-end
+`mine_production` asserts a depth above zero, so a fixture's mine needs this
+before the turn. No GM verb sets the depth, so it is a path (B) binding like
+`castle_level`; it skips the gate crystal a finished build may leave.
+`use-crafts` sinks its mine to depth 4, the shallowest that yields mithril.
+
 **Explicitly deferred:** `kill`, `credit`, the full query set
 (`here`/`all`/`chars_here`/`knows`), the declarative format, RNG bindings, and
 any production-engine integration. Path (B) direct-handler calls are deferred

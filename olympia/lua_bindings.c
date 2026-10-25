@@ -25,7 +25,8 @@
  *  (issue #127); mob for recruitment-raise's rally target (issue #139);
  *  castle_level for construction-refused's level-six improve (issue #162);
  *  storm for the magic fixtures' bind (issue #170); add_garrison for
- *  governance-refused's pre-existing garrisons (issue #134).
+ *  governance-refused's pre-existing garrisons (issue #134); mine_depth
+ *  for use-shipcraft's mines (issue #190).
  *  Everything else in the design (kill, credit, the
  *  wider query set, the declarative format, RNG bindings) is deferred; a
  *  binding is added when a fixture needs it, not speculatively.
@@ -564,6 +565,37 @@ l_castle_level(lua_State *L)
 }
 
 /*
+ *  oly.mine_depth(mine, depth)  -> <depth>
+ *
+ *  Sink a mine to `depth` (1-20, the depth a report shows) and stock it
+ *  with that depth's ore, as a finished build does at depth one
+ *  (build.c). A mine makeloc creates has no shaft, and the month-end
+ *  mine_production() asserts a depth above zero, so a fixture's mine needs
+ *  this before the turn. No GM verb sets the depth, so this is a path (B)
+ *  binding, like castle_level. The gate crystal a finished build may leave
+ *  is not drawn.
+ */
+static int
+l_mine_depth(lua_State *L)
+{
+	int mine = (int) luaL_checkinteger(L, 1);
+	int depth = (int) luaL_checkinteger(L, 2);
+
+	if (!valid_box(mine) || subkind(mine) != sub_mine)
+		return luaL_error(L, "oly.mine_depth: %d not a mine", mine);
+
+	if (depth < 1 || depth > 20)
+		return luaL_error(L, "oly.mine_depth: depth %d not 1-20",
+				depth);
+
+	p_subloc(mine)->shaft_depth = (short) (depth * 3);
+	mine_production(mine);
+
+	lua_pushinteger(L, mine_depth(mine));
+	return 1;
+}
+
+/*
  *  oly.add_garrison(where, castle, item, qty [, name])  -> <id>
  *
  *  Install a garrison of qty item in the province `where`, bound to
@@ -836,6 +868,7 @@ static const luaL_Reg oly_funcs[] = {
 	{ "mob",		l_mob },
 	{ "storm",		l_storm },
 	{ "castle_level",	l_castle_level },
+	{ "mine_depth",		l_mine_depth },
 	{ "add_garrison",	l_add_garrison },
 	{ "seen",		l_seen },
 	{ "guard",		l_guard },
