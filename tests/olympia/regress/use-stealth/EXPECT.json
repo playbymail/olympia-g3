@@ -1,0 +1,49 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Cutpurses",
+   "units": [
+     {"id": 4126, "name": "Thief One", "where": 57081, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 253}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 630, "name": "Stealth"}, {"id": 631, "name": "Petty thievery"}, {"id": 632, "name": "Determine inventory of character"}, {"id": 633, "name": "Determine skills of character"}, {"id": 634, "name": "Determine character's lord"}]}],
+   "locations": [
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 67765, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 60176, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Thief One", "faction": 300}, {"id": 6947, "name": "Shadow One", "faction": 304}, {"id": 8159, "name": "Captor One", "faction": 302}, {"id": 8533, "name": "Hireling", "faction": 301}, {"id": 8651, "name": "Yielder One", "faction": 301}]}]},
+  {"id": 301, "name": "Yielders",
+   "units": [
+     {"id": 8533, "name": "Hireling", "where": 57081, "stacked_under": 8159,
+      "items": [],
+      "skills": []},
+     {"id": 8651, "name": "Yielder One", "where": 57081, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 1675}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 67765, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 60176, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Thief One", "faction": 300}, {"id": 6947, "name": "Shadow One", "faction": 304}, {"id": 8159, "name": "Captor One", "faction": 302}, {"id": 8533, "name": "Hireling", "faction": 301}, {"id": 8651, "name": "Yielder One", "faction": 301}]}]},
+  {"id": 302, "name": "Captors",
+   "units": [
+     {"id": 8159, "name": "Captor One", "where": 57081, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 630, "name": "Stealth"}, {"id": 637, "name": "Torture prisoner"}]}],
+   "locations": [
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 67765, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 60176, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Thief One", "faction": 300}, {"id": 6947, "name": "Shadow One", "faction": 304}, {"id": 8159, "name": "Captor One", "faction": 302}, {"id": 8533, "name": "Hireling", "faction": 301}, {"id": 8651, "name": "Yielder One", "faction": 301}]}]},
+  {"id": 303, "name": "Gossips",
+   "units": [
+     {"id": 7012, "name": "Gossip One", "where": 67765, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 285}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 630, "name": "Stealth"}, {"id": 636, "name": "Learn of richest nearby noble"}]}],
+   "locations": [
+     {"id": 67765, "name": "", "kind": "loc", "subkind": "inn", "depth": "", "province": 13451,
+      "exits": [{"direction": "out", "destination": 57081, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 7012, "name": "Gossip One", "faction": 303}]}]},
+  {"id": 304, "name": "Shadows",
+   "units": [
+     {"id": 6947, "name": "Shadow One", "where": 57081, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 200}],
+      "skills": [{"id": 630, "name": "Stealth"}, {"id": 638, "name": "Conceal self"}, {"id": 639, "name": "Sneak into structure"}]}],
+   "locations": [
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 67765, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 60176, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Thief One", "faction": 300}, {"id": 6947, "name": "Shadow One", "faction": 304}, {"id": 8159, "name": "Captor One", "faction": 302}, {"id": 8533, "name": "Hireling", "faction": 301}, {"id": 8651, "name": "Yielder One", "faction": 301}]}]}]}

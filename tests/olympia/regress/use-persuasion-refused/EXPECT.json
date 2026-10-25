@@ -1,0 +1,19 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Bunglers",
+   "units": [
+     {"id": 4126, "name": "Bungler One", "where": 66159, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 670, "name": "Persuasion"}, {"id": 671, "name": "Bribe noble"}, {"id": 672, "name": "Persuade oathbound noble"}, {"id": 673, "name": "Raise peasant mob"}, {"id": 674, "name": "Rally peasant mob"}, {"id": 675, "name": "Incite mob violence"}]}],
+   "locations": [
+     {"id": 66159, "name": "", "kind": "loc", "subkind": "tower", "depth": "", "province": 13451,
+      "exits": [{"direction": "out", "destination": 57081, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Bungler One", "faction": 300}]}]},
+  {"id": 301, "name": "Absentees",
+   "units": [
+     {"id": 8651, "name": "Absentee One", "where": 57081, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 66159, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8651, "name": "Absentee One", "faction": 301}]}]}]}

@@ -45,7 +45,10 @@ A fixture's `check.sh` passes `--use-coverage` and asserts its cells with
 `use_cells` from `tests/olympia/fixtures/coverage.sh`. Children of #180 are one
 per school group. A child that needs a new Lua binding implements it itself, in
 the same PR as the fixture. Group 1 (shipcraft, construction, mining, trade; #190) is
-covered by `use-crafts` and `use-crafts-refused`.
+covered by `use-crafts` and `use-crafts-refused`; group 2 (combat, stealth,
+persuasion, alchemy, forestry, religion; #192) by `use-<school>` and
+`use-<school>-refused` for each (combat has no refused fixture: none of its
+starts can fail).
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):

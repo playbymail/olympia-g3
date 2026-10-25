@@ -1,0 +1,40 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Seers",
+   "units": [
+     {"id": 4126, "name": "Seer One", "where": 57081, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 750, "name": "Religion"}, {"id": 751, "name": "Receive vision"}, {"id": 755, "name": "Remove blessing from soldiers"}, {"id": 756, "name": "Immunity from Vision"}]}],
+   "locations": [
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Seer One", "faction": 300}, {"id": 7012, "name": "Lazarus One", "faction": 303}, {"id": 8651, "name": "Healer One", "faction": 301}]}]},
+  {"id": 301, "name": "Healers",
+   "units": [
+     {"id": 8651, "name": "Healer One", "where": 57081, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 750, "name": "Religion"}, {"id": 753, "name": "Preparatory ritual"}, {"id": 754, "name": "Resurrect dead noble"}]}],
+   "locations": [
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Seer One", "faction": 300}, {"id": 7012, "name": "Lazarus One", "faction": 303}, {"id": 8651, "name": "Healer One", "faction": 301}]}]},
+  {"id": 302, "name": "Mourners",
+   "units": [
+     {"id": 8159, "name": "Mourner One", "where": 59022, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 750, "name": "Religion"}, {"id": 752, "name": "Lay to rest"}]}],
+   "locations": [
+     {"id": 59022, "name": "", "kind": "loc", "subkind": "graveyard", "depth": "subloc", "province": 19252,
+      "exits": [{"direction": "out", "destination": 19252, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8159, "name": "Mourner One", "faction": 302}]}]},
+  {"id": 303, "name": "Risen",
+   "units": [
+     {"id": 7012, "name": "Lazarus One", "where": 57081, "stacked_under": 0,
+      "items": [],
+      "skills": []}],
+   "locations": [
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Seer One", "faction": 300}, {"id": 7012, "name": "Lazarus One", "faction": 303}, {"id": 8651, "name": "Healer One", "faction": 301}]}]},
+  {"id": 304, "name": "Departed",
+   "units": [],
+   "locations": []}]}

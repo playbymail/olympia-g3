@@ -26,8 +26,9 @@
  *  castle_level for construction-refused's level-six improve (issue #162);
  *  storm for the magic fixtures' bind (issue #170); add_garrison for
  *  governance-refused's pre-existing garrisons (issue #134); mine_depth
- *  for use-shipcraft's mines (issue #190).
- *  Everything else in the design (kill, credit, the
+ *  for use-shipcraft's mines (issue #190); kill for use-religion's dead
+ *  bodies (issue #192).
+ *  Everything else in the design (credit, the
  *  wider query set, the declarative format, RNG bindings) is deferred; a
  *  binding is added when a fixture needs it, not speculatively.
  */
@@ -673,6 +674,44 @@ l_seen(lua_State *L)
 	return 0;
 }
 
+/*
+ *  oly.kill(who, holder)  -> <body>
+ *
+ *  Kill the noble who with the `kill` GM verb (v_kill -> kill_char) and
+ *  hand its dead body to holder. kill_char turns the character into a dead
+ *  body item, keeping its id, and leaves it in the province; holder takes it
+ *  from there, as if it had picked the body up. The verb runs as holder, so
+ *  the active subject is never the dead noble. Returns the body's id.
+ */
+static int
+l_kill(lua_State *L)
+{
+	int who = (int) luaL_checkinteger(L, 1);
+	int holder = (int) luaL_checkinteger(L, 2);
+	int grave;
+
+	if (!valid_box(who) || kind(who) != T_char)
+		return luaL_error(L, "oly.kill: %d not a character", who);
+
+	if (!valid_box(holder) || kind(holder) != T_char || holder == who)
+		return luaL_error(L, "oly.kill: %d not another character",
+				holder);
+
+	be_subject(L, holder);
+	script_cmd(L, sout("kill %d", who));
+
+	if (kind(who) != T_item || subkind(who) != sub_dead_body)
+		return luaL_error(L, "oly.kill: %d left no body", who);
+
+	grave = item_unique(who);
+	if (!move_item(grave, holder, who, 1))
+		return luaL_error(L, "oly.kill: could not give body %d to %d",
+				who, holder);
+
+	lua_pushinteger(L, who);
+	return 1;
+}
+
 /* oly.guard(who, on)  -- the `guard` order set via v_guard. */
 static int
 l_guard(lua_State *L)
@@ -871,6 +910,7 @@ static const luaL_Reg oly_funcs[] = {
 	{ "mine_depth",		l_mine_depth },
 	{ "add_garrison",	l_add_garrison },
 	{ "seen",		l_seen },
+	{ "kill",		l_kill },
 	{ "guard",		l_guard },
 	{ "order",		l_order },
 	{ "save",		l_save },

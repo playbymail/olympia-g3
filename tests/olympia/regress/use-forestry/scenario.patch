@@ -1,0 +1,383 @@
+world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
+--- a/lib/fact/200
++++ b/lib/fact/200
+@@ -3,8 +3,8 @@
+ PL
+  pw crusty7
+ CO
+- li save
+- ar 0 0 0 0 0 0 0 0
+- cs 2
++ li be 4126
++ ar 4126 0 0 0 0 0 0 0
++ st 1
+  pr 1
+ 
+--- /dev/null
++++ b/lib/fact/300
+@@ -0,0 +1,43 @@
++300 player pl_regular
++na Woodcutters
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player300@example.com
++ pw OYCpEMJQ
++ np 18
++ fs 198
++ ft 1
++ kn 13451 
++ un 4126 
++ uf 1375 3743 8127 8535 2769 
++
++4126 char 0
++na Woodcutter One
++il	1 200 \
++	10 25 \
++	77 3 \
++	79 1 \
++	11 3
++LI
++ wh 13451
++CH
++ lo 300
++ he 100
++ lk 2
++ lr 2
++ sl	700 2 0 0 0 \
++	701 2 0 0 0 \
++	702 2 0 0 0
++ bp 50
++ at 80
++ df 80
++CO
++ li be 8651
++ ar 8651 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/301
+@@ -0,0 +1,40 @@
++301 player pl_regular
++na Bowyers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player301@example.com
++ pw j2tStUJc
++ np 18
++ fs 198
++ ft 1
++ kn 62199 
++ un 8651 
++ uf 8533 8078 5691 9254 3229 
++
++8651 char 0
++na Bowyer One
++il	1 200 \
++	10 25 \
++	11 2
++LI
++ wh 62199
++CH
++ lo 301
++ he 100
++ lk 2
++ lr 2
++ sl	700 2 0 0 0 \
++	703 2 0 0 0
++ bp 50
++ at 80
++ df 80
++CO
++ li be 8159
++ ar 8159 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/302
+@@ -0,0 +1,41 @@
++302 player pl_regular
++na Poppy Growers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player302@example.com
++ pw lXS3fLN8
++ np 18
++ fs 198
++ ft 1
++ kn 59084 
++ un 8159 
++ uf 9655 6087 6523 7473 3056 
++
++8159 char 0
++na Farmer One
++il	1 200 \
++	10 25
++LI
++ wh 59084
++CH
++ lo 302
++ he 100
++ lk 2
++ lr 2
++ sl	700 2 0 0 0 \
++	705 2 0 0 0 \
++	707 2 0 0 0
++ bp 50
++ at 80
++ df 80
++CO
++ li save
++ ar 0 0 0 0 0 0 0 0
++ cs 2
++ st 1
++ pr 1
++
+--- a/lib/loc
++++ b/lib/loc
+@@ -44846,7 +44846,7 @@
+ 	274 1
+ LI
+  wh 58762
+- hl 57081 
++ hl 57081 4126 
+ LO
+  pd 13351 13452 13551 13450 
+  dg 4
+@@ -275080,6 +275080,7 @@
+ il	93 25
+ LI
+  wh 18947
++ hl 8159 
+ 
+ 59087 loc circle of trees
+ il	77 5 \
+@@ -284663,6 +284664,7 @@
+ il	68 5
+ LI
+  wh 13349
++ hl 8651 
+ LO
+  hi 1
+ 
+--- a/lib/master
++++ b/lib/master
+@@ -96,6 +96,9 @@
+ 293	4.0	item		faery
+ 294	4.0	item		petty thief cookie
+ 295	4.0	item		hound
++300	1.49	fact/300	Woodcutters
++301	1.49	fact/301	Bowyers
++302	1.49	fact/302	Poppy Growers
+ 401	4.69	item		Imperial Throne
+ 402	4.69	item		Crown of Prosperity
+ 403	4.69	item		Skull of Bastrestric
+@@ -275,6 +278,7 @@
+ 1306	2.64	fact/207	
+ 1321	2.64	fact/207	
+ 1335	2.64	fact/207	
++1375	12.0	unform		
+ 1383	2.64	fact/207	
+ 1416	2.64	fact/207	
+ 1501	2.64	fact/207	
+@@ -338,6 +342,7 @@
+ 2724	2.64	fact/207	
+ 2743	2.64	fact/207	
+ 2763	2.64	fact/207	
++2769	12.0	unform		
+ 2774	2.64	fact/207	
+ 2788	2.64	fact/207	
+ 2811	2.64	fact/207	
+@@ -354,6 +359,7 @@
+ 3020	2.64	fact/207	
+ 3021	2.64	fact/207	
+ 3030	2.64	fact/207	
++3056	12.0	unform		
+ 3078	2.64	fact/207	
+ 3082	2.64	fact/207	
+ 3088	2.64	fact/207	
+@@ -366,6 +372,7 @@
+ 3175	2.64	fact/207	
+ 3199	2.64	fact/207	
+ 3228	2.64	fact/207	
++3229	12.0	unform		
+ 3230	2.64	fact/207	
+ 3235	2.64	fact/207	
+ 3252	2.64	fact/207	
+@@ -384,6 +391,7 @@
+ 3596	2.64	fact/207	
+ 3597	2.64	fact/207	
+ 3711	2.64	fact/207	
++3743	12.0	unform		
+ 3754	2.64	fact/207	
+ 3780	2.64	fact/207	
+ 3791	2.64	fact/207	
+@@ -405,6 +413,7 @@
+ 4047	2.64	fact/207	
+ 4069	2.64	fact/207	
+ 4104	2.64	fact/207	
++4126	2.0	fact/300	Woodcutter One
+ 4139	2.64	fact/207	
+ 4152	2.64	fact/207	
+ 4165	2.64	fact/207	
+@@ -476,6 +485,7 @@
+ 5669	2.64	fact/207	
+ 5676	2.64	fact/207	
+ 5688	2.64	fact/207	
++5691	12.0	unform		
+ 5697	2.64	fact/207	
+ 5728	2.64	fact/207	
+ 5730	2.64	fact/207	
+@@ -498,6 +508,7 @@
+ 6027	2.64	fact/207	
+ 6073	2.64	fact/207	
+ 6082	2.64	fact/207	
++6087	12.0	unform		
+ 6094	2.64	fact/207	
+ 6103	2.64	fact/207	
+ 6169	2.64	fact/207	
+@@ -516,6 +527,7 @@
+ 6440	2.64	fact/207	
+ 6450	2.64	fact/207	
+ 6500	2.64	fact/207	
++6523	12.0	unform		
+ 6527	2.64	fact/207	
+ 6558	2.64	fact/207	
+ 6581	2.64	fact/207	
+@@ -566,6 +578,7 @@
+ 7401	2.64	fact/207	
+ 7421	2.64	fact/207	
+ 7441	2.64	fact/207	
++7473	12.0	unform		
+ 7481	2.64	fact/207	
+ 7518	2.64	fact/207	
+ 7577	2.64	fact/207	
+@@ -594,11 +607,14 @@
+ 7987	2.64	fact/207	
+ 8000	2.64	fact/207	
+ 8007	2.64	fact/207	
++8078	12.0	unform		
+ 8093	2.64	fact/207	
+ 8105	2.64	fact/207	
+ 8122	2.64	fact/207	
++8127	12.0	unform		
+ 8151	2.64	fact/207	
+ 8155	2.64	fact/207	
++8159	2.0	fact/302	Farmer One
+ 8177	2.64	fact/207	
+ 8178	2.64	fact/207	
+ 8182	2.64	fact/207	
+@@ -617,11 +633,14 @@
+ 8494	2.64	fact/207	
+ 8499	2.64	fact/207	
+ 8508	2.64	fact/207	
++8533	12.0	unform		
++8535	12.0	unform		
+ 8575	2.64	fact/207	
+ 8604	2.64	fact/207	
+ 8612	2.64	fact/207	
+ 8635	2.64	fact/207	
+ 8650	2.64	fact/207	
++8651	2.0	fact/301	Bowyer One
+ 8730	2.64	fact/207	
+ 8780	2.64	fact/207	
+ 8839	2.64	fact/207	
+@@ -647,6 +666,7 @@
+ 9185	2.64	fact/207	
+ 9205	2.64	fact/207	
+ 9248	2.64	fact/207	
++9254	12.0	unform		
+ 9258	2.64	fact/207	
+ 9276	2.64	fact/207	
+ 9294	2.64	fact/207	
+@@ -663,6 +683,7 @@
+ 9554	2.64	fact/207	
+ 9622	2.64	fact/207	
+ 9654	2.64	fact/207	
++9655	12.0	unform		
+ 9676	2.64	fact/207	
+ 9685	2.64	fact/207	
+ 9714	2.64	fact/207	
+--- /dev/null
++++ b/lib/orders/300
+@@ -0,0 +1,2 @@
++4126:use 701
++4126:use 702 2
+--- /dev/null
++++ b/lib/orders/301
+@@ -0,0 +1 @@
++8651:use 703 2
+--- /dev/null
++++ b/lib/orders/302
+@@ -0,0 +1 @@
++8159:use 707
+--- a/lib/times_0
++++ b/lib/times_0
+@@ -1,14 +1,15 @@
+-From: skrenta@pbm.com (Rich skrenta)
+-Subject: Olympia G3 - The Olympia Times - Issue 0
++From: olympia@pbm.com (Olympia PBEM)
++Subject: Olympia Times g2-0
++To: totimes@pbm.com
+ 
+    +----------------------------------------------------------------------+
+-   | The Olympia Times                                Fierce winds year 1 |
+-   | October 24, 2026                                                     |
++   | The Olympia Times                                         issue g2-0 |
++   | August 31, 1996                                                      |
+    |                                                                      |
+-   | turn 0, 0 players                     skrenta@pbm.com (Rich skrenta) |
++   | turn 0  0 players                      http://www.pbm.com/oly/times/ |
+    +----------------------------------------------------------------------+
+ 
+-     Questions, comments, to play: http://olympia.v-labs.be/g3
++               Questions, comments, to play:  info@pbm.com
+ 
+                              Olympia PBEM
+ 
+--- a/lib/unform
++++ b/lib/unform
+@@ -0,0 +1,30 @@
++1375 unform 0
++
++2769 unform 0
++
++3056 unform 0
++
++3229 unform 0
++
++3743 unform 0
++
++5691 unform 0
++
++6087 unform 0
++
++6523 unform 0
++
++7473 unform 0
++
++8078 unform 0
++
++8127 unform 0
++
++8533 unform 0
++
++8535 unform 0
++
++9254 unform 0
++
++9655 unform 0
++

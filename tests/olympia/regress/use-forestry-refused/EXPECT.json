@@ -1,0 +1,10 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Bunglers",
+   "units": [
+     {"id": 4126, "name": "Bungler One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 700, "name": "Forestry"}, {"id": 702, "name": "Harvest lumber"}, {"id": 703, "name": "Harvest yew"}, {"id": 705, "name": "Harvest mallorn wood"}, {"id": 707, "name": "Improve opium production"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Bungler One", "faction": 300}]}]}]}

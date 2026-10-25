@@ -681,7 +681,17 @@ before the turn. No GM verb sets the depth, so it is a path (B) binding like
 `castle_level`; it skips the gate crystal a finished build may leave.
 `use-crafts` sinks its mine to depth 4, the shallowest that yields mithril.
 
-**Explicitly deferred:** `kill`, `credit`, the full query set
+**Since landed (#192):** `oly.kill(who, holder)` kills the noble `who` with
+the `kill` GM verb (`v_kill` → `kill_char`), run as `holder`, and hands its
+dead body to `holder`, as if `holder` had picked it up. `kill_char` turns the
+character into a dead body item that keeps its id and leaves it in the
+province (`dead_char_body`); the binding moves it from there with
+`move_item` and returns the body's id. It errors when `who` isn't a
+character, `holder` isn't another character, or the death leaves no body (an
+NPC, a melted unit, or a noble saved by `survive_fatal` or Transcend death).
+`use-religion` uses it for the bodies its priests resurrect and lay to rest.
+
+**Explicitly deferred:** `credit`, the full query set
 (`here`/`all`/`chars_here`/`knows`), the declarative format, RNG bindings, and
 any production-engine integration. Path (B) direct-handler calls are deferred
 unless path (A) proves clumsy.
