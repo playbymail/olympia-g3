@@ -37,8 +37,8 @@ so the Bunglers' player entity orders all three, and `check_allow()`
 refuses each.
 
 Not reached: bribing a noble that switched lords this month (only a
-desertion sets `new_lord`: a won bribe, persuade or prisoner terror),
-bribing a unit of your own faction, inciting a mob stacked under a leader,
+desertion sets `new_lord`; `social-switched` covers it, #160), bribing a
+unit of your own faction, inciting a mob stacked under a leader,
 terrorizing an oath-bound vassal, and the prisoner paths of `terrorize`
 (not your prisoner, an NPC prisoner).
 

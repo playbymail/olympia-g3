@@ -25,7 +25,8 @@ the combat family (#128) by `combat-attack`, `combat-refused` and
 (#143) by `loyalty-bind` and `loyalty-refused`, the skills family
 (#144) by `skills-learn` and `skills-refused`, the stealth family
 (#145) by `stealth-hide` and `stealth-refused`, the social family
-(#146) by `social-bribe` and `social-refused`, the construction family
+(#146) by `social-bribe` and `social-refused` (and bribe's "just
+switched employers" refusal by `social-switched`, #160), the construction family
 (#147) by `construction-build` and `construction-refused`, the
 exploration family (#148) by `exploration-explore` and
 `exploration-refused`, the magic family (#149) by `magic-cast` and

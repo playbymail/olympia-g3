@@ -19,7 +19,7 @@
 -- the player entity's orders for all three are refused.
 --
 -- Not reached: bribing a noble that switched lords this month (only a
--- desertion -- a won bribe, persuade or prisoner terror -- sets new_lord).
+-- desertion sets new_lord; social-switched covers it, #160).
 
 local oly = require "oly"
 
