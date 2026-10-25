@@ -9,9 +9,9 @@ Three factions start in Greyfell (57081), a safe haven:
 
 | Faction | Noble | Set up | Orders |
 |---|---|---|---|
-| 300 Trancers | Trancer One [4126] | knows Advanced sorcery [920] and Trance [921] | `trance` |
+| 300 Trancers | Trancer One [4126] | knows Advanced sorcery [920] and Trance [921]; builds the empty Roundship [64623] on the dock | `trance` |
 | 301 Breeders | Breeder One [8651] | knows Beastmastery [650] and Breed beasts [654]; one ox [76] | `breed 10 76` |
-| 302 Binders | Binder One [8159] | knows Magic, Weather magic and Bind storm (3 aura); aboard Roundship [74170] in Greyfell; owns Rain [91520] over Forest [13451] | `bind 91520` |
+| 302 Binders | Binder One [8159] | knows six magic skills (6 aura); aboard Roundship [74170] in Greyfell; owns Rain [91520] over Forest [13451] | `bind 91520`, `move out`, `move 64623`, `bind 91520` |
 
 - **trance.** `v_trance` needs only the skill. The trance takes 28 days, and
   on day 28 `d_trance` raises current aura to two thirds of the maximum. The
@@ -28,15 +28,19 @@ Three factions start in Greyfell (57081), a safe haven:
   Greyfell's forest [13451] at build time and records the binder as its
   summoner. It spends the forest's rain cookie, as a summon would. `bind` is
   its own verb, not a spell cast through `use`, so the safe haven doesn't
-  stop it. On day 8 `d_bind_storm` spends the binder's 3 aura and binds the
-  storm to the ship. Month end decays the storm to strength 5 and
+  stop it. On day 7 `d_bind_storm` spends 3 aura and binds the storm to
+  Roundship [74170]. On day 8 the binder steps out onto the dock and boards
+  the empty Roundship [64623], and on day 14 it rebinds the storm there for
+  its other 3 aura. Month end decays the storm to strength 5 and
   regenerates the binder's aura to 2.
 
-`d_bind_storm` appends the storm to the ship's `bound_storms` (`bs` in
-`lib/ship`) but sets the storm's own `bind_storm` to the storm, not the
-ship (#169). Every Olympia generation has this line. The fixture takes the turn as
-the engine runs it. `lib/ship` is in the manifest, so the ship's side of the
-binding is hashed. The storm's side is in `lib/misc`, which is not hashed.
+The rebind pins the #169 fix. `d_bind_storm` records the ship on the storm
+(`bind_storm`, `bs` in `lib/misc`) and adds the storm to the ship's
+`bound_storms` (`bs` in `lib/ship`). A rebind looks up the old ship through
+the storm's `bind_storm` and takes the storm off it. Before the fix,
+`bind_storm` held the storm itself, so the lookup found nothing, and the
+storm stayed on both ships' lists. `lib/ship` is in the manifest, so the
+first ship's emptied list and the barge's entry are both hashed.
 
 ## What `check.sh` asserts
 

@@ -809,7 +809,7 @@ struct entity_misc {
 	sparse npc_memory;
 	int only_vulnerable;	/* only defeatable with this rare artifact */
 	int garr_castle;	/* castle which owns this garrison */
-	int bind_storm;		/* storm bound to this ship */
+	int bind_storm;		/* ship this storm is bound to */
 
 	short storm_str;	/* storm strength */
 	schar npc_dir;		/* last direction npc moved */

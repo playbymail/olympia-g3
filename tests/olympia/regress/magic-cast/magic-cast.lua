@@ -4,14 +4,16 @@
 -- frozen as scenario.patch. Three factions start in Greyfell (start city 0):
 --
 --   trancer    knows Advanced sorcery and Trance: trances for 28 days, which
---              restores aura and health
+--              restores aura and health; also builds an empty second ship
+--              (the barge) on the dock
 --   breeder    knows Beastmastery and Breed beasts, and holds an ox beside
 --              its peasants: breeds a peasant with the ox (a minotaur); the
 --              breeding accidents and the offspring are draws on the social
 --              stream
 --   binder     a weather mage aboard a roundship in Greyfell's port, owning a
 --              rain storm over Greyfell's forest [13451] (made by oly.storm):
---              binds the storm to the ship
+--              binds the storm to the ship, boards the barge and rebinds the
+--              storm there, which must take it off the first ship (#169)
 --
 -- Every start returns TRUE (ok).
 
@@ -51,8 +53,8 @@ oly.know(breeder, BEAST)
 oly.know(breeder, BREED)
 oly.additem(breeder, OX, 1)
 
--- each magic skill learned adds one aura: 3 here, what bind costs
-for _, sk in ipairs{ MAGIC, WEATHER, BIND } do
+-- each magic skill learned adds one aura: 6 here, enough to bind twice
+for _, sk in ipairs{ MAGIC, 801, 802, WEATHER, BIND, 825 } do
 	oly.know(binder, sk)
 end
 local ship = oly.makeloc(binder, "roundship", "ship")
@@ -62,12 +64,19 @@ assert(oly.loc(binder) == ship, "the binder must be aboard the ship")
 assert(oly.loc(GREYFELL) == FOREST, "Greyfell must be in the forest")
 local storm = oly.storm(FOREST, "rain", 6, binder, "storm")
 assert(oly.loc(storm) == FOREST, "the storm must be over the forest")
+-- an empty second ship on the dock, made last so the ids above hold
+local barge = oly.makeloc(trancer, "roundship", "barge")
+assert(oly.loc(barge) == GREYFELL, "the barge must be built in Greyfell")
 
 oly.order(trancer, "trance")
 oly.order(breeder, "breed " .. PEASANT .. " " .. OX)
+oly.order(binder, "bind " .. storm)
+oly.order(binder, "move out")
+oly.order(binder, "move " .. barge)
 oly.order(binder, "bind " .. storm)
 
 oly.save("./lib")
 
 print(string.format("built magic-cast: trancer=%d breeder=%d binder=%d "
-	.. "ship=%d storm=%d", trancer, breeder, binder, ship, storm))
+	.. "ship=%d storm=%d barge=%d", trancer, breeder, binder, ship, storm,
+	barge))

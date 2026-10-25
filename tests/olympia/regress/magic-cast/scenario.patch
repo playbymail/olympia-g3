@@ -15,7 +15,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  
 --- /dev/null
 +++ b/lib/fact/300
-@@ -0,0 +1,42 @@
+@@ -0,0 +1,43 @@
 +300 player pl_regular
 +na Trancers
 +il	1 5000 \
@@ -53,8 +53,9 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 + ma 2
 + ca 2
 +CO
-+ li be 8651
-+ ar 8651 0 0 0 0 0 0 0
++ li save
++ ar 0 0 0 0 0 0 0 0
++ cs 2
 + st 1
 + pr 1
 +
@@ -102,7 +103,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 +
 --- /dev/null
 +++ b/lib/fact/302
-@@ -0,0 +1,46 @@
+@@ -0,0 +1,48 @@
 +302 player pl_regular
 +na Binders
 +il	1 5000 \
@@ -132,20 +133,22 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 + lk 2
 + lr 2
 + sl	800 2 0 0 0 \
++	801 2 0 0 0 \
++	802 2 0 0 0 \
 +	820 2 0 0 0 \
-+	822 2 0 0 0
++	822 2 0 0 0 \
++	825 2 0 0 0
 + bp 50
 + at 80
 + df 80
 +CM
 + im 1
-+ ma 3
-+ ca 3
++ ma 6
++ ca 6
 + kw 1
 +CO
-+ li save
-+ ar 0 0 0 0 0 0 0 0
-+ cs 2
++ li be 4126
++ ar 4126 0 0 0 0 0 0 0
 + st 1
 + pr 1
 +
@@ -169,7 +172,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  LI
   wh 13451
 - hl 77708 
-+ hl 8651 4126 77708 74170 
++ hl 8651 4126 77708 74170 64623 
  SL
   te 600 610 680 700 730 800 860 
   sh 1
@@ -311,7 +314,15 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  9676	2.64	fact/207	
  9685	2.64	fact/207	
  9714	2.64	fact/207	
-@@ -34288,6 +34309,7 @@
+@@ -29632,6 +29653,7 @@
+ 64612	3.16	loc		
+ 64617	3.25	loc		
+ 64619	3.13	loc		
++64623	9.31	ship		
+ 64626	3.27	loc		
+ 64627	3.25	loc		
+ 64628	3.17	loc		
+@@ -34288,6 +34310,7 @@
  74167	3.22	loc		Cursed Pits
  74168	3.19	loc		
  74169	3.12	loc		
@@ -319,7 +330,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  74173	3.9	loc		
  74174	3.11	loc		
  74175	3.27	loc		
-@@ -36997,3 +37019,4 @@
+@@ -36997,3 +37020,4 @@
  78915	7.0	misc	Secret pass
  78962	7.0	misc	Secret pass
  78982	7.0	misc	Old road
@@ -349,11 +360,18 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 +8651:breed 10 76
 --- /dev/null
 +++ b/lib/orders/302
-@@ -0,0 +1 @@
+@@ -0,0 +1,4 @@
++8159:bind 91520
++8159:move out
++8159:move 64623
 +8159:bind 91520
 --- a/lib/ship
 +++ b/lib/ship
-@@ -0,0 +1,5 @@
+@@ -0,0 +1,9 @@
++64623 ship roundship
++LI
++ wh 57081
++
 +74170 ship roundship
 +LI
 + wh 57081

@@ -5,7 +5,8 @@
 # Extracts the frozen scenario (scenario.patch over the shared
 # tests/olympia/fixtures/world.tgz) and runs one turn. A trancer in Greyfell
 # trances; a breeder breeds a peasant with an ox; a weather mage on a ship in
-# Greyfell's port binds its storm to the ship. Each order starts.
+# Greyfell's port binds its storm to the ship, boards a second ship and
+# rebinds the storm there. Each order starts.
 # See magic-cast.lua and README.md.
 #
 # Three checks, all required:
@@ -13,7 +14,7 @@
 #      turn's --coverage dump, so the backlog cells this fixture claims stay
 #      true;
 #   2. EXPECT.sha256: each faction's report and unit state, and the ship
-#      file that holds the bound storm, byte for byte
+#      file that holds the bound storms (the rebind pins #169), byte for byte
 #      (the strict gate);
 #   3. EXPECT.json: the post-turn --state-export snapshot (shows *what*
 #      changed when the hashes fail).
