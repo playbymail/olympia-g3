@@ -129,8 +129,8 @@ skill	907	eat_dead	necromancy	v_eat_dead	use-necro	use-necro-refused
 skill	908	aura_blast	necromancy	v_aura_blast	use-necro	use-necro-refused
 skill	909	absorb_blast	necromancy	v_aura_reflect	use-necro	n/a
 skill	911	transcend_death	necromancy	v_implicit	n/a	todo
-skill	921	trance	adv_sorcery	v_trance	todo	todo
-skill	922	teleport_item	adv_sorcery	v_teleport_item	todo	todo
+skill	921	trance	adv_sorcery	v_trance	use-sorcery	n/a
+skill	922	teleport_item	adv_sorcery	v_teleport_item	use-sorcery	n/a
 skill	997	add_ram	(none)	v_add_ram	n/a	n/a
 skill	998	save_quick	(none)	v_save_quick	n/a	n/a
 skill	999	quick_cast	(none)	v_quick_cast	n/a	n/a

@@ -57,7 +57,8 @@ ones), so it needed no binding; group 6 (artifact construction; #204) by
 `use-art` and `use-art-refused`, with palantirs from the `oly.palantir`
 binding; group 7 (necromancy; #214) by `use-necro` and `use-necro-refused`,
 in the base world's graveyards, with a demon lord from the `oly.undead`
-binding.
+binding; group 8 (advanced sorcery; #216) by `use-sorcery` alone, since
+neither of its `fail` cells is reachable.
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):

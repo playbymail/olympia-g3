@@ -137,11 +137,15 @@ either: one fixture pins those for all skills.
   function exists").
 - `ok` of `shipbuilding` (602): `v_shipbuild` always fails ("Use the BUILD
   order to build ships.").
-- `fail` of the 15 skills whose start always returns TRUE: `fight_to_death`,
+- `fail` of the 16 skills whose start always returns TRUE: `fight_to_death`,
   `defense`, `archery`, `swordplay`, `breed_hound`, the three brews
   (`v_brew`), `vision_protect`, `meditate`, `tap_health`, `shroud_abil`,
-  `adv_med`, `banish_corpses` and `absorb_blast`. A missing requirement (a brew's ingredient) fails in
+  `adv_med`, `banish_corpses`, `absorb_blast` and `teleport_item`. A missing requirement (a brew's ingredient) fails in
   `meets_requirements`, under `checks`.
+- `fail` of `trance` (921). `v_trance` refuses a noble that doesn't know
+  Trance, but `v_use` lets one through only when it holds an item whose
+  `may_use` lists Trance, and no engine code makes such an item
+  (`d_write_spell` and the quest scrolls set `may_study`).
 - `fail` of the 4 `(produce)` skills (`make_catapult`, `make_siege`,
   `extract_venom`, `make_ram`). With no start function, `v_use` counts every
   use that passes its shared checks as `ok`; a missing requirement fails in
