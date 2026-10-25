@@ -1,0 +1,19 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Lords",
+   "units": [
+     {"id": 4126, "name": "Lord One", "where": 66159, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 300}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 66159, "name": "", "kind": "loc", "subkind": "castle", "depth": "", "province": 13451,
+      "exits": [{"direction": "out", "destination": 57081, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Lord One", "faction": 300}]}]},
+  {"id": 301, "name": "Wardens",
+   "units": [
+     {"id": 8651, "name": "Warden One", "where": 13451, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 135}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 12, "name": "soldier", "qty": 20}],
+      "skills": []}],
+   "locations": [
+     {"id": 13451, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "south", "destination": 13551, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13450, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 57081, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8651, "name": "Warden One", "faction": 301}]}]}]}

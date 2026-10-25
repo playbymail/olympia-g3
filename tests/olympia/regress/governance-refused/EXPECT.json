@@ -1,0 +1,46 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Lords",
+   "units": [
+     {"id": 4126, "name": "Lord One", "where": 67765, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 300}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 67765, "name": "", "kind": "loc", "subkind": "castle", "depth": "", "province": 13451,
+      "exits": [{"direction": "out", "destination": 57081, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Lord One", "faction": 300}]}]},
+  {"id": 301, "name": "Squires",
+   "units": [
+     {"id": 8651, "name": "Squire One", "where": 13451, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 165}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 12, "name": "soldier", "qty": 5}],
+      "skills": []}],
+   "locations": [
+     {"id": 13451, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "south", "destination": 13551, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13450, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 57081, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8651, "name": "Squire One", "faction": 301}]}]},
+  {"id": 302, "name": "Pretenders",
+   "units": [
+     {"id": 8159, "name": "Pretender One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 155}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 12, "name": "soldier", "qty": 10}],
+      "skills": []}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8159, "name": "Pretender One", "faction": 302}]}]},
+  {"id": 303, "name": "Usurpers",
+   "units": [
+     {"id": 7012, "name": "Usurper One", "where": 58706, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 58706, "name": "Catchclaw", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 15126,
+      "exits": [{"direction": "out", "destination": 15126, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 1009, "name": "", "faction": 207}, {"id": 7012, "name": "Usurper One", "faction": 303}]}]},
+  {"id": 304, "name": "Outlanders",
+   "units": [
+     {"id": 6947, "name": "Outlander One", "where": 10113, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 155}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 12, "name": "soldier", "qty": 10}],
+      "skills": []}],
+   "locations": [
+     {"id": 10113, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 10113,
+      "exits": [{"direction": "north", "destination": 10013, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 10114, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 10213, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 10112, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 62791, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 6947, "name": "Outlander One", "faction": 304}]}]}]}

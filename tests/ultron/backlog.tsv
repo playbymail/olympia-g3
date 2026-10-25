@@ -54,9 +54,9 @@ take	inventory	cr	get	inventory-give	inventory-refused	inventory-refused
 buy	trade	c		trade-market	trade-refused	trade-refused
 fee	trade	c		move-ship	trade-refused	n/a
 sell	trade	c		trade-market	trade-refused	trade-refused
-decree	governance	c		todo	todo	todo
-garrison	governance	c		todo	todo	todo
-ungarrison	governance	c		todo	todo	todo
+decree	governance	c		governance-rule	governance-refused	governance-refused
+garrison	governance	c		governance-rule	governance-refused	governance-refused
+ungarrison	governance	c		governance-rule	governance-refused	governance-refused
 build	construction	c		construction-build	construction-refused	construction-refused
 improve	construction	c		construction-build	construction-refused	construction-refused
 repair	construction	c		construction-build	construction-refused	construction-refused
