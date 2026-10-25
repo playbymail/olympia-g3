@@ -814,6 +814,48 @@ l_palantir(lua_State *L)
 	return 1;
 }
 
+/*
+ *  oly.undead(who [, name])  -> <id>
+ *
+ *  Summon a demon lord stacked under who, as d_undead_lord does at three
+ *  aura: do_cookie_npc() mints it, spends the graveyard's undead cookie, and
+ *  draws its corpses from the per-location npc stream, then it is rated 100
+ *  and bonded to who (LOY_summon, 5), so renew_undead may keep it. No aura
+ *  is spent. One summoned in the turn has an id minted in the turn, which no
+ *  order can name. No GM verb makes a demon lord, so this is a path (B)
+ *  binding, like mob. `name`, when given, binds the id in the registry.
+ */
+static int
+l_undead(lua_State *L)
+{
+	int who = (int) luaL_checkinteger(L, 1);
+	const char *name = luaL_optstring(L, 2, NULL);
+	int where, undead;
+
+	if (!valid_box(who) || kind(who) != T_char)
+		return luaL_error(L, "oly.undead: %d not a character", who);
+
+	where = subloc(who);
+	if (!may_cookie_npc(0, where, item_undead_cookie))
+		return luaL_error(L, "oly.undead: no demon lord may be "
+				"summoned at %d", where);
+
+	undead = do_cookie_npc(who, where, item_undead_cookie, who);
+	if (undead <= 0)
+		return luaL_error(L, "oly.undead: could not summon a demon "
+				"lord at %d", where);
+
+	p_char(undead)->attack = 100;
+	p_char(undead)->defense = 100;
+	set_loyal(undead, LOY_summon, 5);
+
+	if (name != NULL)
+		reg_bind(str_save((char *) name), undead);
+
+	lua_pushinteger(L, undead);
+	return 1;
+}
+
 /* oly.guard(who, on)  -- the `guard` order set via v_guard. */
 static int
 l_guard(lua_State *L)
@@ -1016,6 +1058,7 @@ static const luaL_Reg oly_funcs[] = {
 	{ "kill",		l_kill },
 	{ "sick",		l_sick },
 	{ "palantir",		l_palantir },
+	{ "undead",		l_undead },
 	{ "guard",		l_guard },
 	{ "order",		l_order },
 	{ "save",		l_save },

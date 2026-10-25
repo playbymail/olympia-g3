@@ -1,0 +1,58 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Raisers",
+   "units": [
+     {"id": 4126, "name": "Raiser One", "where": 59022, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 31, "name": "undead", "qty": 3}, {"id": 63461, "name": "Scroll", "qty": 1}],
+      "skills": [{"id": 900, "name": "Necromancy"}, {"id": 901, "name": "Raise undead"}, {"id": 902, "name": "Summon ghost warriors"}, {"id": 903, "name": "Runes of Evil"}, {"id": 904, "name": "Summon demon lord"}, {"id": 905, "name": "Renew demon bond"}, {"id": 906, "name": "Banish demon lord"}, {"id": 907, "name": "Eating of the dead"}, {"id": 908, "name": "Aura blast"}, {"id": 909, "name": "Absorb aura blast"}, {"id": 911, "name": "Transcend death"}]}],
+   "locations": [
+     {"id": 59022, "name": "", "kind": "loc", "subkind": "graveyard", "depth": "subloc", "province": 19252,
+      "exits": [{"direction": "out", "destination": 19252, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 1728, "name": "", "faction": 100}, {"id": 4126, "name": "Raiser One", "faction": 300}, {"id": 8651, "name": "Summoner One", "faction": 301}]}]},
+  {"id": 301, "name": "Summoners",
+   "units": [
+     {"id": 8651, "name": "Summoner One", "where": 59022, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 900, "name": "Necromancy"}, {"id": 901, "name": "Raise undead"}, {"id": 902, "name": "Summon ghost warriors"}, {"id": 903, "name": "Runes of Evil"}, {"id": 904, "name": "Summon demon lord"}, {"id": 905, "name": "Renew demon bond"}, {"id": 906, "name": "Banish demon lord"}, {"id": 907, "name": "Eating of the dead"}, {"id": 908, "name": "Aura blast"}, {"id": 909, "name": "Absorb aura blast"}, {"id": 911, "name": "Transcend death"}]}],
+   "locations": [
+     {"id": 59022, "name": "", "kind": "loc", "subkind": "graveyard", "depth": "subloc", "province": 19252,
+      "exits": [{"direction": "out", "destination": 19252, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 1728, "name": "", "faction": 100}, {"id": 4126, "name": "Raiser One", "faction": 300}, {"id": 8651, "name": "Summoner One", "faction": 301}]}]},
+  {"id": 302, "name": "Renewers",
+   "units": [
+     {"id": 8159, "name": "Renewer One", "where": 59095, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 900, "name": "Necromancy"}, {"id": 901, "name": "Raise undead"}, {"id": 902, "name": "Summon ghost warriors"}, {"id": 903, "name": "Runes of Evil"}, {"id": 904, "name": "Summon demon lord"}, {"id": 905, "name": "Renew demon bond"}, {"id": 906, "name": "Banish demon lord"}, {"id": 907, "name": "Eating of the dead"}, {"id": 908, "name": "Aura blast"}, {"id": 909, "name": "Absorb aura blast"}, {"id": 911, "name": "Transcend death"}]}],
+   "locations": [
+     {"id": 59095, "name": "", "kind": "loc", "subkind": "graveyard", "depth": "subloc", "province": 14658,
+      "exits": [{"direction": "out", "destination": 14658, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8159, "name": "Renewer One", "faction": 302}]}]},
+  {"id": 303, "name": "Eaters",
+   "units": [
+     {"id": 7719, "name": "Eater One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 600, "name": "Shipcraft"}, {"id": 900, "name": "Necromancy"}, {"id": 901, "name": "Raise undead"}, {"id": 902, "name": "Summon ghost warriors"}, {"id": 903, "name": "Runes of Evil"}, {"id": 904, "name": "Summon demon lord"}, {"id": 905, "name": "Renew demon bond"}, {"id": 906, "name": "Banish demon lord"}, {"id": 907, "name": "Eating of the dead"}, {"id": 908, "name": "Aura blast"}, {"id": 909, "name": "Absorb aura blast"}, {"id": 911, "name": "Transcend death"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 2176, "name": "Absorber One", "faction": 305}, {"id": 6895, "name": "Blaster One", "faction": 304}, {"id": 7719, "name": "Eater One", "faction": 303}]}]},
+  {"id": 304, "name": "Blasters",
+   "units": [
+     {"id": 6895, "name": "Blaster One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 900, "name": "Necromancy"}, {"id": 901, "name": "Raise undead"}, {"id": 902, "name": "Summon ghost warriors"}, {"id": 903, "name": "Runes of Evil"}, {"id": 904, "name": "Summon demon lord"}, {"id": 905, "name": "Renew demon bond"}, {"id": 906, "name": "Banish demon lord"}, {"id": 907, "name": "Eating of the dead"}, {"id": 908, "name": "Aura blast"}, {"id": 909, "name": "Absorb aura blast"}, {"id": 911, "name": "Transcend death"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 2176, "name": "Absorber One", "faction": 305}, {"id": 6895, "name": "Blaster One", "faction": 304}, {"id": 7719, "name": "Eater One", "faction": 303}]}]},
+  {"id": 305, "name": "Absorbers",
+   "units": [
+     {"id": 2176, "name": "Absorber One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 900, "name": "Necromancy"}, {"id": 909, "name": "Absorb aura blast"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 2176, "name": "Absorber One", "faction": 305}, {"id": 6895, "name": "Blaster One", "faction": 304}, {"id": 7719, "name": "Eater One", "faction": 303}]}]},
+  {"id": 306, "name": "Departed",
+   "units": [],
+   "locations": []}]}

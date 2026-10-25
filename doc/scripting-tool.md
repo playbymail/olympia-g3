@@ -724,6 +724,19 @@ uses it for the artifacts its mages inspect, cloak, curse and destroy: a
 palantir forged in the turn would have an id minted in the turn, which no
 order can name.
 
+**Since landed (#214):** `oly.undead(who [, name])` summons a demon lord
+stacked under the character `who` and returns its id (optionally bound in the
+registry). It summons as `d_undead_lord` (`necro.c`) does at three aura:
+`do_cookie_npc` mints the demon lord, spends the undead cookie of `who`'s
+graveyard and draws its corpses from the per-location npc stream; the binding
+then rates it 100 and bonds it to `who` (`LOY_summon`, 5), so `renew_undead`
+may keep it. No aura is spent. The mint and the draw are the same on every
+run of a script. No GM verb makes a demon lord, so it is a path (B) binding
+like `oly.mob`. It errors when `who` isn't a character or its location is not
+a graveyard with an undead cookie. `use-necro` uses it for the demon lord its
+renewer renews and banishes: one summoned in the turn would have an id minted
+in the turn, which no order can name.
+
 **Explicitly deferred:** `credit`, the full query set
 (`here`/`all`/`chars_here`/`knows`), the declarative format, RNG bindings, and
 any production-engine integration. Path (B) direct-handler calls are deferred
