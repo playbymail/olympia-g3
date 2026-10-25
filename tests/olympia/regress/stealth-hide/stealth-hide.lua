@@ -9,8 +9,9 @@
 --              exists (contract-500, so it talks on a 50% draw; starting
 --              nobles are oath-2 and never talk)
 --   captor     knows Torture: waits out the surrender, then tortures its
---              prisoner, who talks (the draw is keyed on captor and
---              prisoner; with the yielders first the ids make it succeed)
+--              prisoner, who talks (the draw is keyed on captor, prisoner
+--              and the finish day; with the yielders first and the torture
+--              finishing on day 17 it succeeds)
 --
 -- Every start returns TRUE (ok). The hireling's orders are queued before
 -- it exists; they run once the yielder's 7-day form makes it, on day 8.
@@ -70,7 +71,7 @@ oly.order(sneaker, "sneak")
 oly.order(sneaker, "sneak " .. tower)
 oly.order(yielder, "form " .. hireling .. " Hireling")
 oly.order(hireling, "surrender " .. captor)
-oly.order(captor, "wait time 9")
+oly.order(captor, "wait time 10")
 oly.order(captor, "torture " .. hireling)
 
 oly.save("./lib")

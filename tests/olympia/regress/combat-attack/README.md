@@ -18,8 +18,11 @@ haven, so combat is allowed:
 | 304 Razers | Razer One [6947], in Tower [67765] | `raze` |
 
 On day 1 the raider wins the battle. The victim loses its 25 peasants, is
-wounded to health 78 and falls ill, but is not taken prisoner; it loses ten
-health a week for the rest of the turn. The battle draws from the per-battle
+wounded to health 78 and falls ill, but is not taken prisoner. Its weekly
+heal check rolls afresh each week (#186): it loses nine health on day 7 and
+four on day 14, recovers on day 21 (gaining three) and gains 13 on day 28,
+ending at 81. Before #186 the roll had no day in its key, so the victim lost
+exactly ten health every week. The battle draws from the per-battle
 `begin_battle()` stream, keyed on the place, both leaders and the day (see
 `doc/claude/rng-streams.md`), so the result is pinned by the hashes.
 

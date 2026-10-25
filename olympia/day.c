@@ -83,12 +83,26 @@ begin_upkeep(void)
 	upkeep_rng_turn = sysclock.turn;
 }
 
+/*
+ *  #186: a keyed leaf returns the same roll for the same key, so the weekly
+ *  heal check repeated in one turn replayed its first roll every time. The
+ *  leaves that can repeat draw from a per-day child of the turn stream
+ *  instead (the #132 econ_unit_day model), so each day rolls afresh.
+ */
+static int
+up_today(int k1, int k2, uint32_t tag, int low, int high)
+{
+	rng_stream day = rng_stream_of(&upkeep_rng, sysclock.day, tag);
+
+	return rng_keyed(&day, k1, k2, tag, low, high);
+}
+
 /* Healing roll for a char: sub 0 = sick-recovery check, sub 1 = heal/lose amt. */
 static int
 up_heal(int who, int sub, int low, int high)
 {
 	begin_upkeep();
-	return rng_keyed(&upkeep_rng, who, sub, UTAG_HEAL, low, high);
+	return up_today(who, sub, UTAG_HEAL, low, high);
 }
 
 /* Loyalty-decay desertion check: sub 0 = contract desert, sub 1 = fear desert. */

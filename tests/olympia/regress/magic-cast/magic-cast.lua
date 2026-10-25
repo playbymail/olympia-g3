@@ -6,10 +6,10 @@
 --   trancer    knows Advanced sorcery and Trance: trances for 28 days, which
 --              restores aura and health; also builds an empty second ship
 --              (the barge) on the dock
---   breeder    knows Beastmastery and Breed beasts, and holds an ox beside
---              its peasants: breeds a peasant with the ox (a minotaur); the
---              breeding accidents and the offspring are draws on the social
---              stream
+--   breeder    knows Beastmastery and Breed beasts, and holds two oxen
+--              beside its peasants: breeds a peasant with an ox (a minotaur)
+--              twice; the breeding accidents and the offspring are draws on
+--              the social stream, rolled afresh each day (#186)
 --   binder     a weather mage aboard a roundship in Greyfell's port, owning a
 --              rain storm over Greyfell's forest [13451] (made by oly.storm):
 --              binds the storm to the ship, boards the barge and rebinds the
@@ -51,7 +51,7 @@ oly.know(trancer, TRANCE)
 
 oly.know(breeder, BEAST)
 oly.know(breeder, BREED)
-oly.additem(breeder, OX, 1)
+oly.additem(breeder, OX, 2)
 
 -- each magic skill learned adds one aura: 6 here, enough to bind twice
 for _, sk in ipairs{ MAGIC, 801, 802, WEATHER, BIND, 825 } do
@@ -69,6 +69,7 @@ local barge = oly.makeloc(trancer, "roundship", "barge")
 assert(oly.loc(barge) == GREYFELL, "the barge must be built in Greyfell")
 
 oly.order(trancer, "trance")
+oly.order(breeder, "breed " .. PEASANT .. " " .. OX)
 oly.order(breeder, "breed " .. PEASANT .. " " .. OX)
 oly.order(binder, "bind " .. storm)
 oly.order(binder, "move out")

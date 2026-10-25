@@ -84,10 +84,10 @@ extern int magc_scry(int who, int k2);
 extern int magc_piety(int who, int k2);
 extern int magc_eat(int who, int body, int sub);
 extern int magc_learn(int who, int skill);
-extern int magc_potion(int who, int sub, int low, int high);
+extern int magc_potion(int who, int item, int sub, int low, int high);
 extern int magc_forge(int who, int sub);	/* art.c FORGE AURACULUM kind + weight */
-extern int magc_orb(int who);			/* art.c USE orb gate */
-extern int magc_ring(int who);			/* art.c USE suffuse-ring gate */
+extern int magc_orb(int who, int item);			/* art.c USE orb gate */
+extern int magc_ring(int who, int item);			/* art.c USE suffuse-ring gate */
 extern int d_adv_med(struct command *c);
 extern int d_detect_abil(struct command *c);
 extern int d_dispel_abil(struct command *c);
@@ -829,7 +829,7 @@ extern void put_back_cookie(int who);
 extern void restore_dead_body(int owner, int who);
 /* issue #25 (Unit E): per-turn entity RNG stream; hosted in u.c, called from stack.c/build.c/produce.c */
 extern int ent_prisoner(int who);				/* stack.c: prisoner-escape roll */
-extern int ent_drop(int who, int sub, int low, int high);	/* stack.c: drop-stack scatter gate/dir */
+extern int ent_drop(int who, int prisoner, int sub, int low, int high);	/* stack.c: drop-stack scatter gate/dir */
 extern int ent_build(int where);				/* build.c: new-mine gate-crystal gate */
 extern int ent_menial(int who);					/* produce.c: mage-menial labor-flavor pick */
 

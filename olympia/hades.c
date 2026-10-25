@@ -101,12 +101,26 @@ hads_nasty(int slot, int sub, int low, int high)
 	return rng_keyed(&hades_rng, slot, sub, HTAG_NAST, low, high);
 }
 
+/*
+ *  #186: a keyed leaf returns the same roll for the same key, so a re-entry
+ *  into a Hades province repeated in one turn replayed its first roll every
+ *  time. The leaves that can repeat draw from a per-day child of the turn
+ *  stream instead (the #132 econ_unit_day model), so each day rolls afresh.
+ */
+static int
+hads_today(int k1, int k2, uint32_t tag, int low, int high)
+{
+	rng_stream day = rng_stream_of(&hades_rng, sysclock.day, tag);
+
+	return rng_keyed(&day, k1, k2, tag, low, high);
+}
+
 /* exposed via proto.h for the npc.c bandit ambushes (region-environmental). */
 int
 hads_bandit_kind(int who, int where)
 {
 	begin_hades();
-	return rng_keyed(&hades_rng, who, where, HTAG_BKND, 1, 5);
+	return hads_today(who, where, HTAG_BKND, 1, 5);
 }
 
 int
@@ -120,14 +134,14 @@ int
 hads_ambush(int who, int where)
 {
 	begin_hades();
-	return rng_keyed(&hades_rng, who, where, HTAG_AMBS, 1, 100);
+	return hads_today(who, where, HTAG_AMBS, 1, 100);
 }
 
 int
 hads_retal(int who, int where)
 {
 	begin_hades();
-	return rng_keyed(&hades_rng, who, where, HTAG_RTAL, 1, 2);
+	return hads_today(who, where, HTAG_RTAL, 1, 2);
 }
 
 

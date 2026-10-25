@@ -78,20 +78,34 @@ begin_entity(void)
 	entity_rng_turn = sysclock.turn;
 }
 
+/*
+ *  #186: a keyed leaf returns the same roll for the same key, so a prisoner
+ *  check, release or sneak repeated in one turn replayed its first roll every
+ *  time. The leaves that can repeat draw from a per-day child of the turn
+ *  stream instead (the #132 econ_unit_day model), so each day rolls afresh.
+ */
+static int
+ent_today(int k1, int k2, uint32_t tag, int low, int high)
+{
+	rng_stream day = rng_stream_of(&entity_rng, sysclock.day, tag);
+
+	return rng_keyed(&day, k1, k2, tag, low, high);
+}
+
 /* stack.c: prisoner-escape roll [1,1000], keyed on the prisoner-holder. */
 int
 ent_prisoner(int who)
 {
 	begin_entity();
-	return rng_keyed(&entity_rng, who, 0, ENTAG_PRISON, 1, 1000);
+	return ent_today(who, 0, ENTAG_PRISON, 1, 1000);
 }
 
-/* stack.c: drop-stack item-scatter gate (sub 0, [1,5]) + direction (sub 1, [1,3]), keyed on who. */
+/* stack.c: swear-on-release pledge gate (sub 0, [1,5]) + farewell (sub 1, [1,3]), keyed (who, prisoner). */
 int
-ent_drop(int who, int sub, int low, int high)
+ent_drop(int who, int prisoner, int sub, int low, int high)
 {
 	begin_entity();
-	return rng_keyed(&entity_rng, who, sub, ENTAG_DROP, low, high);
+	return ent_today(who, prisoner * 2 + sub, ENTAG_DROP, low, high);
 }
 
 /* u.c TAKE SOME: quantity gate (sub 0, [1,2]) + amount (sub 1, [0,qty]), keyed on (from, item). */
@@ -142,7 +156,7 @@ static int
 ent_bark(int who, int hound)
 {
 	begin_entity();
-	return rng_keyed(&entity_rng, who, hound, ENTAG_BARK, 1, 2);
+	return ent_today(who, hound, ENTAG_BARK, 1, 2);
 }
 
 /* build.c create_new_building new-mine gate-crystal gate [1,5], keyed on the mine loc. */

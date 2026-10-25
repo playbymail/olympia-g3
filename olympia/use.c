@@ -1657,12 +1657,26 @@ begin_skills(void)
 	skills_rng_turn = sysclock.turn;
 }
 
+/*
+ *  #186: a keyed leaf returns the same roll for the same key, so a 7-day
+ *  skill command repeated in one turn replayed its first roll every time. The
+ *  leaves that can repeat draw from a per-day child of the turn stream
+ *  instead (the #132 econ_unit_day model), so each day rolls afresh.
+ */
+static int
+skil_today(int k1, int k2, uint32_t tag, int low, int high)
+{
+	rng_stream day = rng_stream_of(&skills_rng, sysclock.day, tag);
+
+	return rng_keyed(&day, k1, k2, tag, low, high);
+}
+
 /* c2.c weapon training: 5% crit gate [1,100], keyed on (who, weapon skill). */
 int
 skil_crit(int who, int wsk)
 {
 	begin_skills();
-	return rng_keyed(&skills_rng, who, wsk, STAG_CRIT, 1, 100);
+	return skil_today(who, wsk, STAG_CRIT, 1, 100);
 }
 
 /* c2.c weapon training: rating bonus amount, keyed on (who, weapon skill). */
@@ -1670,7 +1684,7 @@ int
 skil_bonus(int who, int wsk, int low, int high)
 {
 	begin_skills();
-	return rng_keyed(&skills_rng, who, wsk, STAG_YIELD, low, high);
+	return skil_today(who, wsk, STAG_YIELD, low, high);
 }
 
 /* STUDY: 1-in-4 scroll/book consume check [1,4], keyed on (who, skill). */
@@ -1678,7 +1692,7 @@ static int
 skil_study(int who, int sk)
 {
 	begin_skills();
-	return rng_keyed(&skills_rng, who, sk, STAG_STUDY, 1, 4);
+	return skil_today(who, sk, STAG_STUDY, 1, 4);
 }
 
 /* RESEARCH: success gate [1,100], keyed on (who, skill). */
@@ -1686,7 +1700,7 @@ static int
 skil_research(int who, int sk)
 {
 	begin_skills();
-	return rng_keyed(&skills_rng, who, sk, STAG_RESCH, 1, 100);
+	return skil_today(who, sk, STAG_RESCH, 1, 100);
 }
 
 /* RESEARCH: pick an unknown researchable skill [0,high], keyed on (who, skill). */
@@ -1694,7 +1708,7 @@ static int
 skil_research_pick(int who, int sk, int high)
 {
 	begin_skills();
-	return rng_keyed(&skills_rng, who, sk, STAG_RPICK, 0, high);
+	return skil_today(who, sk, STAG_RPICK, 0, high);
 }
 
 /* stealth.c TORTURE: prisoner talk-chance [1,100], keyed on (who, target). */
@@ -1702,7 +1716,7 @@ int
 skil_torture(int who, int target)
 {
 	begin_skills();
-	return rng_keyed(&skills_rng, who, target, STAG_TORT, 1, 100);
+	return skil_today(who, target, STAG_TORT, 1, 100);
 }
 
 /*
@@ -1721,7 +1735,7 @@ int
 skil_petty(int who, int where, int sub, int low, int high)
 {
 	begin_skills();
-	return rng_keyed(&skills_rng, who, where * 16 + sub, STAG_PETTY, low, high);
+	return skil_today(who, where * 16 + sub, STAG_PETTY, low, high);
 }
 
 

@@ -82,7 +82,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 +na Breeder One
 +il	1 200 \
 +	10 25 \
-+	76 1
++	76 2
 +LI
 + wh 57081
 +CH
@@ -356,7 +356,8 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 +4126:trance
 --- /dev/null
 +++ b/lib/orders/301
-@@ -0,0 +1 @@
+@@ -0,0 +1,2 @@
++8651:breed 10 76
 +8651:breed 10 76
 --- /dev/null
 +++ b/lib/orders/302

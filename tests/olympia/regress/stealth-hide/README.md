@@ -13,7 +13,7 @@ Four factions start in Greyfell (57081):
 | 301 Sneakers | Sneaker One [8651] | owns a tower [74301]; no peasants | `sneak`, `sneak 74301` |
 | 302 Yielders | Yielder One [8159] | none | `form 9655 Hireling` |
 | | Hireling [9655] | formed on day 8 | `surrender 7012` |
-| 303 Captors | Captor One [7012] | knows Torture [637] | `wait time 9`, `torture 9655` |
+| 303 Captors | Captor One [7012] | knows Torture [637] | `wait time 10`, `torture 9655` |
 
 `char_alone` counts men as well as nobles, so the hider and sneaker drop
 their 25 starting peasants with `oly.subitem`. `oly.makeloc` + `oly.poof`
@@ -26,13 +26,15 @@ make the sneaker the tower's owner (as in `combat-attack`).
 - **torture.** Starting nobles are oath-2, and their talk chance is 0, so
   the prisoner is a formed noble: the yielder's 7-day `form` makes a
   contract-500 hireling, whose chance is 50%. Once it exists (day 8) it
-  surrenders to the captor, who has waited 9 days so that the prisoner is
+  surrenders to the captor, who has waited 10 days so that the prisoner is
   already in its stack. Torture takes 50 health and draws on the skills
   stream (`skil`, see
   [doc/claude/rng-streams.md](../../../../doc/claude/rng-streams.md)),
-  keyed on (captor, prisoner). With the factions in this order the draw
-  succeeds, and the captor learns the hireling belongs to the Yielders. The
-  hash pins the draw.
+  keyed on (captor, prisoner) under a per-day child of the stream (#186).
+  With the factions in this order and the torture finishing on day 17, the
+  draw succeeds, and the captor learns the hireling belongs to the Yielders.
+  (A 9-day wait finishes on day 16, where the prisoner refuses.) The hash
+  pins the draw.
 
 ## What `check.sh` asserts
 

@@ -461,6 +461,20 @@ begin_social(void)
 	social_rng_turn = sysclock.turn;
 }
 
+/*
+ *  #186: a keyed leaf returns the same roll for the same key, so a 7-day
+ *  social command repeated in one turn replayed its first roll every time.
+ *  The leaves that can repeat draw from a per-day child of the turn stream
+ *  instead (the #132 econ_unit_day model), so each day rolls afresh.
+ */
+static int
+soc_today(int k1, int k2, uint32_t tag, int low, int high)
+{
+	rng_stream day = rng_stream_of(&social_rng, sysclock.day, tag);
+
+	return rng_keyed(&day, k1, k2, tag, low, high);
+}
+
 /* BRIBE: gift-acknowledgement flavor [1,3], keyed on (who, target). */
 static int
 soc_gift(int who, int target)
@@ -474,7 +488,7 @@ static int
 soc_bribe(int who, int target, int sub, int low, int high)
 {
 	begin_social();
-	return rng_keyed(&social_rng, who, target * 2 + sub, SOTAG_BRIBE, low, high);
+	return soc_today(who, target * 2 + sub, SOTAG_BRIBE, low, high);
 }
 
 /* TERRORIZE: severity gate [1,100], keyed on (who, target). */
@@ -482,7 +496,7 @@ static int
 soc_terror(int who, int target)
 {
 	begin_social();
-	return rng_keyed(&social_rng, who, target, SOTAG_TERROR, 1, 100);
+	return soc_today(who, target, SOTAG_TERROR, 1, 100);
 }
 
 /* INCITE: rumor flavor (sub 0, 1..3) + failure gate (sub 1, 1..2), keyed (who, target). */
@@ -490,7 +504,7 @@ static int
 soc_incite(int who, int target, int sub, int low, int high)
 {
 	begin_social();
-	return rng_keyed(&social_rng, who, target * 2 + sub, SOTAG_INCITE, low, high);
+	return soc_today(who, target * 2 + sub, SOTAG_INCITE, low, high);
 }
 
 /* PERSUADE oath: success gate [1,100], keyed on (who, target). */
@@ -498,7 +512,7 @@ static int
 soc_persuade(int who, int target)
 {
 	begin_social();
-	return rng_keyed(&social_rng, who, target, SOTAG_OATH, 1, 100);
+	return soc_today(who, target, SOTAG_OATH, 1, 100);
 }
 
 /*
@@ -510,7 +524,7 @@ int
 soc_breed(int who, int item, int sub, int low, int high)
 {
 	begin_social();
-	return rng_keyed(&social_rng, who, item * 2 + sub, SOTAG_BREED, low, high);
+	return soc_today(who, item * 2 + sub, SOTAG_BREED, low, high);
 }
 
 

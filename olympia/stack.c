@@ -406,7 +406,7 @@ drop_stack(int who, int to_drop)
 		log_write(LOG_SPECIAL, "%s frees a swear_on_release prisoner",
 					box_name(who));
 
-		if (ent_drop(who, 0, 1, 5) < 5)
+		if (ent_drop(who, to_drop, 0, 1, 5) < 5)
 		{
 			wout(who, "%s is grateful for your gallantry.",
 						box_name(to_drop));
@@ -417,7 +417,7 @@ drop_stack(int who, int to_drop)
 		}
 		else
 		{
-			switch (ent_drop(who, 1, 1, 3))
+			switch (ent_drop(who, to_drop, 1, 1, 3))
 			{
 			case 1:
 				wout(who, "%s spits on you, and vanishes in a cloud of orange smoke.", box_name(to_drop));

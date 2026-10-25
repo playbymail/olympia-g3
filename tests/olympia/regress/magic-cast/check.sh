@@ -4,9 +4,9 @@
 #
 # Extracts the frozen scenario (scenario.patch over the shared
 # tests/olympia/fixtures/world.tgz) and runs one turn. A trancer in Greyfell
-# trances; a breeder breeds a peasant with an ox; a weather mage on a ship in
-# Greyfell's port binds its storm to the ship, boards a second ship and
-# rebinds the storm there. Each order starts.
+# trances; a breeder breeds a peasant with an ox, twice; a weather mage on a
+# ship in Greyfell's port binds its storm to the ship, boards a second ship
+# and rebinds the storm there. Each order starts.
 # See magic-cast.lua and README.md.
 #
 # Three checks, all required:

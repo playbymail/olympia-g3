@@ -105,12 +105,26 @@ begin_magic(void)
 	magic_rng_turn = sysclock.turn;
 }
 
+/*
+ *  #186: a keyed leaf returns the same roll for the same key, so a spell or
+ *  crafting command repeated in one turn replayed its first roll every time.
+ *  The leaves that can repeat draw from a per-day child of the turn stream
+ *  instead (the #132 econ_unit_day model), so each day rolls afresh.
+ */
+static int
+magc_today(int k1, int k2, uint32_t tag, int low, int high)
+{
+	rng_stream day = rng_stream_of(&magic_rng, sysclock.day, tag);
+
+	return rng_keyed(&day, k1, k2, tag, low, high);
+}
+
 /* scry.c: LOCATE CHARACTER / REMOVE BARRIER success gate, keyed on (who, k2). */
 int
 magc_scry(int who, int k2)
 {
 	begin_magic();
-	return rng_keyed(&magic_rng, who, k2, MTAG_SCRY, 1, 100);
+	return magc_today(who, k2, MTAG_SCRY, 1, 100);
 }
 
 /* relig.c: REVEAL VISION / RESURRECT / REMOVE BLESSING piety gate, keyed (who, k2). */
@@ -118,7 +132,7 @@ int
 magc_piety(int who, int k2)
 {
 	begin_magic();
-	return rng_keyed(&magic_rng, who, k2, MTAG_PIETY, 1, 100);
+	return magc_today(who, k2, MTAG_PIETY, 1, 100);
 }
 
 /*
@@ -142,15 +156,16 @@ magc_learn(int who, int skill)
 }
 
 /*
- *  alchem.c potion draws, keyed on (who, sub): new_potion kind (sub 0, 1..2),
- *  v_use_heal amount (sub 1, 0..3), v_use_slave gate (sub 2, 1..100). The range
- *  is passed in since the three sub-draws differ.
+ *  alchem.c potion draws, keyed on (who, potion*4 + sub): new_potion kind
+ *  (sub 0, 1..2), v_use_heal amount (sub 1, 0..3), v_use_slave gate (sub 2,
+ *  1..100). The range is passed in since the three sub-draws differ. The
+ *  potion is in the key so two potions used the same day roll apart (#186).
  */
 int
-magc_potion(int who, int sub, int low, int high)
+magc_potion(int who, int item, int sub, int low, int high)
 {
 	begin_magic();
-	return rng_keyed(&magic_rng, who, sub, MTAG_POTN, low, high);
+	return magc_today(who, item * 4 + sub, MTAG_POTN, low, high);
 }
 
 /* basic.c MEDITATE / advanced-meditation hinder gate, keyed on (who, sub). */
@@ -158,7 +173,7 @@ static int
 magc_med(int who, int sub)
 {
 	begin_magic();
-	return rng_keyed(&magic_rng, who, sub, MTAG_MED, 1, 100);
+	return magc_today(who, sub, MTAG_MED, 1, 100);
 }
 
 /* basic.c hinder-meditation omen flavor [1,4] switch, keyed on (who, other). */
@@ -174,7 +189,7 @@ static int
 magc_heal(int who, int target)
 {
 	begin_magic();
-	return rng_keyed(&magic_rng, who, target, MTAG_HEAL, 1, 100);
+	return magc_today(who, target, MTAG_HEAL, 1, 100);
 }
 
 /*
@@ -186,23 +201,23 @@ int
 magc_forge(int who, int sub)
 {
 	begin_magic();
-	return rng_keyed(&magic_rng, who, sub, MTAG_FORG, 1, 3);
+	return magc_today(who, sub, MTAG_FORG, 1, 3);
 }
 
-/* art.c USE orb (v_use_orb): the 1-in-3 murky-image failure gate, keyed (who). */
+/* art.c USE orb (v_use_orb): the 1-in-3 murky-image failure gate, keyed (who, orb). */
 int
-magc_orb(int who)
+magc_orb(int who, int item)
 {
 	begin_magic();
-	return rng_keyed(&magic_rng, who, 0, MTAG_ORB, 1, 3);
+	return magc_today(who, item, MTAG_ORB, 1, 3);
 }
 
-/* art.c USE suffuse-ring (v_suffuse_ring): the 1-in-3 fizzle gate, keyed (who). */
+/* art.c USE suffuse-ring (v_suffuse_ring): the 1-in-3 fizzle gate, keyed (who, ring). */
 int
-magc_ring(int who)
+magc_ring(int who, int item)
 {
 	begin_magic();
-	return rng_keyed(&magic_rng, who, 0, MTAG_RING, 1, 3);
+	return magc_today(who, item, MTAG_RING, 1, 3);
 }
 
 

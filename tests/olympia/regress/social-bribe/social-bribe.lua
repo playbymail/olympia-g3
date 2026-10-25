@@ -16,8 +16,8 @@
 --               terrorizes it into fear loyalty (Greyfell)
 --
 -- Every start returns TRUE (ok). The social draws are keyed on (actor,
--- target); with the inciters first the ids make the incite succeed (and
--- the mark pockets the bribe). The terrorizer's second order waits in its
+-- target) and the day; with the inciters first the ids make the incite
+-- succeed (and the mark reports the bribe). The terrorizer's second order waits in its
 -- queue until the 7-day form has made the hireling, on day 8.
 
 local oly = require "oly"

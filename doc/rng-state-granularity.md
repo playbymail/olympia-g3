@@ -1557,6 +1557,47 @@ cases found since #25 closed, and what was decided about each:
     fights through the battle stream). The main manifest is unchanged. The
     `v_use_bta_skull` entry also picks up the day; the skull is consumed on
     use, so it could not repeat anyway.
+- **Command, upkeep and region leaves (#186): bug, fixed.** An audit of the
+  remaining `rng_keyed` leaves found about twenty more keyed on the actor and
+  a target or skill but not the day. A 7-day command repeated in one turn
+  (up to four times a month), or an autonomous weekly check, replayed its
+  first roll every time. Each affected stream now has a `<prefix>_today()`
+  helper that derives a per-day child (`rng_stream_of(&<stream>_rng,
+  sysclock.day, tag)`, the #132 model) and draws the leaf from it:
+  - upkeep: `up_heal` (the weekly heal on days 7/14/21/28). In
+    `combat-attack` the sick victim used to lose exactly ten health every
+    week; it now loses 9, then 4, and recovers on day 21.
+  - entity: `ent_prisoner` (the weekly escape check, plus captor moves and
+    gives), `ent_bark` (hounds on each sneak), and `ent_drop`, which also
+    gains the prisoner in its key (`ent_drop(who, prisoner, sub, ...)`), so
+    two swear-on-release prisoners freed by one captor roll apart.
+  - skills: `skil_crit`/`skil_bonus` (archery, defense, swordplay),
+    `skil_study`, `skil_research`/`skil_research_pick`, `skil_torture`,
+    `skil_petty`.
+  - social: `soc_bribe`, `soc_terror`, `soc_incite`, `soc_persuade`,
+    `soc_breed`.
+  - magic: `magc_scry`, `magc_piety`, `magc_heal`, `magc_med`, `magc_forge`,
+    and `magc_potion`/`magc_orb`/`magc_ring`, which also gain the item in the
+    key (they were keyed on the user, so a second potion, orb or ring used
+    the same day shared the roll).
+  - regions: `faer_ambush`/`faer_retal`/`faer_bandit_kind` and the `hads_`
+    trio (each arrival in a Faery or Hades province).
+  - **Left alone:** the flavor-only leaves (`soc_gift`, `magc_omen`, the
+    `wthr_storm` fog excuse), and every leaf that runs once per turn or
+    already carries a day or attempt counter. A prisoner escape check that
+    runs twice on one day (a weekly check plus a captor move) still shares
+    that day's roll.
+  - **Spec for the Go port: as for #167, independent draws per actor, per
+    day; item-keyed for consumables.** New fixture
+    `tests/olympia/regress/rng-repeat-leaves` repeats archery and research
+    four times in a turn. Re-baselined: `combat-attack`, `rng-repeat` (the
+    captive quester's weekly heal; hidden health only), `social-bribe` (the
+    mark now reports the bribe, and escapes on day 28), and two whose
+    scenarios changed so they still reach the outcome they pin:
+    `magic-cast` now breeds twice (day 7 kills both beasts, day 14 produces
+    the minotaur) and `stealth-hide` waits 10 days, not 9, so the torture
+    finishes on day 17, where the prisoner talks. The main manifest is
+    unchanged.
 
 ## Migration & re-baseline cost
 

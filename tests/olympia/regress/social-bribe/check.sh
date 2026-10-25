@@ -4,8 +4,8 @@
 #
 # Extracts the frozen scenario (scenario.patch over the shared
 # tests/olympia/fixtures/world.tgz) and runs one turn. In Forest a briber
-# bribes a mark, who pockets the gold, and an inciter incites a mob against
-# the mark (incite, then use 675: the mob attacks); in Greyfell a noble
+# bribes a mark, who reports it, and an inciter incites a mob against the
+# mark (incite, then use 675: the mob attacks); in Greyfell a noble
 # terrorizes the hireling it formed into fear loyalty. Each order starts.
 # See social-bribe.lua and README.md.
 #

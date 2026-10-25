@@ -10,7 +10,7 @@ Three factions start in Greyfell (57081), a safe haven:
 | Faction | Noble | Set up | Orders |
 |---|---|---|---|
 | 300 Trancers | Trancer One [4126] | knows Advanced sorcery [920] and Trance [921]; builds the empty Roundship [64623] on the dock | `trance` |
-| 301 Breeders | Breeder One [8651] | knows Beastmastery [650] and Breed beasts [654]; one ox [76] | `breed 10 76` |
+| 301 Breeders | Breeder One [8651] | knows Beastmastery [650] and Breed beasts [654]; two oxen [76] | `breed 10 76` ×2 |
 | 302 Binders | Binder One [8159] | knows six magic skills (6 aura); aboard Roundship [74170] in Greyfell; owns Rain [91520] over Forest [13451] | `bind 91520`, `move out`, `move 64623`, `bind 91520` |
 
 - **trance.** `v_trance` needs only the skill. The trance takes 28 days, and
@@ -21,9 +21,12 @@ Three factions start in Greyfell (57081), a safe haven:
 - **breed.** A peasant and an ox breed a minotaur (`breed_tbl`) in 7 days.
   The breeding accidents and the offspring are draws on the social stream
   (`soc_breed`, see
-  [doc/claude/rng-streams.md](../../../../doc/claude/rng-streams.md)). On
-  day 7 the peasant is killed, and a minotaur is still produced. The hash
-  pins both draws.
+  [doc/claude/rng-streams.md](../../../../doc/claude/rng-streams.md)),
+  under a per-day child of the stream (#186). The breeder breeds twice. On
+  day 7 the peasant and the ox are both killed and no offspring is
+  produced; on day 14 the second pair produces a minotaur. Before #186 the
+  draws had no day in the key, so day 14 replayed day 7's accidents. The
+  hash pins every draw.
 - **bind.** `oly.storm` (#170) raises Rain [91520], strength 6, over
   Greyfell's forest [13451] at build time and records the binder as its
   summoner. It spends the forest's rain cookie, as a summon would. `bind` is

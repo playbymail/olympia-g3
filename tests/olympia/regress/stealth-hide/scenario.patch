@@ -381,7 +381,7 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 --- /dev/null
 +++ b/lib/orders/303
 @@ -0,0 +1,2 @@
-+7012:wait time 9
++7012:wait time 10
 +7012:torture 9655
 --- a/lib/times_0
 +++ b/lib/times_0

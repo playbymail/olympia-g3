@@ -35,7 +35,9 @@ Run on the engine from before #167, and on this one:
 | explore ×3 in Plain | finds a hidden location on days 7 and 14 (the same gate roll both times), nothing new on day 21 | nothing on day 7, a hidden location on day 14, nothing on day 21 |
 | the two battles | both victims end with 14 soldiers: the same dice | the victims end with 15 and 17 soldiers |
 
-The hashes pin the "now" column.
+The hashes pin the "now" column. The quester, sick in the nazgul's stack
+from day 14, also heals on a weekly roll that #186 made fresh each week;
+that changed only its hidden health, so `EXPECT.json` did not move.
 
 ## What `check.sh` asserts
 

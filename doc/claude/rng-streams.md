@@ -291,3 +291,18 @@ The full per-unit plan is [doc/rng-endgame-to-zero.md](../rng-endgame-to-zero.md
 the migration order and per-subsystem keying live in
 [doc/rng-state-granularity.md](../rng-state-granularity.md). A PCG32 generator swap
 stays deferred behind the TAG 64-bit work; the follow-up **#46** landed in PR #71.
+
+## Keying a leaf: put the day in (#132, #167, #186)
+
+A keyed leaf returns the same roll for the same key, and the golden trees
+never repeat an action, so they cannot catch a key that is too coarse. Any
+draw that can fire more than once per turn for the same actor and target (a
+7-day command repeated, a weekly check, a re-entry, a second consumable)
+must key on the day, and on the item for consumables. The skills, social,
+magic, entity, upkeep and faery/hades streams each have a static
+`<prefix>_today(k1, k2, tag, low, high)` helper that draws from a per-day
+child of the turn stream (`rng_stream_of(&<stream>_rng, sysclock.day, tag)`);
+route a new repeatable leaf through it. Fixtures that pin repeats:
+`tests/olympia/regress/rng-repeat` (#167) and `rng-repeat-leaves` (#186).
+The per-case decisions are in the *Post-#25 keying corrections* section of
+[doc/rng-state-granularity.md](../rng-state-granularity.md#post-25-keying-corrections).

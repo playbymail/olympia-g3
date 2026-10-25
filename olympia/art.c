@@ -919,7 +919,7 @@ v_use_orb(struct command *c)
 
 	ilist_append(&orb_used_this_month, item);
 
-	if (magc_orb(c->who) == 1)	/* issue #25: magic stream */
+	if (magc_orb(c->who, item) == 1)	/* issue #25: magic stream */
 	{
 	    wout(c->who, "Only murky, indistinct images are seen in the orb.");
 	    return FALSE;
@@ -1477,7 +1477,7 @@ v_suffuse_ring(struct command *c, int kind)
 	log_write(LOG_SPECIAL, "Golden ring %s used by %s",
 			box_code_less(item), box_code_less(player(c->who)));
 
-	if (magc_ring(c->who) == 1)	/* issue #25: magic stream */
+	if (magc_ring(c->who, item) == 1)	/* issue #25: magic stream */
 	{
 		wout(c->who, "Nothing happens.");
 	}
