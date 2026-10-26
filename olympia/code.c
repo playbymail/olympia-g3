@@ -472,13 +472,26 @@ box_name_kind(int n)
  *  together (kind_first, kind_next)
  */
 
+/*
+ *  add_next_chain() and add_sub_chain() cache the last box they added, so
+ *  that boxes added in increasing order are appended without a walk.
+ *  remove_next_chain() and remove_sub_chain() drop the cache when they
+ *  remove that box: a box added after it must not be linked after a box
+ *  that is no longer on the chain (issue #246).
+ */
+
+static int next_cache_last = 0;
+static int next_cache_kind = 0;
+
+static int sub_cache_last = 0;
+static int sub_cache_kind = -1;
+
+
 static void
 add_next_chain(int n)
 {
 	int kind;
 	int i;
-	static int cache_last = 0;
-	static int cache_kind = 0;
 
 	assert(bx[n] != NULL);
 	kind = bx[n]->kind;
@@ -488,18 +501,18 @@ add_next_chain(int n)
 
 /*  optim! */
 
-	if (cache_kind == kind &&
-	    n > cache_last &&
-	    bx[cache_last]->x_next_kind == 0)
+	if (next_cache_kind == kind &&
+	    n > next_cache_last &&
+	    bx[next_cache_last]->x_next_kind == 0)
 	{
-		bx[cache_last]->x_next_kind = n;
+		bx[next_cache_last]->x_next_kind = n;
 		bx[n]->x_next_kind = 0;
-		cache_last = n;
+		next_cache_last = n;
 		return;
 	}
 
-	cache_last = n;
-	cache_kind = kind;
+	next_cache_last = n;
+	next_cache_kind = kind;
 
 	if (box_head[kind] == 0)
 	{
@@ -548,6 +561,12 @@ remove_next_chain(int n)
 	}
 
 	bx[n]->x_next_kind = 0;
+
+	if (n == next_cache_last)
+	{
+		next_cache_last = 0;
+		next_cache_kind = 0;
+	}
 }
 
 
@@ -556,26 +575,24 @@ add_sub_chain(int n)
 {
 	int kind;
 	int i;
-	static int cache_last = 0;
-	static int cache_kind = -1;
 
 	assert(bx[n] != NULL);
 	kind = bx[n]->skind;
 
 /*  optim! */
 
-	if (cache_kind == kind &&
-	    n > cache_last &&
-	    bx[cache_last]->x_next_sub == 0)
+	if (sub_cache_kind == kind &&
+	    n > sub_cache_last &&
+	    bx[sub_cache_last]->x_next_sub == 0)
 	{
-		bx[cache_last]->x_next_sub = n;
+		bx[sub_cache_last]->x_next_sub = n;
 		bx[n]->x_next_sub = 0;
-		cache_last = n;
+		sub_cache_last = n;
 		return;
 	}
 
-	cache_last = n;
-	cache_kind = kind;
+	sub_cache_last = n;
+	sub_cache_kind = kind;
 
 	if (sub_head[kind] == 0)
 	{
@@ -624,6 +641,12 @@ remove_sub_chain(int n)
 	}
 
 	bx[n]->x_next_sub = 0;
+
+	if (n == sub_cache_last)
+	{
+		sub_cache_last = 0;
+		sub_cache_kind = -1;
+	}
 }
 
 
