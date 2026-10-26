@@ -11,8 +11,8 @@ gates the post-turn DB in `run/olympia/lib` as a sorted sha256 **manifest**
 `--update`. It is date-independent (the `test-use-const-report-date` flag — see
 [BUILD_HISTORY.md](../../BUILD_HISTORY.md)). G3 output is **deterministic across clean rebuilds**, so the
 gate has **no flaky-file holdout**. `tests/mapgen/golden` is a **stale 32-bit
-baseline** — *not* the gate; the mapgen check is
-`tests/mapgen/regress/secret-sea-route/check.sh`.
+baseline** — *not* the gate; the mapgen checks are
+`tests/mapgen/regress/*/check.sh`.
 
 ## Subsystem gates
 
@@ -24,7 +24,7 @@ them for engine changes), on `debug` and with `OLYMPIA_PRESET=asan-ubsan`:
 | `tests/olympia/regress/*/check.sh` | one fixture each: guard-pillage (combat/pillage), combat-stack-flee (#212 losing stack flees together), inventory-give, inventory-refused (inventory), move-go, move-land, move-ship (movement), player-* (player), production-harvest, production-refused (production), trade-routes (#46 buyer secret), save-seed-unwritable (#240 failed seed save is fatal, not a crash; no EXPECT files), rng-selftest (#241 `-R` tty grid in draw order), mint-top-id (#245 top id range stops at `MAX_BOXES - 1`), wait-not-weather (#247 `wait not rain`/`fog`/`wind` under a storm of strength 2 or more), trade-opium (#252 a sold-out opium market raises the city's addiction level), raze-rebuild (#246 a deleted box leaves the kind/subkind chain cache), token-swear (#251 an NPC token's units swear to the new holder when it is given), order-unrecognized (#248 an order that fails to parse is reported and the unit's next order runs), sail-stale-storm (#250 a ship arrives with a dead storm in its bound list), wait-gm-stack (#249 `wait top`/`stack` from the GM player), coast-rocks (#254 a ship next to a mountain coast strikes submerged rocks), move-out-first (#253 `move <destination>` from a sublocation moves out first, as `move <direction>` does), fly-out-first (#265 `fly <destination>` from a sublocation flies out first, as `fly <direction>` does), sail-out-first (#266 `sail <destination>` from a ship docked at an island sails out first, as `sail <direction>` does); `--update` re-baselines |
 | `tests/olympia/regress/run-all.sh [name...]` | runs every fixture's `check.sh` (not `check-lua.sh`) and reports PASS/FAIL/ERROR per fixture; see [another engine](#running-the-spec-against-another-engine) |
 | `tests/olympia/regress/{guard-pillage,move-ship}/check-lua.sh` | the same scenario authored in Lua (`olyscript-g3`) must match the same EXPECT files |
-| `tests/mapgen/regress/{secret-sea-route,save-seed-unwritable}/check.sh` | the mapgen checks (`tests/mapgen/golden` is a stale 32-bit baseline, not a gate) |
+| `tests/mapgen/regress/*/check.sh` | the mapgen checks: secret-sea-route (adjacent ocean found in the last direction slot), save-seed-unwritable (#240), map-glyphs (#274 `#` holes in row 0 and beside another hole, plus #276 coverage: Uldim/Summerbridge boundaries, sea lanes, `*` cities, a `Land` mismatch and a `Regions` collision; pins stderr too). `tests/mapgen/golden` is a stale 32-bit baseline, not a gate. `MAPGEN_BIN` runs them against another map generator, as `OLYMPIA_ENGINE_BIN` does for the engine; see [tests/mapgen/mapgen.sh](../../tests/mapgen/mapgen.sh) |
 | `tests/island/regress/ocean-glyphs/check.sh` | the island generator |
 | `tests/rng/check.sh` | the `rng` layer self-check plus the "no gameplay `rnd()`" audit (see [rng-streams.md](rng-streams.md)) |
 | `tests/ultron/check.sh` | `backlog.tsv`, `use-backlog.tsv` and `phase-backlog.tsv` stay consistent with the engine's tables and existing fixtures (see [ultron-fixtures.md](ultron-fixtures.md)) |
@@ -76,7 +76,10 @@ export OLYMPIA_RUN_DIR="$(mktemp -d)"         # golden turn output, outside the 
   (`OLYMPIA_ENGINE_BIN=build/debug/olympia-g3`) gives the same `run-all.sh`
   report and golden `YES` as the default.
 
-The mapgen, island, rng and Ultron gates still run the C build only. The C
+The mapgen checks take `MAPGEN_BIN` instead (#276): the same rules, set
+in [tests/mapgen/mapgen.sh](../../tests/mapgen/mapgen.sh), with `--update`
+refused while it is set. The island, rng and Ultron gates still run the C
+build only. The C
 sanitizer gate and the source audits check the C implementation, not a port.
 The `check.sh` scripts call `shasum -a 256`, which a Linux container may not
 have.

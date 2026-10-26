@@ -1304,8 +1304,10 @@ int bridge_map_hole_sup(int row, int col)
 	ne = adjacent_tile_sup(row, col, DIR_NE);
 	se = adjacent_tile_sup(row, col, DIR_SE);
 
-	if (n->mark || s->mark || e->mark || w->mark ||
-	    nw->mark || sw->mark || ne->mark || se->mark)
+	if ((n && n->mark) || (s && s->mark) ||
+	    (e && e->mark) || (w && w->mark) ||
+	    (nw && nw->mark) || (sw && sw->mark) ||
+	    (ne && ne->mark) || (se && se->mark))
 		return FALSE;
 /*
  *  For every path across the hole, add it to the list of possibilities
