@@ -1,0 +1,37 @@
+{"turn": 3, "factions": [
+  {"id": 300, "name": "Northers",
+   "units": [
+     {"id": 9364, "name": "Northers One", "where": 13449, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 13449, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13449,
+      "exits": [{"direction": "north", "destination": 13349, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13450, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13549, "distance": 14, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13448, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 9364, "name": "Northers One", "faction": 300}]}]},
+  {"id": 301, "name": "Southers",
+   "units": [
+     {"id": 2562, "name": "Southers One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 2562, "name": "Southers One", "faction": 301}]}]},
+  {"id": 302, "name": "Southpassers",
+   "units": [
+     {"id": 3349, "name": "Southpassers One", "where": 13550, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 13550, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13550,
+      "exits": [{"direction": "north", "destination": 13450, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13551, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13650, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13549, "distance": 14, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 3349, "name": "Southpassers One", "faction": 302}]}]},
+  {"id": 303, "name": "Northpassers",
+   "units": [
+     {"id": 4816, "name": "Northpassers One", "where": 13551, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 13551, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13551,
+      "exits": [{"direction": "north", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13552, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13651, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4816, "name": "Northpassers One", "faction": 303}]}]}]}

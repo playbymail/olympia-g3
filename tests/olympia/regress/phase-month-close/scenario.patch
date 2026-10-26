@@ -1,0 +1,500 @@
+world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
+--- a/lib/fact/200
++++ b/lib/fact/200
+@@ -3,8 +3,8 @@
+ PL
+  pw crusty7
+ CO
+- li save
+- ar 0 0 0 0 0 0 0 0
+- cs 2
++ li be 1190
++ ar 1190 0 0 0 0 0 0 0
++ st 1
+  pr 1
+ 
+--- /dev/null
++++ b/lib/fact/300
+@@ -0,0 +1,38 @@
++300 player pl_regular
++na Northers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player300@example.com
++ pw nRGiSNV6
++ np 18
++ fs 210
++ ft 7
++ lt 6
++ kn 13449 
++ un 1190 
++ uf 6349 1147 1084 4691 1173 
++
++1190 char 0
++na Northers One
++il	1 200 \
++	10 25
++LI
++ wh 13449
++CH
++ lo 300
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 5209
++ ar 5209 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/301
+@@ -0,0 +1,38 @@
++301 player pl_regular
++na Southers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player301@example.com
++ pw HW43yI5o
++ np 18
++ fs 210
++ ft 7
++ lt 6
++ kn 13450 
++ un 5209 
++ uf 4262 2634 7479 7706 2184 
++
++5209 char 0
++na Southers One
++il	1 200 \
++	10 25
++LI
++ wh 13450
++CH
++ lo 301
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 6299
++ ar 6299 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/302
+@@ -0,0 +1,38 @@
++302 player pl_regular
++na Southpassers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player302@example.com
++ pw tHXIoah2
++ np 18
++ fs 210
++ ft 7
++ lt 6
++ kn 13550 
++ un 6299 
++ uf 8504 2764 9857 3945 8759 
++
++6299 char 0
++na Southpassers One
++il	1 200 \
++	10 25
++LI
++ wh 13550
++CH
++ lo 302
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 8316
++ ar 8316 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/303
+@@ -0,0 +1,39 @@
++303 player pl_regular
++na Northpassers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player303@example.com
++ pw owrGTq1G
++ np 18
++ fs 210
++ ft 7
++ lt 6
++ kn 13551 
++ un 8316 
++ uf 5186 4979 2470 4091 8123 
++
++8316 char 0
++na Northpassers One
++il	1 200 \
++	10 25
++LI
++ wh 13551
++CH
++ lo 303
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li save
++ ar 0 0 0 0 0 0 0 0
++ cs 2
++ st 1
++ pr 1
++
+--- a/lib/loc
++++ b/lib/loc
+@@ -44814,10 +44814,12 @@
+ 	274 1
+ LI
+  wh 58762
+- hl 74717 73119 74976 
++ hl 74717 73119 74976 1190 
+ LO
+  pd 13349 13450 13549 13448 
+  dg 4
++SL
++ sf 1
+ 
+ 13450 loc plain
+ il	51 5 \
+@@ -44829,11 +44831,13 @@
+ 	275 1
+ LI
+  wh 58762
+- hl 73045 74516 
++ hl 73045 74516 5209 
+ LO
+  pd 13350 13451 13550 13449 
+  dg 3
+  lc 1
++SL
++ sf 2
+ 
+ 13451 loc forest
+ il	77 30 \
+@@ -46137,10 +46141,12 @@
+ 	274 1
+ LI
+  wh 58762
+- hl 77310 
++ hl 77310 6299 
+ LO
+  pd 13450 13551 13650 13549 
+  dg 4
++SL
++ uf 3
+ 
+ 13551 loc plain
+ il	51 5 \
+@@ -46151,12 +46157,13 @@
+ 	275 1
+ LI
+  wh 58762
+- hl 69195 
++ hl 69195 8316 
+ LO
+  pd 13451 13552 13651 13550 
+  dg 5
+  lc 1
+ SL
++ uf 4
+  lf 71826 
+ 
+ 13552 loc forest
+--- a/lib/master
++++ b/lib/master
+@@ -96,6 +96,10 @@
+ 293	4.0	item		faery
+ 294	4.0	item		petty thief cookie
+ 295	4.0	item		hound
++300	1.49	fact/300	Northers
++301	1.49	fact/301	Southers
++302	1.49	fact/302	Southpassers
++303	1.49	fact/303	Northpassers
+ 401	4.69	item		Imperial Throne
+ 402	4.69	item		Crown of Prosperity
+ 403	4.69	item		Skull of Bastrestric
+@@ -256,19 +260,23 @@
+ 1023	2.64	fact/207	
+ 1054	2.64	fact/207	
+ 1061	2.64	fact/207	
++1084	12.0	unform		
+ 1095	2.64	fact/207	
+ 1098	2.64	fact/207	
+ 1099	2.64	fact/207	
+ 1104	2.64	fact/207	
+ 1109	2.64	fact/207	
+ 1139	2.64	fact/207	
++1147	12.0	unform		
+ 1154	2.64	fact/207	
+ 1158	2.64	fact/207	
+ 1159	2.64	fact/207	
+ 1170	2.64	fact/207	
++1173	12.0	unform		
+ 1186	2.64	fact/207	
+ 1187	2.64	fact/207	
+ 1188	2.64	fact/207	
++1190	2.0	fact/300	Northers One
+ 1209	2.64	fact/207	
+ 1211	2.64	fact/207	
+ 1287	2.64	fact/207	
+@@ -307,6 +315,7 @@
+ 2150	2.64	fact/207	
+ 2164	2.64	fact/207	
+ 2167	2.64	fact/207	
++2184	12.0	unform		
+ 2189	2.64	fact/207	
+ 2196	2.64	fact/207	
+ 2200	2.64	fact/207	
+@@ -321,6 +330,7 @@
+ 2411	2.64	fact/207	
+ 2421	2.64	fact/207	
+ 2452	2.64	fact/207	
++2470	12.0	unform		
+ 2487	2.64	fact/207	
+ 2514	2.64	fact/207	
+ 2548	2.64	fact/207	
+@@ -329,6 +339,7 @@
+ 2602	2.64	fact/207	
+ 2603	2.64	fact/207	
+ 2616	2.64	fact/207	
++2634	12.0	unform		
+ 2636	2.64	fact/207	
+ 2646	2.64	fact/207	
+ 2679	2.64	fact/207	
+@@ -338,6 +349,7 @@
+ 2724	2.64	fact/207	
+ 2743	2.64	fact/207	
+ 2763	2.64	fact/207	
++2764	12.0	unform		
+ 2774	2.64	fact/207	
+ 2788	2.64	fact/207	
+ 2811	2.64	fact/207	
+@@ -399,11 +411,13 @@
+ 3879	2.64	fact/207	
+ 3897	2.64	fact/207	
+ 3944	2.64	fact/207	
++3945	12.0	unform		
+ 3969	2.64	fact/207	
+ 3976	2.64	fact/207	
+ 4041	2.64	fact/207	
+ 4047	2.64	fact/207	
+ 4069	2.64	fact/207	
++4091	12.0	unform		
+ 4104	2.64	fact/207	
+ 4139	2.64	fact/207	
+ 4152	2.64	fact/207	
+@@ -414,6 +428,7 @@
+ 4240	2.64	fact/207	
+ 4251	2.64	fact/207	
+ 4261	2.64	fact/207	
++4262	12.0	unform		
+ 4266	2.64	fact/207	
+ 4276	2.64	fact/207	
+ 4286	2.64	fact/207	
+@@ -437,6 +452,7 @@
+ 4594	2.64	fact/207	
+ 4599	2.64	fact/207	
+ 4622	2.64	fact/207	
++4691	12.0	unform		
+ 4750	2.64	fact/207	
+ 4767	2.64	fact/207	
+ 4820	2.64	fact/207	
+@@ -444,6 +460,7 @@
+ 4924	2.64	fact/207	
+ 4945	2.64	fact/207	
+ 4950	2.64	fact/207	
++4979	12.0	unform		
+ 4989	2.64	fact/207	
+ 5007	2.64	fact/207	
+ 5039	2.64	fact/207	
+@@ -455,7 +472,9 @@
+ 5156	2.64	fact/207	
+ 5157	2.64	fact/207	
+ 5184	2.64	fact/207	
++5186	12.0	unform		
+ 5201	2.64	fact/207	
++5209	2.0	fact/301	Southers One
+ 5227	2.64	fact/207	
+ 5237	2.64	fact/207	
+ 5289	2.64	fact/207	
+@@ -508,10 +527,12 @@
+ 6266	2.64	fact/207	
+ 6282	2.64	fact/207	
+ 6290	2.64	fact/207	
++6299	2.0	fact/302	Southpassers One
+ 6307	2.64	fact/207	
+ 6310	2.64	fact/207	
+ 6332	2.64	fact/207	
+ 6346	2.64	fact/207	
++6349	12.0	unform		
+ 6376	2.64	fact/207	
+ 6440	2.64	fact/207	
+ 6450	2.64	fact/207	
+@@ -566,6 +587,7 @@
+ 7401	2.64	fact/207	
+ 7421	2.64	fact/207	
+ 7441	2.64	fact/207	
++7479	12.0	unform		
+ 7481	2.64	fact/207	
+ 7518	2.64	fact/207	
+ 7577	2.64	fact/207	
+@@ -574,6 +596,7 @@
+ 7637	2.64	fact/207	
+ 7665	2.64	fact/207	
+ 7700	2.64	fact/207	
++7706	12.0	unform		
+ 7710	2.64	fact/207	
+ 7747	2.64	fact/207	
+ 7757	2.64	fact/207	
+@@ -597,6 +620,7 @@
+ 8093	2.64	fact/207	
+ 8105	2.64	fact/207	
+ 8122	2.64	fact/207	
++8123	12.0	unform		
+ 8151	2.64	fact/207	
+ 8155	2.64	fact/207	
+ 8177	2.64	fact/207	
+@@ -607,6 +631,7 @@
+ 8291	2.64	fact/207	
+ 8311	2.64	fact/207	
+ 8315	2.64	fact/207	
++8316	2.0	fact/303	Northpassers One
+ 8384	2.64	fact/207	
+ 8392	2.64	fact/207	
+ 8453	2.64	fact/207	
+@@ -616,6 +641,7 @@
+ 8486	2.64	fact/207	
+ 8494	2.64	fact/207	
+ 8499	2.64	fact/207	
++8504	12.0	unform		
+ 8508	2.64	fact/207	
+ 8575	2.64	fact/207	
+ 8604	2.64	fact/207	
+@@ -623,6 +649,7 @@
+ 8635	2.64	fact/207	
+ 8650	2.64	fact/207	
+ 8730	2.64	fact/207	
++8759	12.0	unform		
+ 8780	2.64	fact/207	
+ 8839	2.64	fact/207	
+ 8848	2.64	fact/207	
+@@ -672,6 +699,7 @@
+ 9819	2.64	fact/207	
+ 9831	2.64	fact/207	
+ 9835	2.64	fact/207	
++9857	12.0	unform		
+ 9861	2.64	fact/207	
+ 9887	2.64	fact/207	
+ 9973	2.64	fact/207	
+--- a/lib/system
++++ b/lib/system
+@@ -1,3 +1,4 @@
++sysclock: 6 0 180
+ indep_player=100
+ gm_player=200
+ skill_player=202
+--- a/lib/times_0
++++ b/lib/times_0
+@@ -1,14 +1,15 @@
+-From: skrenta@pbm.com (Rich skrenta)
+-Subject: Olympia G3 - The Olympia Times - Issue 0
++From: olympia@pbm.com (Olympia PBEM)
++Subject: Olympia Times g2-0
++To: totimes@pbm.com
+ 
+    +----------------------------------------------------------------------+
+-   | The Olympia Times                                Fierce winds year 1 |
+-   | October 24, 2026                                                     |
++   | The Olympia Times                                         issue g2-0 |
++   | August 31, 1996                                                      |
+    |                                                                      |
+-   | turn 0, 0 players                     skrenta@pbm.com (Rich skrenta) |
++   | turn 0  0 players                      http://www.pbm.com/oly/times/ |
+    +----------------------------------------------------------------------+
+ 
+-     Questions, comments, to play: http://olympia.v-labs.be/g3
++               Questions, comments, to play:  info@pbm.com
+ 
+                              Olympia PBEM
+ 
+--- a/lib/unform
++++ b/lib/unform
+@@ -0,0 +1,40 @@
++1084 unform 0
++
++1147 unform 0
++
++1173 unform 0
++
++2184 unform 0
++
++2470 unform 0
++
++2634 unform 0
++
++2764 unform 0
++
++3945 unform 0
++
++4091 unform 0
++
++4262 unform 0
++
++4691 unform 0
++
++4979 unform 0
++
++5186 unform 0
++
++6349 unform 0
++
++7479 unform 0
++
++7706 unform 0
++
++8123 unform 0
++
++8504 unform 0
++
++8759 unform 0
++
++9857 unform 0
++

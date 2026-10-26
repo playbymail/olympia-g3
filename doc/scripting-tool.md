@@ -754,6 +754,23 @@ turn leaves for day 0 to pick up. `phase-day0` uses all of them.
   command for `who` would replace the running order, so any later binding
   that makes `who` the subject errors: call `oly.start` last for each unit.
 
+**Since landed (#234):** three path (B) bindings set what the month-end
+events are gated on: the calendar, a game option and the map.
+
+- `oly.clock(turn)` sets the saved clock to the start of `turn` (day 0,
+  `MONTH_DAYS` days per turn since the epoch), so the next `-r` runs
+  `turn + 1`. The base world is at turn 0. Call it before the bindings that
+  record the turn, such as `add_player` (a player's `last_order_turn`) and
+  `oly.kill` (a body's death time). The fixture's reports then go to
+  `save/<turn + 1>/`.
+- `oly.auto_quit(turns)` sets the game's `auto_quit` option, which `save_db`
+  writes to `lib/system`: at month end `auto_drop` queues a quit for each
+  player that has sent no orders for that many turns.
+- `oly.pass(where, "uldim"|"summerbridge", flag)` marks the province `where`
+  as mapgen marks Uldim pass (`uldim_flag` 1–4) or Summerbridge
+  (`summer_flag` 1–2). Only the flag is set, not mapgen's name or terrain.
+  The shipped maps have neither place.
+
 **Since landed (#204):** `oly.palantir(who [, name])` gives the character
 `who` a palantir and returns its id (optionally bound in the registry). It
 makes the item as `d_forge_palantir` (`art.c`) does: a unique item

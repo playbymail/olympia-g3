@@ -196,6 +196,9 @@ existing fixtures, which now assert them; 36 are `todo`.
 The work on the `todo` cells is split by phase under #227: day 0 and day 1
 (#232), the daily events (#233) and month end (#234). Day 0 and day 1 are
 covered by `phase-day0` (#232) and the daily events by `phase-daily` (#233).
+Month end is covered by `phase-month-gold` (gold, noble points, ranks and
+drops) and by `phase-month-open` and `phase-month-close` (Uldim pass and
+Summerbridge), with the rest of #234 to come.
 The `n/a` cells:
 
 - `token` of `queue_npc_orders`. It is for units whose NPC program is

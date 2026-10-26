@@ -32,11 +32,13 @@
  *  relic for use-items' unique items (issue #218); hide for
  *  phase-daily's barking dogs (issue #233); token, bandit, release,
  *  desert, restock and start for phase-day0's state an earlier turn
- *  leaves (issue #232). Everything else in the design
+ *  leaves (issue #232); clock, auto_quit and pass for the month-end
+ *  events gated on the calendar and the map (issue #234). Everything else in the design
  *  (credit, the wider query set, the declarative format, RNG bindings) is
  *  deferred; a binding is added when a fixture needs it, not speculatively.
  */
 
+#include <limits.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -1277,6 +1279,84 @@ l_restock(lua_State *L)
 }
 
 /*
+ *  oly.clock(turn)  -- set the turn the game has reached.
+ *
+ *  Sets sysclock to the start of `turn`, as a game that has run that many
+ *  turns saves it (day 0, MONTH_DAYS days per turn since the epoch), so
+ *  the next -r runs turn+1. The month-end events gated on the calendar
+ *  (special_locs_open/close, add_noble_points) and on a turn count
+ *  (dead_body_rot) then fall on that turn. Call it before the bindings
+ *  that record the turn, such as add_player. The base world is at turn
+ *  0. No GM verb sets the clock, so this is a path (B) binding, like mob.
+ */
+static int
+l_clock(lua_State *L)
+{
+	int turn = (int) luaL_checkinteger(L, 1);
+
+	if (turn < 0 || turn > SHRT_MAX)
+		return luaL_error(L, "oly.clock: turn %d out of range", turn);
+
+	sysclock.turn = (short) turn;
+	sysclock.day = 0;
+	sysclock.days_since_epoch = turn * MONTH_DAYS;
+	return 0;
+}
+
+/*
+ *  oly.auto_quit(turns)  -- set the game's auto_quit option.
+ *
+ *  auto_quit_turns, as the auto_quit= line of lib/system sets it: at
+ *  month end auto_drop() queues a quit for each player that has sent no
+ *  orders for that many turns. 0 turns it off (the default). save_db
+ *  writes it back to lib/system. No GM verb sets a game option, so this
+ *  is a path (B) binding, like mob.
+ */
+static int
+l_auto_quit(lua_State *L)
+{
+	int turns = (int) luaL_checkinteger(L, 1);
+
+	if (turns < 0)
+		return luaL_error(L, "oly.auto_quit: turns %d below 0", turns);
+
+	auto_quit_turns = turns;
+	return 0;
+}
+
+/*
+ *  oly.pass(where, "uldim"|"summerbridge", flag)
+ *
+ *  Mark the province where as part of Uldim pass or Summerbridge, as
+ *  mapgen does for the map's special glyphs: uldim_flag 1-4 ('^', 'v',
+ *  '{', '}') or summer_flag 1-2 (']', '['). Only the flag is set, not
+ *  mapgen's name or terrain. The seasonal routes open at the end of month
+ *  2 and close at the end of month 6. No GM verb edits the map, and the
+ *  shipped maps have neither place, so this is a path (B) binding, like
+ *  mob.
+ */
+static int
+l_pass(lua_State *L)
+{
+	static const char *kinds[] = { "uldim", "summerbridge", NULL };
+	int where = (int) luaL_checkinteger(L, 1);
+	int n = luaL_checkoption(L, 2, NULL, kinds);
+	int flag = (int) luaL_checkinteger(L, 3);
+
+	if (!valid_box(where) || loc_depth(where) != LOC_province)
+		return luaL_error(L, "oly.pass: %d not a province", where);
+
+	if (flag < 1 || flag > (n == 0 ? 4 : 2))
+		return luaL_error(L, "oly.pass: no %s flag %d", kinds[n], flag);
+
+	if (n == 0)
+		p_subloc(where)->uldim_flag = (schar) flag;
+	else
+		p_subloc(where)->summer_flag = (schar) flag;
+	return 0;
+}
+
+/*
  *  oly.start(who)  -- start who's next queued order now.
  *
  *  Pops who's top order and runs it through do_command(), as the turn
@@ -1544,6 +1624,9 @@ static const luaL_Reg oly_funcs[] = {
 	{ "release",		l_release },
 	{ "desert",		l_desert },
 	{ "restock",		l_restock },
+	{ "clock",		l_clock },
+	{ "auto_quit",		l_auto_quit },
+	{ "pass",		l_pass },
 	{ "start",		l_start },
 	{ "guard",		l_guard },
 	{ "order",		l_order },
