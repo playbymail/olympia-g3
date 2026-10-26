@@ -826,7 +826,7 @@ new_ent(int kind, int sk)
 	case T_char:
 	case T_unform:
 		if (sk == sub_ni)
-			n = rnd_alloc_num(79000, MAX_BOXES);
+			n = rnd_alloc_num(79000, MAX_BOXES - 1);
 		else
 			n = rnd_alloc_num(1000,9999);
 
@@ -834,7 +834,7 @@ new_ent(int kind, int sk)
 			n = rnd_alloc_num(59000, 78999);
 
 		if (n < 0)
-			n = rnd_alloc_num(79000, MAX_BOXES);
+			n = rnd_alloc_num(79000, MAX_BOXES - 1);
 		break;
 
 	case T_skill:
@@ -863,7 +863,7 @@ new_ent(int kind, int sk)
 		break;
 
 	case T_storm:
-		n = rnd_alloc_num(79000, MAX_BOXES);
+		n = rnd_alloc_num(79000, MAX_BOXES - 1);
 		break;
 
 	default:
@@ -872,7 +872,7 @@ new_ent(int kind, int sk)
 	}
 
 	if (n < 0)
-		n = rnd_alloc_num(79000, MAX_BOXES);
+		n = rnd_alloc_num(79000, MAX_BOXES - 1);
 
 	alloc_box(n, kind, sk);
 
