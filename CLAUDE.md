@@ -13,11 +13,12 @@ The code is legacy C originally targeting **32-bit** systems. The C11/64-bit
 modernization and the 32→64-bit list refactor are **complete**, and so are the
 fixture backlogs: per command (`tests/ultron/backlog.tsv`, #116), per `use`
 (`tests/ultron/use-backlog.tsv`, #180) and per turn phase
-(`tests/ultron/phase-backlog.tsv`, #227). The engine is being **ported to
-Rust + Rhai** in [mdhender/rhorri](https://github.com/mdhender/rhorri), and the
-port is driven from that repo. This repo is now the **reference
-implementation**: its golden trees and regress fixtures are the spec the port
-is checked against, so keep them independent of the target language, and
+(`tests/ultron/phase-backlog.tsv`, #227). The engine is being **ported** twice:
+to Rust + Rhai in [mdhender/rhorri](https://github.com/mdhender/rhorri), and to
+Go in [mdhender/g3g0](https://github.com/mdhender/g3g0). Each port is driven
+from its own repo. This repo is now the **reference
+implementation**: its golden trees and regress fixtures are the spec the ports
+are checked against, so keep them independent of the target language, and
 follow the [C engine policy](#c-engine-policy-reference-implementation) below.
 
 ## C engine policy (reference implementation)
@@ -52,13 +53,14 @@ PR:
 - **The CLI and dump formats** the fixtures call: the flags, `--coverage`,
   `--use-coverage`, `--phase-coverage` and `--state-export`.
 
-**Every behavior change files a matching rhorri issue.** If a PR changes golden
-output or a fixture's `EXPECT` files, open an issue in `mdhender/rhorri` that
-links the PR, so the port follows it. Name the rhorri issue in the PR body.
+**Every behavior change files a matching issue in each port.** If a PR changes
+golden output or a fixture's `EXPECT` files, open an issue in `mdhender/rhorri`
+and one in `mdhender/g3g0`, each linking the PR, so both ports follow it. Name
+both issues in the PR body.
 
-**When the port and C disagree,** first decide which one is wrong. If it's C,
-fix it here under rule 1, then fix the port. If it's the port, fix only the
-port.
+**When a port and C disagree,** first decide which one is wrong. If it's C,
+fix it here under rule 1, then fix the ports (the issues above). If it's the
+port, fix only that port.
 
 **New fixtures are built here,** against the C engine, because the reference
 engine is what produces the expected output. Scenario authoring stays in
@@ -147,7 +149,7 @@ gates: [doc/claude/testing.md](doc/claude/testing.md).
   surrounding file; don't reformat untouched code.
 - **Golden output is the contract.** Behavior changes that alter engine output
   must be deliberate bug fixes, with the snapshot updated in the same change, a
-  note on why, and a matching rhorri issue (see the
+  note on why, and a matching rhorri and g3g0 issue (see the
   [C engine policy](#c-engine-policy-reference-implementation)).
 - All compiler flags live in one CMake helper, `olympia_compile_flags(tgt)`,
   applied to all three targets. **Read
