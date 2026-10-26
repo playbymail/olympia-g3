@@ -470,13 +470,22 @@ test_random(void)
 	rng_master_seed(m);
 	s = rng_seed(m);
 
+	/*
+	 *  issue #241: draw each row into r[] first, in order. Ten rng_draw()
+	 *  calls as printf() arguments ran in the compiler's (unspecified)
+	 *  argument-evaluation order.
+	 */
 	if (isatty(1))
 	    for (i = 0; i < 10; i++)
+	    {
+		int j, r[10];
+
+		for (j = 0; j < 10; j++)
+			r[j] = rng_draw(&s, 1, 10);
+
 		printf("%3d  %3d  %3d  %3d  %3d  %3d  %3d  %3d  %3d  %3d\n",
-			rng_draw(&s, 1, 10), rng_draw(&s, 1, 10), rng_draw(&s, 1, 10),
-			rng_draw(&s, 1, 10), rng_draw(&s, 1, 10), rng_draw(&s, 1, 10),
-			rng_draw(&s, 1, 10), rng_draw(&s, 1, 10), rng_draw(&s, 1, 10),
-			rng_draw(&s, 1, 10));
+			r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]);
+	    }
 	else
 	    for (i = 0; i < 100; i++)
 		printf("%d\n", rng_draw(&s, 1, 10));
