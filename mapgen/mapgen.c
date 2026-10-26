@@ -248,7 +248,7 @@ int main(void)
 
 	fprintf(stderr, "\n");
 	fprintf(stderr, "highest province = %d\n",
-				map[max_row][max_col]->region);
+				rc_to_region(max_row, max_col));
 	fprintf(stderr, "\n");
 
 	save_seed("randseed");

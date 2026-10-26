@@ -29,8 +29,9 @@ Whether a hole is bridged also depends on `mark`. `bridge_map_hole_sup()`
 skips a hole when any neighbor is marked, and gate placement leaves marks.
 That applies to every hole, not only these.
 
-A hole in the bottom-right corner (`max_row`, `max_col`) crashes `main()`'s
-"highest province" line, which this fixture avoids (#287).
+A hole in the bottom-right corner (`max_row`, `max_col`) used to crash
+`main()`'s "highest province" line (#287), so this fixture leaves the corner
+alone. `corner-hole` covers it.
 
 ```bash
 ./tests/mapgen/regress/hole-edges/check.sh           # YES = pass
