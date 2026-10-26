@@ -266,7 +266,7 @@ move_bound_storms(int ship, int where)
 		storm = p->bound_storms[i];
 		if (kind(storm) != T_storm)
 		{
-			ilist_delete(&p->bound_storms, storm);
+			ilist_delete(&p->bound_storms, i);	/* issue #250: was storm */
 			i--;
 			continue;
 		}

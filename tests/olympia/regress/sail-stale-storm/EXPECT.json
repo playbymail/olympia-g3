@@ -1,0 +1,10 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Stale Storms",
+   "units": [
+     {"id": 4126, "name": "Captain One", "where": 61319, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 184}, {"id": 19, "name": "sailor", "qty": 8}],
+      "skills": [{"id": 601, "name": "Sailing"}, {"id": 820, "name": "Weather magic"}, {"id": 822, "name": "Bind storm to ship"}, {"id": 828, "name": "Dissipate storm"}]}],
+   "locations": [
+     {"id": 61319, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13250,
+      "exits": [],
+      "here": [{"id": 4126, "name": "Captain One", "faction": 300}]}]}]}

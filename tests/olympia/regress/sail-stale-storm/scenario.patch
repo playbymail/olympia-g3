@@ -1,0 +1,232 @@
+world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
+--- a/lib/fact/200
++++ b/lib/fact/200
+@@ -3,8 +3,8 @@
+ PL
+  pw crusty7
+ CO
+- li save
+- ar 0 0 0 0 0 0 0 0
+- cs 2
++ li be 4126
++ ar 4126 0 0 0 0 0 0 0
++ st 1
+  pr 1
+ 
+--- /dev/null
++++ b/lib/fact/300
+@@ -0,0 +1,47 @@
++300 player pl_regular
++na Stale Storms
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player300@example.com
++ pw OYCpEMJQ
++ np 18
++ fs 198
++ ft 1
++ kn 13350 61319 
++ un 4126 
++ uf 1375 3743 8127 8535 2769 
++
++4126 char 0
++na Captain One
++il	1 200 \
++	19 8
++LI
++ wh 61319
++CH
++ lo 300
++ he 100
++ lk 2
++ lr 2
++ sl	820 2 0 0 0 \
++	822 2 0 0 0 \
++	828 2 0 0 0 \
++	601 2 0 0 0
++ bp 50
++ at 80
++ df 80
++CM
++ im 1
++ ma 3
++ ca 3
++ kw 1
++CO
++ li save
++ ar 0 0 0 0 0 0 0 0
++ cs 2
++ st 1
++ pr 1
++
+--- a/lib/loc
++++ b/lib/loc
+@@ -43505,12 +43505,10 @@
+ 13350 loc ocean
+ il	87 50 \
+ 	59 30 \
+-	274 1 \
+-	275 1 \
+-	276 1
++	274 1
+ LI
+  wh 58761
+- hl 64865 
++ hl 64865 61319 99374 88781 
+ LO
+  pd 13250 13351 13450 13349 
+  dg 2
+--- a/lib/master
++++ b/lib/master
+@@ -96,6 +96,7 @@
+ 293	4.0	item		faery
+ 294	4.0	item		petty thief cookie
+ 295	4.0	item		hound
++300	1.49	fact/300	Stale Storms
+ 401	4.69	item		Imperial Throne
+ 402	4.69	item		Crown of Prosperity
+ 403	4.69	item		Skull of Bastrestric
+@@ -275,6 +276,7 @@
+ 1306	2.64	fact/207	
+ 1321	2.64	fact/207	
+ 1335	2.64	fact/207	
++1375	12.0	unform		
+ 1383	2.64	fact/207	
+ 1416	2.64	fact/207	
+ 1501	2.64	fact/207	
+@@ -338,6 +340,7 @@
+ 2724	2.64	fact/207	
+ 2743	2.64	fact/207	
+ 2763	2.64	fact/207	
++2769	12.0	unform		
+ 2774	2.64	fact/207	
+ 2788	2.64	fact/207	
+ 2811	2.64	fact/207	
+@@ -384,6 +387,7 @@
+ 3596	2.64	fact/207	
+ 3597	2.64	fact/207	
+ 3711	2.64	fact/207	
++3743	12.0	unform		
+ 3754	2.64	fact/207	
+ 3780	2.64	fact/207	
+ 3791	2.64	fact/207	
+@@ -405,6 +409,7 @@
+ 4047	2.64	fact/207	
+ 4069	2.64	fact/207	
+ 4104	2.64	fact/207	
++4126	2.0	fact/300	Captain One
+ 4139	2.64	fact/207	
+ 4152	2.64	fact/207	
+ 4165	2.64	fact/207	
+@@ -597,6 +602,7 @@
+ 8093	2.64	fact/207	
+ 8105	2.64	fact/207	
+ 8122	2.64	fact/207	
++8127	12.0	unform		
+ 8151	2.64	fact/207	
+ 8155	2.64	fact/207	
+ 8177	2.64	fact/207	
+@@ -617,6 +623,7 @@
+ 8494	2.64	fact/207	
+ 8499	2.64	fact/207	
+ 8508	2.64	fact/207	
++8535	12.0	unform		
+ 8575	2.64	fact/207	
+ 8604	2.64	fact/207	
+ 8612	2.64	fact/207	
+@@ -28028,6 +28035,7 @@
+ 61316	3.16	loc		Place of the Dead
+ 61317	3.16	loc		
+ 61318	3.13	loc		
++61319	9.31	ship		
+ 61326	3.16	loc		
+ 61327	3.9	loc		
+ 61331	3.26	loc		
+@@ -36997,3 +37005,5 @@
+ 78915	7.0	misc	Secret pass
+ 78962	7.0	misc	Secret pass
+ 78982	7.0	misc	Old road
++88781	11.58	misc	
++99374	11.59	misc	
+--- a/lib/misc
++++ b/lib/misc
+@@ -22,3 +22,22 @@
+ 
+ 942 lore 0
+ 
++88781 storm wind
++LI
++ wh 13350
++MI
++ sb 4126
++ ss 6
++ mh 13350
++ co 275
++
++99374 storm rain
++LI
++ wh 13350
++MI
++ sb 4126
++ ss 6
++ mh 13350
++ co 276
++ bs 99374
++
+--- /dev/null
++++ b/lib/orders/300
+@@ -0,0 +1,3 @@
++4126:use 822 88781
++4126:use 828 99374
++4126:sail north
+--- a/lib/ship
++++ b/lib/ship
+@@ -0,0 +1,7 @@
++61319 ship roundship
++LI
++ wh 13350
++ hl 4126 
++SL
++ bs 99374 
++
+--- a/lib/times_0
++++ b/lib/times_0
+@@ -1,14 +1,15 @@
+-From: skrenta@pbm.com (Rich skrenta)
+-Subject: Olympia G3 - The Olympia Times - Issue 0
++From: olympia@pbm.com (Olympia PBEM)
++Subject: Olympia Times g2-0
++To: totimes@pbm.com
+ 
+    +----------------------------------------------------------------------+
+-   | The Olympia Times                                Fierce winds year 1 |
+-   | October 24, 2026                                                     |
++   | The Olympia Times                                         issue g2-0 |
++   | August 31, 1996                                                      |
+    |                                                                      |
+-   | turn 0, 0 players                     skrenta@pbm.com (Rich skrenta) |
++   | turn 0  0 players                      http://www.pbm.com/oly/times/ |
+    +----------------------------------------------------------------------+
+ 
+-     Questions, comments, to play: http://olympia.v-labs.be/g3
++               Questions, comments, to play:  info@pbm.com
+ 
+                              Olympia PBEM
+ 
+--- a/lib/unform
++++ b/lib/unform
+@@ -0,0 +1,10 @@
++1375 unform 0
++
++2769 unform 0
++
++3743 unform 0
++
++8127 unform 0
++
++8535 unform 0
++
