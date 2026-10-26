@@ -1,0 +1,30 @@
+== frontier: -D --seed 7
+exit 0
+genesis: seed=7 size=99 oceans=9 iterations=10 (defer-oceans)
+genesis: islands grown, 3507 land provinces total
+genesis: deferred oceans: 9 seeded, 37 total, 28 tiny filled
+genesis: placed 6 start cities (spacing^2 >= 140)
+genesis: wrote Map, Regions, Land, Cities, randseed
+== lakes: -D --seed 6
+exit 0
+genesis: seed=6 size=99 oceans=9 iterations=10 (defer-oceans)
+genesis: islands grown, 3507 land provinces total
+genesis: deferred oceans: 9 seeded, 28 total, 18 tiny filled
+genesis: placed 6 start cities (spacing^2 >= 121)
+genesis: wrote Map, Regions, Land, Cities, randseed
+== great-lake: -D --seed 27
+exit 0
+genesis: seed=27 size=99 oceans=9 iterations=10 (defer-oceans)
+genesis: islands grown, 3507 land provinces total
+genesis: deferred oceans: 9 seeded, 36 total, 24 tiny filled
+genesis: placed 6 start cities (spacing^2 >= 140)
+genesis: wrote Map, Regions, Land, Cities, randseed
+== size-10: -D --size 10
+exit 0
+genesis: seed=0 size=10 oceans=9 iterations=10 (defer-oceans)
+genesis: islands grown, 36 land provinces total
+genesis: --number-of-oceans 9 exceeds the cap for size 10; using 4
+genesis: deferred oceans: 4 seeded, 4 total, 0 tiny filled
+genesis: couldn't space 6 start cities; retrying with 5
+genesis: placed 5 start cities (spacing^2 >= 4)
+genesis: wrote Map, Regions, Land, Cities, randseed

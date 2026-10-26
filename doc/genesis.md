@@ -272,3 +272,9 @@ merge into the enclosing land mass, so the tiniest island-/Olympus-enclosed pudd
 don't become seas. mapgen requires every water region to be named, so filling them in —
 rather than leaving them as unnamed water — is what keeps the map valid.
 
+
+## Regression gates
+
+`tests/genesis/regress/*/check.sh` pin genesis-g3's output: each runs recorded
+argument vectors and checks the exit status, stderr and every file written. See
+[tests/genesis/README.md](../tests/genesis/README.md).

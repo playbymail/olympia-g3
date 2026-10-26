@@ -1,0 +1,21 @@
+== hex: --seed 0x10 --size 20
+exit 0
+genesis: seed=16 size=20 oceans=9 iterations=10
+genesis: --number-of-oceans 9 exceeds the cap for size 20; using 7
+genesis: islands grown, 256 land provinces total
+genesis: placed 6 start cities (spacing^2 >= 8)
+genesis: wrote Map, Regions, Land, Cities, randseed
+== octal: --seed 020 --size 20
+exit 0
+genesis: seed=16 size=20 oceans=9 iterations=10
+genesis: --number-of-oceans 9 exceeds the cap for size 20; using 7
+genesis: islands grown, 256 land provinces total
+genesis: placed 6 start cities (spacing^2 >= 8)
+genesis: wrote Map, Regions, Land, Cities, randseed
+== decimal: --seed 16 --size 20
+exit 0
+genesis: seed=16 size=20 oceans=9 iterations=10
+genesis: --number-of-oceans 9 exceeds the cap for size 20; using 7
+genesis: islands grown, 256 land provinces total
+genesis: placed 6 start cities (spacing^2 >= 8)
+genesis: wrote Map, Regions, Land, Cities, randseed

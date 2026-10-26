@@ -1,0 +1,21 @@
+== size-13: --seed 68 --size 13 -n 5
+exit 0
+genesis: seed=68 size=13 oceans=5 iterations=10
+genesis: 5 oceans not 4-colorable on this map; retrying with 4
+genesis: islands grown, 81 land provinces total
+genesis: placed 6 start cities (spacing^2 >= 4)
+genesis: wrote Map, Regions, Land, Cities, randseed
+== size-20: --seed 8 --size 20 -n 7
+exit 0
+genesis: seed=8 size=20 oceans=7 iterations=10
+genesis: 7 oceans not 4-colorable on this map; retrying with 6
+genesis: islands grown, 256 land provinces total
+genesis: placed 6 start cities (spacing^2 >= 9)
+genesis: wrote Map, Regions, Land, Cities, randseed
+== size-40: --seed 39 --size 40 -n 12
+exit 0
+genesis: seed=39 size=40 oceans=12 iterations=10
+genesis: 12 oceans not 4-colorable on this map; retrying with 11
+genesis: islands grown, 1005 land provinces total
+genesis: placed 6 start cities (spacing^2 >= 37)
+genesis: wrote Map, Regions, Land, Cities, randseed

@@ -1,0 +1,55 @@
+== size-low: --size 9
+exit 1
+genesis: --size must be 10..99 (got 9)
+== size-high: --size 100
+exit 1
+genesis: --size must be 10..99 (got 100)
+== oceans-low: -n 0
+exit 1
+genesis: --number-of-oceans must be >= 1 (got 0)
+== iterations-low: -i 1
+exit 1
+genesis: --island-iterations must be 2..10 (got 1)
+== iterations-high: -i 11
+exit 1
+genesis: --island-iterations must be 2..10 (got 11)
+== start-cities-low: --start-cities -1
+exit 1
+genesis: --start-cities must be 0..16 (got -1)
+== start-cities-high: --start-cities 17
+exit 1
+genesis: --start-cities must be 0..16 (got 17)
+== pixels-low: --image world.bmp --pixels 0
+exit 1
+genesis: --pixels must be 1..64 (got 0)
+== pixels-high: --image world.bmp --pixels 65
+exit 1
+genesis: --pixels must be 1..64 (got 65)
+== grid-low: --image world.bmp --grid -1
+exit 1
+genesis: --grid must be 0..4 (got -1)
+== grid-high: --image world.bmp --grid 5
+exit 1
+genesis: --grid must be 0..4 (got 5)
+== ocean-growth-bad: -D --ocean-growth spiral
+exit 1
+genesis: --ocean-growth must be frontier or bfs (got spiral)
+== bfs-without-defer: --ocean-growth bfs
+exit 1
+genesis: --ocean-growth bfs requires --defer-oceans
+== pixels-without-image: --size 10 --pixels 0
+exit 0
+genesis: seed=0 size=10 oceans=9 iterations=10
+genesis: --number-of-oceans 9 exceeds the cap for size 10; using 4
+genesis: islands grown, 36 land provinces total
+genesis: couldn't space 6 start cities; retrying with 5
+genesis: placed 5 start cities (spacing^2 >= 4)
+genesis: wrote Map, Regions, Land, Cities, randseed
+== grid-without-image: --size 10 --grid 9
+exit 0
+genesis: seed=0 size=10 oceans=9 iterations=10
+genesis: --number-of-oceans 9 exceeds the cap for size 10; using 4
+genesis: islands grown, 36 land provinces total
+genesis: couldn't space 6 start cities; retrying with 5
+genesis: placed 5 start cities (spacing^2 >= 4)
+genesis: wrote Map, Regions, Land, Cities, randseed

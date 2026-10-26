@@ -1,0 +1,14 @@
+== bfs-lakes: -D --ocean-growth bfs --seed 11 --size 60
+exit 0
+genesis: seed=11 size=60 oceans=9 iterations=10 (defer-oceans, bfs)
+genesis: islands grown, 2199 land provinces total
+genesis: deferred oceans: 9 seeded, 17 total, 6 tiny filled
+genesis: placed 6 start cities (spacing^2 >= 88)
+genesis: wrote Map, Regions, Land, Cities, randseed
+== frontier: -D --ocean-growth frontier --seed 11 --size 60
+exit 0
+genesis: seed=11 size=60 oceans=9 iterations=10 (defer-oceans)
+genesis: islands grown, 2199 land provinces total
+genesis: deferred oceans: 9 seeded, 17 total, 6 tiny filled
+genesis: placed 6 start cities (spacing^2 >= 88)
+genesis: wrote Map, Regions, Land, Cities, randseed

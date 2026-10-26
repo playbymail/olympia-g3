@@ -1,0 +1,25 @@
+== none: --seed 4 --start-cities 0
+exit 0
+genesis: seed=4 size=99 oceans=9 iterations=10
+genesis: islands grown, 3507 land provinces total
+genesis: wrote Map, Regions, Land, Cities, randseed
+== one: --seed 4 --start-cities 1
+exit 0
+genesis: seed=4 size=99 oceans=9 iterations=10
+genesis: islands grown, 3507 land provinces total
+genesis: placed 1 start cities (spacing^2 >= 813)
+genesis: wrote Map, Regions, Land, Cities, randseed
+== sixteen: --seed 4 --start-cities 16
+exit 0
+genesis: seed=4 size=99 oceans=9 iterations=10
+genesis: islands grown, 3507 land provinces total
+genesis: placed 16 start cities (spacing^2 >= 50)
+genesis: wrote Map, Regions, Land, Cities, randseed
+== spacing-retry: --size 10 --start-cities 6
+exit 0
+genesis: seed=0 size=10 oceans=9 iterations=10
+genesis: --number-of-oceans 9 exceeds the cap for size 10; using 4
+genesis: islands grown, 36 land provinces total
+genesis: couldn't space 6 start cities; retrying with 5
+genesis: placed 5 start cities (spacing^2 >= 4)
+genesis: wrote Map, Regions, Land, Cities, randseed

@@ -1,0 +1,6 @@
+== seed-1: --seed 1 --size 99
+exit 0
+genesis: seed=1 size=99 oceans=9 iterations=10
+genesis: islands grown, 3507 land provinces total
+genesis: placed 6 start cities (spacing^2 >= 155)
+genesis: wrote Map, Regions, Land, Cities, randseed

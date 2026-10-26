@@ -1,0 +1,24 @@
+== none:
+exit 0
+genesis: seed=0 size=99 oceans=9 iterations=10
+genesis: islands grown, 3507 land provinces total
+genesis: placed 6 start cities (spacing^2 >= 143)
+genesis: wrote Map, Regions, Land, Cities, randseed
+== seed-1: --seed 1
+exit 0
+genesis: seed=1 size=99 oceans=9 iterations=10
+genesis: islands grown, 3507 land provinces total
+genesis: placed 6 start cities (spacing^2 >= 155)
+genesis: wrote Map, Regions, Land, Cities, randseed
+== seed-2: --seed 2
+exit 0
+genesis: seed=2 size=99 oceans=9 iterations=10
+genesis: islands grown, 3507 land provinces total
+genesis: placed 6 start cities (spacing^2 >= 148)
+genesis: wrote Map, Regions, Land, Cities, randseed
+== seed-12345: --seed 12345
+exit 0
+genesis: seed=12345 size=99 oceans=9 iterations=10
+genesis: islands grown, 3507 land provinces total
+genesis: placed 6 start cities (spacing^2 >= 137)
+genesis: wrote Map, Regions, Land, Cities, randseed
