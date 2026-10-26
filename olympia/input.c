@@ -517,10 +517,10 @@ set_state(struct command *c, int state, int new_pri)
  *
  *	STATE_DONE	no more commands remain in the queue
  *	STATE_LOAD	command loaded and ready to run
- *	STATE_ERROR	player command has an error.
  *
- *	Note that both STATE_LOAD and STATE_ERROR states are passed to do_command.
- *	do_commmand will report error states to the player.
+ *	A command that fails to parse is set to STATE_ERROR and passed
+ *	straight to do_command, which reports it to the player and
+ *	loads the next command.
  */
 
 static int
@@ -549,7 +549,13 @@ load_command(struct command *c)
 	}
 	else
 	{
+/*
+ *  No queue holds STATE_ERROR, so report the bad order now.
+ *  do_command fails it, and command_done loads the next order.
+ */
 		set_state(c, STATE_ERROR, 0);
+		do_command(c);
+		return c->state == STATE_LOAD;
 	}
 
 	return TRUE;
