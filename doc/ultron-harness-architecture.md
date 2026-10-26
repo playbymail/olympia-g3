@@ -527,7 +527,8 @@ reaches include every NPC program, trade matching, garrison pay and tax
 forwarding, desertion, relic, ghost and body decay, temples, animal deaths and
 the month-gated routines (`special_locs_open/close`, `auto_drop`).
 
-The dump also showed a quirk the port has to reproduce or fix:
-`natural_weather` runs 6 times on the golden turn, not the 4 its comment says.
-`daily_events()` sorts only the first 4 of the 30 shuffled weather days, but
-`wday_index` keeps walking into the unsorted rest (#229).
+The dump's first finding was a bug: `natural_weather` ran 6 times on the
+golden turn, not the 4 its comment says. `daily_events()` sorts only the first
+4 of the 30 shuffled weather days, but `wday_index` kept walking into the
+unsorted rest. It was fixed in #229 (PR #231), so it now runs 4 times
+(storms 9708 → 6472).
