@@ -249,7 +249,7 @@ near_rocky_coast(int where)
 	for (i = 0; i < exit_views_len(l); i++)
 		if (subkind(l[i]->destination) != sub_ocean)
 		{
-			if (subkind(l[i]->destination == sub_mountain))
+			if (subkind(l[i]->destination) == sub_mountain)
 				return 2;
 			ret = 1;
 		}

@@ -1,0 +1,55 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Rocks One",
+   "units": [
+     {"id": 4126, "name": "Rocks One Captain", "where": 61319, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 200}],
+      "skills": []}],
+   "locations": [
+     {"id": 61319, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13235,
+      "exits": [],
+      "here": [{"id": 4126, "name": "Rocks One Captain", "faction": 300}]}]},
+  {"id": 301, "name": "Rocks Two",
+   "units": [
+     {"id": 4947, "name": "Rocks Two Captain", "where": 69557, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 200}],
+      "skills": []}],
+   "locations": [
+     {"id": 69557, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13244,
+      "exits": [],
+      "here": [{"id": 4947, "name": "Rocks Two Captain", "faction": 301}]}]},
+  {"id": 302, "name": "Rocks Three",
+   "units": [
+     {"id": 9655, "name": "Rocks Three Captain", "where": 64623, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 200}],
+      "skills": []}],
+   "locations": [
+     {"id": 64623, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13249,
+      "exits": [],
+      "here": [{"id": 9655, "name": "Rocks Three Captain", "faction": 302}]}]},
+  {"id": 303, "name": "Rocks Four",
+   "units": [
+     {"id": 9236, "name": "Rocks Four Captain", "where": 59359, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 200}],
+      "skills": []}],
+   "locations": [
+     {"id": 59359, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13377,
+      "exits": [],
+      "here": [{"id": 9236, "name": "Rocks Four Captain", "faction": 303}]}]},
+  {"id": 304, "name": "Reef One",
+   "units": [
+     {"id": 7942, "name": "Reef One Captain", "where": 64660, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 200}],
+      "skills": []}],
+   "locations": [
+     {"id": 64660, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13245,
+      "exits": [],
+      "here": [{"id": 7942, "name": "Reef One Captain", "faction": 304}]}]},
+  {"id": 305, "name": "Reef Two",
+   "units": [
+     {"id": 6458, "name": "Reef Two Captain", "where": 62335, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 200}],
+      "skills": []}],
+   "locations": [
+     {"id": 62335, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13351,
+      "exits": [],
+      "here": [{"id": 6458, "name": "Reef Two Captain", "faction": 305}]}]}]}

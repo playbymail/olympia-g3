@@ -1,0 +1,701 @@
+world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
+--- a/lib/fact/200
++++ b/lib/fact/200
+@@ -3,8 +3,8 @@
+ PL
+  pw crusty7
+ CO
+- li save
+- ar 0 0 0 0 0 0 0 0
+- cs 2
++ li be 4126
++ ar 4126 0 0 0 0 0 0 0
++ st 1
+  pr 1
+ 
+--- /dev/null
++++ b/lib/fact/300
+@@ -0,0 +1,36 @@
++300 player pl_regular
++na Rocks One
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player300@example.com
++ pw OYCpEMJQ
++ np 18
++ fs 198
++ ft 1
++ kn 13235 61319 
++ un 4126 
++ uf 1375 3743 8127 8535 2769 
++
++4126 char 0
++na Rocks One Captain
++il	1 200
++LI
++ wh 61319
++CH
++ lo 300
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 4947
++ ar 4947 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/301
+@@ -0,0 +1,36 @@
++301 player pl_regular
++na Rocks Two
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player301@example.com
++ pw j2tStUJc
++ np 18
++ fs 198
++ ft 1
++ kn 13244 69557 
++ un 4947 
++ uf 8078 5691 9254 3229 8159 
++
++4947 char 0
++na Rocks Two Captain
++il	1 200
++LI
++ wh 69557
++CH
++ lo 301
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 9655
++ ar 9655 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/302
+@@ -0,0 +1,36 @@
++302 player pl_regular
++na Rocks Three
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player302@example.com
++ pw lXS3fLN8
++ np 18
++ fs 198
++ ft 1
++ kn 13249 64623 
++ un 9655 
++ uf 6523 7473 3056 7012 7719 
++
++9655 char 0
++na Rocks Three Captain
++il	1 200
++LI
++ wh 64623
++CH
++ lo 302
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 9236
++ ar 9236 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/303
+@@ -0,0 +1,36 @@
++303 player pl_regular
++na Rocks Four
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player303@example.com
++ pw RmYOD3ZC
++ np 18
++ fs 198
++ ft 1
++ kn 13377 59359 
++ un 9236 
++ uf 7474 8867 6947 6895 9463 
++
++9236 char 0
++na Rocks Four Captain
++il	1 200
++LI
++ wh 59359
++CH
++ lo 303
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 7942
++ ar 7942 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/304
+@@ -0,0 +1,36 @@
++304 player pl_regular
++na Reef One
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player304@example.com
++ pw h10b4I52
++ np 18
++ fs 198
++ ft 1
++ kn 13245 64660 
++ un 7942 
++ uf 1215 8731 2176 5648 7620 
++
++7942 char 0
++na Reef One Captain
++il	1 200
++LI
++ wh 64660
++CH
++ lo 304
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 6458
++ ar 6458 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/305
+@@ -0,0 +1,37 @@
++305 player pl_regular
++na Reef Two
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player305@example.com
++ pw wjCDbWHh
++ np 18
++ fs 198
++ ft 1
++ kn 13351 62335 
++ un 6458 
++ uf 8761 5846 1348 4977 6287 
++
++6458 char 0
++na Reef Two Captain
++il	1 200
++LI
++ wh 62335
++CH
++ lo 305
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li save
++ ar 0 0 0 0 0 0 0 0
++ cs 2
++ st 1
++ pr 1
++
+--- a/lib/loc
++++ b/lib/loc
+@@ -42033,7 +42033,7 @@
+ 	276 1
+ LI
+  wh 58761
+- hl 73618 
++ hl 73618 61319 
+ LO
+  pd 13135 13236 13335 13234 
+  dg 2
+@@ -42146,7 +42146,7 @@
+ 	276 1
+ LI
+  wh 58761
+- hl 61760 
++ hl 61760 69557 
+ LO
+  pd 13144 13245 13344 13243 
+  dg 1
+@@ -42159,6 +42159,7 @@
+ 	276 1
+ LI
+  wh 58761
++ hl 64660 
+ LO
+  pd 13145 13246 13345 13244 
+  dg 2
+@@ -42208,6 +42209,7 @@
+ 	276 1
+ LI
+  wh 58761
++ hl 64623 
+ LO
+  pd 13149 13250 13349 13248 
+  dg 2
+@@ -43523,7 +43525,7 @@
+ 	276 1
+ LI
+  wh 58761
+- hl 67340 
++ hl 67340 62335 
+ LO
+  pd 13251 13352 13451 13350 
+  dg 3
+@@ -43870,6 +43872,7 @@
+ 	276 1
+ LI
+  wh 58761
++ hl 59359 
+ LO
+  pd 13277 13378 13477 13376 
+  dg 4
+--- a/lib/master
++++ b/lib/master
+@@ -96,6 +96,12 @@
+ 293	4.0	item		faery
+ 294	4.0	item		petty thief cookie
+ 295	4.0	item		hound
++300	1.49	fact/300	Rocks One
++301	1.49	fact/301	Rocks Two
++302	1.49	fact/302	Rocks Three
++303	1.49	fact/303	Rocks Four
++304	1.49	fact/304	Reef One
++305	1.49	fact/305	Reef Two
+ 401	4.69	item		Imperial Throne
+ 402	4.69	item		Crown of Prosperity
+ 403	4.69	item		Skull of Bastrestric
+@@ -271,10 +277,13 @@
+ 1188	2.64	fact/207	
+ 1209	2.64	fact/207	
+ 1211	2.64	fact/207	
++1215	12.0	unform		
+ 1287	2.64	fact/207	
+ 1306	2.64	fact/207	
+ 1321	2.64	fact/207	
+ 1335	2.64	fact/207	
++1348	12.0	unform		
++1375	12.0	unform		
+ 1383	2.64	fact/207	
+ 1416	2.64	fact/207	
+ 1501	2.64	fact/207	
+@@ -307,6 +316,7 @@
+ 2150	2.64	fact/207	
+ 2164	2.64	fact/207	
+ 2167	2.64	fact/207	
++2176	12.0	unform		
+ 2189	2.64	fact/207	
+ 2196	2.64	fact/207	
+ 2200	2.64	fact/207	
+@@ -338,6 +348,7 @@
+ 2724	2.64	fact/207	
+ 2743	2.64	fact/207	
+ 2763	2.64	fact/207	
++2769	12.0	unform		
+ 2774	2.64	fact/207	
+ 2788	2.64	fact/207	
+ 2811	2.64	fact/207	
+@@ -354,6 +365,7 @@
+ 3020	2.64	fact/207	
+ 3021	2.64	fact/207	
+ 3030	2.64	fact/207	
++3056	12.0	unform		
+ 3078	2.64	fact/207	
+ 3082	2.64	fact/207	
+ 3088	2.64	fact/207	
+@@ -366,6 +378,7 @@
+ 3175	2.64	fact/207	
+ 3199	2.64	fact/207	
+ 3228	2.64	fact/207	
++3229	12.0	unform		
+ 3230	2.64	fact/207	
+ 3235	2.64	fact/207	
+ 3252	2.64	fact/207	
+@@ -384,6 +397,7 @@
+ 3596	2.64	fact/207	
+ 3597	2.64	fact/207	
+ 3711	2.64	fact/207	
++3743	12.0	unform		
+ 3754	2.64	fact/207	
+ 3780	2.64	fact/207	
+ 3791	2.64	fact/207	
+@@ -405,6 +419,7 @@
+ 4047	2.64	fact/207	
+ 4069	2.64	fact/207	
+ 4104	2.64	fact/207	
++4126	2.0	fact/300	Rocks One Captain
+ 4139	2.64	fact/207	
+ 4152	2.64	fact/207	
+ 4165	2.64	fact/207	
+@@ -443,7 +458,9 @@
+ 4851	2.64	fact/207	
+ 4924	2.64	fact/207	
+ 4945	2.64	fact/207	
++4947	2.0	fact/301	Rocks Two Captain
+ 4950	2.64	fact/207	
++4977	12.0	unform		
+ 4989	2.64	fact/207	
+ 5007	2.64	fact/207	
+ 5039	2.64	fact/207	
+@@ -473,9 +490,11 @@
+ 5496	2.64	fact/207	
+ 5504	2.64	fact/207	
+ 5611	2.64	fact/207	
++5648	12.0	unform		
+ 5669	2.64	fact/207	
+ 5676	2.64	fact/207	
+ 5688	2.64	fact/207	
++5691	12.0	unform		
+ 5697	2.64	fact/207	
+ 5728	2.64	fact/207	
+ 5730	2.64	fact/207	
+@@ -485,6 +504,7 @@
+ 5787	2.64	fact/207	
+ 5791	2.64	fact/207	
+ 5825	2.64	fact/207	
++5846	12.0	unform		
+ 5853	2.64	fact/207	
+ 5873	2.64	fact/207	
+ 5893	2.64	fact/207	
+@@ -507,6 +527,7 @@
+ 6256	2.64	fact/207	
+ 6266	2.64	fact/207	
+ 6282	2.64	fact/207	
++6287	12.0	unform		
+ 6290	2.64	fact/207	
+ 6307	2.64	fact/207	
+ 6310	2.64	fact/207	
+@@ -515,7 +536,9 @@
+ 6376	2.64	fact/207	
+ 6440	2.64	fact/207	
+ 6450	2.64	fact/207	
++6458	2.0	fact/305	Reef Two Captain
+ 6500	2.64	fact/207	
++6523	12.0	unform		
+ 6527	2.64	fact/207	
+ 6558	2.64	fact/207	
+ 6581	2.64	fact/207	
+@@ -534,13 +557,16 @@
+ 6812	2.64	fact/207	
+ 6844	2.64	fact/207	
+ 6894	2.64	fact/207	
++6895	12.0	unform		
+ 6903	2.64	fact/207	
+ 6946	2.64	fact/207	
++6947	12.0	unform		
+ 6951	2.64	fact/207	
+ 6955	2.64	fact/207	
+ 6966	2.64	fact/207	
+ 6993	2.64	fact/207	
+ 6999	2.64	fact/207	
++7012	12.0	unform		
+ 7017	2.64	fact/207	
+ 7021	2.64	fact/207	
+ 7046	2.64	fact/207	
+@@ -566,15 +592,19 @@
+ 7401	2.64	fact/207	
+ 7421	2.64	fact/207	
+ 7441	2.64	fact/207	
++7473	12.0	unform		
++7474	12.0	unform		
+ 7481	2.64	fact/207	
+ 7518	2.64	fact/207	
+ 7577	2.64	fact/207	
+ 7585	2.64	fact/207	
++7620	12.0	unform		
+ 7628	2.64	fact/207	
+ 7637	2.64	fact/207	
+ 7665	2.64	fact/207	
+ 7700	2.64	fact/207	
+ 7710	2.64	fact/207	
++7719	12.0	unform		
+ 7747	2.64	fact/207	
+ 7757	2.64	fact/207	
+ 7766	2.64	fact/207	
+@@ -587,6 +617,7 @@
+ 7902	2.64	fact/207	
+ 7919	2.64	fact/207	
+ 7938	2.64	fact/207	
++7942	2.0	fact/304	Reef One Captain
+ 7949	2.64	fact/207	
+ 7971	2.64	fact/207	
+ 7974	2.64	fact/207	
+@@ -594,11 +625,14 @@
+ 7987	2.64	fact/207	
+ 8000	2.64	fact/207	
+ 8007	2.64	fact/207	
++8078	12.0	unform		
+ 8093	2.64	fact/207	
+ 8105	2.64	fact/207	
+ 8122	2.64	fact/207	
++8127	12.0	unform		
+ 8151	2.64	fact/207	
+ 8155	2.64	fact/207	
++8159	12.0	unform		
+ 8177	2.64	fact/207	
+ 8178	2.64	fact/207	
+ 8182	2.64	fact/207	
+@@ -617,15 +651,19 @@
+ 8494	2.64	fact/207	
+ 8499	2.64	fact/207	
+ 8508	2.64	fact/207	
++8535	12.0	unform		
+ 8575	2.64	fact/207	
+ 8604	2.64	fact/207	
+ 8612	2.64	fact/207	
+ 8635	2.64	fact/207	
+ 8650	2.64	fact/207	
+ 8730	2.64	fact/207	
++8731	12.0	unform		
++8761	12.0	unform		
+ 8780	2.64	fact/207	
+ 8839	2.64	fact/207	
+ 8848	2.64	fact/207	
++8867	12.0	unform		
+ 8905	2.64	fact/207	
+ 8910	2.64	fact/207	
+ 8935	2.64	fact/207	
+@@ -646,7 +684,9 @@
+ 9159	2.64	fact/207	
+ 9185	2.64	fact/207	
+ 9205	2.64	fact/207	
++9236	2.0	fact/303	Rocks Four Captain
+ 9248	2.64	fact/207	
++9254	12.0	unform		
+ 9258	2.64	fact/207	
+ 9276	2.64	fact/207	
+ 9294	2.64	fact/207	
+@@ -657,12 +697,14 @@
+ 9432	2.64	fact/207	
+ 9433	2.64	fact/207	
+ 9453	2.64	fact/207	
++9463	12.0	unform		
+ 9484	2.64	fact/207	
+ 9515	2.64	fact/207	
+ 9552	2.64	fact/207	
+ 9554	2.64	fact/207	
+ 9622	2.64	fact/207	
+ 9654	2.64	fact/207	
++9655	2.0	fact/302	Rocks Three Captain
+ 9676	2.64	fact/207	
+ 9685	2.64	fact/207	
+ 9714	2.64	fact/207	
+@@ -27100,6 +27142,7 @@
+ 59351	3.15	loc		
+ 59356	3.27	loc		
+ 59358	3.9	loc		
++59359	9.31	ship		
+ 59364	3.28	loc		
+ 59365	3.20	loc		
+ 59366	3.19	loc		
+@@ -28028,6 +28071,7 @@
+ 61316	3.16	loc		Place of the Dead
+ 61317	3.16	loc		
+ 61318	3.13	loc		
++61319	9.31	ship		
+ 61326	3.16	loc		
+ 61327	3.9	loc		
+ 61331	3.26	loc		
+@@ -28524,6 +28568,7 @@
+ 62329	3.25	loc		
+ 62330	3.15	loc		
+ 62332	3.25	loc		
++62335	9.31	ship		
+ 62336	3.23	loc		Grassy field
+ 62338	3.28	loc		
+ 62339	3.25	loc		
+@@ -29632,6 +29677,7 @@
+ 64612	3.16	loc		
+ 64617	3.25	loc		
+ 64619	3.13	loc		
++64623	9.31	ship		
+ 64626	3.27	loc		
+ 64627	3.25	loc		
+ 64628	3.17	loc		
+@@ -29656,6 +29702,7 @@
+ 64657	3.17	loc		
+ 64658	3.18	loc		Old battlefield
+ 64659	3.21	loc		
++64660	9.31	ship		
+ 64662	3.13	loc		
+ 64664	3.26	loc		
+ 64665	3.18	loc		Old battlefield
+@@ -32035,6 +32082,7 @@
+ 69551	3.21	loc		
+ 69554	3.13	loc		
+ 69555	3.22	loc		Cursed Pits
++69557	9.31	ship		
+ 69558	3.27	loc		
+ 69561	3.25	loc		
+ 69569	3.15	loc		
+--- a/lib/ship
++++ b/lib/ship
+@@ -0,0 +1,30 @@
++59359 ship roundship
++LI
++ wh 13377
++ hl 9236 
++
++61319 ship roundship
++LI
++ wh 13235
++ hl 4126 
++
++62335 ship roundship
++LI
++ wh 13351
++ hl 6458 
++
++64623 ship roundship
++LI
++ wh 13249
++ hl 9655 
++
++64660 ship roundship
++LI
++ wh 13245
++ hl 7942 
++
++69557 ship roundship
++LI
++ wh 13244
++ hl 4947 
++
+--- a/lib/times_0
++++ b/lib/times_0
+@@ -1,14 +1,15 @@
+-From: skrenta@pbm.com (Rich skrenta)
+-Subject: Olympia G3 - The Olympia Times - Issue 0
++From: olympia@pbm.com (Olympia PBEM)
++Subject: Olympia Times g2-0
++To: totimes@pbm.com
+ 
+    +----------------------------------------------------------------------+
+-   | The Olympia Times                                Fierce winds year 1 |
+-   | October 24, 2026                                                     |
++   | The Olympia Times                                         issue g2-0 |
++   | August 31, 1996                                                      |
+    |                                                                      |
+-   | turn 0, 0 players                     skrenta@pbm.com (Rich skrenta) |
++   | turn 0  0 players                      http://www.pbm.com/oly/times/ |
+    +----------------------------------------------------------------------+
+ 
+-     Questions, comments, to play: http://olympia.v-labs.be/g3
++               Questions, comments, to play:  info@pbm.com
+ 
+                              Olympia PBEM
+ 
+--- a/lib/unform
++++ b/lib/unform
+@@ -0,0 +1,60 @@
++1215 unform 0
++
++1348 unform 0
++
++1375 unform 0
++
++2176 unform 0
++
++2769 unform 0
++
++3056 unform 0
++
++3229 unform 0
++
++3743 unform 0
++
++4977 unform 0
++
++5648 unform 0
++
++5691 unform 0
++
++5846 unform 0
++
++6287 unform 0
++
++6523 unform 0
++
++6895 unform 0
++
++6947 unform 0
++
++7012 unform 0
++
++7473 unform 0
++
++7474 unform 0
++
++7620 unform 0
++
++7719 unform 0
++
++8078 unform 0
++
++8127 unform 0
++
++8159 unform 0
++
++8535 unform 0
++
++8731 unform 0
++
++8761 unform 0
++
++8867 unform 0
++
++9254 unform 0
++
++9463 unform 0
++
