@@ -1427,8 +1427,8 @@ void bridge_map_holes(void)
 	int row, col;
 	int n;
 
-	for (row = 0; row < max_row; row++)
-	    for (col = 0; col < max_col; col++)
+	for (row = 0; row <= max_row; row++)
+	    for (col = 0; col <= max_col; col++)
 		if (map[row][col] == NULL)
 			if ((n = bridge_map_hole_sup(row, col)))
 				fprintf(stderr,
