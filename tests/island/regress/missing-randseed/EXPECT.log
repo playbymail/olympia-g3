@@ -1,3 +1,4 @@
 == no-seed stage 1: -s 20
 exit 0
+randseed could not be opened.
 Added island of 20 provinces.

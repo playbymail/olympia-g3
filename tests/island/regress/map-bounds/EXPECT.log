@@ -1,0 +1,18 @@
+== max-size stage 1: -s 30
+exit 0
+Added island of 30 provinces.
+== blank-tail stage 1: -s 30
+exit 0
+Added island of 30 provinces.
+== too-tall stage 1: -s 30
+exit 1
+Map taller than 120 rows!
+== too-wide stage 1: -s 30
+exit 1
+Map row longer than 119 characters!
+== long-skipped-row stage 1: -s 30
+exit 1
+Map row longer than 119 characters!
+== split-line stage 1: -s 30
+exit 1
+Map row longer than 119 characters!

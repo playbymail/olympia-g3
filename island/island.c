@@ -161,6 +161,7 @@ int main(int argc, char *argv[])
 	int ids[MAX_MAP][MAX_MAP];
 	char buffer[LINE_MAX];
 	location *island;
+	FILE *fp;
 	int opt, x_size, y_size, x, y, max, count, d, island_size, i;
 	int GCD, LCM, o, terr, temp, size, cluster_end, id;
 	int target_size = 0;
@@ -181,7 +182,8 @@ int main(int argc, char *argv[])
 				target_size = atoi(optarg);
 				break;
 			default:
-				fprintf(stderr, "Usage: %s -b border_width -c continental_shelf_width -s size\n", argv[0]);
+				/* A fixed name, not argv[0]: the line is the same however island is run (#300) */
+				fprintf(stderr, "Usage: island-g3 -b border_width -c continental_shelf_width -s size\n");
 				exit(1);
 		}
 
@@ -196,6 +198,21 @@ int main(int argc, char *argv[])
 	/* Read the starting map from stdin */
 	while (fgets(buffer, LINE_MAX, stdin))
 	{
+		/*
+		 *  Each row of map[] holds MAX_MAP - 1 characters and a NUL, and there
+		 *  are MAX_MAP rows.  Reject a bigger map before sscanf() writes past
+		 *  them; that includes a skipped row, and a line fgets() split (#299).
+		 */
+		if (strcspn(buffer, "\r\n") > MAX_MAP - 1)
+		{
+			fprintf(stderr, "Map row longer than %d characters!\n", MAX_MAP - 1);
+			exit(1);
+		}
+		if (y_size == MAX_MAP && strcspn(buffer, "\r\n") > 0)
+		{
+			fprintf(stderr, "Map taller than %d rows!\n", MAX_MAP);
+			exit(1);
+		}
 		if (sscanf(buffer, "%[^\r\n]", map[y_size]))
 		{
 			if (!x_size)
@@ -212,7 +229,19 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	load_seed("randseed");
+	/*
+	 *  load_seed() reports a missing randseed with printf(), which would put
+	 *  the message in the map on stdout.  Report it on stderr instead and
+	 *  run, as load_seed() does, from the all-zero seed (#298).
+	 */
+	fp = fopen("randseed", "rb");
+	if (fp)
+	{
+		fclose(fp);
+		load_seed("randseed");
+	}
+	else
+		fprintf(stderr, "randseed could not be opened.\n");
 
 	/* Divide the map into available (water) and unavailable (land) space. */
 	/*
