@@ -319,6 +319,7 @@ void save_seed(char *fnam)
 	{
 		fprintf(stderr, "couldn't write %s:", fnam);
 		perror("");
+		exit(1);
 	}
 }
 
