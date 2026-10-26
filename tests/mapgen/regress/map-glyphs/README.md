@@ -48,7 +48,7 @@ appear only on stderr.
 
 ## Constraints on hand-made maps
 
-The fixture works around these behaviors of the C, which are still in place:
+The fixture works around this behavior of the C, which is still in place:
 
 - **Boundary squares come in pairs, and each side needs its own `Regions`
   seed.** A boundary square takes the region of the first flood that reaches
@@ -56,12 +56,12 @@ The fixture works around these behaviors of the C, which are still in place:
   and asserts. Land on each side may touch only its own square of the pair,
   and its seed must flood before the row-major unnamed-region scan reaches
   the boundary square (#281).
-- **Every region must be named in `Regions`.** Unnamed regions keep a NULL
-  `inside_names[]` entry, and `make_gates()` passes it to `strcmp()`. The
-  `;`, `~` and `"` lanes each have their own color, so each one is a separate
-  sea and gets a seed (#279).
-- **No `Regions` or `Land` entry may name a hole.** The seed square is read
-  without a NULL check (#278).
+
+Two more constraints applied when the fixture was built and are now fixed:
+unnamed regions crashed mapgen-g3 (#273, pinned by `unnamed-regions`), and
+so did a `Regions` or `Land` entry naming a hole (#278, pinned by
+`seed-no-province`). The fixture still seeds the `;`, `~` and `"` lanes,
+which each have their own color and so are separate seas.
 
 ## Run it
 

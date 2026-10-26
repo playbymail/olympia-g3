@@ -1768,6 +1768,14 @@ set_regions(void)
 		while (iswhite(*p))
 			p++;
 
+		if (row < 0 || row >= MAX_ROW || col < 0 || col >= MAX_COL ||
+		    map[row][col] == NULL)
+		{
+			fprintf(stderr, "Regions '%s': no province at (%d,%d)\n",
+				p, row, col);
+			continue;
+		}
+
 		if (map[row][col]->inside)
 		{
 			fprintf(stderr, "collision between %s and %s at (%d,%d)\n",
@@ -1937,6 +1945,14 @@ set_province_clumps(void)
 			p++;
 		while (iswhite(*p))
 			p++;
+
+		if (row < 0 || row >= MAX_ROW || col < 0 || col >= MAX_COL ||
+		    map[row][col] == NULL)
+		{
+			fprintf(stderr, "Land '%s': no province at (%d,%d)\n",
+				p, row, col);
+			continue;
+		}
 
 		if (map[row][col]->save_char != type)
 		{
@@ -2109,7 +2125,7 @@ int island_allowed(int row, int col)
 	if (inside == 0)
 		return TRUE;
 
-	for (p = inside_names[inside]; *p; p++)
+	for (p = inside_names[inside]; p && *p; p++)
 		if (strncmp(p, "Deep", 4) == 0)
 			return FALSE;
 
@@ -2314,7 +2330,8 @@ random_tile_from_each_region(void)
 		if (inside_list[i][0]->terrain == terr_ocean)
 			continue;
 
-		if (strcmp(inside_names[i], "Impassable Mountains") == 0)
+		if (inside_names[i] &&
+		    strcmp(inside_names[i], "Impassable Mountains") == 0)
 			continue;
 
 		do
@@ -2614,7 +2631,8 @@ void gate_stone_circles(void)
 
 		fprintf(stderr, "	(%2d,%2d) in %s\n",
 				l[i]->row, l[i]->col,
-				inside_names[l[i]->inside]);
+				inside_names[l[i]->inside] ?
+				    inside_names[l[i]->inside] : "??");
 	}
 
 	/*
@@ -2678,7 +2696,8 @@ void mark_bad_locs(void)
 	int i, j, r, c;
 
 	for (i = 1; i <= inside_top; i++)
-		if (strcmp(inside_names[i], "Impassable Mountains") == 0)
+		if (inside_names[i] &&
+		    strcmp(inside_names[i], "Impassable Mountains") == 0)
 		{
 			for (j = 0; j < tiles_len(inside_list[i]); j++)
 				inside_list[i][j]->mark = 1;

@@ -16,7 +16,7 @@
 #   (2,58) *           named city alone in the sea: fix_terrain can't infer
 #   (10,18) *          named city inside land: terrain inferred
 #   (77,30-37)         sss][sss: Summerbridge pair (sf 1-2)
-# Regions names every new region (unnamed regions crash mapgen-g3) and has
+# Regions names every new region (unnamed regions crashed before #273) and has
 # one collision (2,37). Land has one entry whose glyph does not match (2,36).
 #
 # Before the #274 fix, mapgen-g3 crashed on the holes (SIGSEGV, exit 139).
