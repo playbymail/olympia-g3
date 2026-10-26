@@ -310,10 +310,15 @@ void save_seed(char *fnam)
 	FILE *fd;
 
 	fd = fopen(fnam, "wb+");
-	if (fd >= 0)
+	if (fd)
 	{
 		fwrite(digest, 1, sizeof(digest), fd);
 		fclose(fd);
+	}
+	else
+	{
+		fprintf(stderr, "couldn't write %s:", fnam);
+		perror("");
 	}
 }
 
