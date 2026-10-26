@@ -33,7 +33,9 @@
  *  phase-daily's barking dogs (issue #233); token, bandit, release,
  *  desert, restock and start for phase-day0's state an earlier turn
  *  leaves (issue #232); clock, auto_quit and pass for the month-end
- *  events gated on the calendar and the map (issue #234). Everything else in the design
+ *  events gated on the calendar and the map, and loyalty, loot and
+ *  collapse (and relic's decay) for the decay an earlier month end
+ *  leaves (issue #234). Everything else in the design
  *  (credit, the wider query set, the declarative format, RNG bindings) is
  *  deferred; a binding is added when a fixture needs it, not speculatively.
  */
@@ -1048,18 +1050,24 @@ l_ring(lua_State *L)
 }
 
 /*
- *  oly.relic(who, id)
+ *  oly.relic(who, id [, decay])
  *
  *  Move the relic id from Nowhere to who, as quest loot gives one to a
  *  lair's monster (move_item from nowhere_loc). Loot also sets the relic
- *  to decay; this one does not decay. No GM verb moves a unique item, so
- *  this is a path (B) binding, like mob.
+ *  to decay, drawing 9-21 months; with no decay this one does not decay,
+ *  and with one it vanishes after decay more month ends, as if loot of
+ *  an earlier turn had given it. No GM verb moves a unique item, so this
+ *  is a path (B) binding, like mob.
  */
 static int
 l_relic(lua_State *L)
 {
 	int who = (int) luaL_checkinteger(L, 1);
 	int relic = (int) luaL_checkinteger(L, 2);
+	int decay = (int) luaL_optinteger(L, 3, 0);
+
+	if (decay < 0 || decay > SHRT_MAX)
+		return luaL_error(L, "oly.relic: decay %d out of range", decay);
 
 	if (!valid_box(who) || kind(who) != T_char)
 		return luaL_error(L, "oly.relic: %d not a character", who);
@@ -1070,6 +1078,90 @@ l_relic(lua_State *L)
 				relic);
 
 	move_item(nowhere_loc, who, relic, 1);
+	p_item_magic(relic)->relic_decay = (short) decay;
+	return 0;
+}
+
+/*
+ *  oly.loyalty(who, "contract"|"fear"|"summon", rate)
+ *
+ *  Set who's loyalty, as earlier month ends' loyalty_decay() leaves it:
+ *  the three kinds that decay, at rate. A summon at rate 0 is released at
+ *  month end; a contract below 50, or a fear unit decaying to 0, may
+ *  desert. A unit formed, hired or terrorized in the turn is a fresh
+ *  hire, which loyalty_decay() skips, so only a unit of an earlier turn
+ *  decays. Errors when who isn't a character. No GM verb sets loyalty,
+ *  so this is a path (B) binding, like mob.
+ */
+static int
+l_loyalty(lua_State *L)
+{
+	static const char *kinds[] = { "contract", "fear", "summon", NULL };
+	static const int loy[] = { LOY_contract, LOY_fear, LOY_summon };
+	int who = (int) luaL_checkinteger(L, 1);
+	int n = luaL_checkoption(L, 2, NULL, kinds);
+	int rate = (int) luaL_checkinteger(L, 3);
+
+	if (!valid_box(who) || kind(who) != T_char)
+		return luaL_error(L, "oly.loyalty: %d not a character", who);
+
+	if (rate < 0)
+		return luaL_error(L, "oly.loyalty: rate %d below 0", rate);
+
+	set_loyal(who, loy[n], rate);
+	return 0;
+}
+
+/*
+ *  oly.loot(where, n)  -- leave where pillaged by an earlier turn.
+ *
+ *  Sets the pillage loot of the location where to n, as pillaging does
+ *  (each pillage adds 4), but not recent_loot: that flag is not saved,
+ *  so a pillage of an earlier turn leaves only the loot. pillage_decay()
+ *  lowers it by one at each month end without a pillage. Errors when
+ *  where isn't a location or n is out of range. No GM verb pillages, so
+ *  this is a path (B) binding, like mob.
+ */
+static int
+l_loot(lua_State *L)
+{
+	int where = (int) luaL_checkinteger(L, 1);
+	int n = (int) luaL_checkinteger(L, 2);
+
+	if (!valid_box(where) || kind(where) != T_loc)
+		return luaL_error(L, "oly.loot: %d not a location", where);
+
+	if (n < 0 || n > SCHAR_MAX)
+		return luaL_error(L, "oly.loot: loot %d out of range", n);
+
+	p_subloc(where)->loot = (schar) n;
+	return 0;
+}
+
+/*
+ *  oly.collapse(mine, months)  -- leave an empty mine collapsed.
+ *
+ *  As building_collapses() collapses a mine (sub_mine_collapsed, mine_delay
+ *  8), with months left until collapsed_mine_decay() clears it away, as
+ *  earlier month ends leave it. Errors when mine isn't an empty mine or
+ *  months is out of range. No GM verb collapses a building, so this is a
+ *  path (B) binding, like mob.
+ */
+static int
+l_collapse(lua_State *L)
+{
+	int mine = (int) luaL_checkinteger(L, 1);
+	int months = (int) luaL_checkinteger(L, 2);
+
+	if (!valid_box(mine) || subkind(mine) != sub_mine ||
+	    ilist_len(rp_loc_info(mine) ? rp_loc_info(mine)->here_list : NULL) > 0)
+		return luaL_error(L, "oly.collapse: %d not an empty mine", mine);
+
+	if (months < 1 || months > 8)
+		return luaL_error(L, "oly.collapse: months %d not 1-8", months);
+
+	change_box_subkind(mine, sub_mine_collapsed);
+	p_misc(mine)->mine_delay = (schar) months;
 	return 0;
 }
 
@@ -1627,6 +1719,9 @@ static const luaL_Reg oly_funcs[] = {
 	{ "clock",		l_clock },
 	{ "auto_quit",		l_auto_quit },
 	{ "pass",		l_pass },
+	{ "loyalty",		l_loyalty },
+	{ "loot",		l_loot },
+	{ "collapse",		l_collapse },
 	{ "start",		l_start },
 	{ "guard",		l_guard },
 	{ "order",		l_order },

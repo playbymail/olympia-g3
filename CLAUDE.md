@@ -11,12 +11,12 @@ original multi-engine monorepo; it builds on its own with CMake.
 
 The code is legacy C originally targeting **32-bit** systems. The C11/64-bit
 modernization and the 32→64-bit list refactor are **complete**, and so are the
-per-command fixture backlogs (`tests/ultron/backlog.tsv`, #116;
-`tests/ultron/use-backlog.tsv`, #180). The next step is a **port**, either
-Go + Lua or Rust + Rhai (not yet decided). The one known coverage gap left
-before it is the turn's non-command phases (NPC programs, daily events,
-month-end), tracked in #227. The golden trees and regress fixtures are the spec
-the port is checked against, so keep them independent of the target language.
+fixture backlogs: per command (`tests/ultron/backlog.tsv`, #116), per `use`
+(`tests/ultron/use-backlog.tsv`, #180) and per turn phase
+(`tests/ultron/phase-backlog.tsv`, #227). The next step is a **port**, either
+Go + Lua or Rust + Rhai (not yet decided). The golden trees and regress
+fixtures are the spec the port is checked against, so keep them independent of
+the target language.
 
 ## Read only what your task needs
 

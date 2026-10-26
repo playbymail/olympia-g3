@@ -771,6 +771,21 @@ events are gated on: the calendar, a game option and the map.
   (`summer_flag` 1–2). Only the flag is set, not mapgen's name or terrain.
   The shipped maps have neither place.
 
+`phase-month-decay` adds four more for the state that earlier month ends
+leave for month-end decay to count down:
+
+- `oly.loyalty(who, "contract"|"fear"|"summon", rate)` sets `who`'s loyalty
+  (`set_loyal`) to one of the kinds that decay. A summon at 0 is released at
+  month end; a contract below 50, or a fear unit decaying to 0, may desert.
+  A unit formed or hired in the turn is a fresh hire, which decay skips.
+- `oly.loot(where, n)` sets the pillage loot of `where` as pillaging does
+  (each pillage adds 4), without the unsaved `recent_loot` flag of a pillage
+  in the turn, so it decays at month end.
+- `oly.collapse(mine, months)` collapses an empty mine as
+  `building_collapses` does, with `months` (1–8) left until it is cleared.
+- `oly.relic(who, id [, decay])` now takes an optional decay: the relic
+  vanishes after that many more month ends, as quest loot sets one.
+
 **Since landed (#204):** `oly.palantir(who [, name])` gives the character
 `who` a palantir and returns its id (optionally bound in the registry). It
 makes the item as `d_forge_palantir` (`art.c`) does: a unique item

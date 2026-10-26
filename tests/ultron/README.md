@@ -198,14 +198,13 @@ The work on the `todo` cells is split by phase under #227: day 0 and day 1
 covered by `phase-day0` (#232) and the daily events by `phase-daily` (#233).
 Month end is covered by `phase-month-gold` (gold, noble points, ranks and
 drops) and by `phase-month-open` and `phase-month-close` (Uldim pass and
-Summerbridge), with the rest of #234 to come.
+Summerbridge) and `phase-month-decay` (decay and upkeep). No cell is `todo`.
 The `n/a` cells:
 
 - `token` of `queue_npc_orders`. It is for units whose NPC program is
   `PROG_npc_token`, and no engine code sets that program: the units an NPC
   token adds (`add_token_unit_sup`) have none. Only a hand-edited world
   (`po 3` on a character) reaches it.
-
 - `erode` of `noncreator_curse_erode`. The loyalty loss is `#if 0`'d out,
   so reaching it only writes a `NOTYET!` line to the code log, which no gate
   compares. In one turn it can't be reached with orders either: it runs on

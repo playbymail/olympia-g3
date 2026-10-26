@@ -105,8 +105,9 @@ cells with `phase_cells` from `tests/olympia/fixtures/coverage.sh`. The
 (#232, covered by `phase-day0` with the `oly.desert`, `oly.release`,
 `oly.bandit`, `oly.token`, `oly.restock` and `oly.start` bindings), the
 daily events (#233, covered by `phase-daily` with the `oly.hide` binding) and
-month end (#234, so far `phase-month-gold`, `phase-month-open` and
-`phase-month-close` with the `oly.clock`, `oly.auto_quit` and `oly.pass`
-bindings). When you add
-a row to `ph_rows[]` in `olympia/coverage.c`, add it to the backlog in the
+month end (#234, covered by `phase-month-gold`, `phase-month-open`,
+`phase-month-close` and `phase-month-decay` with the `oly.clock`,
+`oly.auto_quit`, `oly.pass`, `oly.loyalty`, `oly.loot` and `oly.collapse`
+bindings and `oly.relic`'s decay). With them no phase cell is `todo`. When
+you add a row to `ph_rows[]` in `olympia/coverage.c`, add it to the backlog in the
 same position; `tests/ultron/check.sh` checks the order.
