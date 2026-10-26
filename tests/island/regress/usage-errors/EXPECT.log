@@ -1,0 +1,6 @@
+== unknown stage 1: -x
+exit 1
+Usage: island-g3 -b border_width -c continental_shelf_width -s size
+== missing-arg stage 1: -s
+exit 1
+Usage: island-g3 -b border_width -c continental_shelf_width -s size

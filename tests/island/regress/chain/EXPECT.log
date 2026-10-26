@@ -1,0 +1,30 @@
+== four stage 1:
+exit 0
+Added island of 14 provinces.
+== four stage 2:
+exit 0
+Added island of 484 provinces.
+== four stage 3:
+exit 0
+Added island of 60 provinces.
+== four stage 4:
+exit 0
+Added island of 130 provinces.
+== small-first stage 1: -s 30
+exit 0
+Added island of 30 provinces.
+== small-first stage 2: -s 60
+exit 0
+Added island of 60 provinces.
+== small-first stage 3: -s 90
+exit 0
+Added island of 90 provinces.
+== large-first stage 1: -s 90
+exit 0
+Added island of 90 provinces.
+== large-first stage 2: -s 60
+exit 0
+Added island of 60 provinces.
+== large-first stage 3: -s 30
+exit 0
+Added island of 30 provinces.

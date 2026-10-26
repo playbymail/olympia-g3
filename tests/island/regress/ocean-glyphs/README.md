@@ -54,4 +54,7 @@ cmake --build --preset debug          # builds build/debug/island-g3
 ./tests/island/regress/ocean-glyphs/check.sh   # prints YES
 ```
 
-Override the build with `OLYMPIA_PRESET=release ./check.sh`.
+Override the build with `OLYMPIA_PRESET=release ./check.sh`, or run another
+island generator with `ISLAND_BIN=<path> ./check.sh` (see
+[tests/island/island.sh](../../island.sh)). The exact output is pinned by
+`ocean-glyph-output`.

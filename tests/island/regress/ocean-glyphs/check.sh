@@ -23,16 +23,14 @@
 # are RNG-sequence dependent; cf. the #25 granularity work) -- only the
 # bug-defining invariants above.
 #
+# The exact output for the same maps is pinned by ocean-glyph-output.
+#
 # Pass: prints YES and exits 0.
 ###########################################################################
 set -u
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT="$(cd "${HERE}/../../../.." && pwd)"
-PRESET="${OLYMPIA_PRESET:-debug}"
-BIN="${ROOT}/build/${PRESET}/island-g3"
+. "${HERE}/../../island.sh"	# sets BIN: the C build, or ISLAND_BIN
 SIZE=20
-
-[ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }
 
 WORK="$(mktemp -d)"
 trap 'rm -rf "${WORK}"' EXIT

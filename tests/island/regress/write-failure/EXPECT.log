@@ -1,0 +1,3 @@
+== randseed-dir stage 1: -s 20
+exit 1
+couldn't write randseed:Is a directory

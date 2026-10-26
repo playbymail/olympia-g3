@@ -1,0 +1,8 @@
+== border-2 stage 1: -s 100
+exit 0
+Not enough room to expand island!
+Added island of 16 provinces.
+== border-0 stage 1: -s 100 -b 0
+exit 0
+Not enough room to expand island!
+Added island of 64 provinces.
