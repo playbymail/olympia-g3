@@ -12,4 +12,7 @@ exit 0
 Added island of 14 provinces.
 == s-neg stage 1: -s -5
 exit 0
-Added island of 9 provinces.
+Added island of 14 provinces.
+== s-neg-large stage 1: -s -1000
+exit 0
+Added island of 14 provinces.

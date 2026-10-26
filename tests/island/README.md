@@ -39,7 +39,7 @@ diagnostics.
 | `defaults` | no arguments on an all-ocean map, three seeds, three islands |
 | `ocean-glyph-output` | exact output for each ocean glyph (`; , : . ~` space `" '`) |
 | `ocean-glyphs` | the #24 invariants for the same glyphs (its own script, no EXPECT files) |
-| `size` | `-s 50`, `-s 1`; `-s 0` is the random size; `-s -5` is the random size minus 5 |
+| `size` | `-s 50`, `-s 1`; `-s 0`, `-5` and `-1000` are the random size (#294) |
 | `border-shelf` | `-b` and `-c` at 0, 6 and a negative value (clamped to 0) |
 | `existing-land` | placement around land already on the map |
 | `chain` | four stages from one map; the same sizes in two orders differ |
@@ -65,12 +65,6 @@ C build writes `EXPECT.sha256` and `EXPECT.log`.
 
 ## Not covered
 
-- **Negative `-s`.** The random size counts up from the negative value, so
-  a size that stays below 1 reaches `malloc()` with a bad length.
-  `-s -1000` prints `Unable to allocate memory for island data!` and exits
-  1; under ASan it aborts. If the total comes out at exactly -1, the island
-  is written into a zero-byte buffer. Only `-s -5`, which stays positive, is
-  pinned.
 - **Empty input** never finishes: with no rows, `count` is 0 and island
   calls `rnd(1, 0)`.
 - **Input bounds.** Maps taller than 120 rows, or with rows longer than 120

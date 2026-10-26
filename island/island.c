@@ -276,6 +276,8 @@ int main(int argc, char *argv[])
 	if (target_size < 1)
 	{
 		/* Decide how big to make the island */
+		/* Count from 0: any size below 1 means random (#294) */
+		target_size = 0;
 		for (i = 0; i < 2; i++)
 			while (rnd(0, 99))
 				target_size++;
