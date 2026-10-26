@@ -30,7 +30,9 @@
  *  bodies (issue #192); savage for use-beast's keep_savage (issue #194);
  *  palantir for use-art's artifacts (issue #204); potion, orb, ring and
  *  relic for use-items' unique items (issue #218); hide for
- *  phase-daily's barking dogs (issue #233). Everything else in the design
+ *  phase-daily's barking dogs (issue #233); token, bandit, release,
+ *  desert, restock and start for phase-day0's state an earlier turn
+ *  leaves (issue #232). Everything else in the design
  *  (credit, the wider query set, the declarative format, RNG bindings) is
  *  deferred; a binding is added when a fixture needs it, not speculatively.
  */
@@ -176,6 +178,13 @@ req_field_int(lua_State *L, int t, const char *key)
  */
 static int saved_who = 0;
 
+/*
+ *  The characters oly.start() left with an order running. A scripted
+ *  command for one would run in its command slot and replace that order,
+ *  so script_cmd() refuses one.
+ */
+static ilist started = NULL;
+
 static void
 script_cmd(lua_State *L, char *line)
 {
@@ -183,6 +192,13 @@ script_cmd(lua_State *L, char *line)
 	char buf[LEN];
 
 	saved_who = 0;
+
+	if (ilist_lookup(started, immediate) >= 0)
+	{
+		luaL_error(L, "oly: %d has an order oly.start left running; "
+				"start it after its other bindings", immediate);
+		return;
+	}
 
 	c = p_command(immediate);
 	c->who = immediate;
@@ -1055,6 +1071,266 @@ l_relic(lua_State *L)
 	return 0;
 }
 
+/*
+ *  oly.token(who, kind [, name])  -> <id>
+ *
+ *  Give who an NPC token, made as create_npc_token() makes one for quest
+ *  loot: a unique item (sub_npc_token) controlling one unit of kind's
+ *  men, with kind's name and lore. kind is "barbarian", "savage",
+ *  "corpse", "orc" or "skeleton", in create_npc_token()'s order. The
+ *  engine draws the kind; here it is given, so no stream but the mint is
+ *  touched. As from loot, the token has no units yet: check_token_units
+ *  adds them at the start of the turn if a player holds it. Only a
+ *  lair's monster gets one, at an id minted in the turn. No GM verb
+ *  makes a unique item, so this is a path (B) binding, like mob. `name`,
+ *  when given, binds the id in the registry.
+ */
+static int
+l_token(lua_State *L)
+{
+	static const char *kinds[] = {
+		"barbarian", "savage", "corpse", "orc", "skeleton", NULL
+	};
+	static const struct {
+		int ni;
+		char *name;
+		int lore;
+	} tok[] = {
+		{ item_barbarian, "Crown of the Barbarians",
+						lore_barbarian_npc_token },
+		{ item_savage, "Horn of the Savages", lore_savage_npc_token },
+		{ item_corpse, "Crown of the Undead lord",
+						lore_undead_npc_token },
+		{ item_orc, "Golden idol of the Orcs", lore_orc_npc_token },
+		{ item_skeleton, "Banner of the Skeletons",
+						lore_skeleton_npc_token },
+	};
+	int who = (int) luaL_checkinteger(L, 1);
+	int n = luaL_checkoption(L, 2, NULL, kinds);
+	const char *name = luaL_optstring(L, 3, NULL);
+	int new;
+	struct item_magic *pm;
+
+	if (!valid_box(who) || kind(who) != T_char)
+		return luaL_error(L, "oly.token: %d not a character", who);
+
+	new = create_unique_item(who, sub_npc_token);
+	if (new < 0)
+		return luaL_error(L, "oly.token: could not mint a token");
+
+	set_name(new, tok[n].name);
+
+	pm = p_item_magic(new);
+	pm->token_num = 1;
+	pm->token_ni = tok[n].ni;
+	pm->lore = tok[n].lore;
+
+	if (name != NULL)
+		reg_bind(str_save((char *) name), new);
+
+	lua_pushinteger(L, new);
+	return 1;
+}
+
+/*
+ *  oly.bandit(where, item, qty [, name])  -> <id>
+ *
+ *  Mint a band of qty item at where, in Hades or Faery, as an ambush
+ *  there does (create_hades_bandit, create_faery_bandit): an independent
+ *  unit with the region's bandit program and no break point. item is one
+ *  the region's ambush draws: spirits, corpses, savages, skeletons or
+ *  gorgons in Hades; faeries or elves in Faery. The engine draws the
+ *  item and qty, and a Faery band's gold; here they are given and the
+ *  band has no gold, so no stream but the mint is touched. An ambush
+ *  queues orders for its band, so only one from an earlier turn is idle
+ *  when NPC orders are queued. No GM verb makes a bandit, so this is a
+ *  path (B) binding, like mob. `name`, when given, binds the id in the
+ *  registry.
+ */
+static int
+l_bandit(lua_State *L)
+{
+	static const int hades[] = {
+		item_spirit, item_corpse, item_savage, item_skeleton,
+		item_gorgon, 0
+	};
+	static const int faery[] = { item_faery, item_elf, 0 };
+	int where = (int) luaL_checkinteger(L, 1);
+	int item = (int) luaL_checkinteger(L, 2);
+	int qty = (int) luaL_checkinteger(L, 3);
+	const char *name = luaL_optstring(L, 4, NULL);
+	const int *items;
+	int prog, bandit, i;
+
+	if (!valid_box(where) || kind(where) != T_loc)
+		return luaL_error(L, "oly.bandit: %d not a location", where);
+
+	if (in_hades(where))
+	{
+		prog = PROG_hades_bandit;
+		items = hades;
+	}
+	else if (in_faery(where))
+	{
+		prog = PROG_faery_bandit;
+		items = faery;
+	}
+	else
+		return luaL_error(L, "oly.bandit: %d not in Hades or Faery",
+				where);
+
+	for (i = 0; items[i] != 0 && items[i] != item; i++)
+		;
+	if (items[i] == 0)
+		return luaL_error(L, "oly.bandit: no ambush at %d draws %d",
+				where, item);
+
+	if (qty < 1)
+		return luaL_error(L, "oly.bandit: qty %d below 1", qty);
+
+	bandit = new_char(sub_ni, item, where, -1, indep_player,
+							LOY_npc, 0, NULL);
+	if (bandit <= 0)
+		return luaL_error(L, "oly.bandit: could not mint a bandit "
+				"at %d", where);
+
+	p_char(bandit)->break_point = 0;
+	p_char(bandit)->npc_prog = (schar) prog;
+	gen_item(bandit, item, qty);
+
+	if (name != NULL)
+		reg_bind(str_save((char *) name), bandit);
+
+	lua_pushinteger(L, bandit);
+	return 1;
+}
+
+/*
+ *  oly.release(who)  -- let a summoned unit's bond run out.
+ *
+ *  As loyalty_decay() releases a summon whose loyalty rate is down to
+ *  0 at month end: who leaves its stack and becomes an NPC
+ *  (LOY_npc), so the next turn's queue_npc_orders() gives it orders.
+ *  Errors when who isn't a summoned character. No GM verb releases a
+ *  summon, so this is a path (B) binding, like mob.
+ */
+static int
+l_release(lua_State *L)
+{
+	int who = (int) luaL_checkinteger(L, 1);
+
+	if (!valid_box(who) || kind(who) != T_char ||
+	    loyal_kind(who) != LOY_summon)
+		return luaL_error(L, "oly.release: %d not a summoned "
+				"character", who);
+
+	leave_stack(who);
+	set_loyal(who, LOY_npc, 0);
+	return 0;
+}
+
+/*
+ *  oly.desert(who)  -- who deserts to the independent player.
+ *
+ *  As loyalty_decay() deserts a contract or fear unit at month end
+ *  (unit_deserts to indep_player, unsworn): who renounces its lord,
+ *  leaves its stack and becomes an unsworn independent, so the next
+ *  turn's queue_npc_orders() gives it orders. Errors when who isn't a
+ *  character of a player other than the independent one. No GM verb
+ *  makes a unit desert, so this is a path (B) binding, like mob.
+ */
+static int
+l_desert(lua_State *L)
+{
+	int who = (int) luaL_checkinteger(L, 1);
+
+	if (!valid_box(who) || kind(who) != T_char ||
+	    player(who) == 0 || player(who) == indep_player)
+		return luaL_error(L, "oly.desert: %d not a player's "
+				"character", who);
+
+	unit_deserts(who, indep_player, TRUE, LOY_unsworn, 0);
+	return 0;
+}
+
+/*
+ *  oly.restock(where)  -- restock the market of the city where.
+ *
+ *  loc_trade_sup(), as location_trades() restocks every city at month
+ *  end: each good the city produces is offered for sale again, and each
+ *  it consumes is wanted again. No pending trade is matched against the
+ *  new stock until the next turn's day 1 (match_all_trades), so a buy
+ *  that outran the stock is still pending when the turn starts. Errors
+ *  when where isn't a city. No GM verb restocks a market, so this is a
+ *  path (B) binding, like mob.
+ */
+static int
+l_restock(lua_State *L)
+{
+	int where = (int) luaL_checkinteger(L, 1);
+
+	if (!valid_box(where) || subkind(where) != sub_city)
+		return luaL_error(L, "oly.restock: %d not a city", where);
+
+	loc_trade_sup(where, FALSE);
+	return 0;
+}
+
+/*
+ *  oly.start(who)  -- start who's next queued order now.
+ *
+ *  Pops who's top order and runs it through do_command(), as the turn
+ *  starts an order it loads, but without the evenings script_cmd() runs
+ *  to finish it. A one-day order (buy, guard) is done at once; a longer
+ *  one is left running with all its days to go, as an order begun late
+ *  in an earlier turn is when the next turn starts. Errors when who
+ *  has no queued order or it is not a command. Call it after the other
+ *  bindings for who: a scripted command for who runs in who's command
+ *  slot and would replace the running order, so script_cmd() refuses
+ *  one.
+ */
+static int
+l_start(lua_State *L)
+{
+	int who = (int) luaL_checkinteger(L, 1);
+	struct command *c;
+	char *order;
+	char buf[LEN];
+
+	if (!valid_box(who) || kind(who) != T_char)
+		return luaL_error(L, "oly.start: %d not a character", who);
+
+	order = top_order(player(who), who);
+	if (order == NULL)
+		return luaL_error(L, "oly.start: %d has no queued order", who);
+
+	if (immediate == who)
+		be_subject(L, gm_player);
+
+	strncpy(buf, order, LEN-1);
+	buf[LEN-1] = '\0';
+	pop_order(player(who), who);
+
+	c = p_command(who);
+	c->who = who;
+
+	if (!oly_parse(c, buf))
+		return luaL_error(L, "oly.start: unrecognized order for %d: %s",
+				who, buf);
+
+	c->pri = (schar) cmd_tbl[c->cmd].pri;
+	c->wait = cmd_tbl[c->cmd].time;
+	c->poll = (schar) cmd_tbl[c->cmd].poll;
+	c->days_executing = 0;
+	c->state = STATE_LOAD;
+
+	do_command(c);
+
+	if (c->state == STATE_RUN)
+		ilist_append(&started, who);
+	return 0;
+}
+
 /* oly.guard(who, on)  -- the `guard` order set via v_guard. */
 static int
 l_guard(lua_State *L)
@@ -1263,6 +1539,12 @@ static const luaL_Reg oly_funcs[] = {
 	{ "orb",		l_orb },
 	{ "ring",		l_ring },
 	{ "relic",		l_relic },
+	{ "token",		l_token },
+	{ "bandit",		l_bandit },
+	{ "release",		l_release },
+	{ "desert",		l_desert },
+	{ "restock",		l_restock },
+	{ "start",		l_start },
 	{ "guard",		l_guard },
 	{ "order",		l_order },
 	{ "save",		l_save },

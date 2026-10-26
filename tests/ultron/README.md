@@ -194,8 +194,14 @@ with the dump on. Of 75 rows, 9 are reached by the golden turn and 30 by 13
 existing fixtures, which now assert them; 36 are `todo`.
 
 The work on the `todo` cells is split by phase under #227: day 0 and day 1
-(#232), the daily events (#233) and month end (#234). The daily events are
-covered by `phase-daily` (#233). The `n/a` cells:
+(#232), the daily events (#233) and month end (#234). Day 0 and day 1 are
+covered by `phase-day0` (#232) and the daily events by `phase-daily` (#233).
+The `n/a` cells:
+
+- `token` of `queue_npc_orders`. It is for units whose NPC program is
+  `PROG_npc_token`, and no engine code sets that program: the units an NPC
+  token adds (`add_token_unit_sup`) have none. Only a hand-edited world
+  (`po 3` on a character) reaches it.
 
 - `erode` of `noncreator_curse_erode`. The loyalty loss is `#if 0`'d out,
   so reaching it only writes a `NOTYET!` line to the code log, which no gate

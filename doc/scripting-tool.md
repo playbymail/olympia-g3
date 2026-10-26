@@ -720,6 +720,40 @@ binding like `oly.mob`. `phase-daily` uses it for the noble the dogs bark at:
 they bark on the turn's keyed `dog_bark_day`, day 2 of turn 1, and a hide in
 the turn finishes only on day 3.
 
+**Since landed (#232):** six path (B) bindings leave the state an earlier
+turn leaves for day 0 to pick up. `phase-day0` uses all of them.
+
+- `oly.desert(who)` makes the character `who` desert to the independent
+  player, as `loyalty_decay` deserts a unit (`unit_deserts`, unsworn). It
+  errors when `who` isn't a character of a player other than the
+  independent one.
+- `oly.release(who)` lets a summoned unit's bond run out, as
+  `loyalty_decay` releases one at month end: it leaves its stack and becomes
+  an NPC (`LOY_npc`). It errors when `who` isn't a summoned character. With
+  `oly.savage` or `oly.undead` it gives an idle savage or undead.
+- `oly.bandit(where, item, qty [, name])` mints a band of `qty` `item` at
+  `where`, in Hades or Faery, as an ambush there does
+  (`create_hades_bandit`, `create_faery_bandit`), and returns its id. The
+  ambush draws the item, the qty and a Faery band's gold; here they are given
+  and there is no gold. It errors when `where` isn't in Hades or Faery or
+  `item` isn't one the region's ambush draws.
+- `oly.token(who, kind [, name])` gives `who` an NPC token, as
+  `create_npc_token` makes one for quest loot, of `kind` `"barbarian"`,
+  `"savage"`, `"corpse"`, `"orc"` or `"skeleton"`, and returns its id. As
+  from loot it has no units yet; `check_token_units` adds them if a player
+  holds it.
+- `oly.restock(where)` restocks the market of the city `where`, as
+  `location_trades` does at month end (`loc_trade_sup`). The new stock is
+  matched against pending trades only on the next day 1. It errors when
+  `where` isn't a city.
+- `oly.start(who)` pops `who`'s top queued order and runs it through
+  `do_command`, as the turn starts an order, without the evenings
+  `script_cmd` runs to finish one. A zero-day order is done at once; a longer
+  one is left running, as when the next turn starts after an earlier turn
+  began it. It errors when `who` has no queued order. Afterwards a scripted
+  command for `who` would replace the running order, so any later binding
+  that makes `who` the subject errors: call `oly.start` last for each unit.
+
 **Since landed (#204):** `oly.palantir(who [, name])` gives the character
 `who` a palantir and returns its id (optionally bound in the registry). It
 makes the item as `d_forge_palantir` (`art.c`) does: a unique item

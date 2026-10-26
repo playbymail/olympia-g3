@@ -1,0 +1,2530 @@
+world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
+--- a/lib/fact/100
++++ b/lib/fact/100
+@@ -2,4 +2,82 @@
+ na Independent player
+ PL
+  pw crusty7
++ un 3127 8651 85354 93356 111453 
+ 
++3127 char demon lord
++il	31 20
++LI
++ wh 59022
++CH
++ lo 100
++ he 100
++ lk 4
++ at 100
++ df 100
++MI
++ sb 8159
++ mh 59022
++ co 273
++
++8651 char 0
++na Deserter One
++il	1 200 \
++	10 25
++LI
++ wh 57081
++CH
++ lo 100
++ pl 301
++ he 100
++ bp 50
++ at 80
++ df 80
++
++85354 char ni
++na Mob
++il	23 31
++LI
++ wh 13449
++CH
++ ni 23
++ lo 100
++ he -1
++ lk 4
++ gu 1
++ at 60
++ df 60
++MI
++ mh 13449
++ co 101
++CO
++ li guard 1
++ ar 1 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
++93356 char ni
++il	98 1 \
++	32 10
++LI
++ wh 13449
++CH
++ ni 32
++ lo 100
++ he 100
++ lk 4
++ at 60
++ df 60
++
++111453 char ni
++il	26 10
++LI
++ wh 26000
++CH
++ ni 26
++ lo 100
++ he -1
++ lk 4
++ at 60
++ df 60
++ po 5
++
+--- a/lib/fact/200
++++ b/lib/fact/200
+@@ -3,8 +3,8 @@
+ PL
+  pw crusty7
+ CO
+- li save
+- ar 0 0 0 0 0 0 0 0
+- cs 2
++ li be 4126
++ ar 4126 0 0 0 0 0 0 0
++ st 1
+  pr 1
+ 
+--- a/lib/fact/207
++++ b/lib/fact/207
+@@ -43,7 +43,8 @@
+ 	9791 9819 9831 9835 9861 9887 9973 9999 
+ 
+ 1009 char garrison
+-il	16 118
++il	16 118 \
++	70678 1
+ LI
+  wh 58706
+ CH
+--- /dev/null
++++ b/lib/fact/300
+@@ -0,0 +1,38 @@
++300 player pl_regular
++na Builders
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player300@example.com
++ pw OYCpEMJQ
++ np 18
++ fs 198
++ ft 1
++ kn 13450 
++ un 4126 
++ uf 1375 3743 8127 8535 2769 
++
++4126 char 0
++na Builder One
++il	1 200 \
++	10 25
++LI
++ wh 13450
++CH
++ lo 300
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li save
++ ar 0 0 0 0 0 0 0 0
++ cs 2
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/301
+@@ -0,0 +1,15 @@
++301 player pl_regular
++na Deserters
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player301@example.com
++ pw j2tStUJc
++ np 18
++ fs 198
++ ft 1
++ uf 8533 8078 5691 9254 3229 
++
+--- /dev/null
++++ b/lib/fact/302
+@@ -0,0 +1,37 @@
++302 player pl_regular
++na Necromancers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player302@example.com
++ pw lXS3fLN8
++ np 18
++ fs 198
++ ft 1
++ kn 57081 59022 
++ un 8159 
++ uf 9655 6087 6523 7473 3056 
++
++8159 char 0
++na Necro One
++il	1 200 \
++	10 25
++LI
++ wh 57081
++CH
++ lo 302
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 7012
++ ar 7012 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/303
+@@ -0,0 +1,37 @@
++303 player pl_regular
++na Ralliers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player303@example.com
++ pw RmYOD3ZC
++ np 18
++ fs 198
++ ft 1
++ kn 13449 
++ un 7012 
++ uf 6133 9236 5303 7474 8867 
++
++7012 char 0
++na Rallier One
++il	1 200 \
++	10 25
++LI
++ wh 13449
++CH
++ lo 303
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 8761
++ ar 8761 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/304
+@@ -0,0 +1,32 @@
++304 player pl_regular
++na Holders
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player304@example.com
++ pw h10b4I52
++ np 18
++ fs 198
++ ft 1
++ un 6947 
++ uf 9463 4940 7942 4751 1215 
++
++6947 char 0
++na Holder One
++il	1 200 \
++	10 25 \
++	74324 1
++LI
++ wh 57081
++CH
++ lo 304
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++
+--- /dev/null
++++ b/lib/fact/305
+@@ -0,0 +1,39 @@
++305 player pl_regular
++na Waiters
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player305@example.com
++ pw wjCDbWHh
++ np 18
++ fs 198
++ ft 1
++ un 8731 
++ uf 5648 7620 6658 6458 3726 
++
++8731 char 0
++na Waiter One
++il	1 200 \
++	10 25
++LI
++ wh 57081
++CH
++ lo 305
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li wait time 40
++ ar 0 40 0 0 0 0 0 0
++ cs 2
++ wa -1
++ st 1
++ po 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/306
+@@ -0,0 +1,38 @@
++306 player pl_regular
++na Buyers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player306@example.com
++ pw nsKUJ9fc
++ np 18
++ fs 198
++ ft 1
++ un 8761 
++ uf 1348 4977 6287 7223 1016 
++
++8761 char 0
++na Buyer One
++il	1 150 \
++	10 25 \
++	77 25
++tl	1 77 5 14 0 0 0 0
++LI
++ wh 57081
++CH
++ lo 306
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li buy 77 30 14
++ ar 77 30 14 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/307
+@@ -0,0 +1,31 @@
++307 player pl_regular
++na Idlers
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player307@example.com
++ pw dTYb5cEn
++ np 18
++ fs 198
++ ft 1
++ un 2294 
++ uf 4333 8547 8700 5797 3176 
++
++2294 char 0
++na Idler One
++il	1 200 \
++	10 25
++LI
++ wh 57081
++CH
++ lo 307
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++
+--- a/lib/item
++++ b/lib/item
+@@ -846,4 +846,22 @@
+ IM
+  uk 15
+  lo 403
++
++70678 item npc_token
++na Golden idol of the Orcs
++IT
++ un 1009
++IM
++ tn 1
++ ti 287
++ lo 932
++
++74324 item npc_token
++na Horn of the Savages
++IT
++ un 6947
++IM
++ tn 1
++ ti 32
++ lo 934
+ 
+--- a/lib/loc
++++ b/lib/loc
+@@ -44809,12 +44809,11 @@
+ il	77 30 \
+ 	10 10 \
+ 	96 50 \
+-	101 1 \
+ 	276 1 \
+ 	274 1
+ LI
+  wh 58762
+- hl 74717 73119 74976 
++ hl 74717 73119 74976 93356 7012 85354 
+ LO
+  pd 13349 13450 13549 13448 
+  dg 4
+@@ -44829,7 +44828,15 @@
+ 	275 1
+ LI
+  wh 58762
+- hl 73045 74516 
++ hl 73045 74516 4126 67180 73720 75153 78112 71717 73383 \
++	69441 65443 71947 68410 70090 76346 66559 69885 60329 70901 76570 \
++	70460 66282 77581 76129 69968 60685 70043 68225 60707 78947 70092 \
++	69941 59134 71230 77720 59826 75837 68960 61609 59196 66975 75524 \
++	76513 68181 62118 78302 71674 65560 72242 78356 65999 73178 71150 \
++	75422 73825 65855 60744 59557 69695 66613 60757 60378 72352 71024 \
++	59166 72903 67507 67563 64511 77261 62483 69974 60444 76488 62190 \
++	67793 59512 73733 63453 70282 65401 61356 72857 62323 74514 67690 \
++	73710 63072 
+ LO
+  pd 13350 13451 13550 13449 
+  dg 3
+@@ -173233,6 +173240,7 @@
+ il	101 1
+ LI
+  wh 58925
++ hl 111453 
+ LO
+  pd 0 26001 26100 0 
+  hi 1
+@@ -261603,11 +261611,11 @@
+ 	1 87 100 2 0 0 0 0 \
+ 	2 261 10 50 0 0 0 0 \
+ 	1 99 4 126 0 0 0 0 \
+-	2 77 25 14 0 0 0 0 \
+-	1 77 25 7 0 0 0 0
++	1 77 25 7 0 0 0 0 \
++	2 77 25 14 0 0 0 0
+ LI
+  wh 13451
+- hl 77708 
++ hl 2294 8761 8731 6947 8651 77708 8159 
+ SL
+  te 600 610 680 700 730 800 860 
+  sh 1
+@@ -274924,10 +274932,10 @@
+  hi 1
+ 
+ 59022 loc graveyard
+-il	31 15 \
+-	273 1
++il	31 15
+ LI
+  wh 19252
++ hl 3127 
+ LO
+  hi 1
+ SL
+@@ -275262,6 +275270,10 @@
+ LI
+  wh 10386
+ 
++59134 loc tower
++LI
++ wh 13450
++
+ 59138 loc circle of trees
+ il	77 5 \
+ 	64 3
+@@ -275338,6 +275350,10 @@
+ LI
+  wh 16939
+ 
++59166 loc tower
++LI
++ wh 13450
++
+ 59168 loc graveyard
+ il	31 15 \
+ 	273 1
+@@ -275442,6 +275458,10 @@
+ il	59 30
+ LI
+  wh 10133
++
++59196 loc tower
++LI
++ wh 13450
+ 
+ 59202 loc island
+ il	59 30
+@@ -276372,6 +276392,10 @@
+ il	77 5
+ LI
+  wh 18441
++
++59512 loc tower
++LI
++ wh 13450
+ 
+ 59513 loc island
+ il	59 30
+@@ -276521,6 +276545,10 @@
+ LO
+  hi 1
+ 
++59557 loc tower
++LI
++ wh 13450
++
+ 59560 loc island
+ il	59 30
+ LI
+@@ -277492,6 +277520,10 @@
+ SL
+  td 7
+ 
++59826 loc tower
++LI
++ wh 13450
++
+ 59828 loc graveyard
+ na Barrows
+ il	31 15 \
+@@ -278902,6 +278934,10 @@
+  wh 13863
+ LO
+  hi 1
++
++60329 loc tower
++LI
++ wh 13450
+ 
+ 60331 loc circle of trees
+ il	77 5 \
+@@ -279061,6 +279097,10 @@
+ LO
+  hi 1
+ 
++60378 loc tower
++LI
++ wh 13450
++
+ 60383 loc battlefield
+ LI
+  wh 17318
+@@ -279246,6 +279286,10 @@
+  hi 1
+ SL
+  td 10
++
++60444 loc tower
++LI
++ wh 13450
+ 
+ 60446 loc ruins
+ LI
+@@ -280081,6 +280125,10 @@
+  lt 32656 
+  lw -1
+  lp -1
++
++60685 loc tower
++LI
++ wh 13450
+ 
+ 60689 loc pits
+ na Cursed Pits
+@@ -280155,6 +280203,10 @@
+ LO
+  hi 1
+ 
++60707 loc tower
++LI
++ wh 13450
++
+ 60718 loc ruins
+ LI
+  wh 12665
+@@ -280242,6 +280294,10 @@
+ LO
+  hi 1
+ 
++60744 loc tower
++LI
++ wh 13450
++
+ 60747 loc cave
+ il	67 2
+ LI
+@@ -280292,6 +280348,10 @@
+ LO
+  hi 1
+ 
++60757 loc tower
++LI
++ wh 13450
++
+ 60759 loc lair
+ LI
+  wh 14547
+@@ -282086,6 +282146,10 @@
+  wh 12806
+ LO
+  hi 1
++
++61356 loc tower
++LI
++ wh 13450
+ 
+ 61359 loc pasture
+ il	51 5
+@@ -282753,6 +282817,10 @@
+ LO
+  hi 1
+ 
++61609 loc tower
++LI
++ wh 13450
++
+ 61611 loc ruins
+ LI
+  wh 15609
+@@ -284400,6 +284468,10 @@
+ LI
+  wh 11891
+ 
++62118 loc tower
++LI
++ wh 13450
++
+ 62120 loc enchanted forest
+ LI
+  wh 11013
+@@ -284613,6 +284685,10 @@
+  wh 18157
+ LO
+  hi 1
++
++62190 loc tower
++LI
++ wh 13450
+ 
+ 62191 loc yew grove
+ il	68 5
+@@ -285098,6 +285174,10 @@
+ LO
+  hi 1
+ 
++62323 loc tower
++LI
++ wh 13450
++
+ 62324 loc sewer
+ LI
+  wh 57572
+@@ -285594,6 +285674,10 @@
+ LI
+  wh 13384
+ 
++62483 loc tower
++LI
++ wh 13450
++
+ 62485 loc enchanted forest
+ LI
+  wh 15241
+@@ -287640,6 +287724,10 @@
+  wh 16037
+ LO
+  hi 1
++
++63072 loc tower
++LI
++ wh 13450
+ 
+ 63075 loc lair
+ LI
+@@ -289022,6 +289110,10 @@
+ LO
+  hi 1
+ 
++63453 loc tower
++LI
++ wh 13450
++
+ 63454 loc cave
+ il	67 2
+ LI
+@@ -292000,6 +292092,10 @@
+ il	93 25
+ LI
+  wh 13544
++
++64511 loc tower
++LI
++ wh 13450
+ 
+ 64513 loc graveyard
+ na Barrows
+@@ -294830,6 +294926,10 @@
+ LO
+  hi 1
+ 
++65401 loc tower
++LI
++ wh 13450
++
+ 65403 loc yew grove
+ il	68 5
+ LI
+@@ -294913,6 +295013,10 @@
+ LI
+  wh 18052
+ 
++65443 loc tower
++LI
++ wh 13450
++
+ 65445 loc ruins
+ LI
+  wh 15119
+@@ -295289,6 +295393,10 @@
+ LI
+  wh 11291
+ 
++65560 loc tower
++LI
++ wh 13450
++
+ 65561 loc ruins
+ LI
+  wh 17079
+@@ -296175,6 +296283,10 @@
+  wh 12882
+ LO
+  hi 1
++
++65855 loc tower
++LI
++ wh 13450
+ 
+ 65858 loc poppy field
+ il	93 25
+@@ -296598,6 +296710,10 @@
+  wh 18291
+ LO
+  hi 1
++
++65999 loc tower
++LI
++ wh 13450
+ 
+ 66001 loc cave
+ il	67 2
+@@ -297429,6 +297545,10 @@
+ LI
+  wh 16877
+ 
++66282 loc tower
++LI
++ wh 13450
++
+ 66286 loc ruins
+ LI
+  wh 17411
+@@ -298276,6 +298396,10 @@
+ LO
+  pd 0 0 0 0 43489 0 
+  hi 1
++
++66559 loc tower
++LI
++ wh 13450
+ 
+ 66561 loc circle of trees
+ il	77 5 \
+@@ -298442,6 +298566,10 @@
+ LO
+  hi 1
+ 
++66613 loc tower
++LI
++ wh 13450
++
+ 66615 loc cave
+ il	67 2
+ LI
+@@ -299642,6 +299770,10 @@
+ LO
+  hi 1
+ 
++66975 loc tower
++LI
++ wh 13450
++
+ 66977 loc sand pit
+ il	71 1
+ LI
+@@ -300137,6 +300269,10 @@
+ LO
+  pd 0 0 0 0 0 43777 
+  hi 1
++
++67180 loc tower
++LI
++ wh 13450
+ 
+ 67182 loc graveyard
+ na Place of the Dead
+@@ -301291,6 +301427,10 @@
+  wh 14771
+ LO
+  hi 1
++
++67507 loc tower
++LI
++ wh 13450
+ 
+ 67508 loc battlefield
+ na Old battlefield
+@@ -301472,6 +301612,10 @@
+  hi 1
+ SL
+  td 3
++
++67563 loc tower
++LI
++ wh 13450
+ 
+ 67565 loc mallorn grove
+ il	65 2 \
+@@ -301859,6 +302003,10 @@
+ LO
+  hi 1
+ 
++67690 loc tower
++LI
++ wh 13450
++
+ 67693 loc pasture
+ na Grassy field
+ il	51 5
+@@ -302237,6 +302385,10 @@
+ LO
+  hi 1
+ 
++67793 loc tower
++LI
++ wh 13450
++
+ 67800 loc battlefield
+ na Old battlefield
+ LI
+@@ -303425,6 +303577,10 @@
+  wh 18651
+ LO
+  hi 1
++
++68181 loc tower
++LI
++ wh 13450
+ 
+ 68183 loc graveyard
+ na Place of the Dead
+@@ -303565,6 +303721,10 @@
+ LO
+  hi 1
+ 
++68225 loc tower
++LI
++ wh 13450
++
+ 68227 loc graveyard
+ il	31 15 \
+ 	273 1
+@@ -304214,6 +304374,10 @@
+  wh 18819
+ LO
+  hi 1
++
++68410 loc tower
++LI
++ wh 13450
+ 
+ 68411 loc chamber
+ il	101 1
+@@ -305941,6 +306105,10 @@
+  hi 1
+ SL
+  td 2
++
++68960 loc tower
++LI
++ wh 13450
+ 
+ 68962 loc poppy field
+ il	93 25
+@@ -307325,6 +307493,10 @@
+ LI
+  wh 18923
+ 
++69441 loc tower
++LI
++ wh 13450
++
+ 69442 loc island
+ il	59 30
+ LI
+@@ -308138,6 +308310,10 @@
+ LO
+  hi 1
+ 
++69695 loc tower
++LI
++ wh 13450
++
+ 69699 loc graveyard
+ il	31 15 \
+ 	273 1
+@@ -308765,6 +308941,10 @@
+  wh 10748
+ LO
+  hi 1
++
++69885 loc tower
++LI
++ wh 13450
+ 
+ 69888 loc yew grove
+ il	68 5
+@@ -308999,6 +309179,10 @@
+ il	71 1
+ LI
+  wh 11349
++
++69941 loc tower
++LI
++ wh 13450
+ 
+ 69943 loc pits
+ na Cursed Pits
+@@ -309113,6 +309297,10 @@
+ LO
+  hi 1
+ 
++69968 loc tower
++LI
++ wh 13450
++
+ 69970 loc lair
+ LI
+  wh 14327
+@@ -309130,6 +309318,10 @@
+ LO
+  hi 1
+ 
++69974 loc tower
++LI
++ wh 13450
++
+ 69975 loc battlefield
+ na Old battlefield
+ LI
+@@ -309331,6 +309523,10 @@
+ LI
+  wh 36304
+ 
++70043 loc tower
++LI
++ wh 13450
++
+ 70048 loc sacred grove
+ il	77 5
+ LI
+@@ -309486,6 +309682,10 @@
+ LO
+  hi 1
+ 
++70090 loc tower
++LI
++ wh 13450
++
+ 70091 loc graveyard
+ na Catacombs
+ il	31 15 \
+@@ -309496,6 +309696,10 @@
+  lt 28228 
+  lw -1
+  lp -1
++
++70092 loc tower
++LI
++ wh 13450
+ 
+ 70095 loc island
+ il	59 30
+@@ -310199,6 +310403,10 @@
+  hi 1
+ SL
+  td 7
++
++70282 loc tower
++LI
++ wh 13450
+ 
+ 70285 loc island
+ il	59 30
+@@ -310821,6 +311029,10 @@
+  wh 15444
+ LO
+  hi 1
++
++70460 loc tower
++LI
++ wh 13450
+ 
+ 70464 loc battlefield
+ na Old battlefield
+@@ -312123,6 +312335,10 @@
+ LO
+  hi 1
+ 
++70901 loc tower
++LI
++ wh 13450
++
+ 70902 loc graveyard
+ il	31 15 \
+ 	273 1
+@@ -312448,6 +312664,10 @@
+ LO
+  hi 1
+ 
++71024 loc tower
++LI
++ wh 13450
++
+ 71030 loc yew grove
+ il	68 5
+ LI
+@@ -312884,6 +313104,10 @@
+ il	93 25
+ LI
+  wh 15144
++
++71150 loc tower
++LI
++ wh 13450
+ 
+ 71159 loc graveyard
+ il	31 15 \
+@@ -313081,6 +313305,10 @@
+ LO
+  hi 1
+ 
++71230 loc tower
++LI
++ wh 13450
++
+ 71233 loc battlefield
+ na Old battlefield
+ LI
+@@ -314567,6 +314795,10 @@
+  wh 14791
+ LO
+  hi 1
++
++71674 loc tower
++LI
++ wh 13450
+ 
+ 71675 loc mallorn grove
+ il	65 2 \
+@@ -314740,6 +314972,10 @@
+ LO
+  hi 1
+ 
++71717 loc tower
++LI
++ wh 13450
++
+ 71720 loc ruins
+ LI
+  wh 17182
+@@ -315567,6 +315803,10 @@
+  wh 11505
+  hl 76626 
+ 
++71947 loc tower
++LI
++ wh 13450
++
+ 71950 loc rocky hill
+ il	78 50
+ LI
+@@ -316449,6 +316689,10 @@
+ LI
+  wh 12823
+ 
++72242 loc tower
++LI
++ wh 13450
++
+ 72245 loc graveyard
+ il	31 15 \
+ 	273 1
+@@ -316709,6 +316953,10 @@
+  wh 17067
+ LO
+  hi 1
++
++72352 loc tower
++LI
++ wh 13450
+ 
+ 72354 loc island
+ il	59 30
+@@ -318192,6 +318440,10 @@
+ il	68 5
+ LI
+  wh 11652
++
++72857 loc tower
++LI
++ wh 13450
+ 
+ 72859 loc chamber
+ il	101 1
+@@ -318343,6 +318595,10 @@
+ LI
+  wh 16025
+ 
++72903 loc tower
++LI
++ wh 13450
++
+ 72906 loc poppy field
+ il	93 25
+ LI
+@@ -319207,6 +319463,10 @@
+ LO
+  hi 1
+ 
++73178 loc tower
++LI
++ wh 13450
++
+ 73179 loc graveyard
+ na Place of the Dead
+ il	31 15 \
+@@ -319999,6 +320259,10 @@
+  wh 11659
+ LO
+  hi 1
++
++73383 loc tower
++LI
++ wh 13450
+ 
+ 73384 loc mallorn grove
+ il	65 2 \
+@@ -320988,6 +321252,10 @@
+ LI
+  wh 36310
+ 
++73710 loc tower
++LI
++ wh 13450
++
+ 73713 loc battlefield
+ na Ancient battlefield
+ LI
+@@ -321017,6 +321285,10 @@
+  wh 17907
+ LO
+  hi 1
++
++73720 loc tower
++LI
++ wh 13450
+ 
+ 73722 loc ruins
+ LI
+@@ -321036,6 +321308,10 @@
+ na Old battlefield
+ LI
+  wh 14913
++
++73733 loc tower
++LI
++ wh 13450
+ 
+ 73738 loc rocky hill
+ il	78 50
+@@ -321308,6 +321584,10 @@
+  lt 30800 
+  lw -1
+  lp -1
++
++73825 loc tower
++LI
++ wh 13450
+ 
+ 73826 loc graveyard
+ il	31 15 \
+@@ -323319,6 +323599,10 @@
+ LO
+  hi 1
+ 
++74514 loc tower
++LI
++ wh 13450
++
+ 74516 loc ruins
+ LI
+  wh 13450
+@@ -325236,6 +325520,10 @@
+ LO
+  hi 1
+ 
++75153 loc tower
++LI
++ wh 13450
++
+ 75155 loc cave
+ il	67 2
+ LI
+@@ -326015,6 +326303,10 @@
+  lt 32314 
+  lw -1
+  lp -1
++
++75422 loc tower
++LI
++ wh 13450
+ 
+ 75424 loc graveyard
+ il	31 15 \
+@@ -326416,6 +326708,10 @@
+ SL
+  td 3
+ 
++75524 loc tower
++LI
++ wh 13450
++
+ 75525 loc cave
+ il	67 2
+ LI
+@@ -327445,6 +327741,10 @@
+ LI
+  wh 17031
+ 
++75837 loc tower
++LI
++ wh 13450
++
+ 75838 loc ruins
+ LI
+  wh 19120
+@@ -328283,6 +328583,10 @@
+ il	78 50
+ LI
+  wh 18041
++
++76129 loc tower
++LI
++ wh 13450
+ 
+ 76138 loc island
+ il	59 30
+@@ -328895,6 +329199,10 @@
+ LO
+  hi 1
+ 
++76346 loc tower
++LI
++ wh 13450
++
+ 76348 loc ruins
+ LI
+  wh 18943
+@@ -329295,6 +329603,10 @@
+ LI
+  wh 15359
+ 
++76488 loc tower
++LI
++ wh 13450
++
+ 76489 loc rocky hill
+ il	78 50
+ LI
+@@ -329367,6 +329679,10 @@
+  wh 12185
+ LO
+  hi 1
++
++76513 loc tower
++LI
++ wh 13450
+ 
+ 76514 loc sacred grove
+ il	77 5
+@@ -329591,6 +329907,10 @@
+ SL
+  td 8
+ 
++76570 loc tower
++LI
++ wh 13450
++
+ 76572 loc pits
+ na Cursed Pits
+ il	66 4
+@@ -331655,6 +331975,10 @@
+  hi 1
+ SL
+  td 5
++
++77261 loc tower
++LI
++ wh 13450
+ 
+ 77263 loc island
+ il	59 30
+@@ -332751,6 +333075,10 @@
+  wh 14706
+ LO
+  hi 1
++
++77581 loc tower
++LI
++ wh 13450
+ 
+ 77582 loc cave
+ il	67 2
+@@ -333192,6 +333520,10 @@
+  wh 10654
+ LO
+  hi 1
++
++77720 loc tower
++LI
++ wh 13450
+ 
+ 77721 loc graveyard
+ il	31 15 \
+@@ -334327,6 +334659,10 @@
+ LO
+  hi 1
+ 
++78112 loc tower
++LI
++ wh 13450
++
+ 78114 loc yew grove
+ il	68 5
+ LI
+@@ -334907,6 +335243,10 @@
+ LO
+  hi 1
+ 
++78302 loc tower
++LI
++ wh 13450
++
+ 78307 loc cave
+ il	67 2
+ LI
+@@ -335062,6 +335402,10 @@
+  wh 19571
+ LO
+  hi 1
++
++78356 loc tower
++LI
++ wh 13450
+ 
+ 78360 loc island
+ il	59 30
+@@ -336936,6 +337280,10 @@
+ LI
+  wh 12361
+  hl 63665 
++
++78947 loc tower
++LI
++ wh 13450
+ 
+ 78951 loc yew grove
+ il	68 5
+--- a/lib/master
++++ b/lib/master
+@@ -96,6 +96,14 @@
+ 293	4.0	item		faery
+ 294	4.0	item		petty thief cookie
+ 295	4.0	item		hound
++300	1.49	fact/300	Builders
++301	1.49	fact/301	Deserters
++302	1.49	fact/302	Necromancers
++303	1.49	fact/303	Ralliers
++304	1.49	fact/304	Holders
++305	1.49	fact/305	Waiters
++306	1.49	fact/306	Buyers
++307	1.49	fact/307	Idlers
+ 401	4.69	item		Imperial Throne
+ 402	4.69	item		Crown of Prosperity
+ 403	4.69	item		Skull of Bastrestric
+@@ -253,6 +261,7 @@
+ 921	5.0	skill		Trance
+ 922	5.0	skill		Teleport items
+ 1009	2.64	fact/207	
++1016	12.0	unform		
+ 1023	2.64	fact/207	
+ 1054	2.64	fact/207	
+ 1061	2.64	fact/207	
+@@ -271,10 +280,13 @@
+ 1188	2.64	fact/207	
+ 1209	2.64	fact/207	
+ 1211	2.64	fact/207	
++1215	12.0	unform		
+ 1287	2.64	fact/207	
+ 1306	2.64	fact/207	
+ 1321	2.64	fact/207	
+ 1335	2.64	fact/207	
++1348	12.0	unform		
++1375	12.0	unform		
+ 1383	2.64	fact/207	
+ 1416	2.64	fact/207	
+ 1501	2.64	fact/207	
+@@ -315,6 +327,7 @@
+ 2232	2.64	fact/207	
+ 2259	2.64	fact/207	
+ 2284	2.64	fact/207	
++2294	2.0	fact/307	Idler One
+ 2315	2.64	fact/207	
+ 2351	2.64	fact/207	
+ 2357	2.64	fact/207	
+@@ -338,6 +351,7 @@
+ 2724	2.64	fact/207	
+ 2743	2.64	fact/207	
+ 2763	2.64	fact/207	
++2769	12.0	unform		
+ 2774	2.64	fact/207	
+ 2788	2.64	fact/207	
+ 2811	2.64	fact/207	
+@@ -354,6 +368,7 @@
+ 3020	2.64	fact/207	
+ 3021	2.64	fact/207	
+ 3030	2.64	fact/207	
++3056	12.0	unform		
+ 3078	2.64	fact/207	
+ 3082	2.64	fact/207	
+ 3088	2.64	fact/207	
+@@ -361,11 +376,14 @@
+ 3098	2.64	fact/207	
+ 3122	2.64	fact/207	
+ 3126	2.64	fact/207	
++3127	2.55	fact/100	
+ 3139	2.64	fact/207	
+ 3156	2.64	fact/207	
+ 3175	2.64	fact/207	
++3176	12.0	unform		
+ 3199	2.64	fact/207	
+ 3228	2.64	fact/207	
++3229	12.0	unform		
+ 3230	2.64	fact/207	
+ 3235	2.64	fact/207	
+ 3252	2.64	fact/207	
+@@ -384,6 +402,8 @@
+ 3596	2.64	fact/207	
+ 3597	2.64	fact/207	
+ 3711	2.64	fact/207	
++3726	12.0	unform		
++3743	12.0	unform		
+ 3754	2.64	fact/207	
+ 3780	2.64	fact/207	
+ 3791	2.64	fact/207	
+@@ -405,6 +425,7 @@
+ 4047	2.64	fact/207	
+ 4069	2.64	fact/207	
+ 4104	2.64	fact/207	
++4126	2.0	fact/300	Builder One
+ 4139	2.64	fact/207	
+ 4152	2.64	fact/207	
+ 4165	2.64	fact/207	
+@@ -423,6 +444,7 @@
+ 4327	2.64	fact/207	
+ 4328	2.64	fact/207	
+ 4329	2.64	fact/207	
++4333	12.0	unform		
+ 4357	2.64	fact/207	
+ 4370	2.64	fact/207	
+ 4405	2.64	fact/207	
+@@ -438,12 +460,15 @@
+ 4599	2.64	fact/207	
+ 4622	2.64	fact/207	
+ 4750	2.64	fact/207	
++4751	12.0	unform		
+ 4767	2.64	fact/207	
+ 4820	2.64	fact/207	
+ 4851	2.64	fact/207	
+ 4924	2.64	fact/207	
++4940	12.0	unform		
+ 4945	2.64	fact/207	
+ 4950	2.64	fact/207	
++4977	12.0	unform		
+ 4989	2.64	fact/207	
+ 5007	2.64	fact/207	
+ 5039	2.64	fact/207	
+@@ -461,6 +486,7 @@
+ 5289	2.64	fact/207	
+ 5292	2.64	fact/207	
+ 5295	2.64	fact/207	
++5303	12.0	unform		
+ 5322	2.64	fact/207	
+ 5340	2.64	fact/207	
+ 5352	2.64	fact/207	
+@@ -473,9 +499,11 @@
+ 5496	2.64	fact/207	
+ 5504	2.64	fact/207	
+ 5611	2.64	fact/207	
++5648	12.0	unform		
+ 5669	2.64	fact/207	
+ 5676	2.64	fact/207	
+ 5688	2.64	fact/207	
++5691	12.0	unform		
+ 5697	2.64	fact/207	
+ 5728	2.64	fact/207	
+ 5730	2.64	fact/207	
+@@ -484,6 +512,7 @@
+ 5774	2.64	fact/207	
+ 5787	2.64	fact/207	
+ 5791	2.64	fact/207	
++5797	12.0	unform		
+ 5825	2.64	fact/207	
+ 5853	2.64	fact/207	
+ 5873	2.64	fact/207	
+@@ -498,8 +527,10 @@
+ 6027	2.64	fact/207	
+ 6073	2.64	fact/207	
+ 6082	2.64	fact/207	
++6087	12.0	unform		
+ 6094	2.64	fact/207	
+ 6103	2.64	fact/207	
++6133	12.0	unform		
+ 6169	2.64	fact/207	
+ 6170	2.64	fact/207	
+ 6198	2.64	fact/207	
+@@ -507,6 +538,7 @@
+ 6256	2.64	fact/207	
+ 6266	2.64	fact/207	
+ 6282	2.64	fact/207	
++6287	12.0	unform		
+ 6290	2.64	fact/207	
+ 6307	2.64	fact/207	
+ 6310	2.64	fact/207	
+@@ -515,7 +547,9 @@
+ 6376	2.64	fact/207	
+ 6440	2.64	fact/207	
+ 6450	2.64	fact/207	
++6458	12.0	unform		
+ 6500	2.64	fact/207	
++6523	12.0	unform		
+ 6527	2.64	fact/207	
+ 6558	2.64	fact/207	
+ 6581	2.64	fact/207	
+@@ -523,6 +557,7 @@
+ 6613	2.64	fact/207	
+ 6643	2.64	fact/207	
+ 6648	2.64	fact/207	
++6658	12.0	unform		
+ 6672	2.64	fact/207	
+ 6675	2.64	fact/207	
+ 6679	2.64	fact/207	
+@@ -536,11 +571,13 @@
+ 6894	2.64	fact/207	
+ 6903	2.64	fact/207	
+ 6946	2.64	fact/207	
++6947	2.0	fact/304	Holder One
+ 6951	2.64	fact/207	
+ 6955	2.64	fact/207	
+ 6966	2.64	fact/207	
+ 6993	2.64	fact/207	
+ 6999	2.64	fact/207	
++7012	2.0	fact/303	Rallier One
+ 7017	2.64	fact/207	
+ 7021	2.64	fact/207	
+ 7046	2.64	fact/207	
+@@ -556,6 +593,7 @@
+ 7151	2.64	fact/207	
+ 7171	2.64	fact/207	
+ 7222	2.64	fact/207	
++7223	12.0	unform		
+ 7238	2.64	fact/207	
+ 7263	2.64	fact/207	
+ 7290	2.64	fact/207	
+@@ -566,10 +604,13 @@
+ 7401	2.64	fact/207	
+ 7421	2.64	fact/207	
+ 7441	2.64	fact/207	
++7473	12.0	unform		
++7474	12.0	unform		
+ 7481	2.64	fact/207	
+ 7518	2.64	fact/207	
+ 7577	2.64	fact/207	
+ 7585	2.64	fact/207	
++7620	12.0	unform		
+ 7628	2.64	fact/207	
+ 7637	2.64	fact/207	
+ 7665	2.64	fact/207	
+@@ -587,6 +628,7 @@
+ 7902	2.64	fact/207	
+ 7919	2.64	fact/207	
+ 7938	2.64	fact/207	
++7942	12.0	unform		
+ 7949	2.64	fact/207	
+ 7971	2.64	fact/207	
+ 7974	2.64	fact/207	
+@@ -594,11 +636,14 @@
+ 7987	2.64	fact/207	
+ 8000	2.64	fact/207	
+ 8007	2.64	fact/207	
++8078	12.0	unform		
+ 8093	2.64	fact/207	
+ 8105	2.64	fact/207	
+ 8122	2.64	fact/207	
++8127	12.0	unform		
+ 8151	2.64	fact/207	
+ 8155	2.64	fact/207	
++8159	2.0	fact/302	Necro One
+ 8177	2.64	fact/207	
+ 8178	2.64	fact/207	
+ 8182	2.64	fact/207	
+@@ -617,15 +662,23 @@
+ 8494	2.64	fact/207	
+ 8499	2.64	fact/207	
+ 8508	2.64	fact/207	
++8533	12.0	unform		
++8535	12.0	unform		
++8547	12.0	unform		
+ 8575	2.64	fact/207	
+ 8604	2.64	fact/207	
+ 8612	2.64	fact/207	
+ 8635	2.64	fact/207	
+ 8650	2.64	fact/207	
++8651	2.0	fact/100	Deserter One
++8700	12.0	unform		
+ 8730	2.64	fact/207	
++8731	2.0	fact/305	Waiter One
++8761	2.0	fact/306	Buyer One
+ 8780	2.64	fact/207	
+ 8839	2.64	fact/207	
+ 8848	2.64	fact/207	
++8867	12.0	unform		
+ 8905	2.64	fact/207	
+ 8910	2.64	fact/207	
+ 8935	2.64	fact/207	
+@@ -646,7 +699,9 @@
+ 9159	2.64	fact/207	
+ 9185	2.64	fact/207	
+ 9205	2.64	fact/207	
++9236	12.0	unform		
+ 9248	2.64	fact/207	
++9254	12.0	unform		
+ 9258	2.64	fact/207	
+ 9276	2.64	fact/207	
+ 9294	2.64	fact/207	
+@@ -657,12 +712,14 @@
+ 9432	2.64	fact/207	
+ 9433	2.64	fact/207	
+ 9453	2.64	fact/207	
++9463	12.0	unform		
+ 9484	2.64	fact/207	
+ 9515	2.64	fact/207	
+ 9552	2.64	fact/207	
+ 9554	2.64	fact/207	
+ 9622	2.64	fact/207	
+ 9654	2.64	fact/207	
++9655	12.0	unform		
+ 9676	2.64	fact/207	
+ 9685	2.64	fact/207	
+ 9714	2.64	fact/207	
+@@ -26998,6 +27055,7 @@
+ 59126	3.15	loc		
+ 59129	3.9	loc		
+ 59131	3.18	loc		Old battlefield
++59134	3.46	loc		
+ 59138	3.21	loc		
+ 59139	3.13	loc		
+ 59140	3.25	loc		
+@@ -27009,6 +27067,7 @@
+ 59163	3.11	loc		
+ 59164	3.27	loc		
+ 59165	3.9	loc		
++59166	3.46	loc		
+ 59168	3.16	loc		
+ 59171	3.17	loc		
+ 59172	3.18	loc		Old battlefield
+@@ -27025,6 +27084,7 @@
+ 59192	3.17	loc		
+ 59193	3.17	loc		
+ 59195	3.9	loc		
++59196	3.46	loc		
+ 59202	3.9	loc		
+ 59203	3.18	loc		Ancient battlefield
+ 59207	3.13	loc		
+@@ -27171,6 +27231,7 @@
+ 59509	3.9	loc		
+ 59510	3.21	loc		
+ 59511	3.27	loc		
++59512	3.46	loc		
+ 59513	3.9	loc		
+ 59514	6.0	gate		
+ 59516	3.21	loc		
+@@ -27194,6 +27255,7 @@
+ 59553	3.22	loc		Cursed Pits
+ 59555	3.28	loc		
+ 59556	3.13	loc		
++59557	3.46	loc		
+ 59560	3.9	loc		
+ 59561	3.17	loc		
+ 59562	3.17	loc		
+@@ -27343,6 +27405,7 @@
+ 59823	3.25	loc		
+ 59824	6.0	gate		
+ 59825	3.72	loc		
++59826	3.46	loc		
+ 59828	3.16	loc		Barrows
+ 59829	3.18	loc		Ancient battlefield
+ 59830	6.0	gate		
+@@ -27559,6 +27622,7 @@
+ 60326	3.18	loc		Ancient battlefield
+ 60327	3.22	loc		Cursed Pits
+ 60328	3.13	loc		
++60329	3.46	loc		
+ 60331	3.21	loc		
+ 60333	3.21	loc		
+ 60336	3.11	loc		
+@@ -27586,6 +27650,7 @@
+ 60373	3.21	loc		
+ 60374	3.17	loc		
+ 60375	3.18	loc		Old battlefield
++60378	3.46	loc		
+ 60383	3.18	loc		
+ 60384	3.16	loc		
+ 60387	3.9	loc		
+@@ -27615,6 +27680,7 @@
+ 60441	3.23	loc		Grassy field
+ 60442	6.0	gate		
+ 60443	3.72	loc		
++60444	3.46	loc		
+ 60446	3.17	loc		
+ 60447	3.13	loc		
+ 60450	3.16	loc		
+@@ -27744,6 +27810,7 @@
+ 60680	3.72	loc		
+ 60681	3.25	loc		
+ 60684	3.16	loc		Barrow Hills
++60685	3.46	loc		
+ 60689	3.22	loc		Cursed Pits
+ 60692	3.71	loc		
+ 60696	3.9	loc		
+@@ -27756,6 +27823,7 @@
+ 60704	3.13	loc		
+ 60705	6.0	gate		
+ 60706	3.22	loc		Cursed Pits
++60707	3.46	loc		
+ 60718	3.17	loc		
+ 60719	3.20	loc		
+ 60721	3.13	loc		
+@@ -27769,6 +27837,7 @@
+ 60734	3.9	loc		
+ 60737	3.72	loc		
+ 60740	3.25	loc		
++60744	3.46	loc		
+ 60747	3.13	loc		
+ 60748	3.11	loc		
+ 60751	3.25	loc		
+@@ -27777,6 +27846,7 @@
+ 60754	3.23	loc		Grassy field
+ 60755	3.72	loc		
+ 60756	3.13	loc		
++60757	3.46	loc		
+ 60759	3.15	loc		
+ 60760	3.13	loc		
+ 60761	3.28	loc		
+@@ -28045,6 +28115,7 @@
+ 61353	3.17	loc		
+ 61354	3.72	loc		
+ 61355	3.19	loc		
++61356	3.46	loc		
+ 61359	3.23	loc		
+ 61361	3.18	loc		Old battlefield
+ 61363	3.17	loc		
+@@ -28153,6 +28224,7 @@
+ 61600	6.0	gate		
+ 61604	3.9	loc		
+ 61608	3.13	loc		
++61609	3.46	loc		
+ 61611	3.17	loc		
+ 61613	3.18	loc		Ancient battlefield
+ 61614	3.13	loc		
+@@ -28407,6 +28479,7 @@
+ 62115	3.16	loc		
+ 62116	3.9	loc		
+ 62117	3.9	loc		
++62118	3.46	loc		
+ 62120	3.19	loc		
+ 62124	3.9	loc		
+ 62125	3.20	loc		
+@@ -28440,6 +28513,7 @@
+ 62187	3.12	loc		
+ 62188	3.15	loc		
+ 62189	6.0	gate		
++62190	3.46	loc		
+ 62191	3.25	loc		
+ 62192	3.25	loc		
+ 62194	3.19	loc		
+@@ -28516,6 +28590,7 @@
+ 62318	3.13	loc		
+ 62321	3.16	loc		
+ 62322	3.13	loc		
++62323	3.46	loc		
+ 62324	3.71	loc		
+ 62325	3.26	loc		
+ 62326	3.16	loc		
+@@ -28595,6 +28670,7 @@
+ 62478	3.13	loc		
+ 62479	3.20	loc		
+ 62480	3.23	loc		Grassy field
++62483	3.46	loc		
+ 62485	3.19	loc		
+ 62487	3.19	loc		
+ 62490	3.13	loc		
+@@ -28911,6 +28987,7 @@
+ 63069	3.72	loc		
+ 63070	3.13	loc		
+ 63071	3.24	loc		
++63072	3.46	loc		
+ 63075	3.15	loc		
+ 63076	3.11	loc		
+ 63077	3.21	loc		
+@@ -29112,6 +29189,7 @@
+ 63449	3.24	loc		
+ 63450	3.25	loc		
+ 63451	3.17	loc		
++63453	3.46	loc		
+ 63454	3.13	loc		
+ 63455	3.17	loc		
+ 63456	3.13	loc		
+@@ -29583,6 +29661,7 @@
+ 64494	3.9	loc		
+ 64502	3.15	loc		
+ 64504	3.28	loc		
++64511	3.46	loc		
+ 64513	3.16	loc		Barrows
+ 64516	3.25	loc		
+ 64517	3.23	loc		
+@@ -30027,6 +30106,7 @@
+ 65396	3.9	loc		
+ 65397	3.13	loc		
+ 65398	3.17	loc		
++65401	3.46	loc		
+ 65403	3.25	loc		
+ 65405	3.13	loc		
+ 65407	3.25	loc		
+@@ -30039,6 +30119,7 @@
+ 65436	3.13	loc		
+ 65441	3.20	loc		
+ 65442	3.26	loc		
++65443	3.46	loc		
+ 65445	3.17	loc		
+ 65450	3.17	loc		
+ 65454	3.72	loc		
+@@ -30098,6 +30179,7 @@
+ 65557	3.13	loc		
+ 65558	3.26	loc		
+ 65559	3.20	loc		
++65560	3.46	loc		
+ 65561	3.17	loc		
+ 65563	3.22	loc		Cursed Pits
+ 65565	3.9	loc		
+@@ -30244,6 +30326,7 @@
+ 65846	6.0	gate		
+ 65852	3.18	loc		Ancient battlefield
+ 65853	3.18	loc		Old battlefield
++65855	3.46	loc		
+ 65858	3.28	loc		
+ 65865	3.27	loc		
+ 65866	3.13	loc		
+@@ -30310,6 +30393,7 @@
+ 65992	3.13	loc		
+ 65993	3.11	loc		
+ 65994	6.0	gate		
++65999	3.46	loc		
+ 66001	3.13	loc		
+ 66006	3.13	loc		
+ 66009	3.16	loc		
+@@ -30440,6 +30524,7 @@
+ 66275	3.16	loc		
+ 66276	3.25	loc		
+ 66281	3.9	loc		
++66282	3.46	loc		
+ 66286	3.17	loc		
+ 66288	3.16	loc		Place of the Dead
+ 66290	3.28	loc		
+@@ -30573,6 +30658,7 @@
+ 66556	3.23	loc		Grassy field
+ 66557	3.15	loc		
+ 66558	3.71	loc		
++66559	3.46	loc		
+ 66561	3.21	loc		
+ 66562	3.22	loc		Cursed Pits
+ 66563	3.9	loc		
+@@ -30601,6 +30687,7 @@
+ 66600	3.15	loc		
+ 66609	3.15	loc		
+ 66611	3.9	loc		
++66613	3.46	loc		
+ 66615	3.13	loc		
+ 66616	3.9	loc		
+ 66617	3.12	loc		
+@@ -30790,6 +30877,7 @@
+ 66970	3.8	loc		
+ 66971	6.0	gate		
+ 66974	3.17	loc		
++66975	3.46	loc		
+ 66977	3.26	loc		
+ 66985	3.9	loc		
+ 66987	3.21	loc		
+@@ -30870,6 +30958,7 @@
+ 67163	3.12	loc		
+ 67164	3.25	loc		
+ 67169	3.71	loc		
++67180	3.46	loc		
+ 67182	3.16	loc		Place of the Dead
+ 67183	3.16	loc		Cemetary Hill
+ 67184	3.15	loc		
+@@ -31042,6 +31131,7 @@
+ 67504	3.13	loc		
+ 67505	3.18	loc		Old battlefield
+ 67506	3.18	loc		Old battlefield
++67507	3.46	loc		
+ 67508	3.18	loc		Old battlefield
+ 67509	3.71	loc		
+ 67510	3.17	loc		
+@@ -31068,6 +31158,7 @@
+ 67560	3.21	loc		
+ 67561	3.9	loc		
+ 67562	3.72	loc		
++67563	3.46	loc		
+ 67565	3.11	loc		
+ 67567	3.17	loc		
+ 67568	3.18	loc		Old battlefield
+@@ -31129,6 +31220,7 @@
+ 67684	3.21	loc		
+ 67686	3.9	loc		
+ 67689	3.18	loc		
++67690	3.46	loc		
+ 67693	3.23	loc		Grassy field
+ 67697	3.72	loc		
+ 67698	3.25	loc		
+@@ -31190,6 +31282,7 @@
+ 67790	3.9	loc		
+ 67791	3.18	loc		Ancient battlefield
+ 67792	3.13	loc		
++67793	3.46	loc		
+ 67800	3.18	loc		Old battlefield
+ 67801	3.27	loc		
+ 67802	3.26	loc		
+@@ -31376,6 +31469,7 @@
+ 68178	3.17	loc		
+ 68179	3.13	loc		
+ 68180	3.15	loc		
++68181	3.46	loc		
+ 68183	3.16	loc		Place of the Dead
+ 68184	3.11	loc		
+ 68185	6.0	gate		
+@@ -31398,6 +31492,7 @@
+ 68222	3.17	loc		
+ 68223	3.9	loc		
+ 68224	3.11	loc		
++68225	3.46	loc		
+ 68227	3.16	loc		
+ 68228	3.18	loc		Old battlefield
+ 68232	3.9	loc		
+@@ -31495,6 +31590,7 @@
+ 68404	3.16	loc		Grave Mounds
+ 68406	3.24	loc		
+ 68409	3.13	loc		
++68410	3.46	loc		
+ 68411	3.72	loc		
+ 68413	3.18	loc		
+ 68415	3.16	loc		
+@@ -31761,6 +31857,7 @@
+ 68956	3.9	loc		
+ 68957	3.28	loc		
+ 68959	3.72	loc		
++68960	3.46	loc		
+ 68962	3.28	loc		
+ 68966	3.15	loc		
+ 68974	3.21	loc		
+@@ -31977,6 +32074,7 @@
+ 69437	3.20	loc		
+ 69439	3.25	loc		
+ 69440	3.15	loc		
++69441	3.46	loc		
+ 69442	3.9	loc		
+ 69443	3.12	loc		
+ 69446	3.9	loc		
+@@ -32097,6 +32195,7 @@
+ 69692	3.26	loc		
+ 69693	3.11	loc		
+ 69694	6.0	gate		
++69695	3.46	loc		
+ 69699	3.16	loc		
+ 69707	3.9	loc		
+ 69708	3.13	loc		
+@@ -32194,6 +32293,7 @@
+ 69882	3.23	loc		Grassy field
+ 69883	3.25	loc		
+ 69884	3.25	loc		
++69885	3.46	loc		
+ 69888	3.25	loc		
+ 69889	6.0	gate		
+ 69890	3.27	loc		
+@@ -32230,6 +32330,7 @@
+ 69938	3.71	loc		
+ 69939	3.25	loc		
+ 69940	3.26	loc		
++69941	3.46	loc		
+ 69943	3.22	loc		Cursed Pits
+ 69946	3.16	loc		
+ 69947	3.72	loc		
+@@ -32247,10 +32348,12 @@
+ 69965	3.21	loc		
+ 69966	3.18	loc		
+ 69967	3.17	loc		
++69968	3.46	loc		
+ 69970	3.15	loc		
+ 69971	3.15	loc		
+ 69972	6.0	gate		
+ 69973	3.9	loc		
++69974	3.46	loc		
+ 69975	3.18	loc		Old battlefield
+ 69976	3.17	loc		
+ 69978	3.72	loc		
+@@ -32282,6 +32385,7 @@
+ 70040	3.25	loc		
+ 70041	3.21	loc		
+ 70042	3.20	loc		
++70043	3.46	loc		
+ 70048	3.27	loc		
+ 70049	3.19	loc		
+ 70050	3.28	loc		
+@@ -32303,7 +32407,9 @@
+ 70086	3.11	loc		
+ 70087	3.13	loc		
+ 70088	3.26	loc		
++70090	3.46	loc		
+ 70091	3.16	loc		Catacombs
++70092	3.46	loc		
+ 70095	3.9	loc		
+ 70096	3.25	loc		
+ 70098	3.18	loc		
+@@ -32414,6 +32520,7 @@
+ 70279	3.16	loc		Barrow Downs
+ 70280	3.23	loc		Grassy field
+ 70281	3.72	loc		
++70282	3.46	loc		
+ 70285	3.9	loc		
+ 70304	3.9	loc		
+ 70305	3.25	loc		
+@@ -32510,6 +32617,7 @@
+ 70457	6.0	gate		
+ 70458	3.11	loc		
+ 70459	3.13	loc		
++70460	3.46	loc		
+ 70464	3.18	loc		Old battlefield
+ 70466	3.28	loc		
+ 70467	3.15	loc		
+@@ -32613,6 +32721,7 @@
+ 70675	3.71	loc		
+ 70676	3.16	loc		
+ 70677	3.72	loc		
++70678	4.63	item		Golden idol of the Orcs
+ 70680	3.22	loc		Cursed Pits
+ 70685	3.26	loc		
+ 70686	3.20	loc		
+@@ -32719,6 +32828,7 @@
+ 70887	3.28	loc		
+ 70894	3.16	loc		
+ 70899	3.18	loc		Ancient battlefield
++70901	3.46	loc		
+ 70902	3.16	loc		
+ 70904	3.16	loc		Barrow Hills
+ 70905	3.28	loc		
+@@ -32768,6 +32878,7 @@
+ 71021	3.19	loc		
+ 71022	3.28	loc		
+ 71023	3.25	loc		
++71024	3.46	loc		
+ 71030	3.25	loc		
+ 71033	3.23	loc		
+ 71034	3.12	loc		
+@@ -32836,6 +32947,7 @@
+ 71144	3.22	loc		Cursed Pits
+ 71147	3.27	loc		
+ 71149	3.28	loc		
++71150	3.46	loc		
+ 71159	3.16	loc		
+ 71162	3.17	loc		
+ 71163	3.17	loc		
+@@ -32864,6 +32976,7 @@
+ 71219	3.20	loc		
+ 71223	3.9	loc		
+ 71229	3.17	loc		
++71230	3.46	loc		
+ 71233	3.18	loc		Old battlefield
+ 71238	3.25	loc		
+ 71239	3.23	loc		
+@@ -33093,6 +33206,7 @@
+ 71671	3.71	loc		
+ 71672	3.9	loc		
+ 71673	3.17	loc		
++71674	3.46	loc		
+ 71675	3.11	loc		
+ 71678	3.16	loc		Place of the Dead
+ 71679	3.17	loc		
+@@ -33116,6 +33230,7 @@
+ 71712	3.16	loc		
+ 71714	3.28	loc		
+ 71716	3.9	loc		
++71717	3.46	loc		
+ 71720	3.17	loc		
+ 71722	3.22	loc		Cursed Pits
+ 71723	3.72	loc		
+@@ -33239,6 +33354,7 @@
+ 71938	3.23	loc		
+ 71939	3.18	loc		Old battlefield
+ 71940	3.9	loc		
++71947	3.46	loc		
+ 71950	3.20	loc		
+ 71951	3.13	loc		
+ 71955	3.9	loc		
+@@ -33376,6 +33492,7 @@
+ 72236	3.17	loc		
+ 72237	3.12	loc		
+ 72240	3.28	loc		
++72242	3.46	loc		
+ 72243	6.0	gate		
+ 72245	3.16	loc		
+ 72246	3.17	loc		
+@@ -33417,6 +33534,7 @@
+ 72349	3.25	loc		
+ 72350	3.13	loc		
+ 72351	3.9	loc		
++72352	3.46	loc		
+ 72354	3.9	loc		
+ 72355	3.13	loc		
+ 72359	3.18	loc		Ancient battlefield
+@@ -33647,6 +33765,7 @@
+ 72850	3.9	loc		
+ 72851	3.17	loc		
+ 72852	3.25	loc		
++72857	3.46	loc		
+ 72859	3.72	loc		
+ 72861	3.13	loc		
+ 72864	3.18	loc		Old battlefield
+@@ -33672,6 +33791,7 @@
+ 72900	6.0	gate		
+ 72901	3.12	loc		
+ 72902	3.22	loc		Cursed Pits
++72903	3.46	loc		
+ 72906	3.28	loc		
+ 72907	3.13	loc		
+ 72909	3.17	loc		
+@@ -33811,6 +33931,7 @@
+ 73175	3.72	loc		
+ 73176	3.27	loc		
+ 73177	3.18	loc		Ancient battlefield
++73178	3.46	loc		
+ 73179	3.16	loc		Place of the Dead
+ 73180	3.16	loc		
+ 73182	3.20	loc		
+@@ -33926,6 +34047,7 @@
+ 73379	3.22	loc		Cursed Pits
+ 73380	3.17	loc		
+ 73381	3.9	loc		
++73383	3.46	loc		
+ 73384	3.11	loc		
+ 73385	6.0	gate		
+ 73386	3.20	loc		
+@@ -34077,13 +34199,16 @@
+ 73706	3.18	loc		Ancient battlefield
+ 73708	3.17	loc		
+ 73709	3.20	loc		
++73710	3.46	loc		
+ 73713	3.18	loc		Ancient battlefield
+ 73715	3.13	loc		
+ 73718	3.22	loc		Cursed Pits
+ 73719	3.21	loc		
++73720	3.46	loc		
+ 73722	3.17	loc		
+ 73730	3.9	loc		
+ 73731	3.18	loc		Old battlefield
++73733	3.46	loc		
+ 73738	3.20	loc		
+ 73739	3.9	loc		
+ 73740	3.25	loc		
+@@ -34128,6 +34253,7 @@
+ 73816	3.25	loc		
+ 73818	3.72	loc		
+ 73819	3.16	loc		Barrow Hills
++73825	3.46	loc		
+ 73826	3.16	loc		
+ 73827	3.23	loc		
+ 73828	3.27	loc		
+@@ -34349,6 +34475,7 @@
+ 74317	3.18	loc		Old battlefield
+ 74318	3.12	loc		
+ 74322	3.18	loc		Old battlefield
++74324	4.63	item		Horn of the Savages
+ 74326	3.12	loc		
+ 74330	3.22	loc		Cursed Pits
+ 74331	3.17	loc		
+@@ -34443,6 +34570,7 @@
+ 74506	3.20	loc		
+ 74511	3.9	loc		
+ 74513	3.9	loc		
++74514	3.46	loc		
+ 74516	3.17	loc		
+ 74517	3.17	loc		
+ 74520	3.72	loc		
+@@ -34741,6 +34869,7 @@
+ 75146	3.16	loc		
+ 75147	3.13	loc		
+ 75152	3.13	loc		
++75153	3.46	loc		
+ 75155	3.13	loc		
+ 75156	3.27	loc		
+ 75157	3.28	loc		
+@@ -34859,6 +34988,7 @@
+ 75419	3.25	loc		
+ 75420	3.17	loc		
+ 75421	3.16	loc		Grave Mounds
++75422	3.46	loc		
+ 75424	3.16	loc		
+ 75426	3.9	loc		
+ 75429	3.9	loc		
+@@ -34922,6 +35052,7 @@
+ 75521	3.20	loc		
+ 75522	3.72	loc		
+ 75523	3.72	loc		
++75524	3.46	loc		
+ 75525	3.13	loc		
+ 75527	3.28	loc		
+ 75529	3.25	loc		
+@@ -35083,6 +35214,7 @@
+ 75833	3.17	loc		
+ 75835	6.0	gate		
+ 75836	3.9	loc		
++75837	3.46	loc		
+ 75838	3.17	loc		
+ 75839	3.17	loc		
+ 75840	3.26	loc		
+@@ -35214,6 +35346,7 @@
+ 76123	3.13	loc		
+ 76125	3.24	loc		
+ 76126	3.20	loc		
++76129	3.46	loc		
+ 76138	3.9	loc		
+ 76139	3.11	loc		
+ 76140	3.9	loc		
+@@ -35315,6 +35448,7 @@
+ 76340	3.18	loc		
+ 76342	3.17	loc		
+ 76345	3.25	loc		
++76346	3.46	loc		
+ 76348	3.17	loc		
+ 76350	3.9	loc		
+ 76351	3.9	loc		
+@@ -35378,6 +35512,7 @@
+ 76485	3.20	loc		
+ 76486	6.0	gate		
+ 76487	3.15	loc		
++76488	3.46	loc		
+ 76489	3.20	loc		
+ 76493	3.9	loc		
+ 76495	3.17	loc		
+@@ -35391,6 +35526,7 @@
+ 76510	3.23	loc		Grassy field
+ 76511	3.26	loc		
+ 76512	6.0	gate		
++76513	3.46	loc		
+ 76514	3.27	loc		
+ 76516	3.16	loc		
+ 76517	3.13	loc		
+@@ -35427,6 +35563,7 @@
+ 76567	3.21	loc		
+ 76568	3.13	loc		
+ 76569	3.72	loc		
++76570	3.46	loc		
+ 76572	3.22	loc		Cursed Pits
+ 76573	3.19	loc		
+ 76577	3.26	loc		
+@@ -35738,6 +35875,7 @@
+ 77258	3.21	loc		
+ 77259	3.13	loc		
+ 77260	3.72	loc		
++77261	3.46	loc		
+ 77263	3.9	loc		
+ 77264	3.12	loc		
+ 77266	3.28	loc		
+@@ -35906,6 +36044,7 @@
+ 77578	3.28	loc		
+ 77579	3.25	loc		
+ 77580	3.15	loc		
++77581	3.46	loc		
+ 77582	3.13	loc		
+ 77583	3.15	loc		
+ 77584	3.27	loc		
+@@ -35975,6 +36114,7 @@
+ 77717	3.18	loc		
+ 77718	3.19	loc		
+ 77719	3.17	loc		
++77720	3.46	loc		
+ 77721	3.16	loc		
+ 77722	3.9	loc		
+ 77723	3.17	loc		
+@@ -36144,6 +36284,7 @@
+ 78109	3.17	loc		
+ 78110	3.16	loc		
+ 78111	3.11	loc		
++78112	3.46	loc		
+ 78114	3.25	loc		
+ 78116	3.17	loc		
+ 78118	3.13	loc		
+@@ -36232,6 +36373,7 @@
+ 78297	3.20	loc		
+ 78298	3.25	loc		
+ 78299	3.18	loc		Old battlefield
++78302	3.46	loc		
+ 78307	3.13	loc		
+ 78308	3.17	loc		
+ 78309	3.15	loc		
+@@ -36257,6 +36399,7 @@
+ 78343	3.17	loc		
+ 78349	3.21	loc		
+ 78351	3.17	loc		
++78356	3.46	loc		
+ 78360	3.9	loc		
+ 78361	3.17	loc		
+ 78362	3.13	loc		
+@@ -36542,6 +36685,7 @@
+ 78937	3.17	loc		
+ 78939	3.16	loc		Barrows
+ 78942	3.15	loc		
++78947	3.46	loc		
+ 78951	3.25	loc		
+ 78952	3.27	loc		
+ 78954	3.18	loc		Old battlefield
+@@ -36571,6 +36715,9 @@
+ 78991	3.21	loc		
+ 78992	3.13	loc		
+ 78999	3.15	loc		
++85354	2.54	fact/100	Mob
++93356	2.54	fact/100	
++111453	2.54	fact/100	
+ 931	13.0	misc	
+ 932	13.0	misc	
+ 933	13.0	misc	
+--- /dev/null
++++ b/lib/orders/305
+@@ -0,0 +1 @@
++8731:stop
+--- /dev/null
++++ b/lib/orders/307
+@@ -0,0 +1,2 @@
++2294:guard 1
++2294:stop
+--- a/lib/times_0
++++ b/lib/times_0
+@@ -1,14 +1,15 @@
+-From: skrenta@pbm.com (Rich skrenta)
+-Subject: Olympia G3 - The Olympia Times - Issue 0
++From: olympia@pbm.com (Olympia PBEM)
++Subject: Olympia Times g2-0
++To: totimes@pbm.com
+ 
+    +----------------------------------------------------------------------+
+-   | The Olympia Times                                Fierce winds year 1 |
+-   | October 24, 2026                                                     |
++   | The Olympia Times                                         issue g2-0 |
++   | August 31, 1996                                                      |
+    |                                                                      |
+-   | turn 0, 0 players                     skrenta@pbm.com (Rich skrenta) |
++   | turn 0  0 players                      http://www.pbm.com/oly/times/ |
+    +----------------------------------------------------------------------+
+ 
+-     Questions, comments, to play: http://olympia.v-labs.be/g3
++               Questions, comments, to play:  info@pbm.com
+ 
+                              Olympia PBEM
+ 
+--- a/lib/unform
++++ b/lib/unform
+@@ -0,0 +1,80 @@
++1016 unform 0
++
++1215 unform 0
++
++1348 unform 0
++
++1375 unform 0
++
++2769 unform 0
++
++3056 unform 0
++
++3176 unform 0
++
++3229 unform 0
++
++3726 unform 0
++
++3743 unform 0
++
++4333 unform 0
++
++4751 unform 0
++
++4940 unform 0
++
++4977 unform 0
++
++5303 unform 0
++
++5648 unform 0
++
++5691 unform 0
++
++5797 unform 0
++
++6087 unform 0
++
++6133 unform 0
++
++6287 unform 0
++
++6458 unform 0
++
++6523 unform 0
++
++6658 unform 0
++
++7223 unform 0
++
++7473 unform 0
++
++7474 unform 0
++
++7620 unform 0
++
++7942 unform 0
++
++8078 unform 0
++
++8127 unform 0
++
++8533 unform 0
++
++8535 unform 0
++
++8547 unform 0
++
++8700 unform 0
++
++8867 unform 0
++
++9236 unform 0
++
++9254 unform 0
++
++9463 unform 0
++
++9655 unform 0
++
