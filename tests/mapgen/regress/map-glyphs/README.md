@@ -46,22 +46,20 @@ message. `Land` adds `2,36 f Westpass` over a `p` square, which gives the
 `EXPECT.sha256` pins `gate`, `loc`, `road` and stderr. Those two messages
 appear only on stderr.
 
-## Constraints on hand-made maps
+## Why the inputs look like this
 
-The fixture works around this behavior of the C, which is still in place:
+When the fixture was built, three behaviors of the C crashed on hand-made
+maps. All three are now fixed and pinned by their own fixtures:
 
-- **Boundary squares come in pairs, and each side needs its own `Regions`
-  seed.** A boundary square takes the region of the first flood that reaches
-  it and stops there. A later flood from the other side then finds it claimed
-  and asserts. Land on each side may touch only its own square of the pair,
-  and its seed must flood before the row-major unnamed-region scan reaches
-  the boundary square (#281).
+- an unnamed region (#273, `unnamed-regions`)
+- a `Regions` or `Land` entry naming a hole (#278, `seed-no-province`)
+- a boundary square reached by a second region's flood (#281,
+  `lone-boundary`)
 
-Two more constraints applied when the fixture was built and are now fixed:
-unnamed regions crashed mapgen-g3 (#273, pinned by `unnamed-regions`), and
-so did a `Regions` or `Land` entry naming a hole (#278, pinned by
-`seed-no-province`). The fixture still seeds the `;`, `~` and `"` lanes,
-which each have their own color and so are separate seas.
+The fixture still has the workarounds, and its output depends on them. The
+boundary glyphs come in pairs (`^v`, `{}`, `][`) with a `Regions` seed on
+each side. The `;`, `~` and `"` lanes, each its own color and so its own sea,
+are seeded too.
 
 ## Run it
 

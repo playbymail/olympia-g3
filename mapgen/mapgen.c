@@ -1861,6 +1861,9 @@ int flood_land_inside(int row, int col, int ins)
 		if (p->inside == ins)
 			continue;		/* already been here */
 
+		if (p->inside && p->region_boundary)
+			continue;		/* another region's boundary */
+
 		if (p->inside)
 		{
 			fprintf(stderr, "flood_land_inside(%d,%d,%s) error\n",
