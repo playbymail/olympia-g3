@@ -1,0 +1,28 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "One",
+   "units": [
+     {"id": 4126, "name": "One Captain", "where": 61319, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 184}, {"id": 19, "name": "sailor", "qty": 8}],
+      "skills": [{"id": 601, "name": "Sailing"}]}],
+   "locations": [
+     {"id": 61319, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13199,
+      "exits": [],
+      "here": [{"id": 4126, "name": "One Captain", "faction": 300}]}]},
+  {"id": 301, "name": "Two",
+   "units": [
+     {"id": 4947, "name": "Two Captain", "where": 69557, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 184}, {"id": 19, "name": "sailor", "qty": 8}],
+      "skills": [{"id": 601, "name": "Sailing"}]}],
+   "locations": [
+     {"id": 69557, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13199,
+      "exits": [],
+      "here": [{"id": 4947, "name": "Two Captain", "faction": 301}]}]},
+  {"id": 302, "name": "Three",
+   "units": [
+     {"id": 9655, "name": "Three Captain", "where": 64623, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 184}, {"id": 19, "name": "sailor", "qty": 8}],
+      "skills": [{"id": 601, "name": "Sailing"}]}],
+   "locations": [
+     {"id": 64623, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13199,
+      "exits": [],
+      "here": [{"id": 9655, "name": "Three Captain", "faction": 302}]}]}]}

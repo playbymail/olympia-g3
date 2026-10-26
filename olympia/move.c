@@ -1506,6 +1506,13 @@ extern int weight_display_flag;
 			v = NULL;
 		}
 
+/*
+ *  Keep the last argument: can_sail_at_outer_level() tests it.
+ */
+
+		if (numargs(c) == 1)
+			break;
+
 		cmd_shift(c);
 	}
 
