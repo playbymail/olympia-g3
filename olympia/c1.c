@@ -1324,6 +1324,22 @@ parse_wait_args(struct command *c)
 }
 
 
+/*
+ *  The gm player may wait, but stack_leader() takes only characters.
+ *  A player is in no stack, so it is its own leader.
+ */
+
+static int
+wait_leader(int who)
+{
+
+	if (kind(who) != T_char)
+		return who;
+
+	return stack_leader(who);
+}
+
+
 static char *
 check_wait_conditions(struct command *c)
 {
@@ -1521,7 +1537,7 @@ check_wait_conditions(struct command *c)
 				break;			/* just hang */
 #endif
 
-			cond = (stack_leader(c->who) == stack_leader(p->a1));
+			cond = (wait_leader(c->who) == stack_leader(p->a1));
 			cond = not - cond;
 			if (cond)
 				return sout("%s is%s stacked with us.",
@@ -1530,7 +1546,7 @@ check_wait_conditions(struct command *c)
 			break;
 
 		case 8:		/* top */
-			cond = (stack_leader(c->who) == c->who);
+			cond = (wait_leader(c->who) == c->who);
 			cond = not - cond;
 			if (cond)
 				return sout("we are%s the stack leader",
