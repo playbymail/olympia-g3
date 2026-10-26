@@ -11,7 +11,7 @@
   {"id": 301, "name": "Auramakers",
    "units": [
      {"id": 8651, "name": "Auramaker One", "where": 13450, "stacked_under": 0,
-      "items": [{"id": 10, "name": "peasant", "qty": 25}, {"id": 61656, "name": "Scroll", "qty": 1}, {"id": 65952, "name": "Gold ring", "qty": 1}],
+      "items": [{"id": 10, "name": "peasant", "qty": 25}, {"id": 65952, "name": "Gold ring", "qty": 1}, {"id": 69773, "name": "Scroll", "qty": 1}],
       "skills": [{"id": 880, "name": "Artifact construction"}, {"id": 881, "name": "Forge auraculum"}, {"id": 882, "name": "Arcane symbols"}, {"id": 883, "name": "Forge magical weapon"}, {"id": 884, "name": "Forge magical armor"}, {"id": 885, "name": "Forge magical bow"}, {"id": 886, "name": "Curse noncreator loyalty"}, {"id": 887, "name": "Reveal creator of artifact"}, {"id": 888, "name": "Reveal where artifact was created"}, {"id": 889, "name": "Destroy artifact"}, {"id": 891, "name": "Cloak creator of artifact"}, {"id": 892, "name": "Cloak region of artifact creation"}, {"id": 893, "name": "Dispel cloaking from artifact"}, {"id": 894, "name": "Forge palantir"}, {"id": 920, "name": "Advanced sorcery"}]}],
    "locations": [
      {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,

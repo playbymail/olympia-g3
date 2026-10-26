@@ -157,7 +157,10 @@ for the month (these fire the first time `daily_events` runs, i.e. day 1):
 - `dog_bark_day = cal_day(2, 1, MONTH_DAYS)` — **keyed** calendar (#25 endgame
   Unit B, `caln`, `which=2`)
 - `weather_days`: built `1..MONTH_DAYS`, shuffled, then the first 4 `qsort`ed
-  (`day.c:1827-1838`) — the shuffle now draws from the **keyed** weather stream
+  (`day.c:1827-1838`); only those 4 are weather days. Before #229 the
+  firing check had no `wday_index < 4` limit and kept walking into the unsorted
+  tail, so any increasing run there added more weather days (the golden turn
+  had 6). The draw counts below were measured before that fix. — the shuffle now draws from the **keyed** weather stream
   (`wthr_shuffle` → `ilist_shuffle_rng`, #25), not the global `rnd()`
 
 Then, every day in order (`day.c:1840-1868`):
@@ -171,7 +174,7 @@ if (day % 7 == 0) { heal_characters(); weekly_prisoner_escape_check(); }
 if (day == curse_erode_day) noncreator_curse_erode();
 if (day == 15)             increment_stone_ring_aura();
 if (day == dog_bark_day)   dogs_bark_at_hidden_chars();
-if (day == weather_days[wday_index]) { wday_index++; natural_weather(); }
+if (wday_index < 4 && day == weather_days[wday_index]) { wday_index++; natural_weather(); }
 if (day == faery_day)      auto_faery();   // create_elven_hunt -> keyed faer stream (#25 step 12)
 ```
 

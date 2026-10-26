@@ -2077,7 +2077,12 @@ daily_events(void)
 	if (sysclock.day == dog_bark_day)
 		dogs_bark_at_hidden_chars();
 
-	if (sysclock.day == weather_days[wday_index])
+	/*
+	 *  Only the first 4 days are sorted; stop there, or the unsorted
+	 *  tail adds extra weather days (issue #229).
+	 */
+
+	if (wday_index < 4 && sysclock.day == weather_days[wday_index])
 	{
 		wday_index++;
 
