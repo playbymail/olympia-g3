@@ -1,0 +1,586 @@
+world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
+--- a/lib/fact/200
++++ b/lib/fact/200
+@@ -3,8 +3,8 @@
+ PL
+  pw crusty7
+ CO
+- li save
+- ar 0 0 0 0 0 0 0 0
+- cs 2
++ li be 3743
++ ar 3743 0 0 0 0 0 0 0
++ st 1
+  pr 1
+ 
+--- /dev/null
++++ b/lib/fact/300
+@@ -0,0 +1,37 @@
++300 player pl_regular
++na Rainy
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player300@example.com
++ pw OYCpEMJQ
++ np 18
++ fs 198
++ ft 1
++ kn 13550 
++ un 3743 
++ uf 8535 2769 8651 4947 8533 
++
++3743 char 0
++na Rainy One
++il	1 200 \
++	10 25
++LI
++ wh 13550
++CH
++ lo 300
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 8078
++ ar 8078 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/301
+@@ -0,0 +1,37 @@
++301 player pl_regular
++na Foggy
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player301@example.com
++ pw j2tStUJc
++ np 18
++ fs 198
++ ft 1
++ kn 13550 
++ un 8078 
++ uf 9254 3229 8159 7355 9655 
++
++8078 char 0
++na Foggy One
++il	1 200 \
++	10 25
++LI
++ wh 13550
++CH
++ lo 301
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 6087
++ ar 6087 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/302
+@@ -0,0 +1,37 @@
++302 player pl_regular
++na Windy
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player302@example.com
++ pw lXS3fLN8
++ np 18
++ fs 198
++ ft 1
++ kn 13450 
++ un 6087 
++ uf 7473 3056 7012 7719 6133 
++
++6087 char 0
++na Windy One
++il	1 200 \
++	10 25
++LI
++ wh 13450
++CH
++ lo 302
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 9236
++ ar 9236 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/303
+@@ -0,0 +1,37 @@
++303 player pl_regular
++na Wet
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player303@example.com
++ pw RmYOD3ZC
++ np 18
++ fs 198
++ ft 1
++ kn 13550 
++ un 9236 
++ uf 7474 8867 6947 6895 9463 
++
++9236 char 0
++na Wet One
++il	1 200 \
++	10 25
++LI
++ wh 13550
++CH
++ lo 303
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li be 4940
++ ar 4940 0 0 0 0 0 0 0
++ st 1
++ pr 1
++
+--- /dev/null
++++ b/lib/fact/304
+@@ -0,0 +1,38 @@
++304 player pl_regular
++na Dry
++il	1 5000 \
++	52 5 \
++	77 50 \
++	78 100
++PL
++ fn P Word Here
++ em player304@example.com
++ pw h10b4I52
++ np 18
++ fs 198
++ ft 1
++ kn 13449 
++ un 4940 
++ uf 4751 1215 8731 2176 5648 
++
++4940 char 0
++na Dry One
++il	1 200 \
++	10 25
++LI
++ wh 13449
++CH
++ lo 304
++ he 100
++ lk 2
++ lr 2
++ bp 50
++ at 80
++ df 80
++CO
++ li save
++ ar 0 0 0 0 0 0 0 0
++ cs 2
++ st 1
++ pr 1
++
+--- a/lib/loc
++++ b/lib/loc
+@@ -44814,7 +44814,7 @@
+ 	274 1
+ LI
+  wh 58762
+- hl 74717 73119 74976 
++ hl 74717 73119 74976 4940 
+ LO
+  pd 13349 13450 13549 13448 
+  dg 4
+@@ -44825,11 +44825,10 @@
+ 	59 30 \
+ 	277 5 \
+ 	96 100 \
+-	101 1 \
+-	275 1
++	101 1
+ LI
+  wh 58762
+- hl 73045 74516 
++ hl 73045 74516 112143 6087 
+ LO
+  pd 13350 13451 13550 13449 
+  dg 3
+@@ -46132,12 +46131,10 @@
+ il	77 30 \
+ 	10 10 \
+ 	96 50 \
+-	101 1 \
+-	276 1 \
+-	274 1
++	101 1
+ LI
+  wh 58762
+- hl 77310 
++ hl 77310 82126 127789 3743 8078 9236 
+ LO
+  pd 13450 13551 13650 13549 
+  dg 4
+--- a/lib/master
++++ b/lib/master
+@@ -96,6 +96,11 @@
+ 293	4.0	item		faery
+ 294	4.0	item		petty thief cookie
+ 295	4.0	item		hound
++300	1.49	fact/300	Rainy
++301	1.49	fact/301	Foggy
++302	1.49	fact/302	Windy
++303	1.49	fact/303	Wet
++304	1.49	fact/304	Dry
+ 401	4.69	item		Imperial Throne
+ 402	4.69	item		Crown of Prosperity
+ 403	4.69	item		Skull of Bastrestric
+@@ -271,6 +276,7 @@
+ 1188	2.64	fact/207	
+ 1209	2.64	fact/207	
+ 1211	2.64	fact/207	
++1215	12.0	unform		
+ 1287	2.64	fact/207	
+ 1306	2.64	fact/207	
+ 1321	2.64	fact/207	
+@@ -307,6 +313,7 @@
+ 2150	2.64	fact/207	
+ 2164	2.64	fact/207	
+ 2167	2.64	fact/207	
++2176	12.0	unform		
+ 2189	2.64	fact/207	
+ 2196	2.64	fact/207	
+ 2200	2.64	fact/207	
+@@ -338,6 +345,7 @@
+ 2724	2.64	fact/207	
+ 2743	2.64	fact/207	
+ 2763	2.64	fact/207	
++2769	12.0	unform		
+ 2774	2.64	fact/207	
+ 2788	2.64	fact/207	
+ 2811	2.64	fact/207	
+@@ -354,6 +362,7 @@
+ 3020	2.64	fact/207	
+ 3021	2.64	fact/207	
+ 3030	2.64	fact/207	
++3056	12.0	unform		
+ 3078	2.64	fact/207	
+ 3082	2.64	fact/207	
+ 3088	2.64	fact/207	
+@@ -366,6 +375,7 @@
+ 3175	2.64	fact/207	
+ 3199	2.64	fact/207	
+ 3228	2.64	fact/207	
++3229	12.0	unform		
+ 3230	2.64	fact/207	
+ 3235	2.64	fact/207	
+ 3252	2.64	fact/207	
+@@ -384,6 +394,7 @@
+ 3596	2.64	fact/207	
+ 3597	2.64	fact/207	
+ 3711	2.64	fact/207	
++3743	2.0	fact/300	Rainy One
+ 3754	2.64	fact/207	
+ 3780	2.64	fact/207	
+ 3791	2.64	fact/207	
+@@ -438,11 +449,14 @@
+ 4599	2.64	fact/207	
+ 4622	2.64	fact/207	
+ 4750	2.64	fact/207	
++4751	12.0	unform		
+ 4767	2.64	fact/207	
+ 4820	2.64	fact/207	
+ 4851	2.64	fact/207	
+ 4924	2.64	fact/207	
++4940	2.0	fact/304	Dry One
+ 4945	2.64	fact/207	
++4947	12.0	unform		
+ 4950	2.64	fact/207	
+ 4989	2.64	fact/207	
+ 5007	2.64	fact/207	
+@@ -473,6 +487,7 @@
+ 5496	2.64	fact/207	
+ 5504	2.64	fact/207	
+ 5611	2.64	fact/207	
++5648	12.0	unform		
+ 5669	2.64	fact/207	
+ 5676	2.64	fact/207	
+ 5688	2.64	fact/207	
+@@ -498,8 +513,10 @@
+ 6027	2.64	fact/207	
+ 6073	2.64	fact/207	
+ 6082	2.64	fact/207	
++6087	2.0	fact/302	Windy One
+ 6094	2.64	fact/207	
+ 6103	2.64	fact/207	
++6133	12.0	unform		
+ 6169	2.64	fact/207	
+ 6170	2.64	fact/207	
+ 6198	2.64	fact/207	
+@@ -534,13 +551,16 @@
+ 6812	2.64	fact/207	
+ 6844	2.64	fact/207	
+ 6894	2.64	fact/207	
++6895	12.0	unform		
+ 6903	2.64	fact/207	
+ 6946	2.64	fact/207	
++6947	12.0	unform		
+ 6951	2.64	fact/207	
+ 6955	2.64	fact/207	
+ 6966	2.64	fact/207	
+ 6993	2.64	fact/207	
+ 6999	2.64	fact/207	
++7012	12.0	unform		
+ 7017	2.64	fact/207	
+ 7021	2.64	fact/207	
+ 7046	2.64	fact/207	
+@@ -561,11 +581,14 @@
+ 7290	2.64	fact/207	
+ 7300	2.64	fact/207	
+ 7341	2.64	fact/207	
++7355	12.0	unform		
+ 7374	2.64	fact/207	
+ 7388	2.64	fact/207	
+ 7401	2.64	fact/207	
+ 7421	2.64	fact/207	
+ 7441	2.64	fact/207	
++7473	12.0	unform		
++7474	12.0	unform		
+ 7481	2.64	fact/207	
+ 7518	2.64	fact/207	
+ 7577	2.64	fact/207	
+@@ -575,6 +598,7 @@
+ 7665	2.64	fact/207	
+ 7700	2.64	fact/207	
+ 7710	2.64	fact/207	
++7719	12.0	unform		
+ 7747	2.64	fact/207	
+ 7757	2.64	fact/207	
+ 7766	2.64	fact/207	
+@@ -594,11 +618,13 @@
+ 7987	2.64	fact/207	
+ 8000	2.64	fact/207	
+ 8007	2.64	fact/207	
++8078	2.0	fact/301	Foggy One
+ 8093	2.64	fact/207	
+ 8105	2.64	fact/207	
+ 8122	2.64	fact/207	
+ 8151	2.64	fact/207	
+ 8155	2.64	fact/207	
++8159	12.0	unform		
+ 8177	2.64	fact/207	
+ 8178	2.64	fact/207	
+ 8182	2.64	fact/207	
+@@ -617,15 +643,20 @@
+ 8494	2.64	fact/207	
+ 8499	2.64	fact/207	
+ 8508	2.64	fact/207	
++8533	12.0	unform		
++8535	12.0	unform		
+ 8575	2.64	fact/207	
+ 8604	2.64	fact/207	
+ 8612	2.64	fact/207	
+ 8635	2.64	fact/207	
+ 8650	2.64	fact/207	
++8651	12.0	unform		
+ 8730	2.64	fact/207	
++8731	12.0	unform		
+ 8780	2.64	fact/207	
+ 8839	2.64	fact/207	
+ 8848	2.64	fact/207	
++8867	12.0	unform		
+ 8905	2.64	fact/207	
+ 8910	2.64	fact/207	
+ 8935	2.64	fact/207	
+@@ -646,7 +677,9 @@
+ 9159	2.64	fact/207	
+ 9185	2.64	fact/207	
+ 9205	2.64	fact/207	
++9236	2.0	fact/303	Wet One
+ 9248	2.64	fact/207	
++9254	12.0	unform		
+ 9258	2.64	fact/207	
+ 9276	2.64	fact/207	
+ 9294	2.64	fact/207	
+@@ -657,12 +690,14 @@
+ 9432	2.64	fact/207	
+ 9433	2.64	fact/207	
+ 9453	2.64	fact/207	
++9463	12.0	unform		
+ 9484	2.64	fact/207	
+ 9515	2.64	fact/207	
+ 9552	2.64	fact/207	
+ 9554	2.64	fact/207	
+ 9622	2.64	fact/207	
+ 9654	2.64	fact/207	
++9655	12.0	unform		
+ 9676	2.64	fact/207	
+ 9685	2.64	fact/207	
+ 9714	2.64	fact/207	
+@@ -36997,3 +37032,6 @@
+ 78915	7.0	misc	Secret pass
+ 78962	7.0	misc	Secret pass
+ 78982	7.0	misc	Old road
++82126	11.59	misc	
++112143	11.58	misc	
++127789	11.57	misc	
+--- a/lib/misc
++++ b/lib/misc
+@@ -22,3 +22,27 @@
+ 
+ 942 lore 0
+ 
++82126 storm rain
++LI
++ wh 13550
++MI
++ ss 6
++ mh 13550
++ co 276
++
++112143 storm wind
++LI
++ wh 13450
++MI
++ ss 6
++ mh 13450
++ co 275
++
++127789 storm fog
++LI
++ wh 13550
++MI
++ ss 6
++ mh 13550
++ co 274
++
+--- /dev/null
++++ b/lib/orders/300
+@@ -0,0 +1 @@
++3743:wait not rain time 3
+--- /dev/null
++++ b/lib/orders/301
+@@ -0,0 +1 @@
++8078:wait not fog time 3
+--- /dev/null
++++ b/lib/orders/302
+@@ -0,0 +1 @@
++6087:wait not wind time 3
+--- /dev/null
++++ b/lib/orders/303
+@@ -0,0 +1 @@
++9236:wait rain time 3
+--- /dev/null
++++ b/lib/orders/304
+@@ -0,0 +1 @@
++4940:wait not rain time 3
+--- a/lib/times_0
++++ b/lib/times_0
+@@ -1,14 +1,15 @@
+-From: skrenta@pbm.com (Rich skrenta)
+-Subject: Olympia G3 - The Olympia Times - Issue 0
++From: olympia@pbm.com (Olympia PBEM)
++Subject: Olympia Times g2-0
++To: totimes@pbm.com
+ 
+    +----------------------------------------------------------------------+
+-   | The Olympia Times                                Fierce winds year 1 |
+-   | October 24, 2026                                                     |
++   | The Olympia Times                                         issue g2-0 |
++   | August 31, 1996                                                      |
+    |                                                                      |
+-   | turn 0, 0 players                     skrenta@pbm.com (Rich skrenta) |
++   | turn 0  0 players                      http://www.pbm.com/oly/times/ |
+    +----------------------------------------------------------------------+
+ 
+-     Questions, comments, to play: http://olympia.v-labs.be/g3
++               Questions, comments, to play:  info@pbm.com
+ 
+                              Olympia PBEM
+ 
+--- a/lib/unform
++++ b/lib/unform
+@@ -0,0 +1,50 @@
++1215 unform 0
++
++2176 unform 0
++
++2769 unform 0
++
++3056 unform 0
++
++3229 unform 0
++
++4751 unform 0
++
++4947 unform 0
++
++5648 unform 0
++
++6133 unform 0
++
++6895 unform 0
++
++6947 unform 0
++
++7012 unform 0
++
++7355 unform 0
++
++7473 unform 0
++
++7474 unform 0
++
++7719 unform 0
++
++8159 unform 0
++
++8533 unform 0
++
++8535 unform 0
++
++8651 unform 0
++
++8731 unform 0
++
++8867 unform 0
++
++9254 unform 0
++
++9463 unform 0
++
++9655 unform 0
++

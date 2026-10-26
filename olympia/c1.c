@@ -1561,7 +1561,7 @@ check_wait_conditions(struct command *c)
 			break;
 
 		case 11:	/* rain */
-			cond = (weather_here(province(c->who), sub_rain));
+			cond = (weather_here(province(c->who), sub_rain) > 0);
 			cond = not - cond;
 			if (cond)
 				return sout("it is%s raining.",
@@ -1569,7 +1569,7 @@ check_wait_conditions(struct command *c)
 			break;
 
 		case 12:	/* fog */
-			cond = (weather_here(province(c->who), sub_fog));
+			cond = (weather_here(province(c->who), sub_fog) > 0);
 			cond = not - cond;
 			if (cond)
 				return sout("it is%s foggy.",
@@ -1577,7 +1577,7 @@ check_wait_conditions(struct command *c)
 			break;
 
 		case 13:	/* wind */
-			cond = (weather_here(province(c->who), sub_wind));
+			cond = (weather_here(province(c->who), sub_wind) > 0);
 			cond = not - cond;
 			if (cond)
 				return sout("it is%s windy.",

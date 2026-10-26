@@ -1,0 +1,46 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Rainy",
+   "units": [
+     {"id": 3743, "name": "Rainy One", "where": 13550, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 13550, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13550,
+      "exits": [{"direction": "north", "destination": 13450, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13551, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13650, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13549, "distance": 14, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 3743, "name": "Rainy One", "faction": 300}, {"id": 8078, "name": "Foggy One", "faction": 301}, {"id": 9236, "name": "Wet One", "faction": 303}]}]},
+  {"id": 301, "name": "Foggy",
+   "units": [
+     {"id": 8078, "name": "Foggy One", "where": 13550, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 13550, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13550,
+      "exits": [{"direction": "north", "destination": 13450, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13551, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13650, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13549, "distance": 14, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 3743, "name": "Rainy One", "faction": 300}, {"id": 8078, "name": "Foggy One", "faction": 301}, {"id": 9236, "name": "Wet One", "faction": 303}]}]},
+  {"id": 302, "name": "Windy",
+   "units": [
+     {"id": 6087, "name": "Windy One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 6087, "name": "Windy One", "faction": 302}]}]},
+  {"id": 303, "name": "Wet",
+   "units": [
+     {"id": 9236, "name": "Wet One", "where": 13550, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 13550, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13550,
+      "exits": [{"direction": "north", "destination": 13450, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13551, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13650, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13549, "distance": 14, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 3743, "name": "Rainy One", "faction": 300}, {"id": 8078, "name": "Foggy One", "faction": 301}, {"id": 9236, "name": "Wet One", "faction": 303}]}]},
+  {"id": 304, "name": "Dry",
+   "units": [
+     {"id": 4940, "name": "Dry One", "where": 13449, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 13449, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13449,
+      "exits": [{"direction": "north", "destination": 13349, "distance": 10, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13450, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13549, "distance": 14, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13448, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4940, "name": "Dry One", "faction": 304}]}]}]}
