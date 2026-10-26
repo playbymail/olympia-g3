@@ -1,9 +1,10 @@
 #!/bin/bash
 ###########################################################################
-# Regression: map holes, special glyphs and sea lanes (issues #274, #276).
+# Regression: map holes, special glyphs and sea lanes (issues #274, #276,
+# #272).
 #
-# Runs mapgen-g3 on this directory's own Map, Regions, Land and randseed
-# (with the standard Cities) and asserts: (1) clean exit, and (2) gate, loc,
+# Runs mapgen-g3 on this directory's own Map, Regions and Land (with the
+# standard Cities and randseed) and asserts: (1) clean exit, and (2) gate, loc,
 # road and stderr match the committed sha256 manifest (EXPECT.sha256).
 #
 # Map is the standard fixture map with these squares changed:
@@ -19,6 +20,8 @@
 # one collision (2,37). Land has one entry whose glyph does not match (2,36).
 #
 # Before the #274 fix, mapgen-g3 crashed on the holes (SIGSEGV, exit 139).
+# Before the #272 fix, random_province_gates() gated to (r1,c2), which with
+# this seed is a hole, so new_gate() crashed (SIGSEGV, exit 139).
 #
 # Pass:  prints YES and exits 0.   Update manifest: ./check.sh --update
 ###########################################################################
@@ -31,8 +34,8 @@ mapgen_no_update "$@"
 
 WORK="$(mktemp -d)"
 trap 'rm -rf "${WORK}"' EXIT
-cp -p "${FIX}/Cities" "${WORK}/"                          || exit 2
-cp -p "${HERE}/"{Map,Regions,Land,randseed} "${WORK}/"     || exit 2
+cp -p "${FIX}/"{Cities,randseed} "${WORK}/"     || exit 2
+cp -p "${HERE}/"{Map,Regions,Land} "${WORK}/"   || exit 2
 
 ( cd "${WORK}" && "${BIN}" >/dev/null 2>"${WORK}/stderr" )
 ec=$?

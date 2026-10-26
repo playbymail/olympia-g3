@@ -2456,7 +2456,7 @@ void random_province_gates(int n)
 		random_province(&r1, &c1, 0);
 		random_province(&r2, &c2, 0);
 
-		new_gate(map[r1][c1], map[r1][c2], 0);
+		new_gate(map[r1][c1], map[r2][c2], 0);
 	}
 }
 

@@ -1,7 +1,8 @@
 # map-glyphs — map holes, special glyphs and sea lanes
 
-Pins the #274 fix and adds the coverage #276 asks for. It has its own `Map`,
-`Regions`, `Land` and `randseed`. `Cities` comes from `tests/mapgen/fixtures`.
+Pins the #274 and #272 fixes and adds the coverage #276 asks for. It has its
+own `Map`, `Regions` and `Land`. `Cities` and `randseed` come from
+`tests/mapgen/fixtures`.
 
 ## #274: holes at the edge or beside another hole
 
@@ -12,6 +13,16 @@ SIGSEGV (exit 139). It now uses the guarded `(n && n->mark) || ...` form, as
 `bridge_corner_sup()` does. Maps without such holes produce the same output
 as before.
 
+## #272: random gates to (r1,c2)
+
+`random_province_gates()` drew two provinces and gated the first to
+`map[r1][c2]`: the first one's row with the second one's column. That square
+was never filtered by `random_province()`, so the gate could lead into the
+ocean, a safe haven or a hole. With this map and seed it is a hole, and
+`new_gate()` dereferenced NULL (SIGSEGV, exit 139). It now gates to
+`map[r2][c2]`. The draws are unchanged, so only the gate destinations (`tl`
+in `gate`) and the gate counts on stderr differ; `loc` and `road` do not.
+
 ## What the map covers
 
 `Map` is the standard fixture map with these squares changed (row, col):
@@ -20,7 +31,7 @@ as before.
 |---|---|---|
 | (0,40) | `#` | hole in row 0; no road (all its neighbors are sea) |
 | (39,10-11) | `##` | two adjacent holes; (39,10) is bridged n-s |
-| (20,25) | `#` | single hole inside land; bridged n-s |
+| (20,25) | `#` | single hole inside land; bridged e-w |
 | (1,10-13) | `;:~"` | sea lanes, `sl 1` in `loc` |
 | (2,36-48) | `ppp^vppp{}ppp` | Uldim squares, `uf 1`-`uf 4`; `region_boundary` stops `flood_land_inside()` |
 | (2,58) | `*` | named city alone in the sea; `fix_terrain_land()` can't infer a terrain and assumes forest |
@@ -37,22 +48,20 @@ appear only on stderr.
 
 ## Constraints on hand-made maps
 
-The fixture works around three behaviors of the C that are still in place:
+The fixture works around these behaviors of the C, which are still in place:
 
 - **Boundary squares come in pairs, and each side needs its own `Regions`
   seed.** A boundary square takes the region of the first flood that reaches
   it and stops there. A later flood from the other side then finds it claimed
   and asserts. Land on each side may touch only its own square of the pair,
   and its seed must flood before the row-major unnamed-region scan reaches
-  the boundary square.
+  the boundary square (#281).
 - **Every region must be named in `Regions`.** Unnamed regions keep a NULL
   `inside_names[]` entry, and `make_gates()` passes it to `strcmp()`. The
   `;`, `~` and `"` lanes each have their own color, so each one is a separate
-  sea and gets a seed.
-- **The seed is chosen.** `random_province_gates()` links `map[r1][c1]` to
-  `map[r1][c2]` (row of the first pick, column of the second). On a map with
-  holes, that square can be a hole, and `new_gate()` dereferences NULL. Seed
-  `S000000000000001` does not hit this.
+  sea and gets a seed (#279).
+- **No `Regions` or `Land` entry may name a hole.** The seed square is read
+  without a NULL check (#278).
 
 ## Run it
 
