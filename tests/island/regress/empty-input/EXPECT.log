@@ -1,0 +1,9 @@
+== empty stage 1:
+exit 1
+No map on stdin!
+== blank-lines stage 1:
+exit 1
+No map on stdin!
+== crlf-lines stage 1: -s 20
+exit 1
+No map on stdin!

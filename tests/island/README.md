@@ -47,6 +47,7 @@ diagnostics.
 | `map-shape` | a non-square map; rows of a different length are skipped |
 | `usage-errors` | an unknown option and a missing argument: the usage line, exit 1 |
 | `write-failure` | `randseed` is a directory: `couldn't write randseed:Is a directory`, exit 1 |
+| `empty-input` | no map rows (an empty file, blank lines, CRLF blank lines): `No map on stdin!`, exit 1, `randseed` unchanged (#295) |
 | `missing-randseed` | no `randseed`: the `could not be opened` message on stdout, an all-zero seed |
 
 ## Running against another generator
@@ -65,8 +66,6 @@ C build writes `EXPECT.sha256` and `EXPECT.log`.
 
 ## Not covered
 
-- **Empty input** never finishes: with no rows, `count` is 0 and island
-  calls `rnd(1, 0)`.
 - **Input bounds.** Maps taller than 120 rows, or with rows longer than 120
   characters, write past the fixed arrays; lines longer than 199 characters
   are split by `fgets`. No case goes near either limit.

@@ -205,6 +205,13 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	/* No rows: nothing to place an island in (#295) */
+	if (y_size == 0)
+	{
+		fprintf(stderr, "No map on stdin!\n");
+		exit(1);
+	}
+
 	load_seed("randseed");
 
 	/* Divide the map into available (water) and unavailable (land) space. */
