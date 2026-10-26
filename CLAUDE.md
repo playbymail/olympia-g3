@@ -13,10 +13,58 @@ The code is legacy C originally targeting **32-bit** systems. The C11/64-bit
 modernization and the 32→64-bit list refactor are **complete**, and so are the
 fixture backlogs: per command (`tests/ultron/backlog.tsv`, #116), per `use`
 (`tests/ultron/use-backlog.tsv`, #180) and per turn phase
-(`tests/ultron/phase-backlog.tsv`, #227). The next step is a **port**, either
-Go + Lua or Rust + Rhai (not yet decided). The golden trees and regress
-fixtures are the spec the port is checked against, so keep them independent of
-the target language.
+(`tests/ultron/phase-backlog.tsv`, #227). The engine is being **ported to
+Rust + Rhai** in [mdhender/rhorri](https://github.com/mdhender/rhorri), and the
+port is driven from that repo. This repo is now the **reference
+implementation**: its golden trees and regress fixtures are the spec the port
+is checked against, so keep them independent of the target language, and
+follow the [C engine policy](#c-engine-policy-reference-implementation) below.
+
+## C engine policy (reference implementation)
+
+The C engine is frozen except for the changes below. The port must reproduce
+its output byte for byte, so every change here is a change to the port's spec.
+
+**Allowed changes:**
+
+1. **Bug fixes, each with a pinning regress fixture** in the same PR. Fix the
+   bug in C first, then in the port. The port reproduces C behavior, bugs
+   included, until a fix lands here.
+2. **New spec:** regress fixtures, Ultron work, coverage dumps and
+   `--state-export` fields (#114).
+3. **Harness changes that help the port run the spec,** such as letting a
+   fixture's `check.sh` run a different engine binary. These must not change
+   any golden output.
+4. **Documentation.**
+
+**Not allowed:** features, refactors, cleanup, dead-code removal, style or
+warning fixes that touch engine sources, and "modernization". If a compiler
+upgrade forces a source change, it must be byte-identical on both gates.
+
+**The contracts.** The port keeps these identical, so treat any change to them
+as a behavior change, made only when a bug fix needs it and called out in the
+PR:
+
+- **The DB format:** every file `-S` writes under `lib/`, reports included.
+- **The RNG streams:** the MD5 primitive (`lib/rnd.c`), the `lib/rng.{c,h}`
+  layer, and every stream's tag, keys and draw order
+  ([doc/claude/rng-streams.md](doc/claude/rng-streams.md)).
+- **The CLI and dump formats** the fixtures call: the flags, `--coverage`,
+  `--use-coverage`, `--phase-coverage` and `--state-export`.
+
+**Every behavior change files a matching rhorri issue.** If a PR changes golden
+output or a fixture's `EXPECT` files, open an issue in `mdhender/rhorri` that
+links the PR, so the port follows it. Name the rhorri issue in the PR body.
+
+**When the port and C disagree,** first decide which one is wrong. If it's C,
+fix it here under rule 1, then fix the port. If it's the port, fix only the
+port.
+
+**New fixtures are built here,** against the C engine, because the reference
+engine is what produces the expected output. Scenario authoring stays in
+`olyscript-g3` Lua. The fixtures the port runs are frozen `scenario.patch` /
+`scenario.tgz` saved games, so the port doesn't need the Lua bindings to pass
+them.
 
 ## Read only what your task needs
 
@@ -49,8 +97,9 @@ the 32-bit build and the compiler-flag rules are in
 
 ## Test — golden snapshots (must stay green)
 
-Any change must keep the golden tests passing. Modernization changes must
-produce **byte-identical** engine output.
+Any change must keep the golden tests passing. A change that isn't a
+deliberate bug fix (see the [C engine policy](#c-engine-policy-reference-implementation))
+must produce **byte-identical** engine output.
 
 ```bash
 ./run/mapgen/mapgen.sh                     # generate gate/loc/road
@@ -96,9 +145,9 @@ gates: [doc/claude/testing.md](doc/claude/testing.md).
 - Legacy C style: tabs, ANSI prototypes for definitions, terse names. Match the
   surrounding file; don't reformat untouched code.
 - **Golden output is the contract.** Behavior changes that alter engine output
-  must be deliberate and the snapshot updated in the same change with a note on
-  why. Modernization changes (prototypes, casts, dead-code removal) must produce
-  byte-identical golden output.
+  must be deliberate bug fixes, with the snapshot updated in the same change, a
+  note on why, and a matching rhorri issue (see the
+  [C engine policy](#c-engine-policy-reference-implementation)).
 - All compiler flags live in one CMake helper, `olympia_compile_flags(tgt)`,
   applied to all three targets. **Read
   [doc/claude/build.md](doc/claude/build.md) and
