@@ -1041,7 +1041,7 @@ swear_token_units(int item, int target)
 
 	loop_units(item, i)
 	{
-		if (subkind(i) == T_char)
+		if (kind(i) == T_char)
 		{
 			log_write(LOG_MISC, "   swearing %s", box_name_kind(i));
 			set_lord(i, target, LOY_UNCHANGED, 0);
