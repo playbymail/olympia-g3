@@ -16,6 +16,12 @@ set -euo pipefail
 #   2. ./tests/olympia/golden_check.sh        # gate: prints YES on a match
 #      ./tests/olympia/golden_check.sh --update # (re)capture the baseline
 #
+# Another engine (issue #269): run step 1 with OLYMPIA_ENGINE_BIN=<path> and
+# OLYMPIA_RUN_DIR=<dir>, then step 2 with the same OLYMPIA_RUN_DIR; this
+# checks <dir>/lib against the same manifest. --update refuses any run but
+# one of the default C engine (run/olympia-g3.sh records the engine in
+# <run dir>/.olympia.engine), so a port can never rewrite the golden.
+#
 # Adapted from olympia-g2's tests/olympia/golden_check.sh. NOTE one deliberate
 # divergence from G2: G3 engine output is **deterministic across clean rebuilds
 # of byte-identical source** (verified: same manifest from two independent clean
@@ -34,7 +40,8 @@ OLYMPIA_COMMAND=olympia
 ############################################################################
 #
 ROOT="${OLYMPIA_ROOT}"
-RUN_LIB="${ROOT}/run/${OLYMPIA_COMMAND}/lib"
+RUN_DIR="${OLYMPIA_RUN_DIR:-${ROOT}/run/${OLYMPIA_COMMAND}}"
+RUN_LIB="${RUN_DIR}/lib"
 GOLDEN="${ROOT}/tests/${OLYMPIA_COMMAND}/golden"
 MANIFEST="${GOLDEN}/manifest.sha256"
 
@@ -54,6 +61,18 @@ if [[ $# -gt 1 ]]; then usage; fi
 if [[ $# -eq 1 ]]; then
   [[ "$1" == "--update" ]] || usage
   UPDATE=1
+fi
+
+if [[ "${UPDATE}" -eq 1 ]]; then
+  if [[ -n "${OLYMPIA_ENGINE_BIN:-}" ]]; then
+    echo "NO: --update with OLYMPIA_ENGINE_BIN set; only the default C engine writes the golden"; exit 2
+  fi
+  read -r ENGINE_KIND ENGINE_PATH 2>/dev/null < "${RUN_DIR}/.olympia.engine" || ENGINE_KIND=""
+  if [[ "${ENGINE_KIND}" != "default" ]]; then
+    echo "NO: --update needs a run of the default C engine; ${RUN_DIR}/.olympia.engine says: ${ENGINE_KIND:-(missing)} ${ENGINE_PATH:-}"
+    echo "    (re-run ./run/olympia-${OLYMPIA_ENGINE}.sh without OLYMPIA_ENGINE_BIN)"
+    exit 2
+  fi
 fi
 
 [[ -d "${RUN_LIB}" ]] || { echo "NO: missing run lib dir: ${RUN_LIB} (run ./run/olympia-${OLYMPIA_ENGINE}.sh first)"; exit 1; }

@@ -24,11 +24,10 @@
 set -u
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${HERE}/../../../.." && pwd)"
-PRESET="${OLYMPIA_PRESET:-debug}"
-BIN="${ROOT}/build/${PRESET}/olympia-g3"
+. "${ROOT}/tests/olympia/engine.sh"
+engine_no_update "$@"
 WORLD="${ROOT}/tests/olympia/fixtures/world.tgz"
 
-[ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }
 [ -f "${WORLD}" ] || { echo "error: missing ${WORLD} (run tests/olympia/fixtures/build-world.sh)"; exit 2; }
 
 WORK="$(mktemp -d)"

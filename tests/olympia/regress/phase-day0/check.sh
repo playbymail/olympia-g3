@@ -26,8 +26,8 @@
 set -u
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${HERE}/../../../.." && pwd)"
-PRESET="${OLYMPIA_PRESET:-debug}"
-BIN="${ROOT}/build/${PRESET}/olympia-g3"
+. "${ROOT}/tests/olympia/engine.sh"
+engine_no_update "$@"
 . "${ROOT}/tests/olympia/fixtures/scenario.sh"
 . "${ROOT}/tests/olympia/fixtures/coverage.sh"
 
@@ -39,8 +39,6 @@ PHASE_CELLS=(init_savage_attacks:spawn queue_npc_orders:unsworn
 	queue_npc_orders:bandit check_token_units:melt check_token_units:add
 	process_interrupted_units:interrupt process_interrupted_units:idle
 	match_all_trades:trade)
-
-[ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }
 
 WORK="$(mktemp -d)"
 trap 'rm -rf "${WORK}"' EXIT

@@ -24,8 +24,8 @@
 set -u
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${HERE}/../../../.." && pwd)"
-PRESET="${OLYMPIA_PRESET:-debug}"
-BIN="${ROOT}/build/${PRESET}/olympia-g3"
+. "${ROOT}/tests/olympia/engine.sh"
+engine_no_update "$@"
 . "${ROOT}/tests/olympia/fixtures/scenario.sh"
 
 FILES=(save/1/300 save/1/301 fact/300 fact/301)
@@ -33,8 +33,6 @@ CELLS=()
 for v in stack unstack promote; do
 	CELLS+=("${v}:fail" "${v}:rejected")
 done
-
-[ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }
 
 WORK="$(mktemp -d)"
 trap 'rm -rf "${WORK}"' EXIT

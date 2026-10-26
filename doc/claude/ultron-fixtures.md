@@ -2,6 +2,12 @@
 
 > Split out of [CLAUDE.md](../../CLAUDE.md). Read this when you add or change a regress fixture, work a `tests/ultron/backlog.tsv`, `use-backlog.tsv` or `phase-backlog.tsv` cell, or touch the Ultron harness (`--coverage`, `--use-coverage`, `--phase-coverage`, `--state-export`, the Chaos Goblin, `loop.py`).
 
+A new fixture's `check.sh` finds the engine by sourcing
+`tests/olympia/engine.sh` and calling `engine_no_update "$@"` (copy any
+existing `check.sh`), so ports can run it through `OLYMPIA_ENGINE_BIN`
+([testing.md](testing.md#running-the-spec-against-another-engine)). Its
+`build-scenario.sh` and `check-lua.sh` author the scenario and stay C-only.
+
 ## The backlog (ahead of the port)
 
 The work before the port (Go + Lua or Rust + Rhai, TBD) is **fixture coverage**. The golden output is the

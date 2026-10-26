@@ -25,6 +25,12 @@
 #   Set OLYMPIA_COVERAGE=<path> to pass --coverage to the turn run below, and
 #   OLYMPIA_USE_COVERAGE=<path> to pass --use-coverage, and
 #   OLYMPIA_PHASE_COVERAGE=<path> to pass --phase-coverage.
+#
+#   Set OLYMPIA_ENGINE_BIN=<path> to run that engine (e.g. a port's) instead
+#   of build/<preset>/olympia-g3; see tests/olympia/engine.sh. Set
+#   OLYMPIA_RUN_DIR=<dir> to run the turn in <dir> instead of run/olympia;
+#   it is created if missing, and its lib/, lib-before/ and lib-after/ are
+#   replaced. tests/olympia/golden_check.sh reads the same OLYMPIA_RUN_DIR.
 ############################################################################
 # Testing Strategy
 #
@@ -46,9 +52,6 @@
 #
 # Resolve the repo root from this script's location so the repo is relocatable.
 OLYMPIA_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-# CMakePresets emits binaries to build/<presetName> (default preset: debug).
-OLYMPIA_PRESET="${OLYMPIA_PRESET:-debug}"
-OLYMPIA_BIN="${OLYMPIA_ROOT}/build/${OLYMPIA_PRESET}"
 OLYMPIA_FIXTURES="${OLYMPIA_ROOT}/tests"
 OLYMPIA_RUN="${OLYMPIA_ROOT}/run"
 OLYMPIA_ENGINE=g3
@@ -60,12 +63,8 @@ OLYMPIA_COMMAND=olympia
   echo "error: invalid OLYMPIA_ROOT"
   exit 2
 }
-[ -d "${OLYMPIA_BIN}" ] || {
-  echo "OLYMPIA_ROOT       == '${OLYMPIA_ROOT}'"
-  echo "OLYMPIA_BIN        == '${OLYMPIA_BIN}'"
-  echo "error: invalid OLYMPIA_BIN"
-  exit 2
-}
+# Sets BIN: build/<preset>/olympia-g3, or OLYMPIA_ENGINE_BIN (exits 2 if bad).
+. "${OLYMPIA_ROOT}/tests/olympia/engine.sh"
 [ -d "${OLYMPIA_FIXTURES}" ] || {
   echo "OLYMPIA_ROOT       == '${OLYMPIA_ROOT}'"
   echo "OLYMPIA_FIXTURES   == '${OLYMPIA_OLYMPIA_FIXTURES}'"
@@ -88,6 +87,30 @@ OLYMPIA_INPUTS="${OLYMPIA_FIXTURES}/${OLYMPIA_COMMAND}/fixtures"
   exit 2
 }
 OLYMPIA_OUTPUTS="${OLYMPIA_RUN}/${OLYMPIA_COMMAND}"
+if [ -n "${OLYMPIA_RUN_DIR:-}" ]; then
+  # refuse a run directory under tests/, before creating it and again once
+  # symlinks are resolved
+  under_tests() {
+    case "$1/" in
+    "${OLYMPIA_FIXTURES}/"*|"$(cd "${OLYMPIA_FIXTURES}" && pwd -P)/"*)
+      echo "OLYMPIA_RUN_DIR    == '${OLYMPIA_RUN_DIR}'"
+      echo "error: refusing a run directory under tests/"
+      exit 2
+      ;;
+    esac
+  }
+  case "${OLYMPIA_RUN_DIR}" in
+  /*) under_tests "${OLYMPIA_RUN_DIR}" ;;
+  *)  under_tests "${PWD}/${OLYMPIA_RUN_DIR}" ;;
+  esac
+  mkdir -p "${OLYMPIA_RUN_DIR}" || {
+    echo "OLYMPIA_RUN_DIR    == '${OLYMPIA_RUN_DIR}'"
+    echo "error: unable to create OLYMPIA_RUN_DIR"
+    exit 2
+  }
+  OLYMPIA_OUTPUTS="$(cd "${OLYMPIA_RUN_DIR}" && pwd -P)"
+  under_tests "${OLYMPIA_OUTPUTS}"
+fi
 [ -d "${OLYMPIA_OUTPUTS}" ] || {
   echo "OLYMPIA_RUN        == '${OLYMPIA_RUN}'"
   echo "OLYMPIA_ENGINE     == '${OLYMPIA_ENGINE}'"
@@ -107,6 +130,14 @@ cd "${OLYMPIA_OUTPUTS}" || {
 
 ############################################################################
 # copy the test fixtures to the run folder
+echo " info: engine ${BIN}"
+# Record which engine writes this run; golden_check.sh --update accepts only
+# a run of the default C engine.
+if [ -n "${OLYMPIA_ENGINE_BIN:-}" ]; then
+  echo "OLYMPIA_ENGINE_BIN ${BIN}" > .olympia.engine
+else
+  echo "default ${BIN}" > .olympia.engine
+fi
 echo " info: copying inputs to $( pwd )"
 [ -f "${OLYMPIA_INPUTS}/lib.tgz" ] || {
   echo "error: missing fixtures tarball"
@@ -142,8 +173,8 @@ export G3_MAPGEN_SEED_3=26982
 # run the program in "immediate" mode
 #   inputs: lib/
 #   outputs: unknown
-"${OLYMPIA_BIN}/${OLYMPIA_COMMAND}-${OLYMPIA_ENGINE}" -l ./lib -i </dev/null || {
-  echo "error: ${OLYMPIA_COMMAND}-${OLYMPIA_ENGINE} failed"
+"${BIN}" -l ./lib -i </dev/null || {
+  echo "error: ${BIN} failed"
   exit 2
 }
 echo " info: command thinks that it ran successfully"
@@ -155,8 +186,8 @@ rm -rf lib-before lib-after
 cp -a lib lib-before
 # test-use-const-report-date: fix the Olympia Times masthead date so the golden
 # manifest is deterministic across days (otherwise times_0 embeds today's date).
-"${OLYMPIA_BIN}/${OLYMPIA_COMMAND}-${OLYMPIA_ENGINE}" -r -l ./lib -S test-use-const-report-date ${OLYMPIA_COVERAGE:+--coverage "${OLYMPIA_COVERAGE}"} ${OLYMPIA_USE_COVERAGE:+--use-coverage "${OLYMPIA_USE_COVERAGE}"} ${OLYMPIA_PHASE_COVERAGE:+--phase-coverage "${OLYMPIA_PHASE_COVERAGE}"} </dev/null || {
-  echo "error: ${OLYMPIA_COMMAND}-${OLYMPIA_ENGINE} failed"
+"${BIN}" -r -l ./lib -S test-use-const-report-date ${OLYMPIA_COVERAGE:+--coverage "${OLYMPIA_COVERAGE}"} ${OLYMPIA_USE_COVERAGE:+--use-coverage "${OLYMPIA_USE_COVERAGE}"} ${OLYMPIA_PHASE_COVERAGE:+--phase-coverage "${OLYMPIA_PHASE_COVERAGE}"} </dev/null || {
+  echo "error: ${BIN} failed"
   exit 2
 }
 echo " info: command thinks that it ran successfully"

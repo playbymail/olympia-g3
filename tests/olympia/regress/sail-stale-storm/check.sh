@@ -28,8 +28,8 @@
 set -u
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${HERE}/../../../.." && pwd)"
-PRESET="${OLYMPIA_PRESET:-debug}"
-BIN="${ROOT}/build/${PRESET}/olympia-g3"
+. "${ROOT}/tests/olympia/engine.sh"
+engine_no_update "$@"
 . "${ROOT}/tests/olympia/fixtures/scenario.sh"
 
 FILES=(save/1/300 fact/300)
@@ -38,8 +38,6 @@ SHIP=61319		# the captain's roundship
 STALE=99374		# the rain, bound in the pre-#169 shape and dissipated
 GUST=88781		# the wind, bound during the turn
 NORTH=13250		# Ocean [13250], where the ship sails
-
-[ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }
 
 WORK="$(mktemp -d)"
 trap 'rm -rf "${WORK}"' EXIT

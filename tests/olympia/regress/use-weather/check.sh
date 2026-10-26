@@ -27,8 +27,8 @@
 set -u
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${HERE}/../../../.." && pwd)"
-PRESET="${OLYMPIA_PRESET:-debug}"
-BIN="${ROOT}/build/${PRESET}/olympia-g3"
+. "${ROOT}/tests/olympia/engine.sh"
+engine_no_update "$@"
 . "${ROOT}/tests/olympia/fixtures/scenario.sh"
 . "${ROOT}/tests/olympia/fixtures/coverage.sh"
 
@@ -36,8 +36,6 @@ FILES=(save/1/300 save/1/301 save/1/302 save/1/303 save/1/304 save/1/305 fact/30
 CELLS=(use:ok)
 USE_CELLS=(skill:821:ok skill:822:ok skill:823:ok skill:824:ok skill:825:ok skill:826:ok skill:827:ok skill:828:ok skill:829:ok skill:831:ok skill:832:ok skill:833:ok)
 PHASE_CELLS=(storm_move:move)
-
-[ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }
 
 WORK="$(mktemp -d)"
 trap 'rm -rf "${WORK}"' EXIT

@@ -26,16 +26,14 @@
 set -u
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${HERE}/../../../.." && pwd)"
-PRESET="${OLYMPIA_PRESET:-debug}"
-BIN="${ROOT}/build/${PRESET}/olympia-g3"
+. "${ROOT}/tests/olympia/engine.sh"
+engine_no_update "$@"
 . "${ROOT}/tests/olympia/fixtures/scenario.sh"
 . "${ROOT}/tests/olympia/fixtures/coverage.sh"
 
 FILES=(save/1/300 save/1/301 fact/300 fact/301)
 CELLS=(use:ok use:fail)
 USE_CELLS=(skill:861:fail skill:862:fail skill:863:fail skill:864:fail skill:865:fail skill:866:fail skill:867:fail skill:868:fail skill:869:fail skill:871:fail skill:872:fail)
-
-[ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }
 
 WORK="$(mktemp -d)"
 trap 'rm -rf "${WORK}"' EXIT

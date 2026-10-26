@@ -75,6 +75,7 @@ This file holds what every task needs. Task-specific detail lives in
 |---|---|
 | [doc/claude/build.md](doc/claude/build.md) | change build flags, `CMakeLists.txt`, presets, prototypes or headers; triage a new compiler warning; need the modernization phase table or the deferred-bug record |
 | [doc/claude/testing.md](doc/claude/testing.md) | need more than the two standing gates below: what the golden manifest covers, re-baselining, the per-subsystem regress gates |
+| [doc/claude/testing.md#running-the-spec-against-another-engine](doc/claude/testing.md#running-the-spec-against-another-engine) | run the regress or golden gates against a port's engine (`OLYMPIA_ENGINE_BIN`, `OLYMPIA_RUN_DIR`), or touch `tests/olympia/engine.sh` |
 | [doc/claude/ultron-fixtures.md](doc/claude/ultron-fixtures.md) | add or change a regress fixture, work a `tests/ultron/*backlog.tsv` cell, or touch the Ultron harness |
 | [doc/claude/rng-streams.md](doc/claude/rng-streams.md) | add, move or remove a random draw; touch `lib/rng.{c,h}` or a `begin_*()` stream; need to know why a change did or did not re-baseline a golden tree |
 | [BUILD_HISTORY.md](BUILD_HISTORY.md) | change build flags, prototypes or headers (**required**; it has the [warning policy](BUILD_HISTORY.md#warning-policy)) |
