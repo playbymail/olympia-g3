@@ -29,9 +29,10 @@
  *  for use-shipcraft's mines (issue #190); kill for use-religion's dead
  *  bodies (issue #192); savage for use-beast's keep_savage (issue #194);
  *  palantir for use-art's artifacts (issue #204); potion, orb, ring and
- *  relic for use-items' unique items (issue #218). Everything else in the design (credit, the
- *  wider query set, the declarative format, RNG bindings) is deferred; a
- *  binding is added when a fixture needs it, not speculatively.
+ *  relic for use-items' unique items (issue #218); hide for
+ *  phase-daily's barking dogs (issue #233). Everything else in the design
+ *  (credit, the wider query set, the declarative format, RNG bindings) is
+ *  deferred; a binding is added when a fixture needs it, not speculatively.
  */
 
 #include <stdio.h>
@@ -776,6 +777,28 @@ l_sick(lua_State *L)
 }
 
 /*
+ *  oly.hide(who)  -- mark the character who hidden.
+ *
+ *  Sets the hide_self flag that d_hide sets when use 638 (hide self)
+ *  finishes, so who starts the turn hidden, as if an earlier turn hid
+ *  it. A hide in the turn takes three days, too late for an early
+ *  dog_bark_day. Only a char with no men or stackmates is really
+ *  hidden. No GM verb hides a character, so this is a path (B) binding,
+ *  like mob.
+ */
+static int
+l_hide(lua_State *L)
+{
+	int who = (int) luaL_checkinteger(L, 1);
+
+	if (!valid_box(who) || kind(who) != T_char)
+		return luaL_error(L, "oly.hide: %d not a character", who);
+
+	p_magic(who)->hide_self = TRUE;
+	return 0;
+}
+
+/*
  *  oly.palantir(who [, name])  -> <id>
  *
  *  Give who a palantir, made as d_forge_palantir makes one: a unique item
@@ -1233,6 +1256,7 @@ static const luaL_Reg oly_funcs[] = {
 	{ "seen",		l_seen },
 	{ "kill",		l_kill },
 	{ "sick",		l_sick },
+	{ "hide",		l_hide },
 	{ "palantir",		l_palantir },
 	{ "undead",		l_undead },
 	{ "potion",		l_potion },

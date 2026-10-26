@@ -192,3 +192,12 @@ fixture's `check.sh` assert it with `phase_cells` from
 **Seeded 2026-10-25** by running the main golden turn and every regress fixture
 with the dump on. Of 75 rows, 9 are reached by the golden turn and 30 by 13
 existing fixtures, which now assert them; 36 are `todo`.
+
+The work on the `todo` cells is split by phase under #227: day 0 and day 1
+(#232), the daily events (#233) and month end (#234). The daily events are
+covered by `phase-daily` (#233). The `n/a` cells:
+
+- `erode` of `noncreator_curse_erode`. The loyalty loss is `#if 0`'d out,
+  so reaching it only writes a `NOTYET!` line to the code log, which no gate
+  compares. In one turn it can't be reached with orders either: it runs on
+  `curse_erode_day` (day 4 of turn 1), and a noncreator curse takes 14 days.

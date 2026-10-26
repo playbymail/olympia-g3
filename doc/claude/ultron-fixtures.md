@@ -100,6 +100,9 @@ does outside commands: the day-0 NPC setup, day-1 trade matching,
 counts, for each routine, how often it was called (`ran`) and how often it did
 each of its things (`acted`). `tests/ultron/phase-backlog.tsv` tracks the
 `acted` cells. A fixture's `check.sh` passes `--phase-coverage` and asserts its
-cells with `phase_cells` from `tests/olympia/fixtures/coverage.sh`. When you add
+cells with `phase_cells` from `tests/olympia/fixtures/coverage.sh`. The
+`todo` cells are split by phase into children of #227: day 0 and day 1
+(#232), the daily events (#233, covered by `phase-daily` with the `oly.hide`
+binding) and month end (#234). When you add
 a row to `ph_rows[]` in `olympia/coverage.c`, add it to the backlog in the
 same position; `tests/ultron/check.sh` checks the order.

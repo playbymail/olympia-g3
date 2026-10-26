@@ -711,6 +711,15 @@ makes a character sick, so it is a path (B) binding like `oly.mob`.
 `use-basic` uses it for the patient that `heal` must have: `v_heal` refuses a
 target that is not sick.
 
+**Since landed (#233):** `oly.hide(who)` marks the character `who` hidden, as
+`d_hide` (`stealth.c`) does when `use 638` (hide self) finishes, so `who`
+starts the turn as an earlier turn's hide leaves it. Only a character with no
+men and no stackmates is really hidden (`char_really_hidden`). It errors when
+`who` isn't a character. No GM verb hides a character, so it is a path (B)
+binding like `oly.mob`. `phase-daily` uses it for the noble the dogs bark at:
+they bark on the turn's keyed `dog_bark_day`, day 2 of turn 1, and a hide in
+the turn finishes only on day 3.
+
 **Since landed (#204):** `oly.palantir(who [, name])` gives the character
 `who` a palantir and returns its id (optionally bound in the registry). It
 makes the item as `d_forge_palantir` (`art.c`) does: a unique item
