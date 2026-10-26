@@ -2705,7 +2705,7 @@ void mark_bad_locs(void)
 
 	/* don't put gates in locations where magic can't be used */
 	for (r = 0; r <= max_row; r++)
-		for (c = 0; c < max_col; c++)
+		for (c = 0; c <= max_col; c++)
 			if (map[r][c] && map[r][c]->safe_haven)
 				map[r][c]->mark = 1;
 }
@@ -2725,7 +2725,7 @@ not_random_province(int *row, int *col)		/* oh, hack upon hack ... */
 	int sum = 0;
 
 	for (r = 0; r <= max_row; r++)
-	    for (c = 0; c < max_col; c++)
+	    for (c = 0; c <= max_col; c++)
 		if (map[r][c] && map[r][c]->terrain != terr_ocean &&
 		    map[r][c] && map[r][c]->terrain != terr_swamp &&
 		    map[r][c] && map[r][c]->terrain != terr_desert &&
@@ -2735,7 +2735,7 @@ not_random_province(int *row, int *col)		/* oh, hack upon hack ... */
 	n = rnd(1, sum);
 
 	for (r = 0; r <= max_row; r++)
-	    for (c = 0; c < max_col; c++)
+	    for (c = 0; c <= max_col; c++)
 		if ((map[r][c] && map[r][c]->terrain != terr_ocean &&
 		    map[r][c] && map[r][c]->terrain != terr_swamp &&
 		    map[r][c] && map[r][c]->terrain != terr_desert &&
@@ -2769,7 +2769,7 @@ random_province(int *row, int *col, int terr)
 	if (terr == 0)
 	{
 	    for (r = 0; r <= max_row; r++)
-	        for (c = 0; c < max_col; c++)
+	        for (c = 0; c <= max_col; c++)
 			if (map[r][c] && map[r][c]->terrain != terr_ocean &&
 				map[r][c]->mark == 0)
 			    sum++;
@@ -2777,7 +2777,7 @@ random_province(int *row, int *col, int terr)
 	else
 	{
 	    for (r = 0; r <= max_row; r++)
-	        for (c = 0; c < max_col; c++)
+	        for (c = 0; c <= max_col; c++)
 			if (map[r][c] && map[r][c]->terrain == terr &&
 				map[r][c]->mark == 0)
 			    sum++;
@@ -2788,7 +2788,7 @@ random_province(int *row, int *col, int terr)
 	if (terr == 0)
 	{
 	    for (r = 0; r <= max_row; r++)
-	        for (c = 0; c < max_col; c++)
+	        for (c = 0; c <= max_col; c++)
 		    if ((map[r][c] && map[r][c]->terrain != terr_ocean &&
 		        map[r][c]->mark == 0) && (--n <= 0))
 		    {
@@ -2801,7 +2801,7 @@ random_province(int *row, int *col, int terr)
 	else
 	{
 	    for (r = 0; r <= max_row; r++)
-	        for (c = 0; c < max_col; c++)
+	        for (c = 0; c <= max_col; c++)
 		    if ((map[r][c] && map[r][c]->terrain == terr &&
 		        map[r][c]->mark == 0) && (--n <= 0))
 		    {
