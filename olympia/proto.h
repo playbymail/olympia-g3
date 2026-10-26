@@ -178,6 +178,7 @@ extern void location_trades(void);
 extern void market_report(int who, int where);
 extern void match_all_trades(void);
 extern void match_trades(int who);
+extern void opium_market_delta(int where);
 extern void trade_suffuse_ring(int where);
 
 /* olympia/c1.c */

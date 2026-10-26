@@ -35,7 +35,8 @@
  *  leaves (issue #232); clock, auto_quit and pass for the month-end
  *  events gated on the calendar and the map, and loyalty, loot and
  *  collapse (and relic's decay) for the decay an earlier month end
- *  leaves (issue #234). Everything else in the design
+ *  leaves (issue #234); opium for trade-opium's opium market (issue
+ *  #252). Everything else in the design
  *  (credit, the wider query set, the declarative format, RNG bindings) is
  *  deferred; a binding is added when a fixture needs it, not speculatively.
  */
@@ -1371,6 +1372,37 @@ l_restock(lua_State *L)
 }
 
 /*
+ *  oly.opium(city, level)  -> <level>
+ *
+ *  Give the city an opium market at addiction level `level` (0-7), as a
+ *  month end leaves it: set opium_econ, then opium_market_delta() posts
+ *  the CONSUME trade for that level and loc_trade_sup() the BUY that
+ *  players sell to. The base world has no opium market, since its only
+ *  month end ran before the cities were seeded. With no BUY trade yet
+ *  the delta leaves the level alone. No GM verb sets the level, so this
+ *  is a path (B) binding, like restock (issue #252).
+ */
+static int
+l_opium(lua_State *L)
+{
+	int where = (int) luaL_checkinteger(L, 1);
+	int level = (int) luaL_checkinteger(L, 2);
+
+	if (!valid_box(where) || subkind(where) != sub_city)
+		return luaL_error(L, "oly.opium: %d not a city", where);
+
+	if (level < 0 || level > 7)
+		return luaL_error(L, "oly.opium: level %d not 0-7", level);
+
+	p_subloc(where)->opium_econ = level;
+	opium_market_delta(where);
+	loc_trade_sup(where, FALSE);
+
+	lua_pushinteger(L, p_subloc(where)->opium_econ);
+	return 1;
+}
+
+/*
  *  oly.clock(turn)  -- set the turn the game has reached.
  *
  *  Sets sysclock to the start of `turn`, as a game that has run that many
@@ -1716,6 +1748,7 @@ static const luaL_Reg oly_funcs[] = {
 	{ "release",		l_release },
 	{ "desert",		l_desert },
 	{ "restock",		l_restock },
+	{ "opium",		l_opium },
 	{ "clock",		l_clock },
 	{ "auto_quit",		l_auto_quit },
 	{ "pass",		l_pass },

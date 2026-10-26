@@ -786,6 +786,16 @@ leave for month-end decay to count down:
 - `oly.relic(who, id [, decay])` now takes an optional decay: the relic
   vanishes after that many more month ends, as quest loot sets one.
 
+**Since landed (#252):** `oly.opium(city, level)` gives the city `city` an
+opium market at addiction level `level` (0–7), as a month end leaves it: it
+sets `opium_econ`, then `opium_market_delta` posts the city's CONSUME trade
+for that level and `loc_trade_sup` the BUY that players sell to. It returns
+the level. The base world has no opium market, because its only month end ran
+before the cities were seeded. It errors when `city` isn't a city or `level`
+is out of range. No GM verb sets the level, so it is a path (B) binding like
+`oly.restock`. `trade-opium` uses it for the markets whose level the turn's
+month end raises and lowers.
+
 **Since landed (#204):** `oly.palantir(who [, name])` gives the character
 `who` a palantir and returns its id (optionally bound in the registry). It
 makes the item as `d_forge_palantir` (`art.c`) does: a unique item

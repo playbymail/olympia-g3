@@ -1157,15 +1157,32 @@ opium_data[] =
 #define		MAX_OPIUM_ECON		7
 
 
-static void
+void
 opium_market_delta(int where)
 {
 	struct entity_subloc *p;
 	struct trade *t;
+	int i;
 
 	assert(subkind(where) == sub_city);
 
-	t = find_trade(where, BUY, item_opium);
+/*
+ *  Not find_trade(): loop_trade skips a trade with qty 0, which is
+ *  just the sold-out trade we must see here (issue #252).
+ */
+
+	t = NULL;
+	for (i = 0; i < trades_len(bx[where]->trades); i++)
+	{
+		struct trade *e = bx[where]->trades[i];
+
+		if (e->kind == BUY && e->item == item_opium)
+		{
+			t = e;
+			break;
+		}
+	}
+
 	p = p_subloc(where);
 
 	if (t)
