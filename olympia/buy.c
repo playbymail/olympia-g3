@@ -647,6 +647,9 @@ match_all_trades(void)
 	trades_list sellers;
 	trades_list buyers;
 	int i;
+	int qty;
+
+	phase_ran(PH_TRADE_MATCH);
 
 	loop_loc(where)
 	{
@@ -660,7 +663,12 @@ match_all_trades(void)
 			continue;
 
 		for (i = 0; i < trades_len(buyers); i++)
+		{
+			qty = buyers[i]->qty;
 			scan_trades(buyers[i], sellers);
+			if (buyers[i]->qty < qty)
+				phase_acted(PH_TRADE_MATCH);
+		}
 	}
 	next_loc;
 }

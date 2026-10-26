@@ -26,7 +26,7 @@ them for engine changes), on `debug` and with `OLYMPIA_PRESET=asan-ubsan`:
 | `tests/mapgen/regress/secret-sea-route/check.sh` | the mapgen check (`tests/mapgen/golden` is a stale 32-bit baseline, not a gate) |
 | `tests/island/regress/ocean-glyphs/check.sh` | the island generator |
 | `tests/rng/check.sh` | the `rng` layer self-check plus the "no gameplay `rnd()`" audit (see [rng-streams.md](rng-streams.md)) |
-| `tests/ultron/check.sh` | `backlog.tsv` stays consistent with `cmd_tbl` and existing fixtures (see [ultron-fixtures.md](ultron-fixtures.md)) |
+| `tests/ultron/check.sh` | `backlog.tsv`, `use-backlog.tsv` and `phase-backlog.tsv` stay consistent with the engine's tables and existing fixtures (see [ultron-fixtures.md](ultron-fixtures.md)) |
 
 One-turn regress fixtures are stored as a `scenario.patch` over the shared base
 world; see [tests/olympia/fixtures/README.md](../../tests/olympia/fixtures/README.md).

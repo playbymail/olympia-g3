@@ -265,6 +265,8 @@ ship_coastal_damage(void)
 	int n;
 	int sub;			/* issue #25: weather leaf-key disambiguator */
 
+	phase_ran(PH_COAST_DAMAGE);
+
 	loop_ship(ship)
 	{
 		if (!is_ship(ship))		/* not completed */
@@ -285,6 +287,7 @@ ship_coastal_damage(void)
 					"There is minor damage to the ship.",
 							box_name(ship));
 				add_structure_damage(ship, wthr_wreck(ship, sub + 1, 3, 5), TRUE);
+				phase_acted(PH_COAST_DAMAGE);
 			}
 			break;
 
@@ -295,6 +298,7 @@ ship_coastal_damage(void)
 					"There is minor damage to the ship.",
 							box_name(ship));
 				add_structure_damage(ship, wthr_wreck(ship, sub + 3, 6, 9), TRUE);
+				phase_acted(PH_COAST_DAMAGE);
 			}
 			break;
 
@@ -304,11 +308,13 @@ ship_coastal_damage(void)
 			case 1:
 			case 2:
 			    wout(ship, "Hungry looking birds circle overhead.");
+			    phase_acted(PH_COAST_OMEN);
 			    break;
 
 			case 3:
 			    wout(ship, "Sharks circle in the water a short "
 						"distance from the ship.");
+			    phase_acted(PH_COAST_OMEN);
 			    break;
 			}
 			break;
@@ -451,6 +457,8 @@ random_loc_damage(void)
 	int where;
 	int depth;
 
+	phase_ran(PH_LOC_MINE);
+
 	loop_loc(where)
 	{
 		switch (subkind(where))
@@ -459,12 +467,18 @@ random_loc_damage(void)
 			depth = mine_depth(where);
 
 			if (wthr_wreck(where, sysclock.day * 16 + 8, 1, 90) <= depth)
+			{
 				mine_calamity(where);
+				phase_acted(PH_LOC_MINE);
+			}
 			break;
 
 		case sub_inn:
 			if (wthr_wreck(where, sysclock.day * 16 + 9, 1, 100) == 1)
+			{
 				inn_calamity(where);
+				phase_acted(PH_LOC_INN);
+			}
 			break;
 		}
 	}
@@ -479,6 +493,8 @@ dogs_bark_at_hidden_chars(void)
 	int flag;
 	int i;
 
+	phase_ran(PH_DOGS_BARK);
+
 	loop_loc(where)
 	{
 		flag = 0;
@@ -491,7 +507,10 @@ dogs_bark_at_hidden_chars(void)
 		next_here;
 
 		if (flag)
+		{
 			bark_dogs(where);
+			phase_acted(PH_DOGS_BARK);
+		}
 	}
 	next_loc;
 }
@@ -523,6 +542,7 @@ heal_char_sup(int who)
 							box_name(who));
 
 		p_char(who)->sick = FALSE;
+		phase_acted(PH_HEAL_RECOVER);
 	}
 
 	amount = up_heal(who, 1, 3, 15);
@@ -536,6 +556,7 @@ heal_char_sup(int who)
 				box_name(who), nice_num(amount));
 
 		p_char(who)->health -= amount;
+		phase_acted(PH_HEAL_SICKEN);
 
 		if (char_health(who) <= 0)
 			kill_char(who, MATES);
@@ -549,6 +570,7 @@ heal_char_sup(int who)
 				box_name(who), nice_num(amount));
 
 		p_char(who)->health += amount;
+		phase_acted(PH_HEAL_HEAL);
 
 		if (h + amount >= 100)
 			wout(who, "%s is fully healed.", box_name(who));
@@ -562,6 +584,8 @@ default_garrison_pay(void)
 	int who;
 	int parent;
 	extern int gold_garrison;
+
+	phase_ran(PH_GARR_PAY);
 
 	loop_char(who)
 	{
@@ -583,6 +607,7 @@ default_garrison_pay(void)
 		wout(who, "Received %s from %s.",
 			gold_s(garrison_pay),
 			box_name(parent));
+		phase_acted(PH_GARR_PAY);
 	}
 	next_char;
 }
@@ -593,6 +618,8 @@ heal_characters(void)
 {
 	int who;
 	int n;
+
+	phase_ran(PH_HEAL_HEAL);
 
 	loop_char(who)
 	{
@@ -610,12 +637,15 @@ add_claim_gold(void)
 {
 	int pl;
 
+	phase_ran(PH_CLAIM);
+
 	loop_player(pl)
 	{
 		switch (subkind(pl))
 		{
 		case sub_pl_regular:
 			gen_item(pl, item_gold, 25);
+			phase_acted(PH_CLAIM);
 			break;
 		}
 	}
@@ -627,13 +657,18 @@ add_noble_points(void)
 {
 	int pl;
 
+	phase_ran(PH_NP);
+
 	loop_player(pl)
 	{
 		switch (subkind(pl))
 		{
 		case sub_pl_regular:
 			if (next_np_turn(pl) == 0)
+			{
 				add_np(pl, 1);
+				phase_acted(PH_NP);
+			}
 			break;
 		}
 	}
@@ -665,11 +700,20 @@ static void
 add_unformed(void)
 {
 	int pl;
+	struct entity_player *p;
+	int n;
+
+	phase_ran(PH_UNFORMED);
 
 	loop_player(pl)
 	{
+		p = rp_player(pl);
+		n = p ? ilist_len(p->unformed) : 0;
+
 		add_unformed_sup(pl);
 
+		if (p && ilist_len(p->unformed) > n)
+			phase_acted(PH_UNFORMED);
 	}
 	next_player;
 }
@@ -682,6 +726,9 @@ increment_current_aura(void)
 	struct char_magic *p;
 	int ac;					/* auraculum */
 	int ma;					/* max aura */
+	int before;
+
+	phase_ran(PH_AURA);
 
 	loop_char(who)
 	{
@@ -692,6 +739,7 @@ increment_current_aura(void)
 		ma = max_eff_aura(who);
 
 		p = p_magic(who);
+		before = p->cur_aura;
 
 		if (p->cur_aura < ma)
 			p->cur_aura++;		/* two point natural rise */
@@ -718,6 +766,9 @@ increment_current_aura(void)
 			}
 			next_inv;
 		}
+
+		if (p->cur_aura > before)
+			phase_acted(PH_AURA);
 	}
 	next_char;
 }
@@ -729,6 +780,8 @@ increment_stone_ring_aura(void)
 	int who;
 	struct char_magic *p;
 	int ma;					/* max aura */
+
+	phase_ran(PH_RING_AURA);
 
 	loop_char(who)
 	{
@@ -743,6 +796,7 @@ increment_stone_ring_aura(void)
 		{
 			p->cur_aura++;		/* one point bonus */
 			wout(who, "Current aura is now %d.", p->cur_aura);
+			phase_acted(PH_RING_AURA);
 		}
 	}
 	next_char;
@@ -755,12 +809,17 @@ decrement_ability_shroud(void)
 	int who;
 	struct char_magic *p;
 
+	phase_ran(PH_ABILITY_SHROUD);
+
 	loop_char(who)
 	{
 		p = rp_magic(who);
 
 		if (p && p->ability_shroud > 0)
+		{
 			p->ability_shroud--;
+			phase_acted(PH_ABILITY_SHROUD);
+		}
 	}
 	next_char;
 }
@@ -772,6 +831,8 @@ decrement_loc_barrier(void)
 	int where;
 	struct entity_loc *p;
 
+	phase_ran(PH_BARRIER_DEC);
+
 	loop_loc(where)
 	{
 		p = rp_loc(where);
@@ -779,9 +840,13 @@ decrement_loc_barrier(void)
 		if (p && p->barrier > 0)
 		{
 		    p->barrier--;
+		    phase_acted(PH_BARRIER_DEC);
 		    if (p->barrier == 0)
+		    {
 			wout(where, "The barrier over %s has dissipated.",
 							box_name(where));
+			phase_acted(PH_BARRIER_GONE);
+		    }
 		}
 	}
 	next_loc;
@@ -794,6 +859,8 @@ decrement_region_shroud(void)
 	int where;
 	struct entity_loc *p;
 
+	phase_ran(PH_REGION_SHROUD);
+
 	loop_loc(where)
 	{
 		p = rp_loc(where);
@@ -802,6 +869,7 @@ decrement_region_shroud(void)
 		{
 			p->shroud--;
 			notify_loc_shroud(where);
+			phase_acted(PH_REGION_SHROUD);
 		}
 	}
 	next_loc;
@@ -814,12 +882,17 @@ decrement_meditation_hinder(void)
 	int who;
 	struct char_magic *p;
 
+	phase_ran(PH_MED_HINDER);
+
 	loop_char(who)
 	{
 		p = rp_magic(who);
 
 		if (p && p->hinder_meditation > 0)
+		{
 			p->hinder_meditation--;
+			phase_acted(PH_MED_HINDER);
+		}
 	}
 	next_char;
 }
@@ -833,6 +906,8 @@ noncreator_curse_erode(void)
 	struct item_magic *im;
 	int creator;
 	int curse;
+
+	phase_ran(PH_CURSE_ERODE);
 
 	loop_char(who)
 	{
@@ -872,6 +947,7 @@ noncreator_curse_erode(void)
 
 #if 1
 			log_write(LOG_CODE, "noncreator_curse_erode: NOTYET!");
+			phase_acted(PH_CURSE_ERODE);
 #else
 			    delta_loyalty(who, -(im->curse_loyalty), TRUE);
 
@@ -934,6 +1010,8 @@ loyalty_decay(void)
 	int who;
 	struct entity_char *p;
 
+	phase_ran(PH_LOY_DECAY);
+
 	loop_char(who)
 	{
 		p = rp_char(who);
@@ -949,6 +1027,7 @@ loyalty_decay(void)
 		{
 			leave_stack(who);
 			set_loyal(who, LOY_npc, 0);	/* redundant */
+			phase_acted(PH_LOY_RELEASE);
 			continue;
 		}
 
@@ -958,6 +1037,7 @@ loyalty_decay(void)
 		{
 			log_write(LOG_DEATH, "%s deserts, %s", box_name(who), loyal_s(who));
 			unit_deserts(who, indep_player, TRUE, LOY_unsworn, 0);
+			phase_acted(PH_LOY_DESERT);
 			continue;
 		}
 
@@ -965,19 +1045,23 @@ loyalty_decay(void)
 		{
 		case LOY_summon:
 			p->loy_rate--;
+			phase_acted(PH_LOY_DECAY);
 			break;
 
 		case LOY_fear:
 			p->loy_rate--;
+			phase_acted(PH_LOY_DECAY);
 			if (p->loy_rate <= 0 && up_loyal(who, 1, 1, 2) == 1)
 			{
 				log_write(LOG_DEATH, "%s deserts, %s", box_name(who), loyal_s(who));
 				unit_deserts(who, indep_player, TRUE, LOY_unsworn, 0);
+				phase_acted(PH_LOY_DESERT);
 			}
 			break;
 
 		case LOY_contract:
 			p->loy_rate -= max(50, p->loy_rate/10);
+			phase_acted(PH_LOY_DECAY);
 			break;
 
 		default:
@@ -997,6 +1081,8 @@ relic_decay(void)
 	int item;
 	int owner;
 
+	phase_ran(PH_RELIC_DECAY);
+
 	loop_item(item)
 	{
 		if (subkind(item) != sub_relic)
@@ -1006,6 +1092,7 @@ relic_decay(void)
 			continue;
 
 		p_item_magic(item)->relic_decay--;
+		phase_acted(PH_RELIC_DECAY);
 
 		if (item_relic_decay(item) > 0)
 			continue;
@@ -1015,6 +1102,7 @@ relic_decay(void)
 			wout(owner, "%s vanishes.", box_name(item));
 
 		move_item(owner, nowhere_loc, item, 1);
+		phase_acted(PH_RELIC_VANISH);
 	}
 	next_item;
 }
@@ -1025,12 +1113,17 @@ pillage_decay(void)
 {
 	int where;
 
+	phase_ran(PH_PILLAGE);
+
 	loop_loc(where)
 	{
 		if (loc_pillage(where))
 		{
 			if (!recent_pillage(where))
+			{
 				p_subloc(where)->loot--;
+				phase_acted(PH_PILLAGE);
+			}
 		}
 	}
 	next_loc;
@@ -1042,6 +1135,8 @@ auto_drop(void)
 {
 	int pl;
 	struct entity_player *p;
+
+	phase_ran(PH_AUTO_DROP);
 
 	loop_pl_regular(pl)
 	{
@@ -1063,6 +1158,7 @@ auto_drop(void)
 			}
 
 			queue(pl, "quit");
+			phase_acted(PH_AUTO_DROP);
 			log_write(LOG_SPECIAL, "Queued drop for %s", box_name(pl));
 			log_write(LOG_SPECIAL, "    %s <%s>", s, email);
 		}
@@ -1222,7 +1318,11 @@ unit_maint_cost(int who)
 }
 
 
-void
+/*
+ *  Returns 0 if who owes nothing, 1 if it paid in full, 2 if men starved.
+ */
+
+int
 charge_maint_sup(int who)
 {
 	int cost;
@@ -1231,12 +1331,12 @@ charge_maint_sup(int who)
 	cost = unit_maint_cost(who);
 
 	if (cost < 1)
-		return;
+		return 0;
 
 	if (autocharge(who, cost))
 	{
 		wout(who, "Paid maintenance of %s.", gold_s(cost));
-		return;
+		return 1;
 	}
 
 	have = stack_has_item(who, item_gold);
@@ -1245,6 +1345,7 @@ charge_maint_sup(int who)
 				gold_s(cost), gold_s(have));
 
 	men_starve(who, have);
+	return 2;
 }
 
 
@@ -1252,6 +1353,8 @@ static void
 charge_maint_costs(void)
 {
 	int who;
+
+	phase_ran(PH_MAINT_PAID);
 
 	loop_char(who)
 	{
@@ -1263,7 +1366,11 @@ charge_maint_costs(void)
 		if (subkind(player(who)) != sub_pl_regular)
 			continue;
 
-		charge_maint_sup(who);
+		switch (charge_maint_sup(who))
+		{
+		case 1:	phase_acted(PH_MAINT_PAID);	break;
+		case 2:	phase_acted(PH_MAINT_STARVE);	break;
+		}
 	}
 	next_char;
 }
@@ -1277,6 +1384,7 @@ animal_deaths(void)
 	int num_to_kill;
 
 	stage("animal_deaths()");
+	phase_ran(PH_ANIMAL);
 
 	loop_char(who)
 	{
@@ -1297,6 +1405,7 @@ animal_deaths(void)
 				if (dead > 0)
 				{
 					consume_item(who, e->item, dead);
+					phase_acted(PH_ANIMAL);
 					wout(who, "%s %s died.",
 					    cap(nice_num(dead)),
 					    plural_item_name(e->item, dead));
@@ -1319,6 +1428,8 @@ inn_income(void)
 	int base;		/* base of money inn will get */
 	int pil;		/* location pillage severity */
 	extern int gold_inn;
+
+	phase_ran(PH_INN_INCOME);
 
 	loop_inn(i)
 	{
@@ -1346,10 +1457,12 @@ inn_income(void)
 				box_name(i), gold_s(bonus));
 
 			base += bonus;
+			phase_acted(PH_INN_TRAVELLER);
 		}
 
 		gen_item(owner, item_gold, base);
 		gold_inn += base;
+		phase_acted(PH_INN_INCOME);
 		wout(owner, "%s yielded %s in income.",
 				box_name(i), gold_s(base));
 
@@ -1386,6 +1499,8 @@ temple_income(void)
 	int pil;
 	extern int gold_temple;
 
+	phase_ran(PH_TEMPLE);
+
 	loop_temple(i)
 	{
 		owner = building_owner(i);
@@ -1399,6 +1514,7 @@ temple_income(void)
 			amount /= (pil + 1);
 		gen_item(owner, item_gold, amount);
 		gold_temple += amount;
+		phase_acted(PH_TEMPLE);
 		wout(owner, "%s collected offerings of %s.",
 				box_name(i), gold_s(amount));
 	}
@@ -1412,6 +1528,8 @@ collapsed_mine_decay(void)
 	int i;
 	struct entity_misc *p;
 
+	phase_ran(PH_MINE_DEC);
+
 	loop_collapsed_mine(i)
 	{
 		p = p_misc(i);
@@ -1419,9 +1537,13 @@ collapsed_mine_decay(void)
 		p->mine_delay--;
 		if (p->mine_delay < 0)
 			p->mine_delay = 0;
+		phase_acted(PH_MINE_DEC);
 
 		if (p->mine_delay == 0)
+		{
 			get_rid_of_collapsed_mine(i);
+			phase_acted(PH_MINE_CLEAR);
+		}
 	}
 	next_collapsed_mine;
 }
@@ -1436,6 +1558,8 @@ ghost_warrior_decay(void)
 {
 	int i;
 	int has;
+
+	phase_ran(PH_GHOST);
 
 	loop_char(i)
 	{
@@ -1453,6 +1577,7 @@ ghost_warrior_decay(void)
 			wout(i, "%s evaporated.",
 				cap(box_name_qty(item_ghost_warrior,has)));
 			consume_item(i, item_ghost_warrior, has);
+			phase_acted(PH_GHOST);
 		}
 	}
 	next_char;
@@ -1468,6 +1593,8 @@ corpse_decay(void)
 {
 	int i;
 	int has;
+
+	phase_ran(PH_CORPSE);
 
 	loop_char(i)
 	{
@@ -1485,6 +1612,7 @@ corpse_decay(void)
 			wout(i, "%s decomposed.",
 				cap(box_name_qty(item_corpse, has)));
 			consume_item(i, item_corpse, has);
+			phase_acted(PH_CORPSE);
 		}
 	}
 	next_char;
@@ -1502,6 +1630,8 @@ dead_body_rot(void)
 	int owner;
 	int t;
 
+	phase_ran(PH_BODY);
+
 	loop_dead_body(i)
 	{
 		owner = item_unique(i);
@@ -1516,6 +1646,7 @@ dead_body_rot(void)
 			wout(owner, "%s decomposed.", box_name(i));
 
 		destroy_unique_item(owner, i);
+		phase_acted(PH_BODY);
 	}
 	next_dead_body;
 }
@@ -1527,17 +1658,21 @@ storm_decay(void)
 	int i;
 	struct entity_misc *p;
 
+	phase_ran(PH_STORM_WEAKEN);
+
 	loop_storm(i)
 	{
 		p = p_misc(i);
 
 		p->storm_str--;
+		phase_acted(PH_STORM_WEAKEN);
 		if (p->storm_str > 0)
 			continue;
 
 		p->storm_str = 0;
 
 		dissipate_storm(i, TRUE);
+		phase_acted(PH_STORM_GONE);
 	}
 	next_storm;
 }
@@ -1574,6 +1709,8 @@ storm_move(void)
 	struct entity_misc *p;
 	int owner;
 
+	phase_ran(PH_STORM_MOVE);
+
 	loop_storm(i)
 	{
 		p = p_misc(i);
@@ -1591,6 +1728,7 @@ storm_move(void)
 
 		p->npc_dir = 0;
 		p->storm_move = 0;
+		phase_acted(PH_STORM_MOVE);
 	}
 	next_storm;
 }
@@ -1601,10 +1739,15 @@ quest_decay(void)
 {
 	int where;
 
+	phase_ran(PH_QUEST);
+
 	loop_loc(where)
 	{
 		if (subloc_quest(where) > 0)
+		{
 			p_subloc(where)->quest_late--;
+			phase_acted(PH_QUEST);
+		}
 	}
 	next_loc;
 }
@@ -1618,6 +1761,8 @@ collect_taxes(void)
 	int amount;
 	int owner;
 	extern int gold_taxes;
+
+	phase_ran(PH_TAXES);
 
 	loop_castle(fort)
 	{
@@ -1635,6 +1780,7 @@ collect_taxes(void)
 		gen_item(owner, item_gold, amount);
 
 		wout(owner, "Collected %s in taxes.", gold_s(amount));
+		phase_acted(PH_TAXES);
 #if 0
 		fprintf(stderr, "  castle %s, %s gets %d\n", box_code_less(fort), box_code_less(owner), amount);
 #endif
@@ -1802,11 +1948,16 @@ hide_mage_decay(void)
 	int i;
 	struct char_magic *p;
 
+	phase_ran(PH_HIDE_MAGE);
+
 	loop_char(i)
 	{
 		p = rp_magic(i);
 		if (p && p->hide_mage > 0)
+		{
 			p->hide_mage--;
+			phase_acted(PH_HIDE_MAGE);
+		}
 	}
 	next_char;
 }
@@ -1818,6 +1969,8 @@ link_decay(void)
 	int i;
 	struct entity_subloc *p;
 
+	phase_ran(PH_LINK_DEC);
+
 	loop_loc(i)
 	{
 		p = rp_subloc(i);
@@ -1826,12 +1979,18 @@ link_decay(void)
 			continue;
 
 		if (p->link_open > 0)
+		{
 			p->link_open--;
+			phase_acted(PH_LINK_DEC);
+		}
 
 		if (p->link_when == oly_month(sysclock))
 		{
 			if (p->link_open < 2 && p->link_open >= 0)
+			{
 				p->link_open = 2;
+				phase_acted(PH_LINK_OPEN);
+			}
 		}
 	}
 	next_loc;
@@ -1850,12 +2009,16 @@ move_city_gold(void)
 	int prov;
 	int has;
 
+	phase_ran(PH_CITY_GOLD);
+
 	loop_city(i)
 	{
 		prov = province(i);
 		has = has_item(i, item_tax_cookie);
 
 		move_item(i, prov, item_tax_cookie, has);
+		if (has > 0)
+			phase_acted(PH_CITY_GOLD);
 	}
 	next_city;
 }
@@ -1885,6 +2048,8 @@ special_locs_open(void)
 {
 	int i;
 
+	phase_ran(PH_SPECIAL_OPEN);
+
 	loop_province(i)
 	{
 		if (summerbridge(i) == 1)
@@ -1892,24 +2057,28 @@ special_locs_open(void)
 			log_write(LOG_CODE, "%s open to the north.", box_name(i));
 			wout(i, "The swamps of Summerbridge have dried "
 					"enough to permit passage north.");
+			phase_acted(PH_SPECIAL_OPEN);
 		}
 		else if (summerbridge(i) == 2)
 		{
 			log_write(LOG_CODE, "%s open to the south.", box_name(i));
 			wout(i, "The swamps of Summerbridge have dried "
 					"enough to permit passage south.");
+			phase_acted(PH_SPECIAL_OPEN);
 		}
 		else if (uldim(i) == 3)
 		{
 			log_write(LOG_CODE, "%s open to the south.", box_name(i));
 			wout(i, "The snows blocking Uldim pass to the south "
 				"have melted.");
+			phase_acted(PH_SPECIAL_OPEN);
 		}
 		else if (uldim(i) == 4)
 		{
 			log_write(LOG_CODE, "%s open to the north.", box_name(i));
 			wout(i, "The snows blocking Uldim pass to the north "
 				"have melted.");
+			phase_acted(PH_SPECIAL_OPEN);
 		}
 	}
 	next_province;
@@ -1921,6 +2090,8 @@ special_locs_close(void)
 {
 	int i;
 
+	phase_ran(PH_SPECIAL_CLOSE);
+
 	loop_province(i)
 	{
 		if (summerbridge(i) == 1)
@@ -1928,24 +2099,28 @@ special_locs_close(void)
 			log_write(LOG_CODE, "%s closed to the north.", box_name(i));
 			wout(i, "Seasonal rains have made Summerbridge an "
 				"impassable bog to the north.");
+			phase_acted(PH_SPECIAL_CLOSE);
 		}
 		else if (summerbridge(i) == 2)
 		{
 			log_write(LOG_CODE, "%s closed to the south.", box_name(i));
 			wout(i, "Seasonal rains have made Summerbridge an "
 				"impassable bog to the south.");
+			phase_acted(PH_SPECIAL_CLOSE);
 		}
 		else if (uldim(i) == 3)
 		{
 			log_write(LOG_CODE, "%s closed to the south.", box_name(i));
 			wout(i, "Falling snow blocks Uldim pass to the south "
 				"for the winter.");
+			phase_acted(PH_SPECIAL_CLOSE);
 		}
 		else if (uldim(i) == 4)
 		{
 			log_write(LOG_CODE, "%s closed to the north.", box_name(i));
 			wout(i, "Falling snow blocks Uldim pass to the north "
 				"for the winter.");
+			phase_acted(PH_SPECIAL_CLOSE);
 		}
 	}
 	next_province;
@@ -2013,6 +2188,8 @@ post_month(void)
 	storm_decay();
 	storm_move();
 	collapsed_mine_decay();
+	phase_ran(PH_PRODUCTION);	/* not the INIT call in io.c */
+	phase_acted(PH_PRODUCTION);
 	post_production();
 	if (auto_quit_turns > 0)
 		auto_drop();

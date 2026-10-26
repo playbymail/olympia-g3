@@ -1545,8 +1545,11 @@ create_some_storms(int num, int kind)
 	wthr_shuffle(l);
 
 	for (i = 0; i < ilist_len(l) && i < num; i++)
+	{
 		new_storm(0, kind, wthr_storm(l[i], sysclock.day * 256 + kind, 2, 3),
 				l[i]);
+		phase_acted(PH_WEATHER_STORM);
+	}
 }
 
 
@@ -1563,6 +1566,8 @@ natural_weather(void)
  */
 
 	n = nprov / 4 / 2 / 4;
+
+	phase_ran(PH_WEATHER_STORM);
 
 	switch (oly_month(sysclock))
 	{

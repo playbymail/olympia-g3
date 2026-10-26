@@ -677,6 +677,7 @@ main(int argc, char **argv)
 	 *	test-use-const-report-date	fixed Times masthead date
 	 *	--coverage <path>		write the Ultron coverage dump (#100)
 	 *	--use-coverage <path>		write the Ultron use coverage dump (#181)
+	 *	--phase-coverage <path>		write the Ultron phase coverage dump (#227)
 	 *	--state-export <path>		write the Ultron state export (#104)
 	 */
 	{
@@ -693,6 +694,12 @@ main(int argc, char **argv)
 			else if (strcmp(argv[ai], "--use-coverage") == 0) {
 				if (ai + 1 < argc && *argv[ai + 1])
 					use_coverage_path = str_save(argv[++ai]);
+				else
+					errflag++;
+			}
+			else if (strcmp(argv[ai], "--phase-coverage") == 0) {
+				if (ai + 1 < argc && *argv[ai + 1])
+					phase_coverage_path = str_save(argv[++ai]);
 				else
 					errflag++;
 			}
@@ -887,6 +894,7 @@ main(int argc, char **argv)
 
 	write_coverage();
 	write_use_coverage();
+	write_phase_coverage();
 
 	check_db();									 /* check database integrity */
 

@@ -349,6 +349,8 @@ weekly_prisoner_escape_check(void)
 	int who;
 	int chance;
 
+	phase_ran(PH_PRISONER_ESCAPE);
+
 	loop_char(who)
 	{
 	    if (is_prisoner(who))
@@ -362,7 +364,8 @@ weekly_prisoner_escape_check(void)
 		if (kind(i) == T_char && is_prisoner(i) && !release_swear(i))
 		{
 			chance = loc_depth(subloc(who)) >= LOC_build ? 1 : 2;
-			(void) check_prisoner_escape(i, chance, ESC_WEEKLY);
+			if (check_prisoner_escape(i, chance, ESC_WEEKLY))
+				phase_acted(PH_PRISONER_ESCAPE);
 		}
 	    }
 	    next_here;

@@ -455,6 +455,8 @@ garrison_gold(void)
 
 	clear_temps(T_loc);
 
+	phase_ran(PH_GARR_TAX);
+
 	loop_garrison(garr)
 	{
 		if (default_garrison(garr))
@@ -478,6 +480,8 @@ garrison_gold(void)
 
 		gen_item(garr, item_gold, base);
 		p_misc(garr)->garr_tax = base;
+		if (base > 0)
+			phase_acted(PH_GARR_TAX);
 
 /*
  *  Find out how much we spent on maintenance.  The garrison may
@@ -508,6 +512,7 @@ garrison_gold(void)
 		{
 			gen_item(where, item_tax_cookie, remain);
 			p_misc(garr)->garr_forward = -1;
+			phase_acted(PH_GARR_CASTLE);
 			continue;
 		}
 
@@ -538,6 +543,7 @@ garrison_gold(void)
 
 		gen_item(owner, item_gold, bx[i]->temp);
 		gold_provinces += bx[i]->temp;
+		phase_acted(PH_GARR_OWNER);
 	}
 	next_loc;
 }
@@ -718,6 +724,7 @@ determine_noble_ranks(void)
 	int pledged_to;
 
 	stage("determine_noble_ranks()");
+	phase_ran(PH_RANKS);
 
 	clear_temps(T_char);
 
@@ -748,6 +755,7 @@ determine_noble_ranks(void)
 			continue;
 
 		p_char(who)->rank = (schar) det_noble_rank_sup(who);
+		phase_acted(PH_RANKS);
 	}
 	next_char;
 }
@@ -1060,6 +1068,7 @@ ping_garrisons(void)
 	int where;
 
 	show_to_garrison = TRUE;
+	phase_ran(PH_GARR_GUARD);
 
 	loop_garrison(garr)
 	{
@@ -1076,6 +1085,7 @@ ping_garrisons(void)
 				liner_desc(garr), box_name(where));
 
 		rp_char(garr)->guard = TRUE;
+		phase_acted(PH_GARR_GUARD);
 	}
 	next_garrison;
 

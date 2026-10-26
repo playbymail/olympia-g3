@@ -1197,6 +1197,92 @@ extern char *use_coverage_path;
 #define	UCOV_FAIL	2	/* the skill or item use returned FALSE */
 #define	UCOV_MAX	3
 
+/* issue #227: "--phase-coverage <path>" set by main.c, NULL = no phase dump */
+extern char *phase_coverage_path;
+
+/*
+ *  issue #227: phase coverage rows, in turn execution order.  A routine's
+ *  first row also carries its "ran" count (see phase_ran()); the names
+ *  are in ph_rows[] in coverage.c.
+ */
+enum {
+	PH_SAVAGE_SPAWN,	/* day 0 */
+	PH_HADES_SPAWN,
+	PH_HADES_UNIT,
+	PH_NPC_UNSWORN,
+	PH_NPC_UNDEAD,
+	PH_NPC_SAVAGE,
+	PH_NPC_MOB,
+	PH_NPC_BANDIT,
+	PH_NPC_TOKEN,
+	PH_GARR_GUARD,
+	PH_TOKEN_MELT,
+	PH_TOKEN_ADD,
+	PH_STOP_INTERRUPT,
+	PH_STOP_IDLE,
+	PH_TRADE_MATCH,		/* day 1 */
+	PH_GARR_PAY,		/* daily events */
+	PH_COAST_DAMAGE,
+	PH_COAST_OMEN,
+	PH_LOC_MINE,
+	PH_LOC_INN,
+	PH_OCEAN_PLUNGE,
+	PH_HEAL_HEAL,
+	PH_HEAL_SICKEN,
+	PH_HEAL_RECOVER,
+	PH_PRISONER_ESCAPE,
+	PH_CURSE_ERODE,
+	PH_RING_AURA,
+	PH_DOGS_BARK,
+	PH_WEATHER_STORM,
+	PH_FAERY_SPAWN,
+	PH_FAERY_UNIT,
+	PH_SPECIAL_OPEN,	/* month end */
+	PH_SPECIAL_CLOSE,
+	PH_CITY_GOLD,
+	PH_GARR_TAX,
+	PH_GARR_CASTLE,
+	PH_GARR_OWNER,
+	PH_TAXES,
+	PH_CLAIM,
+	PH_NP,
+	PH_UNFORMED,
+	PH_AURA,
+	PH_ABILITY_SHROUD,
+	PH_REGION_SHROUD,
+	PH_MED_HINDER,
+	PH_BARRIER_DEC,
+	PH_BARRIER_GONE,
+	PH_LOY_DECAY,
+	PH_LOY_RELEASE,
+	PH_LOY_DESERT,
+	PH_PILLAGE,
+	PH_RELIC_DECAY,
+	PH_RELIC_VANISH,
+	PH_HIDE_MAGE,
+	PH_INN_INCOME,
+	PH_INN_TRAVELLER,
+	PH_TEMPLE,
+	PH_MAINT_PAID,
+	PH_MAINT_STARVE,
+	PH_ANIMAL,
+	PH_GHOST,
+	PH_CORPSE,
+	PH_BODY,
+	PH_STORM_WEAKEN,
+	PH_STORM_GONE,
+	PH_STORM_MOVE,
+	PH_MINE_DEC,
+	PH_MINE_CLEAR,
+	PH_PRODUCTION,
+	PH_AUTO_DROP,
+	PH_LINK_DEC,
+	PH_LINK_OPEN,
+	PH_QUEST,
+	PH_RANKS,
+	PH_MAX
+};
+
 /* issue #104: "--state-export <path>" set by main.c, NULL = no export */
 extern char *state_export_path;
 

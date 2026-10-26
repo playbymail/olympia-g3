@@ -162,3 +162,33 @@ No cell is `todo`. The `n/a` cells:
 To prove a cell, run the turn with `--use-coverage <path>` and have the fixture's
 `check.sh` assert it with `use_cells` from `tests/olympia/fixtures/coverage.sh`,
 as social-bribe and trade-routes do.
+
+## The phase backlog
+
+`phase-backlog.tsv` (#227) covers the work a turn does that no command starts:
+the day-0 NPC setup, day-1 trade matching, `daily_events()` and `post_month()`
+(the order is in [doc/turn-execution-order.md](../../doc/turn-execution-order.md)).
+It has one row per thing such a routine can do, in turn execution order. Its
+cells match the `acted` column of the `--phase-coverage` dump
+([harness doc §7.6](../../doc/ultron-harness-architecture.md#76-phase-coverage--landed)).
+`./check.sh` keeps it in step with `ph_rows[]` in `olympia/coverage.c` (same rows,
+same order) and checks that every fixture a cell names exists.
+
+| Column | Meaning |
+|---|---|
+| `phase` | `day0`, `day1`, `daily` or `month` |
+| `routine` | the engine routine |
+| `event` | what it did: `heal`, `desert`, `spawn`, … |
+| `acted` | fixture where the routine did that at least once |
+
+Cells hold `todo`, `golden`, a fixture name or `n/a`, as in `backlog.tsv`. The
+dump's `ran` column has no backlog column. It only shows whether a routine was
+called, and most are called every turn.
+
+To prove a cell, run the turn with `--phase-coverage <path>` and have the
+fixture's `check.sh` assert it with `phase_cells` from
+`tests/olympia/fixtures/coverage.sh`, as use-basic does.
+
+**Seeded 2026-10-25** by running the main golden turn and every regress fixture
+with the dump on. Of 75 rows, 9 are reached by the golden turn and 30 by 13
+existing fixtures, which now assert them; 36 are `todo`.

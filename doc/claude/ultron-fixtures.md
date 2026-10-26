@@ -1,6 +1,6 @@
 # The Ultron fixture backlog
 
-> Split out of [CLAUDE.md](../../CLAUDE.md). Read this when you add or change a regress fixture, work a `tests/ultron/backlog.tsv` cell, or touch the Ultron harness (`--coverage`, `--state-export`, the Chaos Goblin, `loop.py`).
+> Split out of [CLAUDE.md](../../CLAUDE.md). Read this when you add or change a regress fixture, work a `tests/ultron/backlog.tsv`, `use-backlog.tsv` or `phase-backlog.tsv` cell, or touch the Ultron harness (`--coverage`, `--use-coverage`, `--phase-coverage`, `--state-export`, the Chaos Goblin, `loop.py`).
 
 ## The backlog (ahead of the port)
 
@@ -91,8 +91,15 @@ speculatively (#120). `oly.restart()` exists only so a Lua script can
 reproduce an older multi-process bash build byte for byte; a fixture authored
 in Lua from the start does not call it.
 
-One known gap beyond the two tables: the hook does not see the non-command
-turn phases (NPC/savage movement, weather, upkeep, region spawns, month-end)
-listed in
-[doc/turn-execution-order.md](../turn-execution-order.md). #227 plans a
-`--phase-coverage` dump and a `tests/ultron/phase-backlog.tsv` to close it.
+**The phase backlog (#227).** The verb and use hooks don't see the work a turn
+does outside commands: the day-0 NPC setup, day-1 trade matching,
+`daily_events()` and `post_month()` (see
+[doc/turn-execution-order.md](../turn-execution-order.md)). The
+`--phase-coverage` dump
+([harness doc §7.6](../ultron-harness-architecture.md#76-phase-coverage--landed))
+counts, for each routine, how often it was called (`ran`) and how often it did
+each of its things (`acted`). `tests/ultron/phase-backlog.tsv` tracks the
+`acted` cells. A fixture's `check.sh` passes `--phase-coverage` and asserts its
+cells with `phase_cells` from `tests/olympia/fixtures/coverage.sh`. When you add
+a row to `ph_rows[]` in `olympia/coverage.c`, add it to the backlog in the
+same position; `tests/ultron/check.sh` checks the order.

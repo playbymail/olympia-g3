@@ -485,3 +485,49 @@ parent issue #180. A fixture asserts its cells with `use_cells` from
 fixture, `use` reaches only 2 of 150 rows: `incite_mob` (675) `ok` in
 social-bribe and `find_buy` (733) `ok` in trade-routes. skills-refused also
 reaches `invalid`.
+
+### 7.6 Phase coverage — landed
+
+The verb and use hooks only see commands. A turn also runs work that no command
+starts: the day-0 NPC setup in `process_orders()`, trade matching on day 1,
+`daily_events()` and `post_month()` (see
+[turn-execution-order.md](turn-execution-order.md)). `olympia-g3 ...
+--phase-coverage <path>` (#227) writes a third dump, `phase-coverage.tsv`,
+counted inside those routines (`olympia/coverage.c`, rows in `ph_rows[]`,
+enum `PH_*` in `oly.h`). `run/olympia-g3.sh` passes it through from
+`OLYMPIA_PHASE_COVERAGE`. Like the other dumps it is opt-in, draws nothing and
+changes nothing under `lib/`: all 79 regress fixtures and the golden turn are
+byte-identical with it on.
+
+- **Rows:** one per thing a routine can do (`event`), in turn execution order,
+  with columns `phase` (`day0`, `day1`, `daily`, `month`), `routine`, `event`,
+  `ran`, `acted`. A routine that can do several distinct things gets a row for
+  each: `loyalty_decay` has `decay`, `release` (a summoned unit is let go) and
+  `desert`; `heal_characters` has `heal`, `sicken` and `recover`.
+  `queue_npc_orders` has a row per NPC program it dispatches.
+- **`ran`** counts calls of the routine and is repeated on each of its rows.
+  `check_token_units` runs at day 0 and at month end, so it counts both.
+  `post_production` counts only its `post_month()` call, not the one-time call
+  on loading a fresh world (`io.c`).
+- **`acted`** counts each time the routine did that thing to one entity
+  (healed a unit, collected a castle's tax, spawned an NPC). A routine that is
+  called but finds nothing to do shows `ran` > 0 and `acted` 0.
+- **Turn-runner only**, like the other hooks: immediate mode is skipped.
+
+The cells are tracked in
+[`tests/ultron/phase-backlog.tsv`](../tests/ultron/README.md#the-phase-backlog).
+A fixture asserts its cells with `phase_cells` from
+`tests/olympia/fixtures/coverage.sh`.
+
+**Baseline (2026-10-25).** The bare-map golden turn acts in 9 of 75 rows: the
+Hades and faery spawns and their units, garrison guards, natural weather, the
+city-tax move, unformed minting, storm weakening, post-production and link
+opening. With the regress fixtures, 39 rows are reached. The 36 that no fixture
+reaches include every NPC program, trade matching, garrison pay and tax
+forwarding, desertion, relic, ghost and body decay, temples, animal deaths and
+the month-gated routines (`special_locs_open/close`, `auto_drop`).
+
+The dump also showed a quirk the port has to reproduce or fix:
+`natural_weather` runs 6 times on the golden turn, not the 4 its comment says.
+`daily_events()` sorts only the first 4 of the 30 shuffled weather days, but
+`wday_index` keeps walking into the unsorted rest (#229).

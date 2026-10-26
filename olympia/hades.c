@@ -502,6 +502,8 @@ auto_hades(void)
 	int i;
 	int n_hades = 0;
 
+	phase_ran(PH_HADES_SPAWN);
+
 	loop_units(hades_player, i)
 	{
 		n_hades++;
@@ -511,12 +513,14 @@ auto_hades(void)
 	while (n_hades < 25)
 	{
 		create_hades_nasty(n_hades);
+		phase_acted(PH_HADES_SPAWN);
 		n_hades++;
 	}
 
 	loop_units(hades_player, i)
 	{
 		auto_hades_sup(i);
+		phase_acted(PH_HADES_UNIT);
 	}
 	next_unit;
 }

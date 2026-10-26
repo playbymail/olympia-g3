@@ -616,6 +616,7 @@ queue_npc_orders(void)
 	int who;
 
 	stage("queue_npc_orders()");
+	phase_ran(PH_NPC_UNSWORN);
 
 	init_savage_attacks();
 	auto_hades();
@@ -641,10 +642,12 @@ queue_npc_orders(void)
 			{
 			case 0:
 				auto_unsworn(who);
+				phase_acted(PH_NPC_UNSWORN);
 				break;
 
 			case sub_undead:
 				auto_undead(who);
+				phase_acted(PH_NPC_UNDEAD);
 				break;
 
 			case sub_ni:
@@ -652,11 +655,13 @@ queue_npc_orders(void)
 				{
 				case item_savage:
 					auto_savage(who);
+					phase_acted(PH_NPC_SAVAGE);
 					break;
 
 				case item_peasant:
 				case item_angry_peasant:
 					auto_mob(who);
+					phase_acted(PH_NPC_MOB);
 					break;
 				}
 				break;
@@ -667,6 +672,7 @@ queue_npc_orders(void)
 		case PROG_hades_bandit:
 		case PROG_faery_bandit:
 			auto_bandit(who, npc_program(who));
+			phase_acted(PH_NPC_BANDIT);
 			break;
 
 		case PROG_subloc_monster:
@@ -674,6 +680,7 @@ queue_npc_orders(void)
 
 		case PROG_npc_token:
 			npc_move(who);
+			phase_acted(PH_NPC_TOKEN);
 			break;
 
 		default:

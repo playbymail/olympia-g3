@@ -851,6 +851,8 @@ check_ocean_chars(void)
 	int who;
 	static ilist l = NULL;
 
+	phase_ran(PH_OCEAN_PLUNGE);
+
 	ilist_clear(&l);
 	l = ilist_copy(ocean_chars);
 
@@ -884,6 +886,7 @@ check_ocean_chars(void)
 				"plunges into the sea.", box_name(who));
 
 		kill_stack_ocean(who);
+		phase_acted(PH_OCEAN_PLUNGE);
 	}
 }
 

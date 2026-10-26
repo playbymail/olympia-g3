@@ -356,6 +356,8 @@ init_savage_attacks(void)
 	int where;
 	int i;
 
+	phase_ran(PH_SAVAGE_SPAWN);
+
 	num_savages = 0;
 	loop_char(i)
 	{
@@ -392,7 +394,10 @@ init_savage_attacks(void)
 
 		for (i = 0; i < exit_views_len(l); i++)
 			if (call_savage(l[i]->destination, where, fort, 2))
+			{
+				phase_acted(PH_SAVAGE_SPAWN);
 				break;
+			}
 	}
 	next_loc;
 }

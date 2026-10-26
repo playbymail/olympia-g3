@@ -24,7 +24,8 @@
 # written (with the seed) under -G and absent under the default.
 #
 # The default run's --use-coverage dump must show skill 733 reaching ok, the
-# use backlog cell this fixture claims (#181).
+# use backlog cell this fixture claims (#181), and its --phase-coverage dump
+# must show the phase cells in PHASE_CELLS acting (#227).
 #
 # EXPECT.json pins the default run's post-turn --state-export snapshot (#104).
 # The hashes stay the strict gate; the JSON diff shows which unit, item or
@@ -68,12 +69,15 @@ routes_file() {		# args: extra olympia flags...
 	rm -rf "${W}"
 }
 
+PHASE_CELLS=(storm_decay:dissipate link_decay:decrement)
+
 STATE_DIR="$(mktemp -d)"
 trap 'rm -rf "${STATE_DIR}"' EXIT
 STATE="${STATE_DIR}/state.json"
 
 H_DEFAULT="$(report_hash --state-export "${STATE}" \
-	--use-coverage "${STATE_DIR}/use-coverage.tsv")"
+	--use-coverage "${STATE_DIR}/use-coverage.tsv" \
+	--phase-coverage "${STATE_DIR}/phase-coverage.tsv")"
 H_SEEDED="$(report_hash -G 1)"
 H_SEEDED2="$(report_hash -G 1)"
 RF_DEFAULT="$(routes_file)"
@@ -92,6 +96,7 @@ EXP_SEEDED="$(cat "${HERE}/EXPECT-seeded.sha256" 2>/dev/null)"
 
 fail=0
 use_cells "${STATE_DIR}/use-coverage.tsv" skill:733:ok || fail=1
+phase_cells "${STATE_DIR}/phase-coverage.tsv" "${PHASE_CELLS[@]}" || fail=1
 [ "${H_DEFAULT}" = "${EXP_DEFAULT}" ] || { echo "NO  (default-secret report changed vs EXPECT.sha256)"; fail=1; }
 [ "${H_SEEDED}"  = "${EXP_SEEDED}"  ] || { echo "NO  (-G 1 report changed vs EXPECT-seeded.sha256)"; fail=1; }
 [ "${H_SEEDED}"  = "${H_SEEDED2}"   ] || { echo "NO  (-G 1 not deterministic across runs)"; fail=1; }

@@ -1012,6 +1012,8 @@ process_interrupted_units(void)
 	int who;
 	struct command *who_c;
 
+	phase_ran(PH_STOP_INTERRUPT);
+
 	loop_char(who)
 	{
 		if (!stop_order(player(who), who))
@@ -1026,10 +1028,12 @@ process_interrupted_units(void)
 		{
 			out(who, "Interrupt current order.");
 			interrupt_order(who);
+			phase_acted(PH_STOP_INTERRUPT);
 		}
 		else
 		{
 			out(who, "No order is currently executing.");
+			phase_acted(PH_STOP_IDLE);
 		}
 	}
 	next_char;

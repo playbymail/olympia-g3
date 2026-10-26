@@ -610,6 +610,8 @@ auto_faery(void)
 	int i;
 	int n_faery = 0;
 
+	phase_ran(PH_FAERY_SPAWN);
+
 	loop_units(faery_player, i)
 	{
 		n_faery++;
@@ -619,12 +621,14 @@ auto_faery(void)
 	while (n_faery < 15)
 	{
 		create_elven_hunt(n_faery);
+		phase_acted(PH_FAERY_SPAWN);
 		n_faery++;
 	}
 
 	loop_units(faery_player, i)
 	{
 		auto_faery_sup(i);
+		phase_acted(PH_FAERY_UNIT);
 	}
 	next_unit;
 }

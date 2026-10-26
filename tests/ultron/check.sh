@@ -1,6 +1,6 @@
 #!/bin/bash
-# Consistency check for the Ultron fixture backlogs (tests/ultron/backlog.tsv
-# and tests/ultron/use-backlog.tsv).
+# Consistency check for the Ultron fixture backlogs (tests/ultron/backlog.tsv,
+# tests/ultron/use-backlog.tsv and tests/ultron/phase-backlog.tsv).
 #
 #   1. Every cmd_tbl verb in olympia/glob.c has exactly one backlog row, and
 #      every backlog row is a cmd_tbl verb (so the backlog can't drift from
@@ -9,7 +9,9 @@
 #      v_use_item() has exactly one use-backlog row, keyed by its id and named
 #      by its sk_/use_ define, and every use-backlog row is one of them
 #      (issue #181).
-#   3. Every cell that names a fixture names one that exists: "golden" (the
+#   3. Every phase coverage row in olympia/coverage.c (ph_rows[]) has exactly
+#      one phase-backlog row, in the same order (issue #227).
+#   4. Every cell that names a fixture names one that exists: "golden" (the
 #      main manifest) or a directory under tests/olympia/regress/.
 #
 # Prints YES when consistent, NO plus the reasons otherwise.
@@ -20,6 +22,8 @@ BACKLOG="${HERE}/backlog.tsv"
 USE_BACKLOG="${HERE}/use-backlog.tsv"
 GLOB="${ROOT}/olympia/glob.c"
 USE_C="${ROOT}/olympia/use.c"
+PHASE_BACKLOG="${HERE}/phase-backlog.tsv"
+COVERAGE_C="${ROOT}/olympia/coverage.c"
 
 bad=0
 
@@ -71,6 +75,22 @@ if [ -n "${dups}" ]; then
 	bad=1
 fi
 
+# phase rows as "phase routine event", in ph_rows[] order
+tbl_phases() {
+	sed -n 's/^	\[PH_[A-Z_]*\] =	*{ "\([a-z0-9]*\)", "\([a-z_]*\)", "\([a-z_]*\)" },$/\1 \2 \3/p' "${COVERAGE_C}"
+}
+backlog_phases() { awk -F'\t' 'NR > 1 { print $1, $2, $3 }' "${PHASE_BACKLOG}"; }
+
+d="$(diff <(tbl_phases) <(backlog_phases))"
+if [ -z "$(tbl_phases)" ]; then
+	echo "NO  (no ph_rows[] entries found in ${COVERAGE_C})"
+	bad=1
+elif [ -n "${d}" ]; then
+	echo "NO  (phase-backlog rows differ from ph_rows[]; < engine only, > backlog only)"
+	echo "${d}"
+	bad=1
+fi
+
 # awk, not "read": IFS=tab would merge the empty alias_of column away
 while read -r verb cell; do
 	case "${cell}" in
@@ -81,7 +101,8 @@ while read -r verb cell; do
 		fi ;;
 	esac
 done < <(awk -F'\t' 'NR > 1 { print $1, $5; print $1, $6; print $1, $7 }' "${BACKLOG}"
-	awk -F'\t' 'NR > 1 { print $1 ":" $3, $6; print $1 ":" $3, $7 }' "${USE_BACKLOG}")
+	awk -F'\t' 'NR > 1 { print $1 ":" $3, $6; print $1 ":" $3, $7 }' "${USE_BACKLOG}"
+	awk -F'\t' 'NR > 1 { print $2 ":" $3, $4 }' "${PHASE_BACKLOG}")
 
 [ "${bad}" -eq 0 ] && echo "YES"
 exit "${bad}"

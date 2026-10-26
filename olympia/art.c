@@ -1201,6 +1201,8 @@ check_token_units(void)
 	int owner, pl;
 	int unit;
 
+	phase_ran(PH_TOKEN_MELT);
+
 	loop_subkind(sub_npc_token, item)
 	{
 /*
@@ -1215,9 +1217,15 @@ check_token_units(void)
 		pl = token_player(owner);
 
 		if (pl == indep_player)
+		{
 			melt_token_units(item);
+			phase_acted(PH_TOKEN_MELT);
+		}
 		else
+		{
 			add_token_units(item);
+			phase_acted(PH_TOKEN_ADD);
+		}
 
 		loop_units(item, unit)
 		{

@@ -20,9 +20,11 @@
 #     -A      Charge player accounts
 #     --coverage path  Write the command coverage dump to path
 #     --use-coverage path  Write the use coverage dump to path
+#     --phase-coverage path  Write the phase coverage dump to path
 #
 #   Set OLYMPIA_COVERAGE=<path> to pass --coverage to the turn run below, and
-#   OLYMPIA_USE_COVERAGE=<path> to pass --use-coverage.
+#   OLYMPIA_USE_COVERAGE=<path> to pass --use-coverage, and
+#   OLYMPIA_PHASE_COVERAGE=<path> to pass --phase-coverage.
 ############################################################################
 # Testing Strategy
 #
@@ -153,7 +155,7 @@ rm -rf lib-before lib-after
 cp -a lib lib-before
 # test-use-const-report-date: fix the Olympia Times masthead date so the golden
 # manifest is deterministic across days (otherwise times_0 embeds today's date).
-"${OLYMPIA_BIN}/${OLYMPIA_COMMAND}-${OLYMPIA_ENGINE}" -r -l ./lib -S test-use-const-report-date ${OLYMPIA_COVERAGE:+--coverage "${OLYMPIA_COVERAGE}"} ${OLYMPIA_USE_COVERAGE:+--use-coverage "${OLYMPIA_USE_COVERAGE}"} </dev/null || {
+"${OLYMPIA_BIN}/${OLYMPIA_COMMAND}-${OLYMPIA_ENGINE}" -r -l ./lib -S test-use-const-report-date ${OLYMPIA_COVERAGE:+--coverage "${OLYMPIA_COVERAGE}"} ${OLYMPIA_USE_COVERAGE:+--use-coverage "${OLYMPIA_USE_COVERAGE}"} ${OLYMPIA_PHASE_COVERAGE:+--phase-coverage "${OLYMPIA_PHASE_COVERAGE}"} </dev/null || {
   echo "error: ${OLYMPIA_COMMAND}-${OLYMPIA_ENGINE} failed"
   exit 2
 }

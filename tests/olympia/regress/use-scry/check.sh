@@ -15,7 +15,8 @@
 #   1. coverage: every verb:outcome in CELLS has a nonzero count in the
 #      turn's --coverage dump, and every use cell in USE_CELLS in its
 #      --use-coverage dump, so the backlog cells this fixture claims stay
-#      true;
+#      true, and every phase cell in PHASE_CELLS acts in its
+#      --phase-coverage dump (#227);
 #   2. EXPECT.sha256: each faction's report and unit state, byte for byte
 #      (the strict gate);
 #   3. EXPECT.json: the post-turn --state-export snapshot (shows *what*
@@ -35,6 +36,8 @@ BIN="${ROOT}/build/${PRESET}/olympia-g3"
 FILES=(save/1/300 save/1/301 save/1/302 fact/300 fact/301 fact/302)
 CELLS=(use:ok)
 USE_CELLS=(skill:841:ok skill:842:ok skill:843:ok skill:844:ok skill:845:ok skill:846:ok skill:847:ok skill:848:ok skill:849:ok skill:851:ok skill:852:ok)
+PHASE_CELLS=(decrement_loc_barrier:decrement
+	decrement_loc_barrier:dissipate)
 
 [ -x "${BIN}" ] || { echo "error: missing ${BIN} (build the ${PRESET} preset first)"; exit 2; }
 
@@ -44,6 +47,7 @@ scenario_unpack "${HERE}" "${WORK}" || exit 2
 
 ( cd "${WORK}" && "${BIN}" -r -l ./lib -S test-use-const-report-date \
 	--coverage "${WORK}/coverage.tsv" \
+	--phase-coverage "${WORK}/phase-coverage.tsv" \
 	--use-coverage "${WORK}/use-coverage.tsv" \
 	--state-export "${WORK}/state.json" </dev/null >/dev/null 2>&1 )
 ec=$?
@@ -61,6 +65,7 @@ for cell in "${CELLS[@]}"; do
 	[ "${n:-0}" -gt 0 ] || { echo "NO  (verb '${v}' did not reach ${o}: ${o}=${n:-0})"; fail=1; }
 done
 use_cells "${WORK}/use-coverage.tsv" "${USE_CELLS[@]}" || fail=1
+phase_cells "${WORK}/phase-coverage.tsv" "${PHASE_CELLS[@]}" || fail=1
 [ "${fail}" -eq 0 ] || exit 1
 
 manifest() { ( cd "${WORK}/lib" && shasum -a 256 "${FILES[@]}" ); }

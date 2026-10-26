@@ -267,6 +267,9 @@ extern void write_coverage(void);
 extern void use_coverage_skill(int ent, int outcome);
 extern void use_coverage_item(int key, int outcome);
 extern void write_use_coverage(void);
+extern void phase_ran(int row);
+extern void phase_acted(int row);
+extern void write_phase_coverage(void);
 
 /* olympia/state_export.c */
 extern void write_state_export(void);
@@ -286,7 +289,7 @@ extern void clear_second_waits(void);
 /* olympia/day.c */
 extern int maint_cost(int item);
 extern void add_unformed_sup(int pl);
-extern void charge_maint_sup(int who);
+extern int charge_maint_sup(int who);
 extern void daily_events(void);
 extern void init_locs_touched(void);
 extern void post_month(void);
