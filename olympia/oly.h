@@ -1332,6 +1332,8 @@ extern char *short_dir_s[];
 extern char *full_dir_s[];
 extern char *month_names[];
 extern char *entab(int);
+extern char *sh_quote(char *s);
+extern char *sender_addr(char *s);
 extern int exit_opposite[];
 extern int immediate;
 extern int win_flag;

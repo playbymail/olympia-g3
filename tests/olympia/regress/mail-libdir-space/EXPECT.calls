@@ -1,0 +1,31 @@
+== A
+g2rep [./my lib/save/1/300]
+sendmail [-t] [-f] [skrenta@pbm.com] < From: skrenta@pbm.com (Rich skrenta)|Reply-To: skrenta@pbm.c
+htpasswd [-i] [@WORK@/my lib/ht passwords] [100] < crusty7|
+g2rep [-h] [./my lib/save/1/100]
+htpasswd [-i] [@WORK@/my lib/ht passwords] [200] < crusty7|
+g2rep [-h] [./my lib/save/1/200]
+htpasswd [-i] [@WORK@/my lib/ht passwords] [202] < crusty7|
+g2rep [-h] [./my lib/save/1/202]
+htpasswd [-i] [@WORK@/my lib/ht passwords] [203] < crusty7|
+g2rep [-h] [./my lib/save/1/203]
+htpasswd [-i] [@WORK@/my lib/ht passwords] [204] < noyoudont|
+g2rep [-h] [./my lib/save/1/204]
+htpasswd [-i] [@WORK@/my lib/ht passwords] [205] < noyoudont|
+g2rep [-h] [./my lib/save/1/205]
+htpasswd [-i] [@WORK@/my lib/ht passwords] [206] < crusty7|
+g2rep [-h] [./my lib/save/1/206]
+htpasswd [-i] [@WORK@/my lib/ht passwords] [207] < crusty7|
+g2rep [-h] [./my lib/save/1/207]
+htpasswd [-i] [@WORK@/my lib/ht passwords] [210] < noyoudont|
+g2rep [-h] [./my lib/save/1/210]
+htpasswd [-i] [@WORK@/my lib/ht passwords] [300] < x"$(touch PWNED)`touch PWNED2`'y|
+g2rep [-h] [./my lib/save/1/300]
+== B
+zcat [./my lib/save/1/300.gz]
+g2rep [/tmp/zrep.300]
+sendmail [-t] [-f] [skrenta@pbm.com] < From: skrenta@pbm.com (Rich skrenta)|Reply-To: skrenta@pbm.c
+== C
+g2rep [./my lib/log/203]
+sendmail [-t] [-f] [skrenta@pbm.com] < 20:0::0::line 1: Incorrect password: begin 300 "nope"|0:0::0
+unexpand [-t8]

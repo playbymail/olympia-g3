@@ -2418,6 +2418,60 @@ entab(int pl)
 }
 
 
+/*
+ *  Quote s as one word for sh: wrap it in '...' and write each
+ *  embedded ' as '\''.  Paths under the libdir go through this
+ *  before they reach system() or popen(), so a libdir holding
+ *  spaces or metacharacters stays one argument (#325, #326).
+ */
+char *
+sh_quote(char *s)
+{
+	char buf[LEN];
+	char *t = buf;
+	char *end = buf + sizeof(buf) - 6;
+
+	*t++ = '\'';
+	for (; *s && t < end; s++)
+	{
+		if (*s == '\'')
+		{
+			strcpy(t, "'\\''");
+			t += 4;
+		}
+		else
+			*t++ = *s;
+	}
+	*t++ = '\'';
+	*t = '\0';
+
+	return sout("%s", buf);
+}
+
+
+/*
+ *  The bare address in a From: value, for sendmail -f.  from_host
+ *  may carry a comment, as in "skrenta@pbm.com (Rich skrenta)", or
+ *  a display name, as in "Rich skrenta <skrenta@pbm.com>" (#325).
+ */
+char *
+sender_addr(char *s)
+{
+	char *p, *q;
+
+	p = strchr(s, '<');
+	if (p && (q = strchr(p + 1, '>')) != NULL)
+		return sout("%.*s", (int) (q - p - 1), p + 1);
+
+	while (*s == ' ' || *s == '\t')
+		s++;
+	for (q = s; *q && *q != ' ' && *q != '\t'; q++)
+		;
+
+	return sout("%.*s", (int) (q - s), s);
+}
+
+
 int
 loc_hidden(int n)
 {

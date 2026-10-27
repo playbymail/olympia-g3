@@ -345,12 +345,14 @@ send_rep(int pl, int turn)
 		if (win_flag)
 		{
 			fnam = sout("tmp/zrep.%d", pl);
-			ret = system(sout("gzcat %s > %s", zfnam, fnam));
+			ret = system(sout("gzcat %s > %s",
+					sh_quote(zfnam), sh_quote(fnam)));
 		}
 		else
 		{
 			fnam = sout("/tmp/zrep.%d", pl);
-			ret = system(sout("zcat %s > %s", zfnam, fnam));
+			ret = system(sout("zcat %s > %s",
+					sh_quote(zfnam), sh_quote(fnam)));
 		}
 
 		if (ret)
@@ -363,18 +365,19 @@ send_rep(int pl, int turn)
 	}
 
 	if (win_flag) {
-		system(sout("g2rep %s >> rep\\%d_%d.txt", fnam, turn, pl));
+		system(sout("g2rep %s >> rep\\%d_%d.txt", sh_quote(fnam), turn, pl));
 		if (player_notab(pl)) {
-			cmd = sout("g2rep %s >> %s", fnam, report);
+			cmd = sout("g2rep %s >> %s", sh_quote(fnam), sh_quote(report));
 		} else {
-			system(sout("g2rep %s >> %s", fnam, report));
-			cmd = sout("entab %s %s", report, report);
+			system(sout("g2rep %s >> %s", sh_quote(fnam), sh_quote(report)));
+			cmd = sout("entab %s %s", sh_quote(report), sh_quote(report));
 		}
 	} else {
 		if (player_notab(pl)) {
-			cmd = sout("g2rep %s >> %s", fnam, report);
+			cmd = sout("g2rep %s >> %s", sh_quote(fnam), sh_quote(report));
 		} else {
-			cmd = sout("g2rep %s | unexpand -t8 >> %s", fnam, report);
+			cmd = sout("g2rep %s | unexpand -t8 >> %s",
+					sh_quote(fnam), sh_quote(report));
 		}
 	}
 
@@ -393,13 +396,15 @@ send_rep(int pl, int turn)
 	if (split_lines == 0 && split_bytes == 0)
 	{
 		if (win_flag) {
-			cmd = sout("sendmail %s", report);
+			cmd = sout("sendmail %s", sh_quote(report));
 		} else {
-			cmd = sout("sendmail -t -f %s < %s", from_host, report);
+			cmd = sout("sendmail -t -f %s < %s",
+					sh_quote(sender_addr(from_host)),
+					sh_quote(report));
 		}
 	} else {
 		cmd = sout("mailsplit -s %d -l %d -c 'sendmail -t -odq' < %s",
-				split_bytes, split_lines, report);
+				split_bytes, split_lines, sh_quote(report));
 	}
 
 	fprintf(stderr, "   sending report for %s to %s\n",
@@ -449,11 +454,7 @@ void setup_html_dir(int pl)
 	FILE *fp;
 
 	sprintf(fnam, "%s/html/%s", libdir, box_code_less(pl));
-	if (win_flag) {
-		system(sout("mkdir %s\\html\\%s", libdir, box_code_less(pl)));
-	} else {
-		mkdir(fnam, 0755);
-	}
+	mkdir(fnam, 0755);
 
 	sprintf(fnam2, "%s/.htaccess", fnam);
 
@@ -477,10 +478,32 @@ void setup_html_dir(int pl)
 	fclose(fp);
 }
 
+/*
+ *  Set user's password in the htpasswd file.  The password goes in on
+ *  stdin (-i), not on the command line, so a player's password can't
+ *  break the command or reach the shell (#326).
+ */
+static int
+run_htpasswd(char *file, char *user, char *pw, int create, int quiet)
+{
+	FILE *fp;
+
+	fp = popen(sout("htpasswd -i %s%s %s%s",
+			create ? "-c " : "",
+			sh_quote(file),
+			sh_quote(user),
+			quiet ? " > /dev/null 2>&1" : ""), "w");
+	if (fp == NULL)
+		return -1;
+
+	fprintf(fp, "%s\n", pw);
+
+	return pclose(fp);
+}
+
 void
 set_html_pass(int pl)
 {
-	char buf[LEN];
 	struct entity_player *p;
 	char *pw;
 	int ret;
@@ -509,31 +532,17 @@ random randompassword
 	}
 
 	if (win_flag) {
-		sprintf(buf,
-			"htpasswd -b lib\\.htpasswd %s \"%s\"",
-			box_code_less(pl),
-			pw);
-		ret = system(buf);
-		if (ret) {
-			sprintf(buf,
-				"htpasswd -c -b lib\\.htpasswd %s \"%s\"",
-				box_code_less(pl),
-				pw);
-			system(buf);
-		}
+		ret = run_htpasswd("lib\\.htpasswd", box_code_less(pl), pw,
+					FALSE, FALSE);
+		if (ret)
+			run_htpasswd("lib\\.htpasswd", box_code_less(pl), pw,
+					TRUE, FALSE);
 	} else {
-		sprintf(buf, "htpasswd -b %s %s \"%s\" &> /dev/null",
-			htpasswd_loc,
-			box_code_less(pl),
-			pw);
-		ret = system(buf);
-		if (ret) {
-			sprintf(buf, "htpasswd -c -b %s %s \"%s\" &> /dev/null",
-				htpasswd_loc,
-				box_code_less(pl),
-				pw);
-			system(buf);
-		}
+		ret = run_htpasswd(htpasswd_loc, box_code_less(pl), pw,
+					FALSE, TRUE);
+		if (ret)
+			run_htpasswd(htpasswd_loc, box_code_less(pl), pw,
+					TRUE, TRUE);
 	}
 
 }
@@ -549,16 +558,54 @@ void output_html_rep(int pl)
 	unlink(fnam2);
 	rename(fnam, fnam2);
 
-	sprintf(fnam2, "g2rep -h %s/save/%d/%d > %s", libdir,
-					sysclock.turn, pl, fnam);
-	system(fnam2);
+	system(sout("g2rep -h %s > %s",
+			sh_quote(sout("%s/save/%d/%d", libdir, sysclock.turn, pl)),
+			sh_quote(fnam)));
+}
+
+/*
+ *  Copy the report from to to, without the shell (#326).  With stop,
+ *  leave off the line holding stop and everything after it, as
+ *  sed -e '/stop/,$d' did.
+ */
+static void
+copy_public_turn(char *from, char *to, char *stop)
+{
+	FILE *in, *out;
+	char buf[LEN];
+
+	in = fopen(from, "r");
+	if (in == NULL)
+	{
+		fprintf(stderr, "can't read %s: ", from);
+		perror("");
+		return;
+	}
+
+	out = fopen(to, "w");
+	if (out == NULL)
+	{
+		fprintf(stderr, "can't write %s: ", to);
+		perror("");
+		fclose(in);
+		return;
+	}
+
+	while (fgets(buf, sizeof(buf), in) != NULL)
+	{
+		if (stop && strstr(buf, stop) != NULL)
+			break;
+		fputs(buf, out);
+	}
+
+	fclose(in);
+	fclose(out);
 }
 
 void copy_public_turns(void)
 {
 	char fnam[LEN];
 	char fnam2[LEN];
-	char cmd[LEN];
 	int pl;
 
 	loop_player(pl)
@@ -570,15 +617,12 @@ void copy_public_turns(void)
 		if (win_flag) {
 			sprintf(fnam, "%s\\html\\%s\\index.html", libdir, box_code_less(pl));
 			sprintf(fnam2, "public\\%s.html", box_code_less(pl));
-			sprintf(cmd, "copy %s %s", fnam, fnam2);
-			printf("%s", cmd);
-			system(cmd);
+			copy_public_turn(fnam, fnam2, NULL);
 		} else {
 			sprintf(fnam, "%s/html/%s/index.html", libdir, box_code_less(pl));
 			sprintf(fnam2, "public/%d.%s", sysclock.turn, box_code_less(pl));
-			sprintf(cmd, "sed -e '/<name=\"Order template\">/,$d' < %s > %s",
-					fnam, fnam2);
-			system(cmd);
+			copy_public_turn(fnam, fnam2,
+					"<name=\"Order template\">");
 		}
 	}
 	next_player;

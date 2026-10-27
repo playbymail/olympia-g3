@@ -1059,6 +1059,7 @@ eat(char *fnam, int mail_now)
 	FILE *fp;
 	int ret = 0;
 	int okay_flag = 0;
+	char *cmd;
 	char buf[1025];
 
 	init_eat_vars();
@@ -1139,18 +1140,19 @@ eat(char *fnam, int mail_now)
 		} else {
 #endif
 
+		cmd = sout("g2rep %s | %ssendmail -t -f %s",
+			sh_quote(sout("%s/log/%d", libdir, eat_pl)),
+			entab(eat_pl), sh_quote(sender_addr(from_host)));
+
 		if (mail_now) {
-			ret = system(sout("g2rep %s/log/%d | %ssendmail -t -f %s",
-				libdir, eat_pl, entab(eat_pl), from_host));
+			ret = system(cmd);
 		}
 
 		if (ret)
 		{
 			fprintf(stderr, "error: couldn't mail ack to %s\n",
 					who_to);
-			fprintf(stderr, "command was: %s\n",
-				sout("g2rep %s/log/%d | %ssendmail -t -f %s",
-					libdir, eat_pl, entab(eat_pl), from_host));
+			fprintf(stderr, "command was: %s\n", cmd);
 		}
 	}
 
