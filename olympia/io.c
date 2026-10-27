@@ -536,7 +536,7 @@ skill_list_scan(char *s, skill_ents_list *l, int box_num)
 			my_free(new);
 		}
 
-		if (s[strlen(s)-1] == '\\')	/* another entry follows */
+		if (*s && s[strlen(s)-1] == '\\')	/* another entry follows */
 		{
 			s = readlin_ew();
 			if (s == NULL)		/* file ends mid-list */
@@ -594,7 +594,7 @@ item_list_scan(char *s, item_ents_list *l, int box_num)
 			my_free(new);
 		}
 
-		if (s[strlen(s)-1] == '\\')	/* another entry follows */
+		if (*s && s[strlen(s)-1] == '\\')	/* another entry follows */
 		{
 			s = readlin_ew();
 			if (s == NULL)		/* file ends mid-list */
@@ -677,7 +677,7 @@ trade_list_scan(char *s, trades_list *l, int box_num)
 			my_free(new);
 		}
 
-		if (s[strlen(s)-1] == '\\')	/* another entry follows */
+		if (*s && s[strlen(s)-1] == '\\')	/* another entry follows */
 		{
 			s = readlin_ew();
 			if (s == NULL)		/* file ends mid-list */
@@ -738,7 +738,7 @@ req_list_scan(char *s, req_ents_list *l, int box_num)
 			my_free(new);
 		}
 
-		if (s[strlen(s)-1] == '\\')	/* another entry follows */
+		if (*s && s[strlen(s)-1] == '\\')	/* another entry follows */
 		{
 			s = readlin_ew();
 			if (s == NULL)		/* file ends mid-list */
