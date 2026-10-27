@@ -1,0 +1,78 @@
+== olympia-g3 -x
+exit 1
+olympia-g3: illegal option -- x
+usage: oly [options]
+== olympia-g3 -xR
+exit 0
+olympia-g3: illegal option -- x
+== olympia-g3 -xy
+exit 1
+olympia-g3: illegal option -- x
+olympia-g3: illegal option -- y
+usage: oly [options]
+== olympia-g3 -x -y -R
+exit 0
+olympia-g3: illegal option -- x
+olympia-g3: illegal option -- y
+== olympia-g3 -l
+exit 1
+olympia-g3: option requires an argument -- l
+usage: oly [options]
+== olympia-g3 -wl
+exit 1
+olympia-g3: option requires an argument -- l
+usage: oly [options]
+== olympia-g3 -G
+exit 1
+olympia-g3: option requires an argument -- G
+usage: oly [options]
+== olympia-g3 -lfoo -x
+exit 1
+olympia-g3: illegal option -- x
+usage: oly [options]
+== olympia-g3 -:
+exit 1
+olympia-g3: illegal option -- :
+usage: oly [options]
+== olympia-g3 -?
+exit 1
+usage: oly [options]
+== olympia-g3 -R?
+exit 0
+== olympia-g3 --bogus
+exit 1
+olympia-g3: illegal option -- -
+olympia-g3: illegal option -- b
+olympia-g3: illegal option -- o
+olympia-g3: illegal option -- g
+olympia-g3: illegal option -- u
+usage: oly [options]
+== olympia-g3 --bogus -R
+exit 0
+olympia-g3: illegal option -- -
+olympia-g3: illegal option -- b
+olympia-g3: illegal option -- o
+olympia-g3: illegal option -- g
+olympia-g3: illegal option -- u
+== olympia-g3 -l ./lib -- -x
+exit 0
+== olympia-g3 -l ./lib - -x
+exit 0
+== olympia-g3 -l ./lib junk -x
+exit 0
+== olympia-g3 -l ./lib -x junk
+exit 1
+olympia-g3: illegal option -- x
+usage: oly [options]
+== olympia-g3 -l./lib -G7 -x
+exit 1
+olympia-g3: illegal option -- x
+usage: oly [options]
+== ./oly-c -x
+exit 1
+./oly-c: illegal option -- x
+usage: oly [options]
+== /some/path/olympia-g3 -l
+exit 1
+/some/path/olympia-g3: option requires an argument -- l
+usage: oly [options]

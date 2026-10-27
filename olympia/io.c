@@ -1,6 +1,8 @@
 #define	_POSIX_C_SOURCE	200809L	/* lstat() -- glibc hides it under -std=c11 (#336) */
 
+#include	<stdarg.h>
 #include	<stdio.h>
+#include	<stdlib.h>
 #include	<string.h>
 #include	<sys/types.h>
 #ifdef _WIN32
@@ -507,6 +509,41 @@ skill_list_print(FILE *fp, char *header, skill_ents_list l)
 }
 
 
+/*
+ *  Read up to n ints from s, as sscanf(s, "%d %d ...") does with n
+ *  conversions: each number is leading whitespace, an optional sign and
+ *  decimal digits, read as strtoll(s, &end, 10) reads them (past the long
+ *  long range it is LLONG_MAX or LLONG_MIN), and the int keeps its low 32
+ *  bits. Reading stops at the first field with no digits; that field and
+ *  the ones after it are left as they were. Returns how many were read.
+ *
+ *  This replaced sscanf(), whose numeric field limit is up to the C
+ *  library: macOS read only the first 512 characters of a long number,
+ *  glibc read all of it (issue #342).
+ */
+static int
+scan_ints(char *s, int n, ...)
+{
+	va_list ap;
+	char *end;
+	long long v;
+	int i;
+
+	va_start(ap, n);
+	for (i = 0; i < n; i++)
+	{
+		v = strtoll(s, &end, 10);
+		if (end == s)
+			break;
+		*va_arg(ap, int *) = (int) v;
+		s = end;
+	}
+	va_end(ap);
+
+	return i;
+}
+
+
 static void
 skill_list_scan(char *s, skill_ents_list *l, int box_num)
 {
@@ -518,7 +555,7 @@ skill_list_scan(char *s, skill_ents_list *l, int box_num)
 	{
 		new = my_malloc(sizeof(*new));
 		know = experience = dummy = 0;	/* a short line leaves them unset */
-		sscanf(s, "%d %d %d %d %d",
+		scan_ints(s, 5,
 					&new->skill,
 					&know,
 					&new->days_studied,
@@ -584,7 +621,7 @@ item_list_scan(char *s, item_ents_list *l, int box_num)
 	while (1)
 	{
 		new = my_malloc(sizeof(*new));
-		sscanf(s, "%d %d", &new->item, &new->qty);
+		scan_ints(s, 2, &new->item, &new->qty);
 
 		if (valid_box(new->item))
 			item_ents_append(l, new);
@@ -657,7 +694,7 @@ trade_list_scan(char *s, trades_list *l, int box_num)
 	while (1)
 	{
 		new = my_malloc(sizeof(*new));
-		sscanf(s, "%d %d %d %d %d %d %d %d",
+		scan_ints(s, 8,
 				&new->kind,
 				&new->item,
 				&new->qty,
@@ -728,7 +765,7 @@ req_list_scan(char *s, req_ents_list *l, int box_num)
 	{
 		new = my_malloc(sizeof(*new));
 		consume = 0;			/* a short line leaves it unset */
-		sscanf(s, "%d %d %d", &new->item, &new->qty, &consume);
+		scan_ints(s, 3, &new->item, &new->qty, &consume);
 		new->consume = (schar) consume;
 
 		if (valid_box(new->item))
@@ -756,8 +793,15 @@ req_list_scan(char *s, req_ents_list *l, int box_num)
 void
 olytime_scan(char *s, olytime *p)
 {
+	int turn, day;
+	int n;
 
-	sscanf(s, "%hd %hd %d", &p->turn, &p->day, &p->days_since_epoch);
+	/* was sscanf("%hd %hd %d"): the shorts keep their low 16 bits */
+	n = scan_ints(s, 3, &turn, &day, &p->days_since_epoch);
+	if (n >= 1)
+		p->turn = (short) turn;
+	if (n >= 2)
+		p->day = (short) day;
 }
 
 
@@ -1763,7 +1807,7 @@ scan_command(struct command *p, int box_num)
 		case 'ue':	p->use_exp = atoi(t);		break;
 
 		case 'ar':
-			sscanf(t, "%d %d %d %d %d %d %d %d",
+			scan_ints(t, 8,
 				&p->a, &p->b, &p->c, &p->d,
 				&p->e, &p->f, &p->g, &p->h);
 			break;

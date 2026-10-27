@@ -7,7 +7,6 @@
 #else
 #include	<sys/stat.h>
 #include	<unistd.h>
-#include	<getopt.h>	/* getopt() -- glibc hides it from <unistd.h> under -std=c11 */
 #endif
 #include	"z.h"
 #include	"oly.h"
@@ -682,16 +681,101 @@ extract_startlocs(void)
  *  global flags (immediate, save_flag, ...), extract_startlocs(),
  *  call_init_routines(), v_remail() (referenced by cmd_tbl), etc. -- but
  *  supplies its OWN entry point in olympia/lua_bindings.c. Guard only main()
- *  out of that build; the rest of the TU compiles identically for both. For
- *  the engine target (olympia-g3) OLYSCRIPT_HOST is never defined, so this is
- *  byte-neutral. See CMakeLists.txt (olyscript-g3) and doc/scripting-tool.md.
+ *  and its oly_getopt() out of that build; the rest of the TU compiles
+ *  identically for both. For the engine target (olympia-g3) OLYSCRIPT_HOST
+ *  is never defined, so this is byte-neutral. See CMakeLists.txt
+ *  (olyscript-g3) and doc/scripting-tool.md.
  */
 #ifndef OLYSCRIPT_HOST
+/*
+ *  The engine's own getopt(), so options are reported the same on every
+ *  platform (issue #343): glibc's getopt() words its diagnostics
+ *  differently. It is the BSD getopt() macOS has:
+ *
+ *	- parsing stops at the first argument that is not an option, at a
+ *	  lone "-", and after "--";
+ *	- any other argument starting with "-" is a cluster of option
+ *	  letters, so "--x" is the options '-' and 'x';
+ *	- an option that takes an argument takes the rest of its cluster, or
+ *	  else the next argument;
+ *	- an unknown option prints "<argv[0]>: illegal option -- <c>" and a
+ *	  missing argument "<argv[0]>: option requires an argument -- <c>",
+ *	  with argv[0] as given, and both return '?'.
+ *
+ *  Returns -1 when the options end.
+ */
+static int oly_optind = 1;
+static char *oly_optarg;
+
+static int
+oly_getopt(int argc, char **argv, char *ostr)
+{
+	static char *place = "";	/* the rest of the current cluster */
+	char *oli;
+	int c;
+
+	if (*place == '\0')
+	{
+		if (oly_optind >= argc || argv[oly_optind][0] != '-')
+			return -1;
+
+		place = &argv[oly_optind][1];
+		c = (unsigned char) *place++;
+
+		if (c == '-' && *place == '\0')	/* "--" */
+		{
+			oly_optind++;
+			place = "";
+			return -1;
+		}
+
+		if (c == '\0')			/* a lone "-" */
+		{
+			place = "";
+			return -1;
+		}
+	}
+	else
+		c = (unsigned char) *place++;
+
+	if (c == ':' || (oli = strchr(ostr, c)) == NULL)
+	{
+		if (*place == '\0')
+			oly_optind++;
+		fprintf(stderr, "%s: illegal option -- %c\n", argv[0], c);
+		return '?';
+	}
+
+	if (oli[1] != ':')
+	{
+		oly_optarg = NULL;
+		if (*place == '\0')
+			oly_optind++;
+	}
+	else
+	{
+		if (*place)
+			oly_optarg = place;
+		else if (++oly_optind < argc)
+			oly_optarg = argv[oly_optind];
+		else
+		{
+			place = "";
+			fprintf(stderr, "%s: option requires an argument -- %c\n",
+								argv[0], c);
+			return '?';
+		}
+		place = "";
+		oly_optind++;
+	}
+
+	return c;
+}
+
+
 int
 main(int argc, char **argv)
 {
-	extern int optind, opterr;
-	extern char *optarg;
 	int errflag = 0;
 	int c;
 	int run_flag = FALSE;
@@ -715,7 +799,7 @@ main(int argc, char **argv)
 	call_init_routines();
 
 	/*
-	 *  Pull the long-form arguments out of argv before getopt() (which only
+	 *  Pull the long-form arguments out of argv before oly_getopt() (which only
 	 *  handles single-char options) sees them, compacting argv so the
 	 *  remaining options parse normally:
 	 *
@@ -760,7 +844,7 @@ main(int argc, char **argv)
 		argc = aj;
 	}
 
-	while ((c = getopt(argc, argv, "waeEfirl:pR?sStMTAhG:")) != EOF) {
+	while ((c = oly_getopt(argc, argv, "waeEfirl:pR?sStMTAhG:")) != EOF) {
 		switch (c) {
 		case 'w':
 			win_flag = TRUE;
@@ -797,7 +881,7 @@ main(int argc, char **argv)
 			break;
 
 		case 'l':									/* set libdir */
-			libdir = str_save(optarg);
+			libdir = str_save(oly_optarg);
 			break;
 
 		case 'p':
@@ -840,7 +924,7 @@ main(int argc, char **argv)
 		case 'G':			/* issue #46: per-game trade-route seed */
 			trade_route_seed_pending = TRUE;
 			trade_route_seed_value =
-				(uint64_t) strtoull(optarg, NULL, 0);
+				(uint64_t) strtoull(oly_optarg, NULL, 0);
 			break;
 
 		default:
