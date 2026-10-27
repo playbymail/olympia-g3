@@ -26,6 +26,9 @@ compares:
 - `EXPECT.sha256`: each stage's stdout (`out.1`, `out.2`, ...) and the final
   `randseed`, as `<case>/<file>`.
 
+A gate that sets `TIMEOUT` (seconds) kills a stage still running after that
+long; it logs exit 137 and the gate fails instead of hanging.
+
 A gate prints `YES` and exits 0 on a pass. On a failure it prints `NO`, the
 differences, and exits 1. Some gates also check cases against each other
 (`island_extra`). Under `OLYMPIA_PRESET=asan-ubsan` a sanitizer report goes
@@ -39,6 +42,7 @@ diagnostics.
 | `defaults` | no arguments on an all-ocean map, three seeds, three islands |
 | `ocean-glyph-output` | exact output for each ocean glyph (`; , : . ~` space `" '`) |
 | `ocean-glyphs` | the #24 invariants for the same glyphs (its own script, no EXPECT files) |
+| `shelf-large` | `-c 13`, `20`, `29` (one water square left), `30` and `100000000` on `land-40.map`, each within a 10 s `TIMEOUT`: the shelf is one breadth-first pass, not 4^shelf calls (#307) |
 | `size` | `-s 50`, `-s 1`; `-s 0`, `-5` and `-1000` are the random size (#294) |
 | `border-shelf` | `-b` and `-c` at 0, 6 and a negative value (clamped to 0); a border wider than the map matches one as wide as the map (#302); with no water left, exit 1 (#305) |
 | `existing-land` | placement around land already on the map |

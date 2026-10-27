@@ -71,8 +71,6 @@ terrain terrains[] =
 
 static void make_shelf(
 	char working[][MAX_MAP],
-	int y,
-	int x,
 	int y_size,
 	int x_size,
 	int shelf)
@@ -85,20 +83,52 @@ static void make_shelf(
 	 *  back implicitly by the distance-from-land pass, which only propagates
 	 *  through '~' cells -- a '_' cell gets distance 0 and is never chosen as an
 	 *  island seed.  It is therefore never printed and never reaches mapgen.
+	 *
+	 *  "Within `shelf` squares" counts north/south/east/west steps through any
+	 *  square on the map.  One breadth-first pass from every land square marks
+	 *  the same squares the old per-square recursion did, which took 4^shelf
+	 *  calls per land square and `shelf` stack frames (#307).
 	 */
-	if (working[y][x] == '~')
-		working[y][x] = '_';
-	if (shelf < 1)
-		return;
+	static int steps[MAX_MAP][MAX_MAP];
+	static location queue[MAX_MAP * MAX_MAP];
+	static const int dy[4] = { -1, 1, 0, 0 };
+	static const int dx[4] = { 0, 0, -1, 1 };
+	int head = 0, tail = 0;
+	int x, y, k, ny, nx;
 
-	if (y > 0)
-		make_shelf(working, y - 1, x, y_size, x_size, shelf - 1);
-	if (y < y_size - 1)
-		make_shelf(working, y + 1, x, y_size, x_size, shelf - 1);
-	if (x > 0)
-		make_shelf(working, y, x - 1, y_size, x_size, shelf - 1);
-	if (x < x_size - 1)
-		make_shelf(working, y, x + 1, y_size, x_size, shelf - 1);
+	for (y = 0; y < y_size; y++)
+		for (x = 0; x < x_size; x++)
+			if (working[y][x] == 'p')
+			{
+				steps[y][x] = 0;
+				queue[tail].y = y;
+				queue[tail].x = x;
+				tail++;
+			}
+			else
+				steps[y][x] = -1;
+
+	while (head < tail)
+	{
+		y = queue[head].y;
+		x = queue[head].x;
+		head++;
+		if (steps[y][x] >= shelf)
+			continue;
+		for (k = 0; k < 4; k++)
+		{
+			ny = y + dy[k];
+			nx = x + dx[k];
+			if (ny < 0 || ny >= y_size || nx < 0 || nx >= x_size || steps[ny][nx] >= 0)
+				continue;
+			steps[ny][nx] = steps[y][x] + 1;
+			if (working[ny][nx] == '~')
+				working[ny][nx] = '_';
+			queue[tail].y = ny;
+			queue[tail].x = nx;
+			tail++;
+		}
+	}
 
 	return;
 }
@@ -276,10 +306,7 @@ int main(int argc, char *argv[])
 			ids[y][x] = 0;
 		}
 	/* exclude any square within shelf of a land square */
-	for (y = 0; y < y_size; y++)
-		for (x = 0; x < x_size; x++)
-			if (working[y][x] == 'p')
-				make_shelf(working, y, x, y_size, x_size, shelf);
+	make_shelf(working, y_size, x_size, shelf);
 	/* exclude border squares around each edge */
 	/* A border wider than the map stops at its edge (#302) */
 	for (y = 0; y < y_size; y++)

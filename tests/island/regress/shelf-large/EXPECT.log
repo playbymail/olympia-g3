@@ -1,0 +1,16 @@
+== c-13 stage 1: -b 0 -c 13
+exit 0
+Added island of 14 provinces.
+== c-20 stage 1: -b 0 -c 20
+exit 0
+Added island of 14 provinces.
+== c-29 stage 1: -b 0 -c 29
+exit 0
+Not enough room to expand island!
+Added island of 1 provinces.
+== c-30 stage 1: -b 0 -c 30
+exit 1
+No room for an island!
+== c-huge stage 1: -b 0 -c 100000000
+exit 1
+No room for an island!

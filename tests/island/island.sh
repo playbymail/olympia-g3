@@ -39,6 +39,10 @@
 # gate can plant a directory where randseed goes. The generator always runs
 # as argv[0] "island-g3", so its usage line does not depend on the path.
 #
+# When the gate sets TIMEOUT (seconds), a stage still running after that long
+# is killed (SIGKILL, so it logs exit 137) and the gate fails, rather than
+# hanging on a generator that is too slow.
+#
 #   EXPECT.sha256  sha256 of every regular file the case leaves behind:
 #                  each stage's stdout (out.1, out.2, ...) and the final
 #                  randseed, as <name>/<file>.
@@ -98,7 +102,7 @@ island_input() {
 
 # Run one case: island_case <CASES entry>. Appends to ${WORK}/log.
 island_case() {
-	local name map seed rest="$1" args more in dir ec k=1
+	local name map seed rest="$1" args more in dir ec pid wd k=1
 	name="${rest%%|*}"; rest="${rest#*|}"
 	map="${rest%%|*}";  rest="${rest#*|}"
 	seed="${rest%%|*}"
@@ -121,8 +125,19 @@ island_case() {
 		*)     args="${rest}"; more=0 ;;
 		esac
 		# shellcheck disable=SC2086	# the arguments are split on purpose
-		( cd "${dir}" && exec -a island-g3 "${BIN}" ${args} <"${in}" >"${dir}/out.${k}" 2>"${WORK}/${name}.err.${k}" )
+		( cd "${dir}" && exec -a island-g3 "${BIN}" ${args} <"${in}" >"${dir}/out.${k}" 2>"${WORK}/${name}.err.${k}" ) &
+		pid=$!
+		wd=""
+		if [ -n "${TIMEOUT:-}" ]; then
+			( sleep "${TIMEOUT}"; kill -KILL "${pid}" ) >/dev/null 2>&1 &
+			wd=$!
+		fi
+		wait "${pid}" 2>/dev/null
 		ec=$?
+		if [ -n "${wd}" ]; then
+			kill "${wd}" 2>/dev/null
+			wait "${wd}" 2>/dev/null
+		fi
 		{
 			echo "== ${name} stage ${k}:${args:+ ${args}}"
 			echo "exit ${ec}"
