@@ -91,21 +91,26 @@ parse_line(char **l, char *s)
 void
 remove_comment(char *s)
 {
+	int tok = TRUE;		/* s is at the start of a token */
+	char q;
+
+/*
+ *  A quote counts only at the start of a token, as in parse_line(),
+ *  so a # inside "quoted" or 'quoted' text is kept, while an
+ *  apostrophe inside a word doesn't hide a comment after it.
+ */
 
 	while (*s)
 	{
-		while (*s == '"')
+		if (tok && (*s == '"' || *s == '\''))
 		{
-			while (*s && *s != '"')
+			q = *s++;
+			while (*s && *s != q)
 				s++;
-			s++;
-		}
-
-		while (*s == '\'')
-		{
-			while (*s && *s != '\'')
-				s++;
-			s++;
+			if (*s == '\0')	/* unterminated: runs to the end */
+				break;
+			s++;		/* parse_line() splits after the quote */
+			continue;
 		}
 
 		if (*s == '#')
@@ -114,6 +119,7 @@ remove_comment(char *s)
 			break;
 		}
 
+		tok = iswhite(*s);
 		s++;
 	}
 }

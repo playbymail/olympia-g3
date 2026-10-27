@@ -516,6 +516,7 @@ skill_list_scan(char *s, skill_ents_list *l, int box_num)
 	while (1)
 	{
 		new = my_malloc(sizeof(*new));
+		know = experience = dummy = 0;	/* a short line leaves them unset */
 		sscanf(s, "%d %d %d %d %d",
 					&new->skill,
 					&know,
@@ -725,6 +726,7 @@ req_list_scan(char *s, req_ents_list *l, int box_num)
 	while (1)
 	{
 		new = my_malloc(sizeof(*new));
+		consume = 0;			/* a short line leaves it unset */
 		sscanf(s, "%d %d %d", &new->item, &new->qty, &consume);
 		new->consume = (schar) consume;
 
@@ -2197,14 +2199,20 @@ read_boxes(char *fnam)
 	while (line)
 	{
 		if (*line == '#')
-			continue;		/* skip comment lines */
+		{
+			advance;		/* skip comment lines */
+			continue;
+		}
 
 		box_num = atoi(line);
 		if (box_num > 0)
 			load_box(box_num);
 		else
+		{
 			fprintf(stderr, "read_boxes: unexpected line %s\n",
 								line);
+			advance;
+		}
 	}
 
 	close_box(fnam);
