@@ -436,6 +436,7 @@ extern void cleanup_posts(void);
 extern void make_dir(char *dir);
 extern void olytime_print(FILE *fp, char *header, olytime *p);
 extern void olytime_scan(char *s, olytime *p);
+extern void remove_dir(char *dir);
 extern void save_box(FILE *fp, int n);
 extern void save_db(void);
 extern void save_logdir(void);

@@ -1296,7 +1296,7 @@ print_item(FILE *fp, struct entity_item *p)
 	if (p->ride_cap)
 		fprintf(fp, " rc %d\n", p->ride_cap);
 
-	if (p->ride_cap)
+	if (p->fly_cap)
 		fprintf(fp, " fc %d\n", p->fly_cap);
 
 	if (p->is_man_item)
@@ -2446,12 +2446,8 @@ write_all_boxes(void)
 		if (bx[i] != NULL)
 			bx[i]->temp = 0;
 
-	if (win_flag) {
-		system(sout("del /s /Q /F %s\\fact\\*", libdir));
-	} else {
-		system(sout("rm -rf %s/fact", libdir));
-		mkdir(sout("%s/fact", libdir), 0755);
-	}
+	remove_dir(sout("%s/fact", libdir));
+	mkdir(sout("%s/fact", libdir), 0755);
 
 	write_kind(T_loc, "loc");
 	write_kind(T_item, "item");
@@ -2883,6 +2879,46 @@ cleanup_posts(void)
 	next_post;
 }
 
+/*
+ *  Remove dir and everything under it, without going through the
+ *  shell, so a libdir holding spaces or metacharacters can't remove
+ *  the wrong paths (#320).  A missing dir is not an error.
+ */
+void
+remove_dir(char *dir)
+{
+	DIR *d;
+	struct dirent *e;
+	struct stat st;
+	char *path;
+	char *fnam;
+
+	path = str_save(dir);
+	d = opendir(path);
+
+	if (d != NULL)
+	{
+		while ((e = readdir(d)) != NULL)
+		{
+			if (strcmp(e->d_name, ".") == 0 ||
+			    strcmp(e->d_name, "..") == 0)
+				continue;
+
+			fnam = sout("%s/%s", path, e->d_name);
+
+			if (lstat(fnam, &st) == 0 && S_ISDIR(st.st_mode))
+				remove_dir(fnam);
+			else
+				unlink(fnam);
+		}
+
+		closedir(d);
+		rmdir(path);
+	}
+
+	my_free(path);
+}
+
 void make_dir(char *dir) {
 	if (win_flag) {
 		mkdir(sout("%s", dir), 0755);
@@ -2897,10 +2933,10 @@ save_logdir(void)
 
 	if (win_flag) {
 		printf("Deleting any existing save dirs (this might fail):\n");
-		system(sout("rd /s /q %s\\save\\%d", libdir, sysclock.turn));
+		remove_dir(sout("%s\\save\\%d", libdir, sysclock.turn));
 		mkdir(sout("%s\\save", libdir), 0755);
 	} else {
-		system(sout("rm -rf %s/save/%d", libdir, sysclock.turn));
+		remove_dir(sout("%s/save/%d", libdir, sysclock.turn));
 		mkdir(sout("%s/save", libdir), 0755);
 	}
 

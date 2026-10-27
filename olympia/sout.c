@@ -229,10 +229,10 @@ open_logfile(void)
 		return;
 
 	if (win_flag) {
-		system(sout("rd /s /q %s\\log", libdir));
+		remove_dir(sout("%s\\log", libdir));
 		mkdir(sout("%s\\log", libdir), 0755);
 	} else {
-		system(sout("rm -rf %s/log", libdir));
+		remove_dir(sout("%s/log", libdir));
 		mkdir(sout("%s/log", libdir), 0755);
 	}
 }

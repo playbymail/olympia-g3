@@ -334,12 +334,8 @@ save_orders(void)
 {
 	int i;
 
-	if (win_flag) {
-		system(sout("del /s /Q /F %s\\orders\\*", libdir));
-	} else {
-		system(sout("rm -rf %s/orders", libdir));
-		mkdir(sout("%s/orders", libdir), 0755);
-	}
+	remove_dir(sout("%s/orders", libdir));
+	mkdir(sout("%s/orders", libdir), 0755);
 
 	loop_player(i)
 	{
