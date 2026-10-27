@@ -2,6 +2,7 @@
 
 #include 	<stdlib.h>
 #include	<stdio.h>
+#include	<limits.h>
 #include	"z.h"
 #include	"oly.h"
 #include	"rng.h"
@@ -86,6 +87,60 @@ apply_trade_route_seed(uint64_t seed)
 }
 
 /*
+ *  Read a seed from a trade-route file: leading whitespace (space, \t, \n,
+ *  \v, \f or \r), an optional
+ *  sign, then decimal digits, as strtoull(s, NULL, 10) takes them. A value
+ *  past 2^64 - 1 is 2^64 - 1, and "-n" is 2^64 - n. Returns FALSE when
+ *  there are no digits.
+ *
+ *  This replaced fscanf("%llu"), whose field limit is up to the C library:
+ *  macOS read a token of 512 or more characters differently from glibc
+ *  (issue #338).
+ */
+static int
+read_trade_route_seed(FILE *fp, unsigned long long *seed)
+{
+	unsigned long long n = 0;
+	int c;
+	int neg = FALSE;
+	int over = FALSE;
+	int digits = 0;
+
+	do
+		c = getc(fp);
+	while (c == ' ' || c == '\t' || c == '\n' ||
+	       c == '\v' || c == '\f' || c == '\r');
+
+	if (c == '+' || c == '-')
+	{
+		neg = (c == '-');
+		c = getc(fp);
+	}
+
+	while (c != EOF && isdigit(c))
+	{
+		unsigned d = (unsigned) (c - '0');
+
+		if (n > (ULLONG_MAX - d) / 10)
+			over = TRUE;
+		else
+			n = n * 10 + d;
+		digits++;
+		c = getc(fp);
+	}
+
+	if (digits == 0)
+		return FALSE;
+
+	if (over)
+		*seed = ULLONG_MAX;
+	else
+		*seed = neg ? (0 - n) : n;
+
+	return TRUE;
+}
+
+/*
  *  Establish the per-game buyer secret. Precedence:
  *	1. a persisted lib/trade_routes (continuing game) -- always wins;
  *	   -G / the input file are ignored with a warning.
@@ -104,7 +159,7 @@ init_trade_routes(void)
 	fp = fopen(fnam, "r");
 	if (fp)
 	{
-		if (fscanf(fp, "%llu", &seed) == 1)
+		if (read_trade_route_seed(fp, &seed))
 			apply_trade_route_seed((uint64_t) seed);
 		fclose(fp);
 
@@ -124,7 +179,7 @@ init_trade_routes(void)
 	fp = fopen(fnam, "r");
 	if (fp)
 	{
-		if (fscanf(fp, "%llu", &seed) == 1)
+		if (read_trade_route_seed(fp, &seed))
 			apply_trade_route_seed((uint64_t) seed);
 		fclose(fp);
 	}

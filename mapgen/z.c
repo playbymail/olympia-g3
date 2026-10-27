@@ -40,6 +40,7 @@ asfail(char *file, int line, char *cond)
 {
 	fprintf(stderr, "assertion failure: %s (%d): %s\n",
 						file, line, cond);
+	fflush(NULL);	/* as olympia/z.c: glibc's abort() doesn't flush (#339) */
 	abort();
 	exit(1);
 }

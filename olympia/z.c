@@ -37,6 +37,12 @@ asfail(char *file, int line, char *cond)
 {
 	fprintf(stderr, "assertion failure: %s (%d): %s\n",
 						file, line, cond);
+	/*
+	 *  Flush every stream before abort(): macOS's abort() does, glibc's
+	 *  doesn't, so a buffered file kept its bytes on one and lost them
+	 *  on the other (issue #339).
+	 */
+	fflush(NULL);
 	abort();
 	exit(1);
 }
