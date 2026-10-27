@@ -166,7 +166,11 @@ boxlist0_scan(char *s, int box_num, ilist *l)
 				s++;
 		}
 		else if (*s == '\\')		/* continuation line follows */
+		{
 			s = readlin_ew();
+			if (s == NULL)		/* file ends mid-list */
+				break;
+		}
 		else
 			break;
 	}
@@ -222,7 +226,11 @@ boxlist_scan(char *s, int box_num, ilist *l)
 				s++;
 		}
 		else if (*s == '\\')		/* continuation line follows */
+		{
 			s = readlin_ew();
+			if (s == NULL)		/* file ends mid-list */
+				break;
+		}
 		else
 			break;
 	}
@@ -333,7 +341,11 @@ admit_scan(char *s, int box_num, struct entity_player *pp)
 				s++;
 		}
 		else if (*s == '\\')		/* continuation line follows */
+		{
 			s = readlin_ew();
+			if (s == NULL)		/* file ends mid-list */
+				break;
+		}
 		else
 			break;
 	}
@@ -390,7 +402,11 @@ ilist_scan(char *s, ilist *l)
 				s++;
 		}
 		else if (*s == '\\')		/* continuation line follows */
+		{
 			s = readlin_ew();
+			if (s == NULL)		/* file ends mid-list */
+				break;
+		}
 		else
 			break;
 	}
@@ -451,7 +467,11 @@ known_scan(char *s, sparse *kn, int box_num)
 				s++;
 		}
 		else if (*s == '\\')		/* continuation line follows */
+		{
 			s = readlin_ew();
+			if (s == NULL)		/* file ends mid-list */
+				break;
+		}
 		else
 			break;
 	}
@@ -517,7 +537,11 @@ skill_list_scan(char *s, skill_ents_list *l, int box_num)
 		}
 
 		if (s[strlen(s)-1] == '\\')	/* another entry follows */
+		{
 			s = readlin_ew();
+			if (s == NULL)		/* file ends mid-list */
+				break;
+		}
 		else
 			break;
 	}
@@ -571,7 +595,11 @@ item_list_scan(char *s, item_ents_list *l, int box_num)
 		}
 
 		if (s[strlen(s)-1] == '\\')	/* another entry follows */
+		{
 			s = readlin_ew();
+			if (s == NULL)		/* file ends mid-list */
+				break;
+		}
 		else
 			break;
 	}
@@ -650,7 +678,11 @@ trade_list_scan(char *s, trades_list *l, int box_num)
 		}
 
 		if (s[strlen(s)-1] == '\\')	/* another entry follows */
+		{
 			s = readlin_ew();
+			if (s == NULL)		/* file ends mid-list */
+				break;
+		}
 		else
 			break;
 	}
@@ -707,7 +739,11 @@ req_list_scan(char *s, req_ents_list *l, int box_num)
 		}
 
 		if (s[strlen(s)-1] == '\\')	/* another entry follows */
+		{
 			s = readlin_ew();
+			if (s == NULL)		/* file ends mid-list */
+				break;
+		}
 		else
 			break;
 	}
