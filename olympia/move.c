@@ -1202,6 +1202,9 @@ check_captain_loses_sailors(int qty, int target, int inform)
 
 	switch (subkind(where))
 	{
+	case sub_raft:		/* a raft needs no crew */
+		return;
+
 	case sub_galley:
 		should_have = 14;
 		break;
@@ -1256,6 +1259,9 @@ move_exit_water(struct command *c, struct exit_view *v, int ship, int show)
 
 	switch (subkind(ship))
 	{
+	case sub_raft:		/* a raft needs no crew */
+		break;
+
 	case sub_roundship:
 		n = has_item(c->who, item_sailor) +
 					has_item(c->who, item_pirate);

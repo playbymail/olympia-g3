@@ -16,7 +16,7 @@ galleys and roundships. `fort_covers()` returns 0 for both: a raft gives no
 cover. Its defense is 0 anyway (`fort_default_defense()` has no raft case), so
 the cover would add nothing.
 
-Sailing a raft is a separate bug, #350.
+Sailing a raft (#350) is pinned by `raft-sail`.
 
 ## Scenario
 
