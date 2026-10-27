@@ -1,3 +1,4 @@
+#define	_POSIX_C_SOURCE	200809L	/* popen(), pclose() -- glibc hides them under -std=c11 (#336) */
 #include	<stdlib.h>
 #include	<stdio.h>
 #ifdef _WIN32

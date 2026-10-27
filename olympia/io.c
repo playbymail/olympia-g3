@@ -1,3 +1,4 @@
+#define	_POSIX_C_SOURCE	200809L	/* lstat() -- glibc hides it under -std=c11 (#336) */
 
 #include	<stdio.h>
 #include	<string.h>
