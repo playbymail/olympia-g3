@@ -2252,40 +2252,96 @@ read_chars(void)
 }
 
 
+/*
+ *  Parse a master line, "num<tab>kind.subkind<tab>...", for fast_scan.
+ */
+
+static void
+master_line(char *s, int *num, int *kind, int *sk)
+{
+	char *p, *q;
+
+	*num = atoi(s);
+
+	for (p = s; *p && isdigit(*p); p++)
+		;
+	while (*p && iswhite(*p))
+		p++;
+
+
+
+
+	for (q = p; *q && *q != '.'; q++)
+		;
+	if (*q == '.')
+		*q++ = '\0';
+
+	*kind = atoi(p);
+	*sk = atoi(q);
+}
+
+
+/*
+ *  Check every line of master before allocating any box.  A number,
+ *  kind or subkind out of range would index outside bx[], box_head[] or
+ *  sub_head[] (#321), so a damaged master is ignored and the caller
+ *  falls back to scan_all_boxes().
+ */
+
+static int
+fast_scan_check(char *path)
+{
+	char *s;
+	int num;
+	int kind, sk;
+	int ok = TRUE;
+
+	if (!readfile(path))
+		return FALSE;
+
+	while (ok && (s = readlin()))
+	{
+		master_line(s, &num, &kind, &sk);
+
+		if (num <= 0 || num >= MAX_BOXES ||
+		    kind <= T_deleted || kind >= T_MAX ||
+		    sk < 0 || sk >= SUB_MAX)
+		{
+			fprintf(stderr, "fast_scan: bad master entry: "
+					"%d %d.%d\n", num, kind, sk);
+			ok = FALSE;
+		}
+	}
+
+	closefile(path);
+
+	return ok;
+}
+
+
 static int
 fast_scan(void)
 {
 	char *path;
-	char *s, *p, *q;
+	char *s;
 	int num;
 	int kind, sk;
 
 	path = sout("%s/master", libdir);
+	if (!fast_scan_check(path))
+		return FALSE;
+
 	if (!readfile(path))
 		return FALSE;
 
 	while (s = readlin())
 	{
-		num = atoi(s);
-
-		for (p = s; *p && isdigit(*p); p++)
-			;
-		while (*p && iswhite(*p))
-			p++;
-
-
-
-
-		for (q = p; *q && *q != '.'; q++)
-			;
-		if (*q == '.')
-			*q++ = '\0';
-
-		kind = atoi(p);
-		sk = atoi(q);
+		master_line(s, &num, &kind, &sk);
 
 		alloc_box(num, kind, sk);
 	}
+
+	closefile(path);
 
 	return TRUE;
 }
@@ -2330,7 +2386,7 @@ scan_boxes(char *fnam)
 
 		if (kind < 0)
 		{
-			fprintf(stderr, "read_boxes(%d): bad kind: %s\n",
+			fprintf(stderr, "scan_boxes(%d): bad kind: %s\n",
 							box_num, s);
 			kind = 0;
 		}
@@ -2342,7 +2398,7 @@ scan_boxes(char *fnam)
 
 		if (sk < 0)
 		{
-			fprintf(stderr, "read_boxes(%d): bad subkind: %s\n",
+			fprintf(stderr, "scan_boxes(%d): bad subkind: %s\n",
 							box_num, t);
 			sk = 0;
 		}
@@ -2361,6 +2417,8 @@ scan_boxes(char *fnam)
 				break;
 		}
 	}
+
+	closefile(path);
 }
 
 
@@ -2386,7 +2444,6 @@ scan_chars(void)
 		if (*(e->d_name) >= '0' && *(e->d_name) <= '9')
 		{
 			scan_boxes(sout("fact/%s", e->d_name));
-			closefile(sout("fact/%s", e->d_name));
 		}
 	}
 
@@ -2499,6 +2556,7 @@ write_master(void)
 		case T_item:
 		case T_skill:
 		case T_gate:
+		case T_road:
 		case T_ship:
 		case T_unform:
 			fprintf(fp, "%d\t%d.%d\t%s\t\t%s\n",
@@ -2700,7 +2758,7 @@ save_system(void)
 
 	if (fp == NULL)
 	{
-		fprintf(stderr, "load_system: can't write %s: ", fname);
+		fprintf(stderr, "save_system: can't write %s: ", fname);
 		perror("");
 		return;
 	}

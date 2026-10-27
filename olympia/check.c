@@ -49,7 +49,8 @@ check_here(void)
 		loop_here(i, j)
 		{
 		    where = loc(j);
-		    if (where != i)
+		    /* a unit listed twice was removed on its first visit (#331) */
+		    if (where != i && in_here_list(i, j))
 		    {
 			fprintf(stderr, "\tcheck_here: removing [%d] from "
 				"here list of [%d]\n", j, i);

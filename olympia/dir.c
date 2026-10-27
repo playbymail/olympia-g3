@@ -101,11 +101,12 @@ determine_map_edges(void)
 
 	loop_province(i)
 	{
-		if (region(i) == faery_region ||
-		    region(i) == hades_region ||
-		    region(i) == cloud_region ||
-		    region(i) == tunnel_region ||
-		    region(i) == nowhere_region)
+		/* a special region not created yet is 0, as is region() of a province in no region (#333) */
+		if ((faery_region && region(i) == faery_region) ||
+		    (hades_region && region(i) == hades_region) ||
+		    (cloud_region && region(i) == cloud_region) ||
+		    (tunnel_region && region(i) == tunnel_region) ||
+		    (nowhere_region && region(i) == nowhere_region))
 			continue;
 
 		row = region_row(i);

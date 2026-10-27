@@ -166,6 +166,7 @@ void
 closefile(char *path) {
 	if (line_fd >= 0)
 		close(line_fd);
+	line_fd = -1;
 }
 
 int

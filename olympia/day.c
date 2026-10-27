@@ -2280,6 +2280,10 @@ touch_loc_pl(int pl, int where)
 	p = p_player(pl);
 	where = viewloc(where);
 
+	/* nowhere, or directly in a region: no location to touch (#330) */
+	if (where == 0)
+		return;
+
 	set_bit(&p->locs, where);
 
 	if (loc_depth(where) > LOC_province)

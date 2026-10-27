@@ -2510,6 +2510,13 @@ void gate_continental_tour(void)
 	tiles_list m;
 
 	l = random_tile_from_each_region();
+
+	if (tiles_len(l) == 0)
+	{
+		fprintf(stderr, "the map has no land region\n");
+		exit(1);
+	}
+
 	m = shift_tour_endpoints(l);
 
 	assert(tiles_len(l) == tiles_len(m));
@@ -2715,6 +2722,20 @@ void mark_bad_locs(void)
 
 
 /*
+ *  A random pick found nothing left to choose from.  rnd(1, 0) would
+ *  loop forever (issue #329), so stop: the map is too small for mapgen.
+ */
+
+static void
+no_choice(char *func, char *what)
+{
+
+	fprintf(stderr, "%s: no unmarked %s left to choose\n", func, what);
+	exit(1);
+}
+
+
+/*
  *  The 'not' refers to not desert and not swamp
  *  We don't want to make any cities there
  *  (Except for the lost city and the city of the ancients)
@@ -2734,6 +2755,9 @@ not_random_province(int *row, int *col)		/* oh, hack upon hack ... */
 		    map[r][c] && map[r][c]->terrain != terr_desert &&
 			map[r][c]->mark == 0)
 		    sum++;
+
+	if (sum == 0)
+		no_choice("not_random_province", "province");
 
 	n = rnd(1, sum);
 
@@ -2786,6 +2810,9 @@ random_province(int *row, int *col, int terr)
 			    sum++;
 	}
 
+	if (sum == 0)
+		no_choice("random_province", "province");
+
 	n = rnd(1, sum);
 
 	if (terr == 0)
@@ -2832,6 +2859,12 @@ int random_island(void)
 {
 	int n;
 	int i;
+
+	for (i = 1; i <= top_subloc; i++)
+		if (subloc[i]->terrain == terr_island && !subloc[i]->mark)
+			break;
+	if (i > top_subloc)
+		no_choice("random_island", "island");
 
 	do {
 		n = rnd(1, num_islands);

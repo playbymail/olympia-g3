@@ -321,6 +321,28 @@ load_orders(void)
 				continue;
 			}
 
+			/*
+			 *  A stray file names a box that has no player
+			 *  section, or a player whose orders another file
+			 *  (1001.bak for 1001) already loaded (#332).
+			 */
+
+			if (rp_player(fact) == NULL)
+			{
+				fprintf(stderr,
+					"ERROR: orders/%s but [%d] is not a player\n",
+							e->d_name, fact);
+				continue;
+			}
+
+			if (rp_player(fact)->orders != NULL)
+			{
+				fprintf(stderr,
+					"ERROR: orders/%s but orders for [%d] are already loaded\n",
+							e->d_name, fact);
+				continue;
+			}
+
 			load_player_orders(fact);
 		}
 	}

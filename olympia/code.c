@@ -191,7 +191,7 @@ print_box_usage_sup(int low, int high, char *s)
 	fprintf(stderr, "\t%5d - %5d  %4s  %d/%d used (%d%%)\n",
 			low, high,
 			s,
-			used, (high-low), used * 100 / (high - low));
+			used, (high-low+1), used * 100 / (high - low + 1));
 }
 
 void
@@ -201,11 +201,11 @@ print_box_usage(void)
 	fprintf(stderr, "entity space usage:\n");
 
 	print_box_usage_sup(1000, 9999, "char");
-	print_box_usage_sup(20000,59999, "locs");
+	print_box_usage_sup(10000,49999, "locs");
  	print_box_usage_sup(50000,56759, "play");
 	print_box_usage_sup(56760,58759, "lloc");
 	print_box_usage_sup(59000,78999, "subl");
-	print_box_usage_sup(79900,MAX_BOXES-1, "rest");
+	print_box_usage_sup(79000,MAX_BOXES-1, "rest");
 }
 
 
