@@ -17,26 +17,20 @@ Added island of 60 provinces.
 exit 0
 Added island of 60 provinces.
 == b-40 stage 1: -s 60 -b 40
-exit 0
-Not enough room to expand island!
-Added island of 1 provinces.
+exit 1
+No room for an island!
 == b-41 stage 1: -s 60 -b 41
-exit 0
-Not enough room to expand island!
-Added island of 1 provinces.
+exit 1
+No room for an island!
 == b-1000 stage 1: -s 60 -b 1000
-exit 0
-Not enough room to expand island!
-Added island of 1 provinces.
+exit 1
+No room for an island!
 == wide-b-15 stage 1: -s 20 -b 15
-exit 0
-Not enough room to expand island!
-Added island of 1 provinces.
+exit 1
+No room for an island!
 == wide-b-16 stage 1: -s 20 -b 16
-exit 0
-Not enough room to expand island!
-Added island of 1 provinces.
+exit 1
+No room for an island!
 == wide-b-31 stage 1: -s 20 -b 31
-exit 0
-Not enough room to expand island!
-Added island of 1 provinces.
+exit 1
+No room for an island!

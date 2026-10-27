@@ -1,0 +1,16 @@
+== repro stage 1: -s 60 -b 40
+exit 1
+No room for an island!
+== all-land stage 1: -b 0
+exit 1
+No room for an island!
+== shelf stage 1: -b 0 -c 8
+exit 1
+No room for an island!
+== border-middle stage 1: -s 20 -b 8
+exit 1
+No room for an island!
+== border-room stage 1: -s 20 -b 7
+exit 0
+Not enough room to expand island!
+Added island of 16 provinces.

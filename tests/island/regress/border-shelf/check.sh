@@ -11,6 +11,8 @@
 # the 30 x 15 map -b 16 (wider than the height only) and -b 31. Before the
 # fix a border wider than the map indexed `working` out of bounds (a UBSan
 # report under asan-ubsan; a segfault on the debug build at -b 100000000).
+# With no water left, each is "No room for an island!", exit 1 (#305; the
+# no-water gate pins that).
 #
 # Runs each case in CASES in its own empty directory and checks the exit
 # status and stderr (EXPECT.log), and every stage's stdout and the final

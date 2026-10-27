@@ -311,6 +311,21 @@ int main(int argc, char *argv[])
 		for (x = 0; x < x_size; x++)
 			extend_distance(distance, y, x, y_size, x_size);
 
+	/*
+	 *  No water left outside the shelf and border: every square has distance
+	 *  0, and the start-square draw below would pick from all of them, land
+	 *  included.  Stop before any draw, so randseed is not rewritten (#305).
+	 */
+	for (y = 0, max = 0; y < y_size; y++)
+		for (x = 0; x < x_size; x++)
+			if (distance[y][x] > max)
+				max = distance[y][x];
+	if (max == 0)
+	{
+		fprintf(stderr, "No room for an island!\n");
+		exit(1);
+	}
+
 	if (target_size < 1)
 	{
 		/* Decide how big to make the island */
