@@ -1,0 +1,18 @@
+== plain stage 1: -s 30
+exit 0
+Added island of 30 provinces.
+== nul-first stage 1: -s 30
+exit 0
+Added island of 30 provinces.
+== nul-middle stage 1: -s 30
+exit 0
+Added island of 30 provinces.
+== nul-last stage 1: -s 30
+exit 0
+Added island of 30 provinces.
+== nul-after-skip stage 1: -s 30
+exit 0
+Added island of 30 provinces.
+== nul-only stage 1: -s 30
+exit 1
+No map on stdin!

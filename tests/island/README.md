@@ -40,7 +40,7 @@ diagnostics.
 | `ocean-glyph-output` | exact output for each ocean glyph (`; , : . ~` space `" '`) |
 | `ocean-glyphs` | the #24 invariants for the same glyphs (its own script, no EXPECT files) |
 | `size` | `-s 50`, `-s 1`; `-s 0`, `-5` and `-1000` are the random size (#294) |
-| `border-shelf` | `-b` and `-c` at 0, 6 and a negative value (clamped to 0) |
+| `border-shelf` | `-b` and `-c` at 0, 6 and a negative value (clamped to 0); a border wider than the map matches one as wide as the map (#302) |
 | `existing-land` | placement around land already on the map |
 | `chain` | four stages from one map; the same sizes in two orders differ |
 | `no-room` | `-s` larger than the water: `Not enough room to expand island!`, the partial island, exit 0 |
@@ -50,6 +50,7 @@ diagnostics.
 | `empty-input` | no map rows (an empty file, blank lines, CRLF blank lines): `No map on stdin!`, exit 1, `randseed` unchanged (#295) |
 | `missing-randseed` | no `randseed`: `randseed could not be opened.` on stderr, stdout the map alone, an all-zero seed (#298) |
 | `map-bounds` | 120 rows of 119 characters works; a taller map, a longer row (even one that would be skipped) or a line `fgets` splits is an error, exit 1 (#299) |
+| `nul-lines` | a line starting with NUL is skipped, at the start, middle or end, or after a skipped row; only NUL lines is an empty map (#303) |
 
 ## Running against another generator
 

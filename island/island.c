@@ -213,7 +213,8 @@ int main(int argc, char *argv[])
 			fprintf(stderr, "Map taller than %d rows!\n", MAX_MAP);
 			exit(1);
 		}
-		if (sscanf(buffer, "%[^\r\n]", map[y_size]))
+		/* Only a match counts: a line starting with NUL gives EOF (#303) */
+		if (sscanf(buffer, "%[^\r\n]", map[y_size]) == 1)
 		{
 			if (!x_size)
 				x_size = (int) strlen(map[y_size]);	/* map row len fits 32 bits */
@@ -280,8 +281,9 @@ int main(int argc, char *argv[])
 			if (working[y][x] == 'p')
 				make_shelf(working, y, x, y_size, x_size, shelf);
 	/* exclude border squares around each edge */
+	/* A border wider than the map stops at its edge (#302) */
 	for (y = 0; y < y_size; y++)
-		for (x = 0; x < border; x++)
+		for (x = 0; x < border && x < x_size; x++)
 		{
 			if (working[y][x] == '~')
 				working[y][x] = '_';
@@ -289,7 +291,7 @@ int main(int argc, char *argv[])
 				working[y][x_size - x - 1] = '_';
 		}
 	for (x = 0; x < x_size; x++)
-		for (y = 0; y < border; y++)
+		for (y = 0; y < border && y < y_size; y++)
 		{
 			if (working[y][x] == '~')
 				working[y][x] = '_';
