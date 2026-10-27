@@ -368,6 +368,8 @@ loc_depth(int n)
 	case sub_castle:
 	case sub_galley_notdone:
 	case sub_roundship_notdone:
+	case sub_raft:
+	case sub_raft_notdone:
 	case sub_ghost_ship:
 	case sub_temple_notdone:
 	case sub_inn:

@@ -281,6 +281,8 @@ fort_covers(int n)
 	case sub_galley_notdone:	return 50;
 	case sub_roundship:		return 50;
 	case sub_roundship_notdone:	return 50;
+	case sub_raft:			return 0;
+	case sub_raft_notdone:		return 0;
 	case sub_temple:		return 50;
 	case sub_temple_notdone:	return 50;
 	case sub_inn:			return 50;

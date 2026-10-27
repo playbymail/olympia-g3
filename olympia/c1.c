@@ -1554,7 +1554,7 @@ check_wait_conditions(struct command *c)
 			break;
 
 		case 9:		/* ferry n */
-			if (!is_ship(p->a1))
+			if (!valid_box(p->a1) || !is_ship(p->a1))
 				return sout("%s is not a ship", box_code(p->a1));
 
 			cond = (subloc(p->a1) == subloc(c->who) && ferry_horn(p->a1));

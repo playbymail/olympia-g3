@@ -277,12 +277,25 @@ check_nowhere(void)
  *  Not thorough enough?  What about other entity types?  sublocs, etc.
  */
 
+/*
+ *  A unit that is nowhere crashes the turn (#347): the order
+ *  scheduler and the combat scans take its location.  Move it
+ *  to the Nowhere province, where it can come to no harm.
+ */
+
 	loop_char(i)
 	{
 		if (loc(i) == 0)
 		{
 			fprintf(stderr, "\twarning: unit %s is nowhere\n",
 						box_code(i));
+
+			if (valid_box(nowhere_loc))
+			{
+				set_where(i, nowhere_loc);
+				fprintf(stderr, "\t\tmoved to %s\n",
+						box_code(nowhere_loc));
+			}
 		}
 	}
 	next_char;
