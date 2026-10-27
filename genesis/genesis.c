@@ -29,10 +29,11 @@
  *     clamp, group by ->color) so each painted ocean reads back as one region.
  */
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <getopt.h>
+#include <getopt.h>		/* struct option; the parser is gen_getopt_long() */
 #include <stdint.h>
 #include <limits.h>
 #include <assert.h>
@@ -1633,6 +1634,172 @@ write_randseed(uint64_t seed)
 
 /* ------------------------------------------------------------------------- */
 
+/*
+ * Option parsing: the BSD getopt_long() that macOS has, on every platform
+ * (issue #344). glibc's getopt_long() parses the same way but words and
+ * quotes its diagnostics differently. The rules:
+ *
+ *   - options after a non-option argument (one not starting with '-', or a
+ *     lone "-") are still parsed, unless POSIXLY_CORRECT is set, which
+ *     stops at it; "--" ends the options;
+ *   - "--name", or a '-' inside a short-option cluster ("-D-size"), is a
+ *     long option. "--name=value" gives its argument; otherwise a long
+ *     option that needs one takes the next argument. A long option may be
+ *     abbreviated to any prefix that is unique, or whose matches all have
+ *     the same has_arg and val; an exact name always wins;
+ *   - a short option that needs an argument takes the rest of its cluster,
+ *     or else the next argument;
+ *   - each error prints one line on stderr and returns '?':
+ *	genesis-g3: invalid option -- c		(illegal option, with POSIXLY_CORRECT)
+ *	genesis-g3: option requires an argument -- c
+ *	genesis-g3: unrecognized option `--name=value'
+ *	genesis-g3: option `--name' is ambiguous
+ *	genesis-g3: option `--name' doesn't allow an argument
+ *	genesis-g3: option `--name' requires an argument
+ *     A cluster ending in '-' ("-D-") returns '?' with no message.
+ *
+ * The program name is always genesis-g3: macOS prints the executable's file
+ * name, not argv[0], as island prints a fixed name (#300). flag in struct
+ * option is not supported (genesis sets none).
+ */
+static int gen_optind = 1;
+static char *gen_optarg;
+
+static void
+gen_warn(const char *fmt, ...)
+{
+	va_list ap;
+
+	fputs("genesis-g3: ", stderr);
+	va_start(ap, fmt);
+	vfprintf(stderr, fmt, ap);
+	va_end(ap);
+	fputc('\n', stderr);
+}
+
+/* A long option; current is its text after "--". */
+static int
+gen_parse_long(int argc, char *argv[], char *current, const struct option *lo)
+{
+	char *eq;
+	size_t len;
+	int i, match = -1, exact = 0, ambiguous = 0;
+
+	gen_optind++;
+	eq = strchr(current, '=');
+	len = eq ? (size_t) (eq - current) : strlen(current);
+
+	for (i = 0; lo[i].name; i++) {
+		if (strncmp(current, lo[i].name, len) != 0)
+			continue;
+		if (strlen(lo[i].name) == len) {
+			match = i;
+			exact = 1;
+			break;
+		}
+		if (match == -1)
+			match = i;
+		else if (lo[i].has_arg != lo[match].has_arg || lo[i].val != lo[match].val)
+			ambiguous = 1;
+	}
+
+	if (!exact && ambiguous) {
+		gen_warn("option `--%.*s' is ambiguous", (int) len, current);
+		return '?';
+	}
+	if (match == -1) {
+		gen_warn("unrecognized option `--%s'", current);
+		return '?';
+	}
+	if (lo[match].has_arg == no_argument && eq) {
+		gen_warn("option `--%.*s' doesn't allow an argument", (int) len, current);
+		return '?';
+	}
+	if (lo[match].has_arg == required_argument) {
+		if (eq)
+			gen_optarg = eq + 1;
+		else if (gen_optind < argc)
+			gen_optarg = argv[gen_optind++];
+		else {
+			gen_warn("option `--%s' requires an argument", current);
+			return '?';
+		}
+	}
+	return lo[match].val;
+}
+
+static int
+gen_getopt_long(int argc, char *argv[], const char *ostr, const struct option *lo)
+{
+	static char *place = "";	/* the rest of the current cluster */
+	static int posixly = -1;
+	const char *oli;
+	int c;
+
+	if (posixly == -1)
+		posixly = getenv("POSIXLY_CORRECT") != NULL;
+	gen_optarg = NULL;
+
+	if (*place == '\0') {
+		for (;;) {
+			char *arg;
+
+			if (gen_optind >= argc)
+				return -1;
+			arg = argv[gen_optind];
+			if (arg[0] != '-' || arg[1] == '\0') {	/* a non-option */
+				if (posixly)
+					return -1;
+				gen_optind++;
+				continue;
+			}
+			if (arg[1] == '-' && arg[2] == '\0') {	/* "--" */
+				gen_optind++;
+				return -1;
+			}
+			place = arg + 1;
+			break;
+		}
+	}
+
+	if (*place == '-') {
+		char *current = place + 1;
+
+		place = "";
+		if (*current == '\0')		/* "-D-" */
+			return '?';
+		return gen_parse_long(argc, argv, current, lo);
+	}
+
+	c = (unsigned char) *place++;
+	if (c == ':' || (oli = strchr(ostr, c)) == NULL) {
+		if (*place == '\0')
+			gen_optind++;
+		gen_warn(posixly ? "illegal option -- %c" : "invalid option -- %c", c);
+		return '?';
+	}
+
+	if (oli[1] != ':') {
+		if (*place == '\0')
+			gen_optind++;
+	} else {
+		if (*place)
+			gen_optarg = place;
+		else if (++gen_optind < argc)
+			gen_optarg = argv[gen_optind];
+		else {
+			place = "";
+			gen_warn("option requires an argument -- %c", c);
+			return '?';
+		}
+		place = "";
+		gen_optind++;
+	}
+	return c;
+}
+
+/* ------------------------------------------------------------------------- */
+
 static void
 usage(const char *prog)
 {
@@ -1690,24 +1857,24 @@ main(int argc, char *argv[])
 		{ 0, 0, 0, 0 }
 	};
 
-	while ((opt = getopt_long(argc, argv, "s:n:i:d:Dh", longopts, NULL)) != -1)
+	while ((opt = gen_getopt_long(argc, argv, "s:n:i:d:Dh", longopts)) != -1)
 		switch (opt) {
-		case 's': size = atoi(optarg); break;
-		case 'n': oceans = atoi(optarg); break;
-		case 'i': iterations = atoi(optarg); break;
-		case 'd': seed = strtoull(optarg, NULL, 0); break;
+		case 's': size = atoi(gen_optarg); break;
+		case 'n': oceans = atoi(gen_optarg); break;
+		case 'i': iterations = atoi(gen_optarg); break;
+		case 'd': seed = strtoull(gen_optarg, NULL, 0); break;
 		case 'D': g_defer_oceans = 1; break;
-		case OPT_IMAGE:  image_path = optarg; break;
-		case OPT_PIXELS: image_pixels = atoi(optarg); break;
-		case OPT_GRID:   image_grid = atoi(optarg); break;
-		case OPT_START_CITIES: start_cities = atoi(optarg); break;
+		case OPT_IMAGE:  image_path = gen_optarg; break;
+		case OPT_PIXELS: image_pixels = atoi(gen_optarg); break;
+		case OPT_GRID:   image_grid = atoi(gen_optarg); break;
+		case OPT_START_CITIES: start_cities = atoi(gen_optarg); break;
 		case OPT_OCEAN_GROWTH:
-			if (strcmp(optarg, "bfs") == 0)
+			if (strcmp(gen_optarg, "bfs") == 0)
 				g_ocean_bfs = 1;
-			else if (strcmp(optarg, "frontier") == 0)
+			else if (strcmp(gen_optarg, "frontier") == 0)
 				g_ocean_bfs = 0;
 			else {
-				fprintf(stderr, "genesis: --ocean-growth must be frontier or bfs (got %s)\n", optarg);
+				fprintf(stderr, "genesis: --ocean-growth must be frontier or bfs (got %s)\n", gen_optarg);
 				return 1;
 			}
 			break;

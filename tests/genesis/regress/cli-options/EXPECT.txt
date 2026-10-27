@@ -1,0 +1,516 @@
+== - genesis-g3 -x
+exit 1
+-- stdout
+-- stderr
+genesis-g3: invalid option -- x
+Usage: genesis-g3 [--seed N] [--size 10..99] [--number-of-oceans N]
+          [--island-iterations 2..10] [--defer-oceans]
+          [--ocean-growth frontier|bfs]
+          [--start-cities 0..16]
+          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]
+  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to
+  fit; larger requests are reduced with a warning.
+  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus
+  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.
+  --ocean-growth picks how --defer-oceans grows each ocean from its
+  origin: frontier (default; random frontier flood, ragged seas) or bfs
+  (ring-by-ring, nearest origin through the water).  See issue #87.
+  --start-cities places up to N safe-haven start cities on land (default
+  6; fewer if they can't be spaced; 0 = none).  Without at least one,
+  olympia-g3 can't add players.  See issue #85.
+  --image dumps the generated Map as a 24-bit BMP for eyeballing the
+  world (debug aid, issue #81; emitted only when given, never affects
+  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per
+  province (default 8); --grid sets black grid-line thickness in pixels
+  between and around provinces (default 0 = no grid).
+Generates the mapgen input set (Map, Regions, Land, Cities, randseed)
+in the current directory.  See doc/genesis.md.
+== - genesis-g3 -xD
+exit 1
+-- stdout
+-- stderr
+genesis-g3: invalid option -- x
+Usage: genesis-g3 [--seed N] [--size 10..99] [--number-of-oceans N]
+          [--island-iterations 2..10] [--defer-oceans]
+          [--ocean-growth frontier|bfs]
+          [--start-cities 0..16]
+          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]
+  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to
+  fit; larger requests are reduced with a warning.
+  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus
+  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.
+  --ocean-growth picks how --defer-oceans grows each ocean from its
+  origin: frontier (default; random frontier flood, ragged seas) or bfs
+  (ring-by-ring, nearest origin through the water).  See issue #87.
+  --start-cities places up to N safe-haven start cities on land (default
+  6; fewer if they can't be spaced; 0 = none).  Without at least one,
+  olympia-g3 can't add players.  See issue #85.
+  --image dumps the generated Map as a 24-bit BMP for eyeballing the
+  world (debug aid, issue #81; emitted only when given, never affects
+  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per
+  province (default 8); --grid sets black grid-line thickness in pixels
+  between and around provinces (default 0 = no grid).
+Generates the mapgen input set (Map, Regions, Land, Cities, randseed)
+in the current directory.  See doc/genesis.md.
+== - genesis-g3 -:
+exit 1
+-- stdout
+-- stderr
+genesis-g3: invalid option -- :
+Usage: genesis-g3 [--seed N] [--size 10..99] [--number-of-oceans N]
+          [--island-iterations 2..10] [--defer-oceans]
+          [--ocean-growth frontier|bfs]
+          [--start-cities 0..16]
+          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]
+  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to
+  fit; larger requests are reduced with a warning.
+  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus
+  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.
+  --ocean-growth picks how --defer-oceans grows each ocean from its
+  origin: frontier (default; random frontier flood, ragged seas) or bfs
+  (ring-by-ring, nearest origin through the water).  See issue #87.
+  --start-cities places up to N safe-haven start cities on land (default
+  6; fewer if they can't be spaced; 0 = none).  Without at least one,
+  olympia-g3 can't add players.  See issue #85.
+  --image dumps the generated Map as a 24-bit BMP for eyeballing the
+  world (debug aid, issue #81; emitted only when given, never affects
+  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per
+  province (default 8); --grid sets black grid-line thickness in pixels
+  between and around provinces (default 0 = no grid).
+Generates the mapgen input set (Map, Regions, Land, Cities, randseed)
+in the current directory.  See doc/genesis.md.
+== - genesis-g3 -s
+exit 1
+-- stdout
+-- stderr
+genesis-g3: option requires an argument -- s
+Usage: genesis-g3 [--seed N] [--size 10..99] [--number-of-oceans N]
+          [--island-iterations 2..10] [--defer-oceans]
+          [--ocean-growth frontier|bfs]
+          [--start-cities 0..16]
+          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]
+  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to
+  fit; larger requests are reduced with a warning.
+  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus
+  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.
+  --ocean-growth picks how --defer-oceans grows each ocean from its
+  origin: frontier (default; random frontier flood, ragged seas) or bfs
+  (ring-by-ring, nearest origin through the water).  See issue #87.
+  --start-cities places up to N safe-haven start cities on land (default
+  6; fewer if they can't be spaced; 0 = none).  Without at least one,
+  olympia-g3 can't add players.  See issue #85.
+  --image dumps the generated Map as a 24-bit BMP for eyeballing the
+  world (debug aid, issue #81; emitted only when given, never affects
+  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per
+  province (default 8); --grid sets black grid-line thickness in pixels
+  between and around provinces (default 0 = no grid).
+Generates the mapgen input set (Map, Regions, Land, Cities, randseed)
+in the current directory.  See doc/genesis.md.
+== - genesis-g3 --bogus
+exit 1
+-- stdout
+-- stderr
+genesis-g3: unrecognized option `--bogus'
+Usage: genesis-g3 [--seed N] [--size 10..99] [--number-of-oceans N]
+          [--island-iterations 2..10] [--defer-oceans]
+          [--ocean-growth frontier|bfs]
+          [--start-cities 0..16]
+          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]
+  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to
+  fit; larger requests are reduced with a warning.
+  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus
+  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.
+  --ocean-growth picks how --defer-oceans grows each ocean from its
+  origin: frontier (default; random frontier flood, ragged seas) or bfs
+  (ring-by-ring, nearest origin through the water).  See issue #87.
+  --start-cities places up to N safe-haven start cities on land (default
+  6; fewer if they can't be spaced; 0 = none).  Without at least one,
+  olympia-g3 can't add players.  See issue #85.
+  --image dumps the generated Map as a 24-bit BMP for eyeballing the
+  world (debug aid, issue #81; emitted only when given, never affects
+  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per
+  province (default 8); --grid sets black grid-line thickness in pixels
+  between and around provinces (default 0 = no grid).
+Generates the mapgen input set (Map, Regions, Land, Cities, randseed)
+in the current directory.  See doc/genesis.md.
+== - genesis-g3 --bogus=1
+exit 1
+-- stdout
+-- stderr
+genesis-g3: unrecognized option `--bogus=1'
+Usage: genesis-g3 [--seed N] [--size 10..99] [--number-of-oceans N]
+          [--island-iterations 2..10] [--defer-oceans]
+          [--ocean-growth frontier|bfs]
+          [--start-cities 0..16]
+          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]
+  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to
+  fit; larger requests are reduced with a warning.
+  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus
+  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.
+  --ocean-growth picks how --defer-oceans grows each ocean from its
+  origin: frontier (default; random frontier flood, ragged seas) or bfs
+  (ring-by-ring, nearest origin through the water).  See issue #87.
+  --start-cities places up to N safe-haven start cities on land (default
+  6; fewer if they can't be spaced; 0 = none).  Without at least one,
+  olympia-g3 can't add players.  See issue #85.
+  --image dumps the generated Map as a 24-bit BMP for eyeballing the
+  world (debug aid, issue #81; emitted only when given, never affects
+  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per
+  province (default 8); --grid sets black grid-line thickness in pixels
+  between and around provinces (default 0 = no grid).
+Generates the mapgen input set (Map, Regions, Land, Cities, randseed)
+in the current directory.  See doc/genesis.md.
+== - genesis-g3 --size
+exit 1
+-- stdout
+-- stderr
+genesis-g3: option `--size' requires an argument
+Usage: genesis-g3 [--seed N] [--size 10..99] [--number-of-oceans N]
+          [--island-iterations 2..10] [--defer-oceans]
+          [--ocean-growth frontier|bfs]
+          [--start-cities 0..16]
+          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]
+  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to
+  fit; larger requests are reduced with a warning.
+  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus
+  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.
+  --ocean-growth picks how --defer-oceans grows each ocean from its
+  origin: frontier (default; random frontier flood, ragged seas) or bfs
+  (ring-by-ring, nearest origin through the water).  See issue #87.
+  --start-cities places up to N safe-haven start cities on land (default
+  6; fewer if they can't be spaced; 0 = none).  Without at least one,
+  olympia-g3 can't add players.  See issue #85.
+  --image dumps the generated Map as a 24-bit BMP for eyeballing the
+  world (debug aid, issue #81; emitted only when given, never affects
+  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per
+  province (default 8); --grid sets black grid-line thickness in pixels
+  between and around provinces (default 0 = no grid).
+Generates the mapgen input set (Map, Regions, Land, Cities, randseed)
+in the current directory.  See doc/genesis.md.
+== - genesis-g3 --s 10
+exit 1
+-- stdout
+-- stderr
+genesis-g3: option `--s' is ambiguous
+Usage: genesis-g3 [--seed N] [--size 10..99] [--number-of-oceans N]
+          [--island-iterations 2..10] [--defer-oceans]
+          [--ocean-growth frontier|bfs]
+          [--start-cities 0..16]
+          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]
+  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to
+  fit; larger requests are reduced with a warning.
+  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus
+  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.
+  --ocean-growth picks how --defer-oceans grows each ocean from its
+  origin: frontier (default; random frontier flood, ragged seas) or bfs
+  (ring-by-ring, nearest origin through the water).  See issue #87.
+  --start-cities places up to N safe-haven start cities on land (default
+  6; fewer if they can't be spaced; 0 = none).  Without at least one,
+  olympia-g3 can't add players.  See issue #85.
+  --image dumps the generated Map as a 24-bit BMP for eyeballing the
+  world (debug aid, issue #81; emitted only when given, never affects
+  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per
+  province (default 8); --grid sets black grid-line thickness in pixels
+  between and around provinces (default 0 = no grid).
+Generates the mapgen input set (Map, Regions, Land, Cities, randseed)
+in the current directory.  See doc/genesis.md.
+== - genesis-g3 --=x
+exit 1
+-- stdout
+-- stderr
+genesis-g3: option `--' is ambiguous
+Usage: genesis-g3 [--seed N] [--size 10..99] [--number-of-oceans N]
+          [--island-iterations 2..10] [--defer-oceans]
+          [--ocean-growth frontier|bfs]
+          [--start-cities 0..16]
+          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]
+  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to
+  fit; larger requests are reduced with a warning.
+  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus
+  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.
+  --ocean-growth picks how --defer-oceans grows each ocean from its
+  origin: frontier (default; random frontier flood, ragged seas) or bfs
+  (ring-by-ring, nearest origin through the water).  See issue #87.
+  --start-cities places up to N safe-haven start cities on land (default
+  6; fewer if they can't be spaced; 0 = none).  Without at least one,
+  olympia-g3 can't add players.  See issue #85.
+  --image dumps the generated Map as a 24-bit BMP for eyeballing the
+  world (debug aid, issue #81; emitted only when given, never affects
+  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per
+  province (default 8); --grid sets black grid-line thickness in pixels
+  between and around provinces (default 0 = no grid).
+Generates the mapgen input set (Map, Regions, Land, Cities, randseed)
+in the current directory.  See doc/genesis.md.
+== - genesis-g3 --de=1
+exit 1
+-- stdout
+-- stderr
+genesis-g3: option `--de' doesn't allow an argument
+Usage: genesis-g3 [--seed N] [--size 10..99] [--number-of-oceans N]
+          [--island-iterations 2..10] [--defer-oceans]
+          [--ocean-growth frontier|bfs]
+          [--start-cities 0..16]
+          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]
+  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to
+  fit; larger requests are reduced with a warning.
+  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus
+  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.
+  --ocean-growth picks how --defer-oceans grows each ocean from its
+  origin: frontier (default; random frontier flood, ragged seas) or bfs
+  (ring-by-ring, nearest origin through the water).  See issue #87.
+  --start-cities places up to N safe-haven start cities on land (default
+  6; fewer if they can't be spaced; 0 = none).  Without at least one,
+  olympia-g3 can't add players.  See issue #85.
+  --image dumps the generated Map as a 24-bit BMP for eyeballing the
+  world (debug aid, issue #81; emitted only when given, never affects
+  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per
+  province (default 8); --grid sets black grid-line thickness in pixels
+  between and around provinces (default 0 = no grid).
+Generates the mapgen input set (Map, Regions, Land, Cities, randseed)
+in the current directory.  See doc/genesis.md.
+== - genesis-g3 --help=x
+exit 1
+-- stdout
+-- stderr
+genesis-g3: option `--help' doesn't allow an argument
+Usage: genesis-g3 [--seed N] [--size 10..99] [--number-of-oceans N]
+          [--island-iterations 2..10] [--defer-oceans]
+          [--ocean-growth frontier|bfs]
+          [--start-cities 0..16]
+          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]
+  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to
+  fit; larger requests are reduced with a warning.
+  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus
+  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.
+  --ocean-growth picks how --defer-oceans grows each ocean from its
+  origin: frontier (default; random frontier flood, ragged seas) or bfs
+  (ring-by-ring, nearest origin through the water).  See issue #87.
+  --start-cities places up to N safe-haven start cities on land (default
+  6; fewer if they can't be spaced; 0 = none).  Without at least one,
+  olympia-g3 can't add players.  See issue #85.
+  --image dumps the generated Map as a 24-bit BMP for eyeballing the
+  world (debug aid, issue #81; emitted only when given, never affects
+  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per
+  province (default 8); --grid sets black grid-line thickness in pixels
+  between and around provinces (default 0 = no grid).
+Generates the mapgen input set (Map, Regions, Land, Cities, randseed)
+in the current directory.  See doc/genesis.md.
+== - genesis-g3 -D-
+exit 1
+-- stdout
+-- stderr
+Usage: genesis-g3 [--seed N] [--size 10..99] [--number-of-oceans N]
+          [--island-iterations 2..10] [--defer-oceans]
+          [--ocean-growth frontier|bfs]
+          [--start-cities 0..16]
+          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]
+  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to
+  fit; larger requests are reduced with a warning.
+  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus
+  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.
+  --ocean-growth picks how --defer-oceans grows each ocean from its
+  origin: frontier (default; random frontier flood, ragged seas) or bfs
+  (ring-by-ring, nearest origin through the water).  See issue #87.
+  --start-cities places up to N safe-haven start cities on land (default
+  6; fewer if they can't be spaced; 0 = none).  Without at least one,
+  olympia-g3 can't add players.  See issue #85.
+  --image dumps the generated Map as a 24-bit BMP for eyeballing the
+  world (debug aid, issue #81; emitted only when given, never affects
+  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per
+  province (default 8); --grid sets black grid-line thickness in pixels
+  between and around provinces (default 0 = no grid).
+Generates the mapgen input set (Map, Regions, Land, Cities, randseed)
+in the current directory.  See doc/genesis.md.
+== - genesis-g3 -D-bogus
+exit 1
+-- stdout
+-- stderr
+genesis-g3: unrecognized option `--bogus'
+Usage: genesis-g3 [--seed N] [--size 10..99] [--number-of-oceans N]
+          [--island-iterations 2..10] [--defer-oceans]
+          [--ocean-growth frontier|bfs]
+          [--start-cities 0..16]
+          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]
+  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to
+  fit; larger requests are reduced with a warning.
+  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus
+  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.
+  --ocean-growth picks how --defer-oceans grows each ocean from its
+  origin: frontier (default; random frontier flood, ragged seas) or bfs
+  (ring-by-ring, nearest origin through the water).  See issue #87.
+  --start-cities places up to N safe-haven start cities on land (default
+  6; fewer if they can't be spaced; 0 = none).  Without at least one,
+  olympia-g3 can't add players.  See issue #85.
+  --image dumps the generated Map as a 24-bit BMP for eyeballing the
+  world (debug aid, issue #81; emitted only when given, never affects
+  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per
+  province (default 8); --grid sets black grid-line thickness in pixels
+  between and around provinces (default 0 = no grid).
+Generates the mapgen input set (Map, Regions, Land, Cities, randseed)
+in the current directory.  See doc/genesis.md.
+== - genesis-g3 --si 9
+exit 1
+-- stdout
+-- stderr
+genesis: --size must be 10..99 (got 9)
+== - genesis-g3 --size=9
+exit 1
+-- stdout
+-- stderr
+genesis: --size must be 10..99 (got 9)
+== - genesis-g3 -s9
+exit 1
+-- stdout
+-- stderr
+genesis: --size must be 10..99 (got 9)
+== - genesis-g3 -Ds 9
+exit 1
+-- stdout
+-- stderr
+genesis: --size must be 10..99 (got 9)
+== - genesis-g3 -D-size=9
+exit 1
+-- stdout
+-- stderr
+genesis: --size must be 10..99 (got 9)
+== - genesis-g3 junk --size 9
+exit 1
+-- stdout
+-- stderr
+genesis: --size must be 10..99 (got 9)
+== - genesis-g3 - --size 9
+exit 1
+-- stdout
+-- stderr
+genesis: --size must be 10..99 (got 9)
+== - genesis-g3 --size 9 -- -x
+exit 1
+-- stdout
+-- stderr
+genesis: --size must be 10..99 (got 9)
+== - genesis-g3 --size 10 -i 2 -n 1 -- -x
+exit 0
+-- stdout
+-- stderr
+genesis: seed=0 size=10 oceans=1 iterations=2
+genesis: islands grown, 36 land provinces total
+genesis: couldn't space 6 start cities; retrying with 5
+genesis: placed 5 start cities (spacing^2 >= 4)
+genesis: wrote Map, Regions, Land, Cities, randseed
+== posix genesis-g3 -x
+exit 1
+-- stdout
+-- stderr
+genesis-g3: illegal option -- x
+Usage: genesis-g3 [--seed N] [--size 10..99] [--number-of-oceans N]
+          [--island-iterations 2..10] [--defer-oceans]
+          [--ocean-growth frontier|bfs]
+          [--start-cities 0..16]
+          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]
+  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to
+  fit; larger requests are reduced with a warning.
+  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus
+  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.
+  --ocean-growth picks how --defer-oceans grows each ocean from its
+  origin: frontier (default; random frontier flood, ragged seas) or bfs
+  (ring-by-ring, nearest origin through the water).  See issue #87.
+  --start-cities places up to N safe-haven start cities on land (default
+  6; fewer if they can't be spaced; 0 = none).  Without at least one,
+  olympia-g3 can't add players.  See issue #85.
+  --image dumps the generated Map as a 24-bit BMP for eyeballing the
+  world (debug aid, issue #81; emitted only when given, never affects
+  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per
+  province (default 8); --grid sets black grid-line thickness in pixels
+  between and around provinces (default 0 = no grid).
+Generates the mapgen input set (Map, Regions, Land, Cities, randseed)
+in the current directory.  See doc/genesis.md.
+== posix genesis-g3 --bogus
+exit 1
+-- stdout
+-- stderr
+genesis-g3: unrecognized option `--bogus'
+Usage: genesis-g3 [--seed N] [--size 10..99] [--number-of-oceans N]
+          [--island-iterations 2..10] [--defer-oceans]
+          [--ocean-growth frontier|bfs]
+          [--start-cities 0..16]
+          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]
+  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to
+  fit; larger requests are reduced with a warning.
+  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus
+  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.
+  --ocean-growth picks how --defer-oceans grows each ocean from its
+  origin: frontier (default; random frontier flood, ragged seas) or bfs
+  (ring-by-ring, nearest origin through the water).  See issue #87.
+  --start-cities places up to N safe-haven start cities on land (default
+  6; fewer if they can't be spaced; 0 = none).  Without at least one,
+  olympia-g3 can't add players.  See issue #85.
+  --image dumps the generated Map as a 24-bit BMP for eyeballing the
+  world (debug aid, issue #81; emitted only when given, never affects
+  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per
+  province (default 8); --grid sets black grid-line thickness in pixels
+  between and around provinces (default 0 = no grid).
+Generates the mapgen input set (Map, Regions, Land, Cities, randseed)
+in the current directory.  See doc/genesis.md.
+== posix genesis-g3 --size 10 -i 2 -n 1 junk -x
+exit 0
+-- stdout
+-- stderr
+genesis: seed=0 size=10 oceans=1 iterations=2
+genesis: islands grown, 36 land provinces total
+genesis: couldn't space 6 start cities; retrying with 5
+genesis: placed 5 start cities (spacing^2 >= 4)
+genesis: wrote Map, Regions, Land, Cities, randseed
+== - /some/path/genesis-g3 -x
+exit 1
+-- stdout
+-- stderr
+genesis-g3: invalid option -- x
+Usage: /some/path/genesis-g3 [--seed N] [--size 10..99] [--number-of-oceans N]
+          [--island-iterations 2..10] [--defer-oceans]
+          [--ocean-growth frontier|bfs]
+          [--start-cities 0..16]
+          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]
+  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to
+  fit; larger requests are reduced with a warning.
+  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus
+  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.
+  --ocean-growth picks how --defer-oceans grows each ocean from its
+  origin: frontier (default; random frontier flood, ragged seas) or bfs
+  (ring-by-ring, nearest origin through the water).  See issue #87.
+  --start-cities places up to N safe-haven start cities on land (default
+  6; fewer if they can't be spaced; 0 = none).  Without at least one,
+  olympia-g3 can't add players.  See issue #85.
+  --image dumps the generated Map as a 24-bit BMP for eyeballing the
+  world (debug aid, issue #81; emitted only when given, never affects
+  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per
+  province (default 8); --grid sets black grid-line thickness in pixels
+  between and around provinces (default 0 = no grid).
+Generates the mapgen input set (Map, Regions, Land, Cities, randseed)
+in the current directory.  See doc/genesis.md.
+== - other-name --bogus
+exit 1
+-- stdout
+-- stderr
+genesis-g3: unrecognized option `--bogus'
+Usage: other-name [--seed N] [--size 10..99] [--number-of-oceans N]
+          [--island-iterations 2..10] [--defer-oceans]
+          [--ocean-growth frontier|bfs]
+          [--start-cities 0..16]
+          [--image FILE.bmp] [--pixels 1..64] [--grid 0..4]
+  --number-of-oceans is capped to min(ceil(size/3), 12) and clamped to
+  fit; larger requests are reduced with a warning.
+  --defer-oceans generates the oceans AFTER the islands and Mt. Olympus
+  (origin-seeded, size-named; largest sea = Great Sea).  See issue #80.
+  --ocean-growth picks how --defer-oceans grows each ocean from its
+  origin: frontier (default; random frontier flood, ragged seas) or bfs
+  (ring-by-ring, nearest origin through the water).  See issue #87.
+  --start-cities places up to N safe-haven start cities on land (default
+  6; fewer if they can't be spaced; 0 = none).  Without at least one,
+  olympia-g3 can't add players.  See issue #85.
+  --image dumps the generated Map as a 24-bit BMP for eyeballing the
+  world (debug aid, issue #81; emitted only when given, never affects
+  the Map/Regions/Land/Cities output).  --pixels sets N x N pixels per
+  province (default 8); --grid sets black grid-line thickness in pixels
+  between and around provinces (default 0 = no grid).
+Generates the mapgen input set (Map, Regions, Land, Cities, randseed)
+in the current directory.  See doc/genesis.md.

@@ -43,6 +43,7 @@ fails the `EXPECT.log` comparison: `YES` there also means no diagnostics.
 | `image` | `--pixels 1` and `64`, `--grid 4`, a BMP whose rows need padding; `--image` leaves the world files unchanged |
 | `validation-errors` | every range check (exit 1, nothing written); `--pixels`/`--grid` are ignored without `--image` |
 | `write-failures` | each output file planted as a directory (perror, exit 1, the earlier files kept); `--image` into a missing directory |
+| `cli-options` | option parsing and its diagnostics (#344): unknown, ambiguous and abbreviated long options, `=value`, missing arguments, `-D-size` clusters, permuting past a non-option, `--`, `POSIXLY_CORRECT`, and the fixed `genesis-g3:` prefix. Its own driver, not `genesis_gate`: it sets `argv[0]` and the environment, and pins stdout and stderr in `EXPECT.txt` |
 
 ## Running against another generator
 
@@ -62,8 +63,8 @@ build writes `EXPECT.sha256` and `EXPECT.log`.
 
 - **`randseed` byte order.** `write_randseed()` `fwrite`s two `uint64_t`s in
   host byte order, so the `randseed` lines hold only on little-endian hosts.
-- **libc messages.** No case passes an unknown option: `getopt_long`'s
-  messages come from libc and differ between macOS and glibc. The
+- **libc messages.** Option errors no longer come from libc:
+  `gen_getopt_long()` prints the BSD wording on every platform (#344). The
   `write-failures` lines carry `strerror(EISDIR)`, "Is a directory" on both.
 - **Unreached paths.** These gates don't reach `couldn't place N ocean
   origins`, `N deferred oceans not 4-colorable`, `no land for start cities`,
