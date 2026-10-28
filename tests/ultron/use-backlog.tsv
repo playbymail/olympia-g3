@@ -111,7 +111,7 @@ skill	882	write_art	artifact	v_write_spell	use-art	use-art-refused
 skill	883	forge_weapon	artifact	v_forge_art_x	use-art	use-art-refused
 skill	884	forge_armor	artifact	v_forge_art_x	use-art	use-art-refused
 skill	885	forge_bow	artifact	v_forge_art_x	use-art	use-art-refused
-skill	886	curse_noncreat	artifact	v_curse_noncreat	use-art	use-art-refused
+skill	886	curse_noncreat	artifact	v_curse_noncreat	n/a	use-art-refused
 skill	887	show_art_creat	artifact	v_show_art_creat	use-art	use-art-refused
 skill	888	show_art_reg	artifact	v_show_art_reg	use-art	use-art-refused
 skill	889	destroy_art	artifact	v_destroy_art	use-art	use-art-refused

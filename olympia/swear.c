@@ -175,12 +175,9 @@ set_lord(int who, int new_lord, int k, int lev)
 	if (flag)
 	{
 		int nps = char_np_total(who);
+		/* issue #352: callers check the NPs; a short new owner is a bug */
 		if (!deduct_np(new_pl, nps))
-#if 0
 			assert(FALSE);
-#else
-		log_write(LOG_CODE, "assert fail: new_pl=%s, who=%s, nps=%d, old_pl=%s", box_code(new_pl), box_code(who), nps, box_code(old_pl));
-#endif
 		wout(new_pl, "Paid %d NP%s for %s.", nps, add_s(nps),
 					box_name(who));
 	}

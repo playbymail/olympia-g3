@@ -61,6 +61,8 @@ call_savage(int where, int to_where, int who, int why)
 
 	init_load_sup(new);   /* make ready to execute commands immediately */
 
+	num_savages++;		/* issue #354: count it against MAX_SAVAGES */
+
 	return TRUE;
 }
 
@@ -372,6 +374,10 @@ init_savage_attacks(void)
 	loop_loc(fort)
 	{
 		if (loc_depth(fort) != LOC_build)
+			continue;
+
+		/* issue #354: MAX_SAVAGES caps this turn's spawns too */
+		if (num_savages >= MAX_SAVAGES)
 			continue;
 
 		/* issue #25: per-fort savage-spawn check, keyed on the fort */

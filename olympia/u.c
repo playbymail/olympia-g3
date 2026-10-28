@@ -816,7 +816,7 @@ kill_char(int who, int inherit)
 
 			if (item_token_num(token_item) <= 0)
 			{
-				if (player(who_has) == sub_pl_regular)
+				if (subkind(player(who_has)) == sub_pl_regular)
 					wout(who_has, "%s vanishes.",
 						box_name(token_item));
 				destroy_unique_item(who_has, token_item);
@@ -2335,6 +2335,7 @@ test_known(int who, int i)
 	assert(valid_box(i));
 
 	pl = player(who);
+	assert(pl != 0);	/* issue #353: rp_player(0) reads bx[0] */
 	ep = rp_player(pl);
 
 	if (ep && test_bit(ep->known, i))

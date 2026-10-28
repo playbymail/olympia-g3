@@ -687,10 +687,13 @@ v_curse_noncreat(struct command *c)
 		return FALSE;
 	}
 
-	wout(c->who, "Attempt to cast a noncreator possession curse on %s.",
-				box_name(item));
+/*
+ *  issue #356: noncreator_curse_erode() has never eroded loyalty, so
+ *  refuse the curse rather than charge aura for no effect.
+ */
 
-	return TRUE;
+	wout(c->who, "The noncreator possession curse has no effect yet.");
+	return FALSE;
 }
 
 

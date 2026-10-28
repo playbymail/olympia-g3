@@ -137,6 +137,9 @@ No cell is `todo`. The `n/a` cells:
   function exists").
 - `ok` of `shipbuilding` (602): `v_shipbuild` always fails ("Use the BUILD
   order to build ships.").
+- `ok` of `curse_noncreat` (886): `v_curse_noncreat` refuses a curse it
+  would accept ("The noncreator possession curse has no effect yet.", #356),
+  since `noncreator_curse_erode` never erodes loyalty.
 - `fail` of the 16 skills whose start always returns TRUE: `fight_to_death`,
   `defense`, `archery`, `swordplay`, `breed_hound`, the three brews
   (`v_brew`), `vision_protect`, `meditate`, `tap_health`, `shroud_abil`,

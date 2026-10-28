@@ -21,8 +21,8 @@
 -- Every start returns TRUE (ok). The forger forges a sword, armor and a
 -- bow at one aura each, then a palantir. The auramaker forges an auraculum
 -- of one aura and scribes Reveal creator of artifact. The curator learns
--- who made its palantir and where, then cloaks both. The curser lays a
--- noncreator curse on its palantir and destroys it. The dispeller cloaks
+-- who made its palantir and where, then cloaks both. The curser is refused
+-- a noncreator curse on its palantir (#356) and destroys it. The dispeller cloaks
 -- its palantir's creator and region, then dispels both cloaks. The
 -- palantirs come from oly.palantir: one forged in the turn has an id minted
 -- in the turn.

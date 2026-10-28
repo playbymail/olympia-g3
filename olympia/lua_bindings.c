@@ -1228,6 +1228,87 @@ l_token(lua_State *L)
 }
 
 /*
+ *  oly.token_units(token)  -> <id>
+ *
+ *  Run check_token_units, as the turn does at its start, so a held NPC
+ *  token gets its unit now rather than on day 0, and return the token's
+ *  first unit. The unit's id is minted here, before the turn, so orders
+ *  and bindings can name it (to put it where it dies in the turn, say).
+ *  Errors when token isn't an NPC token or still has no unit. No GM verb
+ *  adds a token's units, so this is a path (B) binding, like mob.
+ */
+static int
+l_token_units(lua_State *L)
+{
+	int token = (int) luaL_checkinteger(L, 1);
+
+	if (!valid_box(token) || subkind(token) != sub_npc_token)
+		return luaL_error(L, "oly.token_units: %d not an NPC token",
+				token);
+
+	check_token_units();
+
+	if (ilist_len(p_player(token)->units) < 1)
+		return luaL_error(L, "oly.token_units: %d has no unit", token);
+
+	lua_pushinteger(L, p_player(token)->units[0]);
+	return 1;
+}
+
+/*
+ *  oly.prisoner(who, target [, swear])  -- who takes target prisoner.
+ *
+ *  take_prisoner(), as a battle's winner takes one: target is stacked
+ *  beneath who as a prisoner and who takes its items. With swear,
+ *  target also swears to whoever frees it (swear_on_release), which only
+ *  a loaded DB sets: no engine code sets it. Errors when who or target
+ *  isn't a character, or they are the same. No GM verb takes a
+ *  prisoner, so this is a path (B) binding, like mob.
+ */
+static int
+l_prisoner(lua_State *L)
+{
+	int who = (int) luaL_checkinteger(L, 1);
+	int target = (int) luaL_checkinteger(L, 2);
+	int swear = lua_toboolean(L, 3);
+
+	if (!valid_box(who) || kind(who) != T_char)
+		return luaL_error(L, "oly.prisoner: %d not a character", who);
+
+	if (!valid_box(target) || kind(target) != T_char || target == who)
+		return luaL_error(L, "oly.prisoner: %d not another character",
+				target);
+
+	take_prisoner(who, target);
+	if (swear)
+		p_magic(target)->swear_on_release = TRUE;
+	return 0;
+}
+
+/*
+ *  oly.noble_points(pl, n)  -- set player pl's noble points to n.
+ *
+ *  As a player is left after spending NPs; np_spent is untouched.
+ *  Errors when pl isn't a player or n is out of range. No GM verb sets
+ *  NPs, so this is a path (B) binding, like mob.
+ */
+static int
+l_noble_points(lua_State *L)
+{
+	int pl = (int) luaL_checkinteger(L, 1);
+	int n = (int) luaL_checkinteger(L, 2);
+
+	if (!valid_box(pl) || kind(pl) != T_player)
+		return luaL_error(L, "oly.noble_points: %d not a player", pl);
+
+	if (n < 0 || n > SHRT_MAX)
+		return luaL_error(L, "oly.noble_points: %d out of range", n);
+
+	p_player(pl)->noble_points = (short) n;
+	return 0;
+}
+
+/*
  *  oly.bandit(where, item, qty [, name])  -> <id>
  *
  *  Mint a band of qty item at where, in Hades or Faery, as an ambush
@@ -1744,6 +1825,9 @@ static const luaL_Reg oly_funcs[] = {
 	{ "ring",		l_ring },
 	{ "relic",		l_relic },
 	{ "token",		l_token },
+	{ "token_units", l_token_units },
+	{ "prisoner",	l_prisoner },
+	{ "noble_points", l_noble_points },
 	{ "bandit",		l_bandit },
 	{ "release",		l_release },
 	{ "desert",		l_desert },

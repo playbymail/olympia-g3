@@ -796,6 +796,23 @@ is out of range. No GM verb sets the level, so it is a path (B) binding like
 `oly.restock`. `trade-opium` uses it for the markets whose level the turn's
 month end raises and lowers.
 
+**Since landed (#352, #355):** three path (B) bindings for the bug-fix
+fixtures `release-swear-np` and `token-vanish`.
+
+- `oly.token_units(token)` runs `check_token_units`, as the turn does at its
+  start, so a held NPC token (`oly.token`) gets its unit before the turn, and
+  returns the token's first unit. The unit's id is then minted before the
+  turn, so a script can name it. It errors when `token` isn't an NPC token or
+  still has no unit.
+- `oly.prisoner(who, target [, swear])` has `who` take `target` prisoner,
+  as a battle's winner does (`take_prisoner`): `target` is stacked beneath
+  `who` and `who` takes its items. With `swear`, `target` also swears to
+  whoever frees it (`swear_on_release`), which only a loaded DB sets. It
+  errors when either isn't a character, or they are the same.
+- `oly.noble_points(pl, n)` sets the player `pl`'s noble points to `n`, as a
+  player is left after spending them; `np_spent` is untouched. It errors when
+  `pl` isn't a player or `n` is out of range.
+
 **Since landed (#204):** `oly.palantir(who [, name])` gives the character
 `who` a palantir and returns its id (optionally bound in the registry). It
 makes the item as `d_forge_palantir` (`art.c`) does: a unique item

@@ -3,9 +3,13 @@
 Pins the `ok` cells of the Artifact construction school, use group 6 (issue
 #204, use backlog parent #180): `forge_aura` (881), `write_art` (882),
 `forge_weapon` (883), `forge_armor` (884), `forge_bow` (885),
-`curse_noncreat` (886), `show_art_creat` (887), `show_art_reg` (888),
-`destroy_art` (889), `cloak_creat` (891), `cloak_reg` (892),
-`rem_art_cloak` (893) and `forge_palantir` (894).
+`show_art_creat` (887), `show_art_reg` (888), `destroy_art` (889),
+`cloak_creat` (891), `cloak_reg` (892), `rem_art_cloak` (893) and
+`forge_palantir` (894).
+
+`curse_noncreat` (886) left with #356: its curse never eroded anyone's
+loyalty, so `v_curse_noncreat` now refuses one it would accept, and its `ok`
+cell is `n/a`. The curser's `use 886` stays, to pin the refusal.
 
 `rem_art_cloak` joined with #205: `v_rem_art_cloak` used to return FALSE
 after its "Attempt to remove all cloaking spells" message, so the spell never
@@ -29,7 +33,7 @@ minted in the turn, which no order can name.
 | 303 Cursers | Curser One [7719] | Palantir [73052], a blank scroll | `use 886 73052`, `use 889 73052` |
 | 304 Dispellers | Dispeller One [9463] | Palantir [72332], 5 mithril | `use 891 72332`, `use 892 72332`, `use 893 72332` |
 
-Every start returns TRUE:
+Every start but the curse returns TRUE:
 
 - The forger forges an enchanted sword, armor and bow at one aura each,
   for 500 gold and a mithril or mallorn wood apiece, then starts a palantir
@@ -38,8 +42,9 @@ Every start returns TRUE:
   teaches it Advanced sorcery, then scribes Reveal creator of artifact.
 - The curator learns that it made its palantir itself, in Provinia, then
   cloaks its creator and its region of creation at one aura each.
-- The curser lays a noncreator curse of one aura on its palantir, then
-  destroys it and gets a gate crystal from the shards.
+- The curser tries a noncreator curse on its palantir, which is refused
+  ("The noncreator possession curse has no effect yet.") without charging
+  aura, then destroys the palantir and gets a gate crystal from the shards.
 - The dispeller cloaks its palantir's creator and region at one aura each,
   then dispels both cloaks for 8 aura; the dispel takes 10 days and
   finishes on day 25. (The curator's month is full: four 7-day uses.)
