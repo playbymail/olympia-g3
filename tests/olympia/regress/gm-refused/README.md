@@ -23,11 +23,19 @@ The orders of the GM player, The Fates [200]:
 | `credit 57081` | fail: the Times pays only a character |
 | `credit 4126` | ok: the Times pays the herald 25 gold |
 | `credit 4126` | fail: the Times has already paid faction 300 |
+| `credit` | fail: no target |
 | `emote 4126` | fail: no message |
 | `relore 57081` | fail: Greyfell is not a skill |
+| `relore` | fail: no skill |
 
 `credit` has no other fail branch. `emote` never checks its target, so its
-only fail is a missing message. `relore`'s only fail is a non-skill.
+only fail is a missing message. `relore` fails on a non-skill or none.
+
+The bare `credit` and `relore` pin #364. Each follows an order with a
+target, and `parse_line()` clears the parse vector's length but not its
+slots, so the target's slot still points into the previous order's freed
+line. Both verbs used to print that slot in their failure message; now they
+check `numargs()` first.
 
 ## What `check.sh` asserts
 

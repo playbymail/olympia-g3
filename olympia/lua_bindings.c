@@ -589,6 +589,34 @@ l_castle_level(lua_State *L)
 }
 
 /*
+ *  oly.damage(fort, n)  -> <damage>
+ *
+ *  Damage a finished building or ship by n (1-99) points, as an earlier
+ *  turn's siege would, through add_structure_damage() with can_destroy
+ *  FALSE, so the damage stays below 100. No GM verb damages a structure, so
+ *  this is a path (B) binding, like castle_level. A fixture's repair needs
+ *  damage to repair: makeloc leaves a building undamaged.
+ */
+static int
+l_damage(lua_State *L)
+{
+	int fort = (int) luaL_checkinteger(L, 1);
+	int n = (int) luaL_checkinteger(L, 2);
+
+	if (!valid_box(fort) || loc_depth(fort) != LOC_build)
+		return luaL_error(L, "oly.damage: %d not a building or ship",
+				fort);
+
+	if (n < 1 || n > 99)
+		return luaL_error(L, "oly.damage: %d not 1-99", n);
+
+	add_structure_damage(fort, n, FALSE);
+
+	lua_pushinteger(L, loc_damage(fort));
+	return 1;
+}
+
+/*
  *  oly.mine_depth(mine, depth)  -> <depth>
  *
  *  Sink a mine to `depth` (1-20, the depth a report shows) and stock it
@@ -1812,6 +1840,7 @@ static const luaL_Reg oly_funcs[] = {
 	{ "storm",		l_storm },
 	{ "castle_level",	l_castle_level },
 	{ "mine_depth",		l_mine_depth },
+	{ "damage",		l_damage },
 	{ "add_garrison",	l_add_garrison },
 	{ "savage",		l_savage },
 	{ "seen",		l_seen },

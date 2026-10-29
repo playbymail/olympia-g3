@@ -33,6 +33,136 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
 + at 80
 + df 80
 +
+--- a/lib/item
++++ b/lib/item
+@@ -58,7 +58,6 @@
+  wt 1100
+  lc 100
+  rc 100
+- fc 0
+  mu 1
+  pr 1
+  at 45
+@@ -71,7 +70,6 @@
+  wt 1100
+  lc 100
+  rc 100
+- fc 0
+  mu 1
+  pr 1
+  at 90
+@@ -248,7 +246,6 @@
+  wt 1000
+  lc -1
+  rc -1
+- fc 0
+  pr 1
+  an 1
+ 
+@@ -259,7 +256,6 @@
+  wt 1000
+  lc 150
+  rc 150
+- fc 0
+  pr 1
+  an 1
+ 
+@@ -270,7 +266,6 @@
+  wt 1000
+  lc 150
+  rc 150
+- fc 0
+  pr 1
+  an 1
+ 
+@@ -420,7 +415,6 @@
+  wt 2000
+  lc 1500
+  rc -1
+- fc 0
+  pr 1
+  an 1
+ 
+@@ -549,7 +543,6 @@
+  wt 1000
+  lc 150
+  rc 150
+- fc 0
+  pr 1
+  an 1
+  at 30
+@@ -563,7 +556,6 @@
+  wt 800
+  lc -1
+  rc -1
+- fc 0
+  pr 1
+  an 1
+  at 30
+@@ -602,7 +594,6 @@
+  wt 500
+  lc -1
+  rc -1
+- fc 0
+  pr 1
+  an 1
+  at 150
+@@ -616,7 +607,6 @@
+  wt 50
+  lc -1
+  rc -1
+- fc 0
+  pr 1
+  an 1
+  at 3
+@@ -630,7 +620,6 @@
+  wt 750
+  lc -1
+  rc -1
+- fc 0
+  pr 1
+  an 1
+  at 100
+@@ -658,7 +647,6 @@
+  wt 1000
+  lc -1
+  rc -1
+- fc 0
+  pr 1
+  an 1
+  at 45
+@@ -683,7 +671,6 @@
+  wt 800
+  lc -1
+  rc -1
+- fc 0
+  pr 1
+  an 1
+  at 130
+@@ -726,7 +713,6 @@
+  wt 100
+  lc 100
+  rc -1
+- fc 0
+  mu 1
+  pr 1
+  at 20
+@@ -740,7 +726,6 @@
+  wt 200
+  lc -1
+  rc -1
+- fc 0
+  pr 1
+  an 1
+  at 10
+@@ -754,7 +739,6 @@
+  wt 100
+  lc -1
+  rc -1
+- fc 0
+  pr 1
+  an 1
+  at 5
 --- a/lib/loc
 +++ b/lib/loc
 @@ -261607,7 +261607,7 @@
@@ -102,16 +232,3308 @@ world-sha256: 6e3a657edc27b06448ae65a88bfd7fcfe6686b1c9f583e5a2cb9f45ecd839787
  8575	2.64	fact/207	
  8604	2.64	fact/207	
  8612	2.64	fact/207	
+@@ -26979,7 +26986,9 @@
+ 59094	3.20	loc		
+ 59095	3.16	loc		
+ 59096	3.27	loc		
++59097	7.0	road		Secret pass
+ 59098	3.72	loc		
++59100	7.0	road		Old road
+ 59102	3.27	loc		
+ 59103	3.12	loc		
+ 59104	3.23	loc		
+@@ -26996,12 +27005,14 @@
+ 59124	3.13	loc		
+ 59125	3.26	loc		
+ 59126	3.15	loc		
++59127	7.0	road		Secret route
+ 59129	3.9	loc		
+ 59131	3.18	loc		Old battlefield
+ 59138	3.21	loc		
+ 59139	3.13	loc		
+ 59140	3.25	loc		
+ 59142	3.13	loc		
++59143	7.0	road		Secret sea route
+ 59145	3.17	loc		
+ 59148	3.16	loc		
+ 59159	3.27	loc		
+@@ -27057,6 +27068,7 @@
+ 59258	3.13	loc		
+ 59263	3.17	loc		
+ 59264	3.23	loc		
++59265	7.0	road		Old road
+ 59268	3.18	loc		Old battlefield
+ 59271	6.0	gate		
+ 59278	3.17	loc		
+@@ -27065,6 +27077,7 @@
+ 59284	3.25	loc		
+ 59285	3.21	loc		
+ 59286	3.23	loc		
++59289	7.0	road		Rocky channel
+ 59292	3.25	loc		
+ 59294	3.28	loc		
+ 59296	3.9	loc		
+@@ -27090,6 +27103,7 @@
+ 59333	3.13	loc		
+ 59334	3.16	loc		
+ 59337	3.13	loc		
++59340	7.0	road		Old road
+ 59342	3.16	loc		
+ 59343	3.15	loc		
+ 59344	3.23	loc		Grassy field
+@@ -27124,6 +27138,7 @@
+ 59399	3.22	loc		Cursed Pits
+ 59400	3.11	loc		
+ 59401	3.13	loc		
++59402	7.0	road		Secret route
+ 59408	3.9	loc		
+ 59409	3.24	loc		
+ 59410	3.25	loc		
+@@ -27139,7 +27154,9 @@
+ 59445	3.13	loc		
+ 59446	3.17	loc		
+ 59447	3.9	loc		
++59449	7.0	road		Old road
+ 59450	3.16	loc		Fields of Death
++59451	7.0	road		Secret pass
+ 59452	3.9	loc		
+ 59453	3.12	loc		
+ 59454	3.72	loc		
+@@ -27185,8 +27202,10 @@
+ 59531	6.0	gate		
+ 59533	3.17	loc		
+ 59539	3.24	loc		
++59540	7.0	road		Secret route
+ 59543	3.16	loc		
+ 59544	3.11	loc		
++59545	7.0	road		Secret pass
+ 59549	3.16	loc		
+ 59550	3.9	loc		
+ 59551	3.18	loc		Old battlefield
+@@ -27215,6 +27234,7 @@
+ 59592	3.19	loc		
+ 59594	3.15	loc		
+ 59595	3.25	loc		
++59596	7.0	road		Secret route
+ 59599	3.13	loc		
+ 59600	6.0	gate		
+ 59601	6.0	gate		
+@@ -27252,6 +27272,7 @@
+ 59656	3.19	loc		
+ 59657	3.18	loc		Old battlefield
+ 59658	3.13	loc		
++59659	7.0	road		Old road
+ 59660	3.71	loc		
+ 59664	3.18	loc		
+ 59665	3.16	loc		
+@@ -27261,6 +27282,7 @@
+ 59678	3.13	loc		
+ 59679	3.20	loc		
+ 59680	3.9	loc		
++59681	7.0	road		Secret pass
+ 59682	3.72	loc		
+ 59685	3.13	loc		
+ 59686	3.13	loc		
+@@ -27277,6 +27299,7 @@
+ 59699	3.23	loc		
+ 59707	3.9	loc		
+ 59708	3.16	loc		Cemetary Hill
++59709	7.0	road		Secret pass
+ 59714	3.72	loc		
+ 59715	3.25	loc		
+ 59717	3.16	loc		Catacombs
+@@ -27284,6 +27307,7 @@
+ 59722	3.18	loc		Old battlefield
+ 59723	3.18	loc		Old battlefield
+ 59724	3.17	loc		
++59727	7.0	road		Secret pass
+ 59729	3.9	loc		
+ 59730	3.17	loc		
+ 59731	3.28	loc		
+@@ -27335,6 +27359,7 @@
+ 59801	3.23	loc		Grassy field
+ 59802	3.23	loc		
+ 59810	3.22	loc		Cursed Pits
++59811	7.0	road		Old road
+ 59818	3.18	loc		Ancient battlefield
+ 59819	3.16	loc		
+ 59820	3.27	loc		
+@@ -27398,6 +27423,7 @@
+ 59925	3.27	loc		
+ 59929	3.16	loc		Place of the Dead
+ 59930	3.16	loc		
++59931	7.0	road		Rocky channel
+ 59933	3.9	loc		
+ 59940	3.13	loc		
+ 59941	3.15	loc		
+@@ -27405,6 +27431,7 @@
+ 59951	3.9	loc		
+ 59952	3.27	loc		
+ 59954	3.22	loc		Cursed Pits
++59955	7.0	road		Secret route
+ 59956	3.9	loc		
+ 59957	3.28	loc		
+ 59958	3.71	loc		
+@@ -27451,6 +27478,7 @@
+ 60061	3.9	loc		
+ 60062	3.25	loc		
+ 60063	3.17	loc		
++60064	7.0	road		Old road
+ 60065	3.15	loc		
+ 60066	3.71	loc		
+ 60067	3.13	loc		
+@@ -27534,6 +27562,7 @@
+ 60288	3.22	loc		Cursed Pits
+ 60289	3.72	loc		
+ 60290	3.22	loc		Cursed Pits
++60291	7.0	road		Secret route
+ 60292	3.15	loc		
+ 60296	3.15	loc		
+ 60297	3.18	loc		
+@@ -27542,14 +27571,17 @@
+ 60300	3.9	loc		
+ 60301	3.16	loc		Barrows
+ 60302	3.9	loc		
++60303	7.0	road		Narrow channel
+ 60304	3.25	loc		
+ 60305	3.27	loc		
++60306	7.0	road		Old road
+ 60307	3.72	loc		
+ 60308	3.18	loc		Old battlefield
+ 60309	3.72	loc		
+ 60310	3.23	loc		
+ 60311	3.17	loc		
+ 60312	3.24	loc		
++60313	7.0	road		Secret sea route
+ 60314	3.16	loc		
+ 60319	6.0	gate		
+ 60320	3.16	loc		
+@@ -27562,6 +27594,7 @@
+ 60331	3.21	loc		
+ 60333	3.21	loc		
+ 60336	3.11	loc		
++60337	7.0	road		Old road
+ 60340	3.25	loc		
+ 60341	3.17	loc		
+ 60343	3.9	loc		
+@@ -27597,10 +27630,12 @@
+ 60395	6.0	gate		
+ 60396	3.19	loc		
+ 60403	3.16	loc		
++60404	7.0	road		Old road
+ 60405	3.15	loc		
+ 60406	3.24	loc		
+ 60409	3.19	loc		
+ 60412	3.72	loc		
++60416	7.0	road		Secret route
+ 60417	3.71	loc		
+ 60419	3.17	loc		
+ 60420	3.12	loc		
+@@ -27660,6 +27695,7 @@
+ 60521	3.72	loc		
+ 60523	6.0	gate		
+ 60525	3.19	loc		
++60526	7.0	road		Secret route
+ 60528	6.0	gate		
+ 60530	3.21	loc		
+ 60532	3.13	loc		
+@@ -27672,12 +27708,14 @@
+ 60549	3.12	loc		
+ 60550	3.16	loc		
+ 60551	3.9	loc		
++60552	7.0	road		Secret route
+ 60553	3.17	loc		
+ 60554	3.71	loc		
+ 60555	3.71	loc		
+ 60557	3.15	loc		
+ 60558	3.19	loc		
+ 60560	3.19	loc		
++60561	7.0	road		Secret pass
+ 60563	3.19	loc		
+ 60564	3.72	loc		
+ 60568	3.23	loc		
+@@ -27708,13 +27746,17 @@
+ 60601	3.71	loc		
+ 60605	6.0	gate		
+ 60607	3.17	loc		
++60611	7.0	road		Secret route
+ 60614	3.20	loc		
++60615	7.0	road		Rocky channel
+ 60621	3.20	loc		
+ 60622	3.11	loc		
+ 60623	3.25	loc		
++60624	7.0	road		Old road
+ 60627	3.24	loc		
+ 60634	3.22	loc		Cursed Pits
+ 60636	3.13	loc		
++60645	7.0	road		Secret pass
+ 60649	3.16	loc		
+ 60650	3.18	loc		
+ 60651	3.13	loc		
+@@ -27745,6 +27787,8 @@
+ 60681	3.25	loc		
+ 60684	3.16	loc		Barrow Hills
+ 60689	3.22	loc		Cursed Pits
++60690	7.0	road		Secret route
++60691	7.0	road		Narrow channel
+ 60692	3.71	loc		
+ 60696	3.9	loc		
+ 60698	3.19	loc		
+@@ -27800,6 +27844,7 @@
+ 60803	3.9	loc		
+ 60804	3.11	loc		
+ 60805	3.25	loc		
++60806	7.0	road		Secret sea route
+ 60807	3.18	loc		
+ 60808	3.16	loc		Barrow Downs
+ 60809	3.25	loc		
+@@ -27807,6 +27852,7 @@
+ 60812	3.18	loc		Ancient battlefield
+ 60818	3.16	loc		
+ 60819	3.11	loc		
++60822	7.0	road		Secret pass
+ 60824	3.9	loc		
+ 60825	3.21	loc		
+ 60826	3.9	loc		
+@@ -27832,10 +27878,12 @@
+ 60876	3.17	loc		
+ 60878	3.23	loc		Grassy field
+ 60880	3.20	loc		
++60895	7.0	road		Narrow channel
+ 60896	3.9	loc		
+ 60900	3.25	loc		
+ 60905	3.15	loc		
+ 60906	3.19	loc		
++60908	7.0	road		Old road
+ 60909	3.20	loc		
+ 60910	3.16	loc		Place of the Dead
+ 60911	3.13	loc		
+@@ -27859,6 +27907,7 @@
+ 60949	3.19	loc		
+ 60952	3.71	loc		
+ 60954	3.15	loc		
++60956	7.0	road		Secret route
+ 60961	3.28	loc		
+ 60962	3.13	loc		
+ 60970	3.21	loc		
+@@ -27866,6 +27915,7 @@
+ 60972	3.9	loc		
+ 60973	3.13	loc		
+ 60974	3.72	loc		
++60977	7.0	road		Secret route
+ 60979	3.16	loc		
+ 60981	3.13	loc		
+ 60982	3.18	loc		
+@@ -27877,10 +27927,12 @@
+ 60999	3.25	loc		
+ 61005	3.13	loc		
+ 61006	3.13	loc		
++61008	7.0	road		Old road
+ 61011	3.25	loc		
+ 61012	3.25	loc		
+ 61016	3.15	loc		
+ 61017	3.28	loc		
++61021	7.0	road		Old road
+ 61022	3.28	loc		
+ 61023	3.9	loc		
+ 61024	3.9	loc		
+@@ -27903,6 +27955,7 @@
+ 61055	3.23	loc		
+ 61056	3.13	loc		
+ 61057	6.0	gate		
++61058	7.0	road		Secret pass
+ 61061	3.16	loc		Fields of Death
+ 61062	3.13	loc		
+ 61066	3.26	loc		
+@@ -27930,6 +27983,7 @@
+ 61100	3.15	loc		
+ 61101	3.71	loc		
+ 61106	3.20	loc		
++61107	7.0	road		Secret route
+ 61109	3.25	loc		
+ 61110	3.17	loc		
+ 61111	3.13	loc		
+@@ -27956,6 +28010,7 @@
+ 61158	3.26	loc		
+ 61159	3.27	loc		
+ 61160	3.28	loc		
++61161	7.0	road		Narrow channel
+ 61164	3.16	loc		
+ 61166	3.16	loc		
+ 61167	3.16	loc		
+@@ -27985,6 +28040,7 @@
+ 61215	3.23	loc		
+ 61216	3.15	loc		
+ 61217	3.28	loc		
++61218	7.0	road		Secret pass
+ 61225	3.22	loc		Cursed Pits
+ 61235	3.9	loc		
+ 61237	3.17	loc		
+@@ -28016,6 +28072,7 @@
+ 61293	3.17	loc		
+ 61294	3.20	loc		
+ 61295	3.18	loc		
++61296	7.0	road		Narrow channel
+ 61300	3.71	loc		
+ 61301	3.13	loc		
+ 61305	3.13	loc		
+@@ -28040,6 +28097,7 @@
+ 61342	3.16	loc		
+ 61343	3.17	loc		
+ 61344	3.17	loc		
++61348	7.0	road		Secret pass
+ 61351	3.16	loc		
+ 61352	3.20	loc		
+ 61353	3.17	loc		
+@@ -28054,6 +28112,7 @@
+ 61371	3.13	loc		
+ 61375	3.20	loc		
+ 61377	3.20	loc		
++61378	7.0	road		Secret sea route
+ 61383	3.24	loc		
+ 61385	3.9	loc		
+ 61386	3.9	loc		
+@@ -28074,6 +28133,7 @@
+ 61415	3.24	loc		
+ 61416	3.18	loc		
+ 61417	3.13	loc		
++61425	7.0	road		Secret pass
+ 61426	3.13	loc		
+ 61427	3.9	loc		
+ 61430	3.13	loc		
+@@ -28084,6 +28144,7 @@
+ 61454	3.27	loc		
+ 61455	3.13	loc		
+ 61456	3.23	loc		
++61461	7.0	road		Secret route
+ 61464	3.17	loc		
+ 61465	3.17	loc		
+ 61466	3.17	loc		
+@@ -28112,6 +28173,7 @@
+ 61512	3.13	loc		
+ 61513	3.21	loc		
+ 61514	3.28	loc		
++61515	7.0	road		Secret route
+ 61516	3.16	loc		Barrows
+ 61517	3.26	loc		
+ 61518	3.18	loc		Ancient battlefield
+@@ -28169,6 +28231,7 @@
+ 61633	3.23	loc		Grassy field
+ 61634	3.23	loc		Grassy field
+ 61635	3.17	loc		
++61636	7.0	road		Rocky channel
+ 61639	3.17	loc		
+ 61640	3.17	loc		
+ 61641	3.18	loc		Old battlefield
+@@ -28200,6 +28263,7 @@
+ 61684	3.25	loc		
+ 61686	3.9	loc		
+ 61688	3.17	loc		
++61689	7.0	road		Old road
+ 61690	3.13	loc		
+ 61692	3.18	loc		Old battlefield
+ 61694	3.13	loc		
+@@ -28221,6 +28285,7 @@
+ 61726	3.25	loc		
+ 61728	3.13	loc		
+ 61733	3.16	loc		
++61739	7.0	road		Old road
+ 61741	3.13	loc		
+ 61749	3.23	loc		
+ 61750	3.17	loc		
+@@ -28237,9 +28302,11 @@
+ 61767	3.13	loc		
+ 61768	3.17	loc		
+ 61769	6.0	gate		
++61770	7.0	road		Rocky channel
+ 61771	3.12	loc		
+ 61773	3.28	loc		
+ 61776	3.26	loc		
++61779	7.0	road		Secret route
+ 61789	3.8	loc		
+ 61790	3.21	loc		
+ 61792	3.28	loc		
+@@ -28269,6 +28336,7 @@
+ 61821	3.72	loc		
+ 61823	3.11	loc		
+ 61829	3.13	loc		
++61834	7.0	road		Secret sea route
+ 61838	3.19	loc		
+ 61842	3.15	loc		
+ 61843	3.9	loc		
+@@ -28277,8 +28345,10 @@
+ 61850	3.17	loc		
+ 61853	3.9	loc		
+ 61859	3.28	loc		
++61860	7.0	road		Secret route
+ 61861	3.24	loc		
+ 61862	3.20	loc		
++61863	7.0	road		Rocky channel
+ 61868	3.9	loc		
+ 61872	3.16	loc		Barrow Hills
+ 61873	3.21	loc		
+@@ -28310,6 +28380,7 @@
+ 61927	3.16	loc		
+ 61930	3.13	loc		
+ 61932	3.13	loc		
++61936	7.0	road		Old road
+ 61937	3.9	loc		
+ 61939	3.19	loc		
+ 61940	3.13	loc		
+@@ -28322,6 +28393,7 @@
+ 61954	3.9	loc		
+ 61955	3.9	loc		
+ 61956	3.13	loc		
++61966	7.0	road		Secret route
+ 61967	3.17	loc		
+ 61970	3.18	loc		Old battlefield
+ 61971	3.21	loc		
+@@ -28336,6 +28408,7 @@
+ 61980	3.20	loc		
+ 61981	3.25	loc		
+ 61984	3.15	loc		
++61986	7.0	road		Secret route
+ 61989	3.21	loc		
+ 61990	3.18	loc		Ancient battlefield
+ 61992	3.18	loc		Ancient battlefield
+@@ -28371,6 +28444,7 @@
+ 62039	3.27	loc		
+ 62041	3.18	loc		Ancient battlefield
+ 62045	3.13	loc		
++62048	7.0	road		Old road
+ 62049	3.13	loc		
+ 62050	3.8	loc		
+ 62051	3.25	loc		
+@@ -28389,6 +28463,7 @@
+ 62080	3.21	loc		
+ 62081	3.18	loc		Ancient battlefield
+ 62086	3.15	loc		
++62087	7.0	road		Secret route
+ 62088	3.24	loc		
+ 62091	3.9	loc		
+ 62094	3.17	loc		
+@@ -28397,6 +28472,7 @@
+ 62097	3.18	loc		Old battlefield
+ 62098	3.15	loc		
+ 62099	3.11	loc		
++62100	7.0	road		Secret pass
+ 62103	3.21	loc		
+ 62105	3.16	loc		
+ 62107	3.9	loc		
+@@ -28452,10 +28528,12 @@
+ 62201	3.17	loc		
+ 62202	3.17	loc		
+ 62203	3.18	loc		Old battlefield
++62204	7.0	road		Old road
+ 62207	3.23	loc		Grassy field
+ 62208	3.9	loc		
+ 62210	3.20	loc		
+ 62211	6.0	gate		
++62212	7.0	road		Secret pass
+ 62214	3.13	loc		
+ 62215	3.16	loc		
+ 62216	3.21	loc		
+@@ -28536,11 +28614,13 @@
+ 62347	3.17	loc		
+ 62348	3.16	loc		
+ 62349	3.13	loc		
++62354	7.0	road		Secret pass
+ 62356	3.25	loc		
+ 62357	3.20	loc		
+ 62358	3.71	loc		
+ 62376	3.9	loc		
+ 62377	3.20	loc		
++62385	7.0	road		Secret pass
+ 62387	3.17	loc		
+ 62388	3.17	loc		
+ 62390	3.19	loc		
+@@ -28591,6 +28671,7 @@
+ 62472	3.17	loc		
+ 62473	3.20	loc		
+ 62474	3.72	loc		
++62476	7.0	road		Old road
+ 62477	3.9	loc		
+ 62478	3.13	loc		
+ 62479	3.20	loc		
+@@ -28616,12 +28697,14 @@
+ 62513	3.9	loc		
+ 62514	3.28	loc		
+ 62515	3.15	loc		
++62516	7.0	road		Secret route
+ 62517	3.17	loc		
+ 62520	3.28	loc		
+ 62524	6.0	gate		
+ 62525	3.18	loc		
+ 62526	3.13	loc		
+ 62532	3.13	loc		
++62533	7.0	road		Old road
+ 62534	3.17	loc		
+ 62535	3.16	loc		Catacombs
+ 62536	3.27	loc		
+@@ -28644,10 +28727,12 @@
+ 62563	3.17	loc		
+ 62567	3.27	loc		
+ 62569	3.12	loc		
++62570	7.0	road		Secret route
+ 62571	3.9	loc		
+ 62572	3.16	loc		Grave Mounds
+ 62573	3.8	loc		
+ 62574	3.13	loc		
++62577	7.0	road		Old road
+ 62581	3.19	loc		
+ 62585	3.9	loc		
+ 62590	3.9	loc		
+@@ -28676,6 +28761,8 @@
+ 62643	3.25	loc		
+ 62644	3.71	loc		
+ 62646	3.18	loc		
++62648	7.0	road		Rocky channel
++62649	7.0	road		Rocky channel
+ 62650	3.25	loc		
+ 62651	3.71	loc		
+ 62654	3.13	loc		
+@@ -28697,6 +28784,7 @@
+ 62690	3.19	loc		
+ 62691	3.15	loc		
+ 62692	6.0	gate		
++62693	7.0	road		Secret pass
+ 62694	3.72	loc		
+ 62697	3.17	loc		
+ 62698	3.18	loc		Ancient battlefield
+@@ -28721,6 +28809,7 @@
+ 62733	3.9	loc		
+ 62736	3.24	loc		
+ 62739	3.18	loc		Ancient battlefield
++62740	7.0	road		Old road
+ 62742	3.9	loc		
+ 62743	3.18	loc		Old battlefield
+ 62744	3.16	loc		
+@@ -28730,6 +28819,7 @@
+ 62748	3.72	loc		
+ 62749	3.21	loc		
+ 62751	3.15	loc		
++62753	7.0	road		Secret sea route
+ 62757	3.16	loc		
+ 62758	3.16	loc		
+ 62759	3.20	loc		
+@@ -28763,6 +28853,7 @@
+ 62804	3.20	loc		
+ 62805	3.23	loc		
+ 62806	3.8	loc		
++62810	7.0	road		Secret pass
+ 62811	3.17	loc		
+ 62816	3.15	loc		
+ 62817	3.9	loc		
+@@ -28783,12 +28874,14 @@
+ 62843	3.27	loc		
+ 62844	3.21	loc		
+ 62845	3.13	loc		
++62846	7.0	road		Old road
+ 62849	3.20	loc		
+ 62850	3.25	loc		
+ 62851	6.0	gate		
+ 62852	3.13	loc		
+ 62853	3.12	loc		
+ 62856	3.24	loc		
++62859	7.0	road		Narrow channel
+ 62860	3.13	loc		
+ 62861	3.13	loc		
+ 62864	3.72	loc		
+@@ -28830,6 +28923,7 @@
+ 62925	3.18	loc		Ancient battlefield
+ 62926	3.71	loc		
+ 62929	3.25	loc		
++62930	7.0	road		Secret route
+ 62934	3.17	loc		
+ 62936	3.28	loc		
+ 62937	3.18	loc		Ancient battlefield
+@@ -28871,10 +28965,12 @@
+ 62983	3.71	loc		
+ 62984	3.13	loc		
+ 62988	3.18	loc		Old battlefield
++62991	7.0	road		Secret route
+ 62992	3.28	loc		
+ 62995	3.15	loc		
+ 62997	3.9	loc		
+ 62999	3.26	loc		
++63000	7.0	road		Old road
+ 63002	3.13	loc		
+ 63004	3.9	loc		
+ 63005	3.12	loc		
+@@ -28896,6 +28992,7 @@
+ 63034	3.18	loc		Old battlefield
+ 63035	3.13	loc		
+ 63036	3.15	loc		
++63037	7.0	road		Old road
+ 63041	3.19	loc		
+ 63042	3.13	loc		
+ 63043	3.17	loc		
+@@ -28915,8 +29012,10 @@
+ 63076	3.11	loc		
+ 63077	3.21	loc		
+ 63078	3.24	loc		
++63079	7.0	road		Old road
+ 63080	3.9	loc		
+ 63081	3.16	loc		
++63082	7.0	road		Secret route
+ 63083	3.72	loc		
+ 63087	3.13	loc		
+ 63088	3.17	loc		
+@@ -28938,8 +29037,11 @@
+ 63134	3.13	loc		
+ 63136	3.13	loc		
+ 63137	3.17	loc		
++63138	7.0	road		Secret sea route
+ 63139	3.9	loc		
+ 63140	3.23	loc		
++63141	7.0	road		Old road
++63142	7.0	road		Secret pass
+ 63143	3.72	loc		
+ 63144	3.22	loc		Cursed Pits
+ 63146	3.13	loc		
+@@ -29004,6 +29106,7 @@
+ 63270	3.17	loc		
+ 63271	3.13	loc		
+ 63272	3.13	loc		
++63273	7.0	road		Secret pass
+ 63274	3.13	loc		
+ 63275	3.15	loc		
+ 63276	3.16	loc		
+@@ -29015,6 +29118,7 @@
+ 63289	3.18	loc		
+ 63292	3.22	loc		Cursed Pits
+ 63293	3.27	loc		
++63296	7.0	road		Secret route
+ 63297	6.0	gate		
+ 63300	3.13	loc		
+ 63301	3.71	loc		
+@@ -29023,7 +29127,9 @@
+ 63305	3.17	loc		
+ 63306	3.13	loc		
+ 63308	3.26	loc		
++63309	7.0	road		Old road
+ 63310	3.13	loc		
++63311	7.0	road		Secret pass
+ 63314	3.26	loc		
+ 63315	3.26	loc		
+ 63317	3.9	loc		
+@@ -29033,6 +29139,7 @@
+ 63326	3.9	loc		
+ 63327	3.20	loc		
+ 63329	3.13	loc		
++63333	7.0	road		Secret route
+ 63336	3.13	loc		
+ 63337	3.20	loc		
+ 63338	3.15	loc		
+@@ -29054,6 +29161,8 @@
+ 63358	3.22	loc		Cursed Pits
+ 63359	3.25	loc		
+ 63360	3.27	loc		
++63361	7.0	road		Secret sea route
++63362	7.0	road		Old road
+ 63363	3.19	loc		
+ 63364	3.9	loc		
+ 63365	3.17	loc		
+@@ -29073,6 +29182,7 @@
+ 63379	3.25	loc		
+ 63380	3.17	loc		
+ 63381	6.0	gate		
++63385	7.0	road		Secret sea route
+ 63386	3.18	loc		Old battlefield
+ 63389	3.28	loc		
+ 63390	3.26	loc		
+@@ -29117,6 +29227,7 @@
+ 63456	3.13	loc		
+ 63457	3.13	loc		
+ 63460	3.71	loc		
++63469	7.0	road		Narrow channel
+ 63470	3.18	loc		Old battlefield
+ 63471	3.72	loc		
+ 63472	3.9	loc		
+@@ -29124,6 +29235,7 @@
+ 63476	3.9	loc		
+ 63477	3.22	loc		Cursed Pits
+ 63479	3.17	loc		
++63480	7.0	road		Secret route
+ 63481	3.15	loc		
+ 63482	3.28	loc		
+ 63484	3.23	loc		
+@@ -29148,9 +29260,11 @@
+ 63537	3.12	loc		
+ 63540	3.9	loc		
+ 63541	6.0	gate		
++63542	7.0	road		Secret route
+ 63545	3.16	loc		
+ 63547	3.72	loc		
+ 63548	3.13	loc		
++63550	7.0	road		Old road
+ 63551	3.17	loc		
+ 63552	3.25	loc		
+ 63553	3.16	loc		
+@@ -29164,6 +29278,7 @@
+ 63564	3.13	loc		
+ 63565	3.72	loc		
+ 63571	3.17	loc		
++63575	7.0	road		Secret pass
+ 63577	3.18	loc		Old battlefield
+ 63579	3.17	loc		
+ 63584	3.18	loc		Old battlefield
+@@ -29190,11 +29305,13 @@
+ 63629	3.17	loc		
+ 63632	3.12	loc		
+ 63633	3.13	loc		
++63634	7.0	road		Old road
+ 63641	3.25	loc		
+ 63643	3.24	loc		
+ 63652	3.71	loc		
+ 63659	3.28	loc		
+ 63663	3.28	loc		
++63665	7.0	road		Secret route
+ 63666	3.25	loc		
+ 63669	3.72	loc		
+ 63670	3.17	loc		
+@@ -29205,11 +29322,13 @@
+ 63679	3.9	loc		
+ 63680	3.13	loc		
+ 63681	3.13	loc		
++63682	7.0	road		Secret sea route
+ 63683	3.22	loc		Cursed Pits
+ 63691	3.20	loc		
+ 63694	3.16	loc		
+ 63695	3.18	loc		Old battlefield
+ 63696	3.15	loc		
++63697	7.0	road		Old road
+ 63699	3.17	loc		
+ 63700	3.21	loc		
+ 63701	3.28	loc		
+@@ -29224,6 +29343,7 @@
+ 63720	3.9	loc		
+ 63721	3.18	loc		Old battlefield
+ 63722	3.27	loc		
++63723	7.0	road		Secret pass
+ 63724	3.72	loc		
+ 63726	3.25	loc		
+ 63727	3.9	loc		
+@@ -29266,14 +29386,18 @@
+ 63803	3.16	loc		Cairn Hills
+ 63804	3.9	loc		
+ 63805	3.18	loc		
++63806	7.0	road		Secret route
+ 63807	3.27	loc		
+ 63816	3.13	loc		
+ 63817	3.19	loc		
+ 63818	3.9	loc		
+ 63821	3.17	loc		
++63824	7.0	road		Old road
++63826	7.0	road		Old road
+ 63827	3.9	loc		
+ 63828	3.9	loc		
+ 63829	3.19	loc		
++63832	7.0	road		Secret sea route
+ 63833	3.16	loc		
+ 63835	3.20	loc		
+ 63836	3.12	loc		
+@@ -29381,6 +29505,7 @@
+ 64058	3.16	loc		
+ 64059	6.0	gate		
+ 64060	3.21	loc		
++64063	7.0	road		Secret route
+ 64064	3.9	loc		
+ 64068	3.20	loc		
+ 64069	3.9	loc		
+@@ -29412,6 +29537,7 @@
+ 64098	3.13	loc		
+ 64110	3.9	loc		
+ 64113	3.9	loc		
++64114	7.0	road		Secret pass
+ 64117	3.27	loc		
+ 64120	3.9	loc		
+ 64121	3.23	loc		Grassy field
+@@ -29452,6 +29578,7 @@
+ 64182	3.13	loc		
+ 64186	3.13	loc		
+ 64188	3.28	loc		
++64189	7.0	road		Rocky channel
+ 64190	3.13	loc		
+ 64191	3.19	loc		
+ 64192	3.17	loc		
+@@ -29469,6 +29596,7 @@
+ 64229	3.13	loc		
+ 64231	3.11	loc		
+ 64237	3.71	loc		
++64239	7.0	road		Rocky channel
+ 64240	3.9	loc		
+ 64242	3.9	loc		
+ 64243	3.16	loc		
+@@ -29478,6 +29606,7 @@
+ 64247	3.25	loc		
+ 64248	3.26	loc		
+ 64249	3.25	loc		
++64251	7.0	road		Secret pass
+ 64254	3.28	loc		
+ 64258	3.11	loc		
+ 64259	3.17	loc		
+@@ -29537,6 +29666,7 @@
+ 64381	3.19	loc		
+ 64382	3.19	loc		
+ 64383	3.26	loc		
++64384	7.0	road		Old road
+ 64385	3.16	loc		Cairn Hills
+ 64386	3.13	loc		
+ 64387	3.27	loc		
+@@ -29567,6 +29697,7 @@
+ 64441	6.0	gate		
+ 64442	3.8	loc		
+ 64443	3.25	loc		
++64447	7.0	road		Secret route
+ 64451	3.13	loc		
+ 64453	3.24	loc		
+ 64456	3.12	loc		
+@@ -29574,6 +29705,7 @@
+ 64459	3.27	loc		
+ 64464	3.9	loc		
+ 64467	3.26	loc		
++64468	7.0	road		Secret route
+ 64478	3.23	loc		Grassy field
+ 64479	3.13	loc		
+ 64486	3.28	loc		
+@@ -29730,6 +29862,7 @@
+ 64801	3.25	loc		
+ 64804	3.25	loc		
+ 64805	3.11	loc		
++64806	7.0	road		Secret route
+ 64807	3.17	loc		
+ 64808	3.8	loc		
+ 64811	3.17	loc		
+@@ -29737,6 +29870,7 @@
+ 64821	3.17	loc		
+ 64823	3.11	loc		
+ 64824	3.20	loc		
++64827	7.0	road		Secret route
+ 64831	3.16	loc		
+ 64833	3.23	loc		Grassy field
+ 64834	3.18	loc		Old battlefield
+@@ -29758,11 +29892,13 @@
+ 64860	3.21	loc		
+ 64861	3.13	loc		
+ 64862	3.28	loc		
++64863	7.0	road		Old road
+ 64865	3.9	loc		
+ 64866	3.23	loc		
+ 64867	3.25	loc		
+ 64868	3.13	loc		
+ 64869	3.9	loc		
++64873	7.0	road		Secret sea route
+ 64874	3.17	loc		
+ 64875	3.19	loc		
+ 64886	3.25	loc		
+@@ -29792,9 +29928,12 @@
+ 64925	3.27	loc		
+ 64926	3.25	loc		
+ 64927	3.25	loc		
++64928	7.0	road		Old road
+ 64929	6.0	gate		
++64930	7.0	road		Secret pass
+ 64931	3.16	loc		
+ 64932	3.11	loc		
++64933	7.0	road		Secret pass
+ 64934	3.17	loc		
+ 64936	3.17	loc		
+ 64937	3.9	loc		
+@@ -29812,6 +29951,7 @@
+ 64962	3.15	loc		
+ 64963	3.23	loc		
+ 64964	3.17	loc		
++64965	7.0	road		Secret pass
+ 64967	3.23	loc		Grassy field
+ 64968	3.9	loc		
+ 64971	3.13	loc		
+@@ -29825,6 +29965,7 @@
+ 64987	3.16	loc		Barrow Downs
+ 64990	3.11	loc		
+ 64994	3.15	loc		
++64996	7.0	road		Secret pass
+ 64998	3.20	loc		
+ 65000	3.25	loc		
+ 65003	3.13	loc		
+@@ -29847,6 +29988,7 @@
+ 65036	3.25	loc		
+ 65037	3.23	loc		
+ 65038	3.17	loc		
++65039	7.0	road		Rocky channel
+ 65041	3.9	loc		
+ 65044	3.13	loc		
+ 65046	3.18	loc		Old battlefield
+@@ -29893,9 +30035,11 @@
+ 65123	3.13	loc		
+ 65128	3.22	loc		Cursed Pits
+ 65129	3.18	loc		Old battlefield
++65130	7.0	road		Narrow channel
+ 65136	3.24	loc		
+ 65137	3.19	loc		
+ 65138	3.22	loc		Cursed Pits
++65139	7.0	road		Secret route
+ 65140	3.21	loc		
+ 65142	3.17	loc		
+ 65144	3.13	loc		
+@@ -29916,6 +30060,7 @@
+ 65166	3.25	loc		
+ 65167	3.28	loc		
+ 65170	3.16	loc		Grave Mounds
++65172	7.0	road		Secret route
+ 65174	3.23	loc		Grassy field
+ 65177	3.9	loc		
+ 65186	3.19	loc		
+@@ -29939,6 +30084,7 @@
+ 65234	3.9	loc		
+ 65237	3.9	loc		
+ 65238	3.13	loc		
++65239	7.0	road		Old road
+ 65241	6.0	gate		
+ 65243	3.15	loc		
+ 65245	3.28	loc		
+@@ -29984,10 +30130,12 @@
+ 65326	3.20	loc		
+ 65327	3.18	loc		Old battlefield
+ 65328	3.72	loc		
++65331	7.0	road		Secret route
+ 65332	3.13	loc		
+ 65333	3.25	loc		
+ 65334	6.0	gate		
+ 65337	3.16	loc		
++65339	7.0	road		Secret route
+ 65343	3.17	loc		
+ 65344	3.18	loc		Ancient battlefield
+ 65345	3.13	loc		
+@@ -30032,6 +30180,7 @@
+ 65407	3.25	loc		
+ 65410	3.11	loc		
+ 65412	3.22	loc		Cursed Pits
++65423	7.0	road		Secret pass
+ 65425	3.15	loc		
+ 65428	3.21	loc		
+ 65432	3.16	loc		
+@@ -30112,6 +30261,7 @@
+ 65579	3.19	loc		
+ 65580	3.16	loc		
+ 65582	3.13	loc		
++65583	7.0	road		Secret route
+ 65584	3.28	loc		
+ 65585	3.17	loc		
+ 65586	3.15	loc		
+@@ -30143,6 +30293,7 @@
+ 65621	3.25	loc		
+ 65622	3.71	loc		
+ 65627	3.18	loc		Old battlefield
++65629	7.0	road		Narrow channel
+ 65630	3.25	loc		
+ 65631	3.26	loc		
+ 65640	3.25	loc		
+@@ -30154,6 +30305,7 @@
+ 65654	3.17	loc		
+ 65655	6.0	gate		
+ 65656	6.0	gate		
++65657	7.0	road		Secret route
+ 65658	3.17	loc		
+ 65662	3.18	loc		
+ 65667	3.13	loc		
+@@ -30176,6 +30328,7 @@
+ 65693	3.20	loc		
+ 65702	3.21	loc		
+ 65703	3.13	loc		
++65707	7.0	road		Old road
+ 65708	3.16	loc		Cairn Hills
+ 65709	3.21	loc		
+ 65710	3.22	loc		Cursed Pits
+@@ -30241,6 +30394,7 @@
+ 65841	3.27	loc		
+ 65842	3.71	loc		
+ 65844	3.27	loc		
++65845	7.0	road		Rocky channel
+ 65846	6.0	gate		
+ 65852	3.18	loc		Ancient battlefield
+ 65853	3.18	loc		Old battlefield
+@@ -30248,6 +30402,7 @@
+ 65865	3.27	loc		
+ 65866	3.13	loc		
+ 65867	6.0	gate		
++65869	7.0	road		Old road
+ 65870	3.9	loc		
+ 65871	3.11	loc		
+ 65872	3.17	loc		
+@@ -30272,6 +30427,7 @@
+ 65924	3.17	loc		
+ 65925	3.17	loc		
+ 65926	3.19	loc		
++65927	7.0	road		Old road
+ 65930	3.27	loc		
+ 65931	3.9	loc		
+ 65932	3.27	loc		
+@@ -30383,6 +30539,7 @@
+ 66128	3.17	loc		
+ 66129	3.13	loc		
+ 66130	3.17	loc		
++66131	7.0	road		Secret route
+ 66133	3.9	loc		
+ 66134	3.16	loc		
+ 66137	3.72	loc		
+@@ -30402,6 +30559,7 @@
+ 66179	3.23	loc		Grassy field
+ 66181	3.13	loc		
+ 66185	3.25	loc		
++66186	7.0	road		Rocky channel
+ 66190	3.16	loc		Cemetary Hill
+ 66194	3.18	loc		Old battlefield
+ 66198	3.9	loc		
+@@ -30413,8 +30571,10 @@
+ 66205	3.25	loc		
+ 66206	3.17	loc		
+ 66207	6.0	gate		
++66208	7.0	road		Old road
+ 66210	3.18	loc		Old battlefield
+ 66211	3.15	loc		
++66212	7.0	road		Secret route
+ 66215	3.16	loc		Fields of Death
+ 66217	3.13	loc		
+ 66218	3.16	loc		Barrows
+@@ -30430,9 +30590,11 @@
+ 66249	3.17	loc		
+ 66251	3.71	loc		
+ 66252	3.17	loc		
++66257	7.0	road		Rocky channel
+ 66258	3.16	loc		
+ 66259	3.13	loc		
+ 66260	3.12	loc		
++66261	7.0	road		Secret pass
+ 66264	3.9	loc		
+ 66267	3.9	loc		
+ 66270	3.11	loc		
+@@ -30511,6 +30673,7 @@
+ 66427	3.12	loc		
+ 66431	3.19	loc		
+ 66436	3.9	loc		
++66437	7.0	road		Secret sea route
+ 66439	3.9	loc		
+ 66440	3.22	loc		Cursed Pits
+ 66441	3.25	loc		
+@@ -30553,6 +30716,7 @@
+ 66516	3.17	loc		
+ 66521	3.9	loc		
+ 66522	3.23	loc		
++66526	7.0	road		Old road
+ 66529	3.9	loc		
+ 66530	3.19	loc		
+ 66531	3.11	loc		
+@@ -30619,6 +30783,7 @@
+ 66639	3.28	loc		
+ 66641	3.21	loc		
+ 66642	3.20	loc		
++66643	7.0	road		Secret sea route
+ 66644	3.20	loc		
+ 66645	3.17	loc		
+ 66646	3.11	loc		
+@@ -30635,6 +30800,7 @@
+ 66660	3.9	loc		
+ 66661	3.13	loc		
+ 66663	3.12	loc		
++66664	7.0	road		Secret pass
+ 66665	3.8	loc		
+ 66666	3.13	loc		
+ 66669	3.17	loc		
+@@ -30649,6 +30815,7 @@
+ 66678	3.11	loc		
+ 66679	3.17	loc		
+ 66680	3.17	loc		
++66681	7.0	road		Secret route
+ 66684	3.19	loc		
+ 66686	3.24	loc		
+ 66687	6.0	gate		
+@@ -30665,6 +30832,7 @@
+ 66714	3.23	loc		
+ 66715	3.13	loc		
+ 66716	3.25	loc		
++66717	7.0	road		Secret route
+ 66722	3.18	loc		Ancient battlefield
+ 66723	3.13	loc		
+ 66724	3.25	loc		
+@@ -30686,6 +30854,7 @@
+ 66746	3.27	loc		
+ 66747	3.23	loc		Grassy field
+ 66748	3.20	loc		
++66749	7.0	road		Secret sea route
+ 66751	3.24	loc		
+ 66762	3.16	loc		Catacombs
+ 66763	3.28	loc		
+@@ -30719,6 +30888,7 @@
+ 66823	3.18	loc		Old battlefield
+ 66824	3.13	loc		
+ 66825	3.9	loc		
++66826	7.0	road		Rocky channel
+ 66827	3.71	loc		
+ 66829	3.9	loc		
+ 66832	3.27	loc		
+@@ -30726,10 +30896,13 @@
+ 66837	3.13	loc		
+ 66838	3.20	loc		
+ 66839	3.20	loc		
++66840	7.0	road		Old road
+ 66841	3.17	loc		
++66842	7.0	road		Secret sea route
+ 66844	3.17	loc		
+ 66845	3.13	loc		
+ 66846	3.27	loc		
++66847	7.0	road		Old road
+ 66849	3.25	loc		
+ 66850	3.13	loc		
+ 66853	3.13	loc		
+@@ -30757,6 +30930,7 @@
+ 66888	3.9	loc		
+ 66889	3.16	loc		Cairn Hills
+ 66890	3.16	loc		
++66900	7.0	road		Secret pass
+ 66901	3.17	loc		
+ 66914	3.17	loc		
+ 66915	6.0	gate		
+@@ -30834,6 +31008,7 @@
+ 67074	3.9	loc		
+ 67075	3.17	loc		
+ 67076	3.13	loc		
++67079	7.0	road		Secret pass
+ 67080	3.9	loc		
+ 67081	3.28	loc		
+ 67083	3.16	loc		
+@@ -30865,6 +31040,7 @@
+ 67152	3.18	loc		
+ 67153	3.22	loc		Cursed Pits
+ 67154	3.13	loc		
++67155	7.0	road		Secret route
+ 67157	3.9	loc		
+ 67162	3.23	loc		
+ 67163	3.12	loc		
+@@ -30898,6 +31074,7 @@
+ 67225	3.13	loc		
+ 67226	3.9	loc		
+ 67227	3.16	loc		
++67228	7.0	road		Old road
+ 67234	3.20	loc		
+ 67237	3.9	loc		
+ 67238	3.18	loc		
+@@ -30917,6 +31094,7 @@
+ 67268	3.72	loc		
+ 67270	3.25	loc		
+ 67271	3.17	loc		
++67272	7.0	road		Old road
+ 67273	3.22	loc		Cursed Pits
+ 67278	3.23	loc		Grassy field
+ 67282	3.24	loc		
+@@ -30955,7 +31133,9 @@
+ 67346	3.19	loc		
+ 67348	3.9	loc		
+ 67352	3.13	loc		
++67353	7.0	road		Rocky channel
+ 67355	3.17	loc		
++67356	7.0	road		Secret pass
+ 67357	3.22	loc		Cursed Pits
+ 67358	3.8	loc		
+ 67359	3.71	loc		
+@@ -30979,6 +31159,7 @@
+ 67386	3.18	loc		Old battlefield
+ 67387	3.17	loc		
+ 67388	3.12	loc		
++67389	7.0	road		Secret sea route
+ 67390	3.8	loc		
+ 67391	3.27	loc		
+ 67396	3.16	loc		
+@@ -31007,10 +31188,12 @@
+ 67441	3.23	loc		
+ 67442	3.15	loc		
+ 67443	3.25	loc		
++67444	7.0	road		Secret route
+ 67446	3.16	loc		Barrow Hills
+ 67447	3.25	loc		
+ 67448	3.27	loc		
+ 67449	3.20	loc		
++67450	7.0	road		Old road
+ 67453	3.72	loc		
+ 67454	3.15	loc		
+ 67455	3.9	loc		
+@@ -31094,6 +31277,7 @@
+ 67606	3.18	loc		Old battlefield
+ 67609	3.26	loc		
+ 67614	3.28	loc		
++67620	7.0	road		Secret pass
+ 67621	3.9	loc		
+ 67622	3.26	loc		
+ 67623	3.13	loc		
+@@ -31224,11 +31408,13 @@
+ 67863	3.13	loc		
+ 67865	3.9	loc		
+ 67868	3.17	loc		
++67869	7.0	road		Secret pass
+ 67872	3.27	loc		
+ 67875	3.24	loc		
+ 67876	3.15	loc		
+ 67877	3.23	loc		Grassy field
+ 67878	3.72	loc		
++67879	7.0	road		Secret sea route
+ 67881	3.9	loc		
+ 67884	3.26	loc		
+ 67887	3.25	loc		
+@@ -31259,6 +31445,7 @@
+ 67937	3.13	loc		
+ 67938	3.20	loc		
+ 67943	3.9	loc		
++67944	7.0	road		Old road
+ 67947	3.9	loc		
+ 67950	3.15	loc		
+ 67951	3.20	loc		
+@@ -31289,11 +31476,13 @@
+ 67990	3.13	loc		
+ 67999	3.19	loc		
+ 68002	3.9	loc		
++68004	7.0	road		Secret sea route
+ 68005	3.71	loc		
+ 68006	3.13	loc		
+ 68012	3.17	loc		
+ 68015	3.16	loc		
+ 68017	3.19	loc		
++68018	7.0	road		Secret pass
+ 68020	3.13	loc		
+ 68023	3.26	loc		
+ 68024	3.25	loc		
+@@ -31327,6 +31516,7 @@
+ 68076	3.71	loc		
+ 68079	3.15	loc		
+ 68080	3.15	loc		
++68084	7.0	road		Secret route
+ 68085	3.28	loc		
+ 68086	3.19	loc		
+ 68087	6.0	gate		
+@@ -31335,6 +31525,7 @@
+ 68091	3.26	loc		
+ 68092	3.17	loc		
+ 68095	3.21	loc		
++68098	7.0	road		Old road
+ 68103	3.9	loc		
+ 68104	3.25	loc		
+ 68108	3.16	loc		
+@@ -31358,6 +31549,7 @@
+ 68136	3.13	loc		
+ 68138	3.13	loc		
+ 68140	3.21	loc		
++68142	7.0	road		Secret route
+ 68143	3.17	loc		
+ 68144	3.13	loc		
+ 68146	3.16	loc		
+@@ -31380,6 +31572,8 @@
+ 68184	3.11	loc		
+ 68185	6.0	gate		
+ 68186	3.11	loc		
++68187	7.0	road		Secret route
++68188	7.0	road		Secret pass
+ 68190	3.9	loc		
+ 68191	3.16	loc		
+ 68192	3.25	loc		
+@@ -31388,6 +31582,7 @@
+ 68203	3.13	loc		
+ 68209	3.15	loc		
+ 68210	3.9	loc		
++68211	7.0	road		Narrow channel
+ 68212	3.19	loc		
+ 68213	3.23	loc		Grassy field
+ 68214	3.19	loc		
+@@ -31430,6 +31625,7 @@
+ 68283	3.16	loc		
+ 68284	3.16	loc		Barrow Hills
+ 68285	3.17	loc		
++68289	7.0	road		Old road
+ 68292	3.71	loc		
+ 68293	3.19	loc		
+ 68299	3.21	loc		
+@@ -31503,6 +31699,7 @@
+ 68420	6.0	gate		
+ 68423	3.18	loc		Old battlefield
+ 68425	3.24	loc		
++68426	7.0	road		Secret sea route
+ 68428	3.16	loc		Barrows
+ 68429	3.13	loc		
+ 68430	3.18	loc		Ancient battlefield
+@@ -31513,6 +31710,7 @@
+ 68443	3.21	loc		
+ 68446	3.16	loc		
+ 68447	3.25	loc		
++68457	7.0	road		Rocky channel
+ 68460	3.15	loc		
+ 68461	3.18	loc		
+ 68462	3.21	loc		
+@@ -31559,6 +31757,7 @@
+ 68544	3.10	loc		
+ 68550	3.26	loc		
+ 68557	3.16	loc		Grave Mounds
++68558	7.0	road		Secret pass
+ 68560	3.15	loc		
+ 68561	3.20	loc		
+ 68564	3.72	loc		
+@@ -31592,6 +31791,7 @@
+ 68612	3.17	loc		
+ 68615	3.22	loc		Cursed Pits
+ 68616	3.18	loc		Old battlefield
++68617	7.0	road		Narrow channel
+ 68628	3.15	loc		
+ 68630	3.15	loc		
+ 68635	3.13	loc		
+@@ -31610,6 +31810,7 @@
+ 68663	3.16	loc		
+ 68666	3.9	loc		
+ 68667	3.23	loc		Grassy field
++68668	7.0	road		Secret route
+ 68674	3.72	loc		
+ 68675	3.25	loc		
+ 68677	3.19	loc		
+@@ -31619,6 +31820,7 @@
+ 68689	3.25	loc		
+ 68690	3.26	loc		
+ 68691	3.12	loc		
++68695	7.0	road		Old road
+ 68703	3.28	loc		
+ 68704	3.15	loc		
+ 68705	3.20	loc		
+@@ -31634,12 +31836,15 @@
+ 68719	3.20	loc		
+ 68720	6.0	gate		
+ 68721	3.9	loc		
++68728	7.0	road		Secret pass
+ 68731	3.17	loc		
+ 68733	3.9	loc		
+ 68736	3.9	loc		
+ 68737	3.13	loc		
++68738	7.0	road		Secret route
+ 68740	3.22	loc		Cursed Pits
+ 68741	3.13	loc		
++68743	7.0	road		Old road
+ 68745	3.23	loc		Grassy field
+ 68746	3.19	loc		
+ 68747	3.18	loc		Old battlefield
+@@ -31667,6 +31872,7 @@
+ 68784	3.19	loc		
+ 68785	3.9	loc		
+ 68789	3.15	loc		
++68790	7.0	road		Secret route
+ 68792	3.18	loc		Ancient battlefield
+ 68793	3.18	loc		Old battlefield
+ 68794	3.28	loc		
+@@ -31681,6 +31887,7 @@
+ 68803	3.23	loc		
+ 68814	3.17	loc		
+ 68817	3.17	loc		
++68821	7.0	road		Narrow channel
+ 68822	3.9	loc		
+ 68823	3.13	loc		
+ 68825	3.11	loc		
+@@ -31698,6 +31905,8 @@
+ 68844	3.18	loc		
+ 68848	3.71	loc		
+ 68849	3.28	loc		
++68852	7.0	road		Old road
++68853	7.0	road		Secret pass
+ 68854	3.9	loc		
+ 68855	3.9	loc		
+ 68856	3.16	loc		Cairn Hills
+@@ -31760,10 +31969,12 @@
+ 68955	3.21	loc		
+ 68956	3.9	loc		
+ 68957	3.28	loc		
++68958	7.0	road		Secret route
+ 68959	3.72	loc		
+ 68962	3.28	loc		
+ 68966	3.15	loc		
+ 68974	3.21	loc		
++68979	7.0	road		Old road
+ 68980	3.16	loc		
+ 68981	3.17	loc		
+ 68982	3.11	loc		
+@@ -31775,6 +31986,7 @@
+ 68992	3.19	loc		
+ 68993	3.16	loc		
+ 68994	3.27	loc		
++68995	7.0	road		Secret route
+ 68998	3.72	loc		
+ 69000	3.18	loc		Old battlefield
+ 69001	3.9	loc		
+@@ -31784,6 +31996,7 @@
+ 69015	3.18	loc		Old battlefield
+ 69016	3.9	loc		
+ 69017	3.13	loc		
++69018	7.0	road		Secret sea route
+ 69019	3.9	loc		
+ 69020	3.18	loc		Ancient battlefield
+ 69021	3.18	loc		
+@@ -31807,6 +32020,7 @@
+ 69066	3.27	loc		
+ 69067	3.21	loc		
+ 69068	3.18	loc		Old battlefield
++69069	7.0	road		Secret route
+ 69074	3.20	loc		
+ 69075	3.22	loc		Cursed Pits
+ 69076	3.20	loc		
+@@ -31840,6 +32054,7 @@
+ 69132	3.11	loc		
+ 69135	3.18	loc		Old battlefield
+ 69136	3.23	loc		
++69137	7.0	road		Secret pass
+ 69141	3.12	loc		
+ 69143	3.13	loc		
+ 69146	3.20	loc		
+@@ -31894,12 +32109,15 @@
+ 69243	3.9	loc		
+ 69245	3.15	loc		
+ 69246	3.22	loc		Cursed Pits
++69251	7.0	road		Old road
+ 69252	3.16	loc		
+ 69253	3.17	loc		
+ 69254	3.25	loc		
+ 69255	3.17	loc		
+ 69256	3.13	loc		
+ 69257	3.9	loc		
++69258	7.0	road		Old road
++69259	7.0	road		Secret sea route
+ 69264	3.25	loc		
+ 69265	3.23	loc		
+ 69269	6.0	gate		
+@@ -31931,13 +32149,16 @@
+ 69324	3.20	loc		
+ 69327	3.16	loc		
+ 69328	3.28	loc		
++69329	7.0	road		Old road
+ 69330	3.27	loc		
+ 69339	3.16	loc		Grave Mounds
++69342	7.0	road		Secret pass
+ 69343	3.9	loc		
+ 69345	3.13	loc		
+ 69346	3.24	loc		
+ 69350	3.9	loc		
+ 69351	3.71	loc		
++69353	7.0	road		Secret sea route
+ 69356	3.15	loc		
+ 69357	3.72	loc		
+ 69362	3.13	loc		
+@@ -31963,9 +32184,11 @@
+ 69398	3.17	loc		
+ 69399	3.17	loc		
+ 69400	6.0	gate		
++69401	7.0	road		Secret pass
+ 69404	3.9	loc		
+ 69405	3.17	loc		
+ 69409	3.72	loc		
++69410	7.0	road		Rocky channel
+ 69411	3.9	loc		
+ 69412	3.20	loc		
+ 69413	3.19	loc		
+@@ -32005,9 +32228,11 @@
+ 69486	3.13	loc		
+ 69487	3.11	loc		
+ 69489	3.17	loc		
++69491	7.0	road		Secret route
+ 69493	3.9	loc		
+ 69494	3.16	loc		
+ 69495	3.17	loc		
++69496	7.0	road		Rocky channel
+ 69497	3.17	loc		
+ 69504	3.26	loc		
+ 69508	3.21	loc		
+@@ -32035,11 +32260,13 @@
+ 69551	3.21	loc		
+ 69554	3.13	loc		
+ 69555	3.22	loc		Cursed Pits
++69556	7.0	road		Secret route
+ 69558	3.27	loc		
+ 69561	3.25	loc		
+ 69569	3.15	loc		
+ 69570	3.9	loc		
+ 69573	3.9	loc		
++69574	7.0	road		Secret pass
+ 69576	3.9	loc		
+ 69577	3.15	loc		
+ 69578	3.18	loc		
+@@ -32050,7 +32277,9 @@
+ 69586	3.24	loc		
+ 69587	3.15	loc		
+ 69589	3.13	loc		
++69592	7.0	road		Secret pass
+ 69593	3.20	loc		
++69596	7.0	road		Secret route
+ 69600	3.72	loc		
+ 69605	3.17	loc		
+ 69608	3.22	loc		Cursed Pits
+@@ -32082,6 +32311,7 @@
+ 69662	3.18	loc		Old battlefield
+ 69663	3.13	loc		
+ 69665	3.15	loc		
++69666	7.0	road		Old road
+ 69669	3.21	loc		
+ 69670	3.16	loc		Cemetary Hill
+ 69673	3.16	loc		
+@@ -32101,6 +32331,7 @@
+ 69707	3.9	loc		
+ 69708	3.13	loc		
+ 69709	3.12	loc		
++69710	7.0	road		Old road
+ 69712	3.17	loc		
+ 69714	3.13	loc		
+ 69715	3.19	loc		
+@@ -32161,6 +32392,7 @@
+ 69823	3.9	loc		
+ 69824	3.16	loc		
+ 69825	3.27	loc		
++69829	7.0	road		Old road
+ 69835	3.9	loc		
+ 69837	3.16	loc		
+ 69838	3.16	loc		Catacombs
+@@ -32231,6 +32463,7 @@
+ 69939	3.25	loc		
+ 69940	3.26	loc		
+ 69943	3.22	loc		Cursed Pits
++69944	7.0	road		Secret pass
+ 69946	3.16	loc		
+ 69947	3.72	loc		
+ 69948	3.13	loc		
+@@ -32287,6 +32520,7 @@
+ 70050	3.28	loc		
+ 70053	3.13	loc		
+ 70054	3.16	loc		
++70056	7.0	road		Old road
+ 70057	3.25	loc		
+ 70061	3.27	loc		
+ 70062	3.21	loc		
+@@ -32294,6 +32528,7 @@
+ 70065	3.16	loc		
+ 70070	3.13	loc		
+ 70074	3.13	loc		
++70075	7.0	road		Secret pass
+ 70076	3.13	loc		
+ 70079	3.19	loc		
+ 70082	3.72	loc		
+@@ -32303,9 +32538,11 @@
+ 70086	3.11	loc		
+ 70087	3.13	loc		
+ 70088	3.26	loc		
++70089	7.0	road		Narrow channel
+ 70091	3.16	loc		Catacombs
+ 70095	3.9	loc		
+ 70096	3.25	loc		
++70097	7.0	road		Secret pass
+ 70098	3.18	loc		
+ 70099	3.17	loc		
+ 70100	3.17	loc		
+@@ -32332,6 +32569,7 @@
+ 70149	3.16	loc		
+ 70150	3.12	loc		
+ 70151	3.19	loc		
++70152	7.0	road		Secret route
+ 70154	3.16	loc		
+ 70155	3.18	loc		
+ 70156	3.16	loc		
+@@ -32351,6 +32589,7 @@
+ 70178	3.72	loc		
+ 70179	3.17	loc		
+ 70180	3.13	loc		
++70181	7.0	road		Secret route
+ 70185	3.28	loc		
+ 70187	3.18	loc		
+ 70188	6.0	gate		
+@@ -32360,6 +32599,7 @@
+ 70194	3.13	loc		
+ 70196	3.8	loc		
+ 70199	3.25	loc		
++70203	7.0	road		Secret pass
+ 70204	3.20	loc		
+ 70205	3.11	loc		
+ 70206	3.9	loc		
+@@ -32379,6 +32619,7 @@
+ 70220	3.23	loc		
+ 70221	3.18	loc		Old battlefield
+ 70222	3.18	loc		
++70223	7.0	road		Secret route
+ 70226	3.17	loc		
+ 70228	3.9	loc		
+ 70229	3.16	loc		Barrows
+@@ -32415,6 +32656,7 @@
+ 70280	3.23	loc		Grassy field
+ 70281	3.72	loc		
+ 70285	3.9	loc		
++70301	7.0	road		Old road
+ 70304	3.9	loc		
+ 70305	3.25	loc		
+ 70306	3.15	loc		
+@@ -32513,6 +32755,7 @@
+ 70464	3.18	loc		Old battlefield
+ 70466	3.28	loc		
+ 70467	3.15	loc		
++70468	7.0	road		Secret route
+ 70470	3.25	loc		
+ 70471	3.21	loc		
+ 70472	3.18	loc		
+@@ -32524,6 +32767,7 @@
+ 70483	3.18	loc		Old battlefield
+ 70484	3.22	loc		Cursed Pits
+ 70485	3.13	loc		
++70487	7.0	road		Secret route
+ 70491	3.27	loc		
+ 70492	3.27	loc		
+ 70493	3.26	loc		
+@@ -32559,6 +32803,7 @@
+ 70542	3.23	loc		
+ 70547	3.9	loc		
+ 70551	3.17	loc		
++70552	7.0	road		Secret pass
+ 70556	3.16	loc		
+ 70560	3.9	loc		
+ 70564	3.21	loc		
+@@ -32566,6 +32811,7 @@
+ 70573	3.11	loc		
+ 70574	3.21	loc		
+ 70584	3.25	loc		
++70585	7.0	road		Secret pass
+ 70589	3.25	loc		
+ 70591	3.20	loc		
+ 70594	3.11	loc		
+@@ -32579,6 +32825,7 @@
+ 70614	3.24	loc		
+ 70620	3.21	loc		
+ 70621	3.17	loc		
++70623	7.0	road		Old road
+ 70624	3.18	loc		Old battlefield
+ 70625	3.17	loc		
+ 70626	3.20	loc		
+@@ -32590,6 +32837,7 @@
+ 70635	6.0	gate		
+ 70636	3.27	loc		
+ 70637	3.20	loc		
++70638	7.0	road		Secret route
+ 70639	3.18	loc		Ancient battlefield
+ 70642	3.71	loc		
+ 70643	3.12	loc		
+@@ -32601,6 +32849,7 @@
+ 70657	3.19	loc		
+ 70658	3.23	loc		
+ 70659	3.9	loc		
++70660	7.0	road		Secret route
+ 70661	3.28	loc		
+ 70662	3.72	loc		
+ 70665	3.25	loc		
+@@ -32640,6 +32889,7 @@
+ 70746	3.13	loc		
+ 70747	6.0	gate		
+ 70749	6.0	gate		
++70751	7.0	road		Secret route
+ 70753	3.16	loc		
+ 70754	3.17	loc		
+ 70758	3.9	loc		
+@@ -32656,9 +32906,11 @@
+ 70776	3.15	loc		
+ 70779	3.8	loc		
+ 70783	3.17	loc		
++70784	7.0	road		Secret route
+ 70785	3.72	loc		
+ 70786	3.16	loc		Barrow Hills
+ 70788	3.13	loc		
++70789	7.0	road		Secret pass
+ 70791	3.9	loc		
+ 70792	3.25	loc		
+ 70793	3.17	loc		
+@@ -32683,6 +32935,7 @@
+ 70831	3.13	loc		
+ 70832	3.22	loc		Cursed Pits
+ 70833	3.11	loc		
++70834	7.0	road		Secret sea route
+ 70835	3.13	loc		
+ 70836	3.16	loc		
+ 70837	3.18	loc		Old battlefield
+@@ -32700,6 +32953,7 @@
+ 70852	3.26	loc		
+ 70856	3.12	loc		
+ 70859	3.15	loc		
++70861	7.0	road		Secret pass
+ 70863	3.25	loc		
+ 70864	3.9	loc		
+ 70865	3.9	loc		
+@@ -32741,17 +32995,20 @@
+ 70960	3.17	loc		
+ 70966	3.28	loc		
+ 70967	3.9	loc		
++70969	7.0	road		Old road
+ 70970	3.17	loc		
+ 70971	3.9	loc		
+ 70972	3.9	loc		
+ 70974	3.13	loc		
+ 70975	3.21	loc		
+ 70978	3.13	loc		
++70985	7.0	road		Rocky channel
+ 70988	3.21	loc		
+ 70990	3.16	loc		
+ 70995	3.9	loc		
+ 70996	3.16	loc		
+ 70997	3.12	loc		
++70998	7.0	road		Old road
+ 70999	3.19	loc		
+ 71004	3.18	loc		Old battlefield
+ 71006	3.11	loc		
+@@ -32769,6 +33026,7 @@
+ 71022	3.28	loc		
+ 71023	3.25	loc		
+ 71030	3.25	loc		
++71032	7.0	road		Old road
+ 71033	3.23	loc		
+ 71034	3.12	loc		
+ 71035	3.16	loc		
+@@ -32795,6 +33053,7 @@
+ 71056	3.9	loc		
+ 71057	3.25	loc		
+ 71058	3.71	loc		
++71059	7.0	road		Secret route
+ 71060	3.71	loc		
+ 71061	3.17	loc		
+ 71062	3.21	loc		
+@@ -32832,6 +33091,7 @@
+ 71137	3.28	loc		
+ 71140	3.9	loc		
+ 71141	3.72	loc		
++71142	7.0	road		Secret sea route
+ 71143	3.25	loc		
+ 71144	3.22	loc		Cursed Pits
+ 71147	3.27	loc		
+@@ -32839,6 +33099,7 @@
+ 71159	3.16	loc		
+ 71162	3.17	loc		
+ 71163	3.17	loc		
++71165	7.0	road		Old road
+ 71166	3.27	loc		
+ 71172	3.21	loc		
+ 71177	3.26	loc		
+@@ -32874,10 +33135,12 @@
+ 71245	3.9	loc		
+ 71246	3.17	loc		
+ 71247	3.13	loc		
++71248	7.0	road		Old road
+ 71249	3.9	loc		
+ 71250	3.17	loc		
+ 71251	3.23	loc		Grassy field
+ 71252	3.72	loc		
++71255	7.0	road		Secret pass
+ 71258	3.13	loc		
+ 71260	3.15	loc		
+ 71264	3.24	loc		
+@@ -32894,6 +33157,7 @@
+ 71285	3.24	loc		
+ 71286	3.13	loc		
+ 71288	3.23	loc		Grassy field
++71289	7.0	road		Secret route
+ 71293	3.17	loc		
+ 71297	3.13	loc		
+ 71299	3.13	loc		
+@@ -32904,8 +33168,10 @@
+ 71314	3.16	loc		
+ 71315	3.23	loc		Grassy field
+ 71319	3.27	loc		
++71320	7.0	road		Secret route
+ 71321	3.9	loc		
+ 71325	3.21	loc		
++71326	7.0	road		Old road
+ 71329	3.13	loc		
+ 71332	3.28	loc		
+ 71335	3.18	loc		Ancient battlefield
+@@ -32923,6 +33189,7 @@
+ 71361	3.25	loc		
+ 71362	3.25	loc		
+ 71363	6.0	gate		
++71364	7.0	road		Secret pass
+ 71365	6.0	gate		
+ 71366	3.28	loc		
+ 71367	3.18	loc		Old battlefield
+@@ -32970,6 +33237,7 @@
+ 71441	3.27	loc		
+ 71443	3.9	loc		
+ 71444	3.28	loc		
++71445	7.0	road		Secret sea route
+ 71447	3.22	loc		Cursed Pits
+ 71449	3.17	loc		
+ 71450	3.27	loc		
+@@ -33021,6 +33289,7 @@
+ 71535	3.20	loc		
+ 71536	3.13	loc		
+ 71537	3.16	loc		
++71538	7.0	road		Secret pass
+ 71539	3.71	loc		
+ 71542	3.21	loc		
+ 71544	3.13	loc		
+@@ -33038,6 +33307,7 @@
+ 71576	3.16	loc		
+ 71577	3.28	loc		
+ 71578	3.20	loc		
++71579	7.0	road		Secret pass
+ 71587	3.22	loc		Cursed Pits
+ 71591	3.25	loc		
+ 71592	3.16	loc		
+@@ -33074,6 +33344,7 @@
+ 71651	3.12	loc		
+ 71652	3.18	loc		Old battlefield
+ 71653	3.27	loc		
++71654	7.0	road		Old road
+ 71655	6.0	gate		
+ 71656	3.13	loc		
+ 71657	3.71	loc		
+@@ -33105,6 +33376,7 @@
+ 71689	3.9	loc		
+ 71690	3.16	loc		
+ 71691	3.13	loc		
++71692	7.0	road		Secret pass
+ 71694	3.20	loc		
+ 71701	3.9	loc		
+ 71702	3.12	loc		
+@@ -33123,6 +33395,7 @@
+ 71730	3.19	loc		
+ 71733	3.21	loc		
+ 71735	3.25	loc		
++71736	7.0	road		Old road
+ 71737	3.15	loc		
+ 71739	3.26	loc		
+ 71741	3.13	loc		
+@@ -33148,6 +33421,7 @@
+ 71774	3.13	loc		
+ 71778	3.27	loc		
+ 71779	3.15	loc		
++71780	7.0	road		Rocky channel
+ 71781	3.72	loc		
+ 71784	3.13	loc		
+ 71785	3.16	loc		Barrows
+@@ -33234,8 +33508,10 @@
+ 71923	3.21	loc		
+ 71924	3.25	loc		
+ 71925	3.13	loc		
++71926	7.0	road		Old road
+ 71931	3.15	loc		
+ 71933	3.28	loc		
++71937	7.0	road		Secret pass
+ 71938	3.23	loc		
+ 71939	3.18	loc		Old battlefield
+ 71940	3.9	loc		
+@@ -33268,6 +33544,7 @@
+ 72015	3.9	loc		
+ 72017	3.28	loc		
+ 72018	3.22	loc		Cursed Pits
++72019	7.0	road		Old road
+ 72021	3.17	loc		
+ 72023	3.22	loc		Cursed Pits
+ 72025	3.17	loc		
+@@ -33312,6 +33589,7 @@
+ 72108	3.18	loc		Old battlefield
+ 72109	3.9	loc		
+ 72110	3.16	loc		
++72111	7.0	road		Rocky channel
+ 72113	3.21	loc		
+ 72116	3.13	loc		
+ 72117	3.17	loc		
+@@ -33335,6 +33613,7 @@
+ 72151	3.26	loc		
+ 72155	3.18	loc		
+ 72157	3.20	loc		
++72159	7.0	road		Old road
+ 72160	3.72	loc		
+ 72164	3.9	loc		
+ 72165	3.18	loc		Old battlefield
+@@ -33358,6 +33637,7 @@
+ 72197	3.27	loc		
+ 72201	3.9	loc		
+ 72202	3.13	loc		
++72203	7.0	road		Old road
+ 72205	3.27	loc		
+ 72207	6.0	gate		
+ 72208	3.13	loc		
+@@ -33369,12 +33649,14 @@
+ 72216	3.13	loc		
+ 72219	3.25	loc		
+ 72223	3.25	loc		
++72224	7.0	road		Secret route
+ 72226	3.16	loc		Barrow Hills
+ 72227	3.20	loc		
+ 72228	3.25	loc		
+ 72232	3.17	loc		
+ 72236	3.17	loc		
+ 72237	3.12	loc		
++72238	7.0	road		Secret pass
+ 72240	3.28	loc		
+ 72243	6.0	gate		
+ 72245	3.16	loc		
+@@ -33414,6 +33696,7 @@
+ 72335	3.11	loc		
+ 72339	6.0	gate		
+ 72342	3.24	loc		
++72348	7.0	road		Secret sea route
+ 72349	3.25	loc		
+ 72350	3.13	loc		
+ 72351	3.9	loc		
+@@ -33440,6 +33723,7 @@
+ 72403	3.13	loc		
+ 72404	3.9	loc		
+ 72405	3.18	loc		Old battlefield
++72406	7.0	road		Secret pass
+ 72407	3.9	loc		
+ 72409	3.22	loc		Cursed Pits
+ 72410	3.24	loc		
+@@ -33452,6 +33736,7 @@
+ 72424	3.11	loc		
+ 72431	3.9	loc		
+ 72433	3.27	loc		
++72434	7.0	road		Secret route
+ 72439	3.11	loc		
+ 72441	3.15	loc		
+ 72443	3.17	loc		
+@@ -33480,6 +33765,7 @@
+ 72486	3.13	loc		
+ 72487	3.12	loc		
+ 72489	3.24	loc		
++72491	7.0	road		Secret route
+ 72493	3.17	loc		
+ 72494	3.20	loc		
+ 72495	3.9	loc		
+@@ -33509,6 +33795,8 @@
+ 72562	3.26	loc		
+ 72563	3.11	loc		
+ 72564	3.17	loc		
++72565	7.0	road		Old road
++72566	7.0	road		Secret sea route
+ 72569	3.27	loc		
+ 72571	3.16	loc		
+ 72575	3.11	loc		
+@@ -33519,6 +33807,7 @@
+ 72580	3.13	loc		
+ 72581	3.12	loc		
+ 72582	6.0	gate		
++72583	7.0	road		Secret pass
+ 72587	3.22	loc		Cursed Pits
+ 72588	3.21	loc		
+ 72589	3.20	loc		
+@@ -33553,7 +33842,9 @@
+ 72637	3.9	loc		
+ 72639	3.16	loc		
+ 72640	3.20	loc		
++72641	7.0	road		Secret route
+ 72642	3.16	loc		Cairn Hills
++72643	7.0	road		Rocky channel
+ 72648	3.25	loc		
+ 72650	3.28	loc		
+ 72651	3.12	loc		
+@@ -33587,6 +33878,7 @@
+ 72706	3.27	loc		
+ 72707	3.27	loc		
+ 72708	3.20	loc		
++72709	7.0	road		Old road
+ 72710	3.71	loc		
+ 72711	3.72	loc		
+ 72715	3.24	loc		
+@@ -33608,6 +33900,7 @@
+ 72739	3.9	loc		
+ 72742	6.0	gate		
+ 72744	3.13	loc		
++72751	7.0	road		Secret route
+ 72752	3.16	loc		Barrows
+ 72753	3.23	loc		
+ 72755	3.71	loc		
+@@ -33629,6 +33922,7 @@
+ 72802	3.16	loc		Barrows
+ 72808	3.18	loc		
+ 72809	3.27	loc		
++72810	7.0	road		Secret route
+ 72812	3.17	loc		
+ 72816	3.20	loc		
+ 72817	3.21	loc		
+@@ -33647,6 +33941,7 @@
+ 72850	3.9	loc		
+ 72851	3.17	loc		
+ 72852	3.25	loc		
++72853	7.0	road		Secret pass
+ 72859	3.72	loc		
+ 72861	3.13	loc		
+ 72864	3.18	loc		Old battlefield
+@@ -33679,6 +33974,7 @@
+ 72911	3.9	loc		
+ 72913	3.18	loc		
+ 72915	3.13	loc		
++72916	7.0	road		Secret pass
+ 72917	3.21	loc		
+ 72919	3.9	loc		
+ 72921	3.20	loc		
+@@ -33705,6 +34001,7 @@
+ 72965	3.17	loc		
+ 72967	3.19	loc		
+ 72968	3.13	loc		
++72969	7.0	road		Secret route
+ 72971	3.19	loc		
+ 72975	3.13	loc		
+ 72979	3.17	loc		
+@@ -33738,8 +34035,10 @@
+ 73016	3.26	loc		
+ 73018	3.13	loc		
+ 73020	3.15	loc		
++73024	7.0	road		Secret pass
+ 73025	3.9	loc		
+ 73029	3.19	loc		
++73036	7.0	road		Secret sea route
+ 73037	3.13	loc		
+ 73038	3.25	loc		
+ 73044	3.25	loc		
+@@ -33777,6 +34076,7 @@
+ 73097	3.13	loc		
+ 73098	3.17	loc		
+ 73099	3.15	loc		
++73100	7.0	road		Old road
+ 73101	3.27	loc		
+ 73102	3.20	loc		
+ 73106	3.17	loc		
+@@ -33804,6 +34104,7 @@
+ 73150	3.16	loc		Barrow Downs
+ 73153	3.27	loc		
+ 73156	3.12	loc		
++73160	7.0	road		Secret pass
+ 73161	3.25	loc		
+ 73164	3.72	loc		
+ 73171	3.28	loc		
+@@ -33815,6 +34116,7 @@
+ 73180	3.16	loc		
+ 73182	3.20	loc		
+ 73184	3.13	loc		
++73185	7.0	road		Secret route
+ 73187	3.9	loc		
+ 73188	3.16	loc		Grave Mounds
+ 73189	3.15	loc		
+@@ -33890,6 +34192,7 @@
+ 73321	3.72	loc		
+ 73322	3.20	loc		
+ 73323	3.19	loc		
++73324	7.0	road		Secret route
+ 73325	3.71	loc		
+ 73327	3.18	loc		Old battlefield
+ 73328	3.17	loc		
+@@ -33907,6 +34210,7 @@
+ 73353	3.27	loc		
+ 73357	3.18	loc		Old battlefield
+ 73358	3.25	loc		
++73359	7.0	road		Old road
+ 73360	3.9	loc		
+ 73361	3.72	loc		
+ 73362	3.9	loc		
+@@ -33933,17 +34237,22 @@
+ 73392	3.27	loc		
+ 73394	3.21	loc		
+ 73395	3.13	loc		
++73396	7.0	road		Secret pass
+ 73397	3.18	loc		Old battlefield
+ 73398	3.11	loc		
++73399	7.0	road		Secret route
+ 73401	3.23	loc		Grassy field
+ 73402	3.18	loc		
++73405	7.0	road		Secret pass
+ 73409	3.18	loc		Old battlefield
+ 73412	3.17	loc		
+ 73423	3.9	loc		
++73425	7.0	road		Secret route
+ 73426	3.13	loc		
+ 73427	3.24	loc		
+ 73428	3.16	loc		
+ 73430	3.20	loc		
++73432	7.0	road		Secret pass
+ 73435	3.9	loc		
+ 73436	3.18	loc		Old battlefield
+ 73439	3.25	loc		
+@@ -33969,6 +34278,7 @@
+ 73479	3.18	loc		Old battlefield
+ 73480	3.26	loc		
+ 73482	3.19	loc		
++73483	7.0	road		Secret sea route
+ 73484	3.17	loc		
+ 73485	3.13	loc		
+ 73486	3.25	loc		
+@@ -33997,6 +34307,7 @@
+ 73548	3.9	loc		
+ 73563	3.13	loc		
+ 73565	3.13	loc		
++73566	7.0	road		Old road
+ 73567	3.13	loc		
+ 73571	3.72	loc		
+ 73572	3.17	loc		
+@@ -34121,6 +34432,7 @@
+ 73803	3.17	loc		
+ 73804	3.13	loc		
+ 73808	3.25	loc		
++73809	7.0	road		Old road
+ 73811	3.28	loc		
+ 73812	3.28	loc		
+ 73813	3.28	loc		
+@@ -34197,6 +34509,7 @@
+ 73964	3.22	loc		Cursed Pits
+ 73966	3.13	loc		
+ 73968	3.27	loc		
++73972	7.0	road		Rocky channel
+ 73973	3.12	loc		
+ 73977	3.13	loc		
+ 73980	3.19	loc		
+@@ -34209,6 +34522,7 @@
+ 73994	3.17	loc		
+ 73998	3.20	loc		
+ 74004	3.20	loc		
++74006	7.0	road		Secret pass
+ 74011	3.15	loc		
+ 74012	3.13	loc		
+ 74018	3.13	loc		
+@@ -34220,6 +34534,7 @@
+ 74030	3.28	loc		
+ 74035	3.28	loc		
+ 74038	3.23	loc		Grassy field
++74040	7.0	road		Secret route
+ 74041	3.12	loc		
+ 74042	6.0	gate		
+ 74043	3.19	loc		
+@@ -34244,6 +34559,8 @@
+ 74075	3.18	loc		Old battlefield
+ 74076	3.71	loc		
+ 74080	3.13	loc		
++74087	7.0	road		Old road
++74089	7.0	road		Secret pass
+ 74092	3.20	loc		
+ 74093	3.72	loc		
+ 74094	3.16	loc		Catacombs
+@@ -34295,6 +34612,7 @@
+ 74178	3.9	loc		
+ 74179	3.9	loc		
+ 74180	3.9	loc		
++74183	7.0	road		Secret pass
+ 74184	3.9	loc		
+ 74185	3.9	loc		
+ 74186	3.13	loc		
+@@ -34315,6 +34633,8 @@
+ 74208	3.28	loc		
+ 74209	3.17	loc		
+ 74210	3.19	loc		
++74211	7.0	road		Narrow channel
++74212	7.0	road		Narrow channel
+ 74213	3.17	loc		
+ 74214	3.72	loc		
+ 74215	3.23	loc		
+@@ -34323,6 +34643,7 @@
+ 74219	3.18	loc		
+ 74233	3.21	loc		
+ 74234	6.0	gate		
++74235	7.0	road		Secret pass
+ 74238	3.19	loc		
+ 74239	3.11	loc		
+ 74245	3.23	loc		Grassy field
+@@ -34348,11 +34669,14 @@
+ 74316	3.9	loc		
+ 74317	3.18	loc		Old battlefield
+ 74318	3.12	loc		
++74319	7.0	road		Rocky channel
+ 74322	3.18	loc		Old battlefield
++74323	7.0	road		Old road
+ 74326	3.12	loc		
+ 74330	3.22	loc		Cursed Pits
+ 74331	3.17	loc		
+ 74332	3.13	loc		
++74333	7.0	road		Secret pass
+ 74334	3.18	loc		Old battlefield
+ 74335	3.19	loc		
+ 74338	3.9	loc		
+@@ -34496,6 +34820,7 @@
+ 74593	3.13	loc		
+ 74594	3.71	loc		
+ 74602	3.72	loc		
++74603	7.0	road		Old road
+ 74604	3.13	loc		
+ 74607	6.0	gate		
+ 74608	3.15	loc		
+@@ -34509,12 +34834,14 @@
+ 74632	3.26	loc		
+ 74633	3.21	loc		
+ 74635	3.28	loc		
++74636	7.0	road		Old road
+ 74637	3.9	loc		
+ 74638	3.9	loc		
+ 74639	3.13	loc		
+ 74640	3.13	loc		
+ 74646	3.13	loc		
+ 74647	3.9	loc		
++74648	7.0	road		Secret route
+ 74651	3.13	loc		
+ 74653	3.72	loc		
+ 74654	3.9	loc		
+@@ -34539,14 +34866,18 @@
+ 74694	3.20	loc		
+ 74695	3.8	loc		
+ 74698	3.15	loc		
++74699	7.0	road		Narrow channel
+ 74700	3.15	loc		
+ 74709	3.17	loc		
+ 74711	3.71	loc		
+ 74712	3.18	loc		Ancient battlefield
+ 74713	3.9	loc		
+ 74715	3.18	loc		
++74716	7.0	road		Secret route
+ 74717	3.16	loc		Barrows
++74718	7.0	road		Secret pass
+ 74721	3.9	loc		
++74723	7.0	road		Secret sea route
+ 74732	3.25	loc		
+ 74738	3.16	loc		Place of the Dead
+ 74739	3.12	loc		
+@@ -34561,6 +34892,7 @@
+ 74758	3.13	loc		
+ 74760	3.25	loc		
+ 74761	3.13	loc		
++74762	7.0	road		Secret route
+ 74765	3.71	loc		
+ 74767	3.22	loc		Cursed Pits
+ 74772	3.16	loc		
+@@ -34607,6 +34939,7 @@
+ 74871	3.17	loc		
+ 74872	3.9	loc		
+ 74873	3.16	loc		
++74874	7.0	road		Secret pass
+ 74875	3.8	loc		
+ 74876	3.13	loc		
+ 74877	3.17	loc		
+@@ -34624,8 +34957,12 @@
+ 74894	3.12	loc		
+ 74895	3.17	loc		
+ 74899	3.16	loc		
++74900	7.0	road		Old road
+ 74901	3.28	loc		
+ 74918	3.13	loc		
++74922	7.0	road		Secret pass
++74925	7.0	road		Old road
++74926	7.0	road		Secret route
+ 74931	3.19	loc		
+ 74936	3.9	loc		
+ 74937	3.22	loc		Cursed Pits
+@@ -34673,9 +35010,11 @@
+ 75013	3.17	loc		
+ 75018	3.16	loc		
+ 75019	3.20	loc		
++75022	7.0	road		Secret route
+ 75025	3.18	loc		Old battlefield
+ 75032	3.13	loc		
+ 75036	3.21	loc		
++75037	7.0	road		Secret pass
+ 75038	3.16	loc		Barrows
+ 75039	3.72	loc		
+ 75041	3.16	loc		
+@@ -34773,6 +35112,7 @@
+ 75218	3.18	loc		Old battlefield
+ 75219	3.22	loc		Cursed Pits
+ 75220	3.9	loc		
++75221	7.0	road		Secret pass
+ 75222	3.17	loc		
+ 75229	3.13	loc		
+ 75231	3.22	loc		Cursed Pits
+@@ -34787,6 +35127,7 @@
+ 75245	3.22	loc		Cursed Pits
+ 75246	3.17	loc		
+ 75248	3.15	loc		
++75250	7.0	road		Secret pass
+ 75257	3.25	loc		
+ 75258	3.18	loc		Ancient battlefield
+ 75269	3.28	loc		
+@@ -34796,6 +35137,7 @@
+ 75285	3.17	loc		
+ 75288	3.24	loc		
+ 75298	3.21	loc		
++75299	7.0	road		Old road
+ 75300	3.18	loc		Old battlefield
+ 75303	3.18	loc		Old battlefield
+ 75304	3.18	loc		Old battlefield
+@@ -34803,6 +35145,7 @@
+ 75306	3.26	loc		
+ 75307	3.71	loc		
+ 75308	3.9	loc		
++75310	7.0	road		Secret sea route
+ 75311	3.13	loc		
+ 75313	3.17	loc		
+ 75324	3.9	loc		
+@@ -34839,6 +35182,7 @@
+ 75361	3.18	loc		Ancient battlefield
+ 75363	3.12	loc		
+ 75364	3.11	loc		
++75365	7.0	road		Old road
+ 75366	3.72	loc		
+ 75368	3.13	loc		
+ 75369	3.15	loc		
+@@ -34884,6 +35228,7 @@
+ 75455	3.72	loc		
+ 75456	3.19	loc		
+ 75457	3.28	loc		
++75458	7.0	road		Secret pass
+ 75461	3.18	loc		Ancient battlefield
+ 75462	3.71	loc		
+ 75463	3.12	loc		
+@@ -34917,6 +35262,7 @@
+ 75515	3.18	loc		Old battlefield
+ 75516	3.17	loc		
+ 75517	3.20	loc		
++75518	7.0	road		Old road
+ 75519	3.25	loc		
+ 75520	3.16	loc		
+ 75521	3.20	loc		
+@@ -34932,6 +35278,7 @@
+ 75534	3.23	loc		Grassy field
+ 75542	3.16	loc		
+ 75543	3.24	loc		
++75546	7.0	road		Secret sea route
+ 75548	3.13	loc		
+ 75552	3.28	loc		
+ 75553	3.26	loc		
+@@ -34939,6 +35286,7 @@
+ 75556	3.11	loc		
+ 75560	3.72	loc		
+ 75563	3.25	loc		
++75564	7.0	road		Old road
+ 75565	3.15	loc		
+ 75566	3.13	loc		
+ 75567	3.16	loc		Barrows
+@@ -34959,6 +35307,7 @@
+ 75592	3.12	loc		
+ 75593	3.9	loc		
+ 75597	3.23	loc		Grassy field
++75599	7.0	road		Secret route
+ 75601	3.21	loc		
+ 75602	3.9	loc		
+ 75603	3.18	loc		Old battlefield
+@@ -34976,6 +35325,7 @@
+ 75617	3.18	loc		
+ 75619	3.21	loc		
+ 75620	3.20	loc		
++75629	7.0	road		Secret route
+ 75633	3.15	loc		
+ 75635	3.13	loc		
+ 75636	3.18	loc		Old battlefield
+@@ -35006,6 +35356,7 @@
+ 75695	3.19	loc		
+ 75697	3.22	loc		Cursed Pits
+ 75698	3.20	loc		
++75699	7.0	road		Secret pass
+ 75700	3.13	loc		
+ 75701	3.23	loc		
+ 75703	3.9	loc		
+@@ -35014,6 +35365,7 @@
+ 75706	3.17	loc		
+ 75707	3.25	loc		
+ 75708	3.22	loc		Cursed Pits
++75710	7.0	road		Rocky channel
+ 75711	3.19	loc		
+ 75712	3.16	loc		
+ 75714	3.25	loc		
+@@ -35038,6 +35390,7 @@
+ 75742	3.13	loc		
+ 75748	3.22	loc		Cursed Pits
+ 75751	3.17	loc		
++75755	7.0	road		Secret pass
+ 75759	3.16	loc		Fields of Death
+ 75762	3.9	loc		
+ 75764	3.13	loc		
+@@ -35089,6 +35442,7 @@
+ 75846	3.23	loc		Grassy field
+ 75847	3.18	loc		
+ 75848	6.0	gate		
++75849	7.0	road		Old road
+ 75851	3.13	loc		
+ 75853	3.17	loc		
+ 75854	3.25	loc		
+@@ -35119,6 +35473,7 @@
+ 75907	3.9	loc		
+ 75911	3.28	loc		
+ 75912	3.16	loc		Cemetary Hill
++75913	7.0	road		Rocky channel
+ 75914	3.13	loc		
+ 75919	3.22	loc		Cursed Pits
+ 75920	3.17	loc		
+@@ -35133,9 +35488,11 @@
+ 75936	3.17	loc		
+ 75937	3.19	loc		
+ 75938	3.17	loc		
++75939	7.0	road		Secret sea route
+ 75940	3.22	loc		Cursed Pits
+ 75941	3.27	loc		
+ 75942	3.21	loc		
++75943	7.0	road		Secret route
+ 75952	3.9	loc		
+ 75953	3.16	loc		Cairn Hills
+ 75954	3.71	loc		
+@@ -35157,6 +35514,7 @@
+ 75982	3.13	loc		
+ 75986	3.72	loc		
+ 75988	3.13	loc		
++75990	7.0	road		Secret pass
+ 75992	3.24	loc		
+ 75993	3.15	loc		
+ 75994	3.18	loc		Old battlefield
+@@ -35207,6 +35565,7 @@
+ 76109	3.28	loc		
+ 76111	3.12	loc		
+ 76113	3.23	loc		Grassy field
++76114	7.0	road		Old road
+ 76116	3.18	loc		Old battlefield
+ 76118	3.16	loc		
+ 76119	3.18	loc		Old battlefield
+@@ -35214,6 +35573,7 @@
+ 76123	3.13	loc		
+ 76125	3.24	loc		
+ 76126	3.20	loc		
++76130	7.0	road		Rocky channel
+ 76138	3.9	loc		
+ 76139	3.11	loc		
+ 76140	3.9	loc		
+@@ -35256,6 +35616,7 @@
+ 76226	3.28	loc		
+ 76227	3.23	loc		
+ 76228	3.19	loc		
++76229	7.0	road		Old road
+ 76230	3.20	loc		
+ 76231	3.25	loc		
+ 76232	3.72	loc		
+@@ -35274,8 +35635,10 @@
+ 76252	3.20	loc		
+ 76257	3.15	loc		
+ 76260	3.24	loc		
++76261	7.0	road		Secret pass
+ 76264	3.16	loc		
+ 76265	3.20	loc		
++76266	7.0	road		Secret sea route
+ 76269	3.28	loc		
+ 76272	3.9	loc		
+ 76273	3.18	loc		Old battlefield
+@@ -35308,6 +35671,7 @@
+ 76327	3.72	loc		
+ 76328	6.0	gate		
+ 76331	3.15	loc		
++76333	7.0	road		Secret pass
+ 76335	3.22	loc		Cursed Pits
+ 76337	6.0	gate		
+ 76338	3.23	loc		
+@@ -35343,6 +35707,7 @@
+ 76415	3.11	loc		
+ 76416	3.21	loc		
+ 76420	3.18	loc		Old battlefield
++76427	7.0	road		Old road
+ 76430	3.13	loc		
+ 76432	3.17	loc		
+ 76435	3.9	loc		
+@@ -35353,7 +35718,9 @@
+ 76441	3.13	loc		
+ 76442	3.13	loc		
+ 76443	3.24	loc		
++76444	7.0	road		Secret pass
+ 76445	3.24	loc		
++76446	7.0	road		Secret pass
+ 76448	3.25	loc		
+ 76450	3.28	loc		
+ 76451	3.25	loc		
+@@ -35461,6 +35828,7 @@
+ 76630	3.18	loc		Ancient battlefield
+ 76640	3.18	loc		Old battlefield
+ 76641	3.13	loc		
++76642	7.0	road		Secret sea route
+ 76643	3.20	loc		
+ 76644	3.18	loc		Old battlefield
+ 76645	3.9	loc		
+@@ -35489,9 +35857,11 @@
+ 76708	3.21	loc		
+ 76709	3.16	loc		
+ 76711	3.16	loc		
++76712	7.0	road		Secret pass
+ 76714	3.20	loc		
+ 76715	3.15	loc		
+ 76716	3.17	loc		
++76717	7.0	road		Old road
+ 76720	3.13	loc		
+ 76721	3.15	loc		
+ 76724	6.0	gate		
+@@ -35507,6 +35877,7 @@
+ 76742	3.13	loc		
+ 76745	3.22	loc		Cursed Pits
+ 76746	3.28	loc		
++76749	7.0	road		Secret route
+ 76755	3.20	loc		
+ 76756	3.11	loc		
+ 76761	3.18	loc		Ancient battlefield
+@@ -35514,9 +35885,11 @@
+ 76763	3.13	loc		
+ 76765	3.9	loc		
+ 76766	3.24	loc		
++76767	7.0	road		Secret pass
+ 76768	3.17	loc		
+ 76770	3.23	loc		
+ 76772	3.9	loc		
++76775	7.0	road		Old road
+ 76782	3.13	loc		
+ 76783	3.18	loc		Old battlefield
+ 76784	3.16	loc		Cairn Hills
+@@ -35537,6 +35910,8 @@
+ 76817	3.15	loc		
+ 76818	3.18	loc		Old battlefield
+ 76819	6.0	gate		
++76820	7.0	road		Old road
++76821	7.0	road		Secret pass
+ 76822	3.71	loc		
+ 76823	3.71	loc		
+ 76826	3.13	loc		
+@@ -35566,6 +35941,7 @@
+ 76884	3.12	loc		
+ 76887	3.18	loc		
+ 76889	3.13	loc		
++76890	7.0	road		Secret route
+ 76892	3.16	loc		
+ 76893	6.0	gate		
+ 76896	3.13	loc		
+@@ -35597,6 +35973,7 @@
+ 76953	3.19	loc		
+ 76954	3.24	loc		
+ 76955	3.25	loc		
++76956	7.0	road		Rocky channel
+ 76961	3.15	loc		
+ 76963	3.16	loc		
+ 76964	3.19	loc		
+@@ -35650,12 +36027,15 @@
+ 77064	3.27	loc		
+ 77065	3.13	loc		
+ 77069	3.15	loc		
++77070	7.0	road		Secret route
+ 77074	3.16	loc		Grave Mounds
++77075	7.0	road		Secret route
+ 77080	3.18	loc		Old battlefield
+ 77081	3.26	loc		
+ 77084	3.27	loc		
+ 77089	3.9	loc		
+ 77090	3.13	loc		
++77091	7.0	road		Old road
+ 77092	3.9	loc		
+ 77094	3.18	loc		Ancient battlefield
+ 77099	3.15	loc		
+@@ -35671,8 +36051,10 @@
+ 77121	3.13	loc		
+ 77122	3.18	loc		
+ 77123	3.11	loc		
++77124	7.0	road		Secret route
+ 77126	3.9	loc		
+ 77127	3.16	loc		Barrow Hills
++77134	7.0	road		Secret route
+ 77137	3.17	loc		
+ 77138	3.17	loc		
+ 77139	3.18	loc		
+@@ -35721,6 +36103,7 @@
+ 77235	3.9	loc		
+ 77236	3.13	loc		
+ 77239	3.21	loc		
++77240	7.0	road		Secret pass
+ 77241	3.25	loc		
+ 77244	3.16	loc		
+ 77245	3.9	loc		
+@@ -35731,6 +36114,7 @@
+ 77250	3.28	loc		
+ 77251	3.9	loc		
+ 77252	3.21	loc		
++77253	7.0	road		Secret route
+ 77254	3.9	loc		
+ 77255	3.24	loc		
+ 77256	3.9	loc		
+@@ -35774,6 +36158,7 @@
+ 77328	3.16	loc		Grave Mounds
+ 77330	3.16	loc		
+ 77331	3.18	loc		Old battlefield
++77338	7.0	road		Secret route
+ 77345	3.9	loc		
+ 77346	3.13	loc		
+ 77347	3.11	loc		
+@@ -35790,6 +36175,7 @@
+ 77378	3.18	loc		Old battlefield
+ 77380	3.28	loc		
+ 77381	3.16	loc		
++77382	7.0	road		Secret pass
+ 77383	3.16	loc		
+ 77384	3.25	loc		
+ 77385	3.18	loc		Old battlefield
+@@ -35820,11 +36206,13 @@
+ 77447	3.11	loc		
+ 77448	3.25	loc		
+ 77449	3.28	loc		
++77450	7.0	road		Secret pass
+ 77451	6.0	gate		
+ 77452	3.8	loc		
+ 77456	3.19	loc		
+ 77458	3.13	loc		
+ 77459	3.23	loc		Grassy field
++77460	7.0	road		Rocky channel
+ 77461	3.13	loc		
+ 77463	3.17	loc		
+ 77464	3.25	loc		
+@@ -35912,6 +36300,7 @@
+ 77587	3.17	loc		
+ 77589	3.16	loc		
+ 77591	3.71	loc		
++77592	7.0	road		Narrow channel
+ 77593	3.26	loc		
+ 77595	3.8	loc		
+ 77597	3.28	loc		
+@@ -35925,6 +36314,7 @@
+ 77615	3.17	loc		
+ 77627	3.13	loc		
+ 77629	3.17	loc		
++77631	7.0	road		Rocky channel
+ 77633	3.17	loc		
+ 77634	3.24	loc		
+ 77639	3.13	loc		
+@@ -35937,6 +36327,7 @@
+ 77646	3.17	loc		
+ 77647	3.12	loc		
+ 77648	3.24	loc		
++77649	7.0	road		Secret route
+ 77659	3.27	loc		
+ 77660	3.12	loc		
+ 77662	3.13	loc		
+@@ -35959,6 +36350,7 @@
+ 77697	3.25	loc		
+ 77698	3.13	loc		
+ 77699	3.11	loc		
++77700	7.0	road		Secret pass
+ 77702	3.27	loc		
+ 77703	3.28	loc		
+ 77704	3.9	loc		
+@@ -36007,12 +36399,14 @@
+ 77772	3.20	loc		
+ 77773	3.13	loc		
+ 77774	3.25	loc		
++77775	7.0	road		Secret route
+ 77778	3.71	loc		
+ 77779	3.16	loc		Barrows
+ 77783	3.13	loc		
+ 77786	3.9	loc		
+ 77794	3.22	loc		Cursed Pits
+ 77795	3.9	loc		
++77799	7.0	road		Secret pass
+ 77802	3.72	loc		
+ 77806	6.0	gate		
+ 77807	3.28	loc		
+@@ -36030,6 +36424,7 @@
+ 77843	3.18	loc		Old battlefield
+ 77844	3.25	loc		
+ 77845	3.72	loc		
++77847	7.0	road		Rocky channel
+ 77849	3.9	loc		
+ 77852	3.25	loc		
+ 77854	3.17	loc		
+@@ -36097,6 +36492,7 @@
+ 77994	3.18	loc		Old battlefield
+ 77997	3.25	loc		
+ 77998	3.17	loc		
++77999	7.0	road		Secret route
+ 78000	3.18	loc		Ancient battlefield
+ 78001	3.25	loc		
+ 78002	3.15	loc		
+@@ -36136,6 +36532,7 @@
+ 78089	3.72	loc		
+ 78094	3.13	loc		
+ 78095	3.23	loc		
++78101	7.0	road		Secret pass
+ 78103	3.9	loc		
+ 78105	3.23	loc		
+ 78106	3.16	loc		Catacombs
+@@ -36149,6 +36546,7 @@
+ 78118	3.13	loc		
+ 78119	3.15	loc		
+ 78120	3.13	loc		
++78121	7.0	road		Old road
+ 78122	6.0	gate		
+ 78123	3.13	loc		
+ 78124	3.9	loc		
+@@ -36163,6 +36561,7 @@
+ 78146	3.20	loc		
+ 78147	3.19	loc		
+ 78148	3.9	loc		
++78149	7.0	road		Old road
+ 78151	3.9	loc		
+ 78153	3.27	loc		
+ 78159	3.26	loc		
+@@ -36194,6 +36593,7 @@
+ 78204	3.25	loc		
+ 78208	3.12	loc		
+ 78214	3.13	loc		
++78215	7.0	road		Secret pass
+ 78216	3.27	loc		
+ 78217	3.21	loc		
+ 78219	3.17	loc		
+@@ -36204,6 +36604,7 @@
+ 78224	3.13	loc		
+ 78225	3.22	loc		Cursed Pits
+ 78226	3.17	loc		
++78227	7.0	road		Rocky channel
+ 78228	3.71	loc		
+ 78231	3.23	loc		
+ 78232	3.13	loc		
+@@ -36211,16 +36612,20 @@
+ 78240	3.17	loc		
+ 78241	3.9	loc		
+ 78242	3.20	loc		
++78243	7.0	road		Secret route
+ 78245	3.13	loc		
+ 78247	3.9	loc		
+ 78248	3.19	loc		
+ 78255	3.25	loc		
+ 78256	3.13	loc		
++78257	7.0	road		Secret route
+ 78258	3.9	loc		
+ 78259	3.17	loc		
++78262	7.0	road		Secret route
+ 78263	3.21	loc		
+ 78264	3.22	loc		Cursed Pits
+ 78267	3.13	loc		
++78268	7.0	road		Secret pass
+ 78270	3.11	loc		
+ 78281	3.9	loc		
+ 78286	3.18	loc		Old battlefield
+@@ -36232,6 +36637,7 @@
+ 78297	3.20	loc		
+ 78298	3.25	loc		
+ 78299	3.18	loc		Old battlefield
++78304	7.0	road		Secret pass
+ 78307	3.13	loc		
+ 78308	3.17	loc		
+ 78309	3.15	loc		
+@@ -36251,6 +36657,7 @@
+ 78335	3.12	loc		
+ 78336	3.24	loc		
+ 78337	3.11	loc		
++78338	7.0	road		Old road
+ 78339	3.15	loc		
+ 78340	3.20	loc		
+ 78342	3.17	loc		
+@@ -36290,6 +36697,7 @@
+ 78408	3.16	loc		Grave Mounds
+ 78409	3.17	loc		
+ 78413	3.8	loc		
++78414	7.0	road		Secret route
+ 78416	3.28	loc		
+ 78421	3.19	loc		
+ 78422	3.13	loc		
+@@ -36297,6 +36705,7 @@
+ 78424	3.18	loc		Old battlefield
+ 78425	3.13	loc		
+ 78426	3.18	loc		Old battlefield
++78427	7.0	road		Old road
+ 78428	3.15	loc		
+ 78429	3.16	loc		
+ 78430	3.19	loc		
+@@ -36321,6 +36730,7 @@
+ 78462	3.13	loc		
+ 78465	3.24	loc		
+ 78468	3.22	loc		Cursed Pits
++78470	7.0	road		Secret pass
+ 78474	3.12	loc		
+ 78475	3.27	loc		
+ 78476	3.16	loc		Place of the Dead
+@@ -36412,6 +36822,7 @@
+ 78644	3.15	loc		
+ 78648	3.9	loc		
+ 78649	3.25	loc		
++78650	7.0	road		Old road
+ 78653	3.12	loc		
+ 78654	3.13	loc		
+ 78657	6.0	gate		
+@@ -36427,14 +36838,18 @@
+ 78671	3.27	loc		
+ 78672	3.25	loc		
+ 78673	3.13	loc		
++78674	7.0	road		Old road
++78675	7.0	road		Secret pass
+ 78676	3.72	loc		
+ 78677	3.71	loc		
+ 78679	3.28	loc		
+ 78681	3.11	loc		
+ 78683	3.26	loc		
++78688	7.0	road		Secret pass
+ 78692	3.17	loc		
+ 78694	3.25	loc		
+ 78695	3.13	loc		
++78696	7.0	road		Secret pass
+ 78698	3.12	loc		
+ 78699	3.21	loc		
+ 78700	3.17	loc		
+@@ -36472,7 +36887,9 @@
+ 78776	3.24	loc		
+ 78777	6.0	gate		
+ 78778	3.19	loc		
++78779	7.0	road		Narrow channel
+ 78780	3.18	loc		Ancient battlefield
++78781	7.0	road		Rocky channel
+ 78786	3.25	loc		
+ 78788	3.25	loc		
+ 78793	3.21	loc		
+@@ -36518,12 +36935,14 @@
+ 78885	3.25	loc		
+ 78892	3.15	loc		
+ 78893	3.17	loc		
++78894	7.0	road		Secret pass
+ 78895	3.11	loc		
+ 78896	3.71	loc		
+ 78904	3.72	loc		
+ 78905	3.28	loc		
+ 78912	3.13	loc		
+ 78914	3.13	loc		
++78915	7.0	road		Secret pass
+ 78918	3.17	loc		
+ 78919	3.27	loc		
+ 78921	3.13	loc		
+@@ -36550,6 +36969,7 @@
+ 78958	3.27	loc		
+ 78959	3.17	loc		
+ 78960	3.71	loc		
++78962	7.0	road		Secret pass
+ 78963	3.71	loc		
+ 78965	3.23	loc		
+ 78969	3.13	loc		
+@@ -36564,6 +36984,7 @@
+ 78979	3.16	loc		Barrows
+ 78980	3.19	loc		
+ 78981	3.25	loc		
++78982	7.0	road		Old road
+ 78983	3.26	loc		
+ 78984	3.27	loc		
+ 78987	3.20	loc		
+@@ -36583,417 +37004,3 @@
+ 940	13.0	misc	
+ 941	13.0	misc	
+ 942	13.0	misc	
+-59097	7.0	misc	Secret pass
+-59100	7.0	misc	Old road
+-59127	7.0	misc	Secret route
+-59143	7.0	misc	Secret sea route
+-59265	7.0	misc	Old road
+-59289	7.0	misc	Rocky channel
+-59340	7.0	misc	Old road
+-59402	7.0	misc	Secret route
+-59449	7.0	misc	Old road
+-59451	7.0	misc	Secret pass
+-59540	7.0	misc	Secret route
+-59545	7.0	misc	Secret pass
+-59596	7.0	misc	Secret route
+-59659	7.0	misc	Old road
+-59681	7.0	misc	Secret pass
+-59709	7.0	misc	Secret pass
+-59727	7.0	misc	Secret pass
+-59811	7.0	misc	Old road
+-59931	7.0	misc	Rocky channel
+-59955	7.0	misc	Secret route
+-60064	7.0	misc	Old road
+-60291	7.0	misc	Secret route
+-60303	7.0	misc	Narrow channel
+-60306	7.0	misc	Old road
+-60313	7.0	misc	Secret sea route
+-60337	7.0	misc	Old road
+-60404	7.0	misc	Old road
+-60416	7.0	misc	Secret route
+-60526	7.0	misc	Secret route
+-60552	7.0	misc	Secret route
+-60561	7.0	misc	Secret pass
+-60611	7.0	misc	Secret route
+-60615	7.0	misc	Rocky channel
+-60624	7.0	misc	Old road
+-60645	7.0	misc	Secret pass
+-60690	7.0	misc	Secret route
+-60691	7.0	misc	Narrow channel
+-60806	7.0	misc	Secret sea route
+-60822	7.0	misc	Secret pass
+-60895	7.0	misc	Narrow channel
+-60908	7.0	misc	Old road
+-60956	7.0	misc	Secret route
+-60977	7.0	misc	Secret route
+-61008	7.0	misc	Old road
+-61021	7.0	misc	Old road
+-61058	7.0	misc	Secret pass
+-61107	7.0	misc	Secret route
+-61161	7.0	misc	Narrow channel
+-61218	7.0	misc	Secret pass
+-61296	7.0	misc	Narrow channel
+-61348	7.0	misc	Secret pass
+-61378	7.0	misc	Secret sea route
+-61425	7.0	misc	Secret pass
+-61461	7.0	misc	Secret route
+-61515	7.0	misc	Secret route
+-61636	7.0	misc	Rocky channel
+-61689	7.0	misc	Old road
+-61739	7.0	misc	Old road
+-61770	7.0	misc	Rocky channel
+-61779	7.0	misc	Secret route
+-61834	7.0	misc	Secret sea route
+-61860	7.0	misc	Secret route
+-61863	7.0	misc	Rocky channel
+-61936	7.0	misc	Old road
+-61966	7.0	misc	Secret route
+-61986	7.0	misc	Secret route
+-62048	7.0	misc	Old road
+-62087	7.0	misc	Secret route
+-62100	7.0	misc	Secret pass
+-62204	7.0	misc	Old road
+-62212	7.0	misc	Secret pass
+-62354	7.0	misc	Secret pass
+-62385	7.0	misc	Secret pass
+-62476	7.0	misc	Old road
+-62516	7.0	misc	Secret route
+-62533	7.0	misc	Old road
+-62570	7.0	misc	Secret route
+-62577	7.0	misc	Old road
+-62648	7.0	misc	Rocky channel
+-62649	7.0	misc	Rocky channel
+-62693	7.0	misc	Secret pass
+-62740	7.0	misc	Old road
+-62753	7.0	misc	Secret sea route
+-62810	7.0	misc	Secret pass
+-62846	7.0	misc	Old road
+-62859	7.0	misc	Narrow channel
+-62930	7.0	misc	Secret route
+-62991	7.0	misc	Secret route
+-63000	7.0	misc	Old road
+-63037	7.0	misc	Old road
+-63079	7.0	misc	Old road
+-63082	7.0	misc	Secret route
+-63138	7.0	misc	Secret sea route
+-63141	7.0	misc	Old road
+-63142	7.0	misc	Secret pass
+-63273	7.0	misc	Secret pass
+-63296	7.0	misc	Secret route
+-63309	7.0	misc	Old road
+-63311	7.0	misc	Secret pass
+-63333	7.0	misc	Secret route
+-63361	7.0	misc	Secret sea route
+-63362	7.0	misc	Old road
+-63385	7.0	misc	Secret sea route
+-63469	7.0	misc	Narrow channel
+-63480	7.0	misc	Secret route
+-63542	7.0	misc	Secret route
+-63550	7.0	misc	Old road
+-63575	7.0	misc	Secret pass
+-63634	7.0	misc	Old road
+-63665	7.0	misc	Secret route
+-63682	7.0	misc	Secret sea route
+-63697	7.0	misc	Old road
+-63723	7.0	misc	Secret pass
+-63806	7.0	misc	Secret route
+-63824	7.0	misc	Old road
+-63826	7.0	misc	Old road
+-63832	7.0	misc	Secret sea route
+-64063	7.0	misc	Secret route
+-64114	7.0	misc	Secret pass
+-64189	7.0	misc	Rocky channel
+-64239	7.0	misc	Rocky channel
+-64251	7.0	misc	Secret pass
+-64384	7.0	misc	Old road
+-64447	7.0	misc	Secret route
+-64468	7.0	misc	Secret route
+-64806	7.0	misc	Secret route
+-64827	7.0	misc	Secret route
+-64863	7.0	misc	Old road
+-64873	7.0	misc	Secret sea route
+-64928	7.0	misc	Old road
+-64930	7.0	misc	Secret pass
+-64933	7.0	misc	Secret pass
+-64965	7.0	misc	Secret pass
+-64996	7.0	misc	Secret pass
+-65039	7.0	misc	Rocky channel
+-65130	7.0	misc	Narrow channel
+-65139	7.0	misc	Secret route
+-65172	7.0	misc	Secret route
+-65239	7.0	misc	Old road
+-65331	7.0	misc	Secret route
+-65339	7.0	misc	Secret route
+-65423	7.0	misc	Secret pass
+-65583	7.0	misc	Secret route
+-65629	7.0	misc	Narrow channel
+-65657	7.0	misc	Secret route
+-65707	7.0	misc	Old road
+-65845	7.0	misc	Rocky channel
+-65869	7.0	misc	Old road
+-65927	7.0	misc	Old road
+-66131	7.0	misc	Secret route
+-66186	7.0	misc	Rocky channel
+-66208	7.0	misc	Old road
+-66212	7.0	misc	Secret route
+-66257	7.0	misc	Rocky channel
+-66261	7.0	misc	Secret pass
+-66437	7.0	misc	Secret sea route
+-66526	7.0	misc	Old road
+-66643	7.0	misc	Secret sea route
+-66664	7.0	misc	Secret pass
+-66681	7.0	misc	Secret route
+-66717	7.0	misc	Secret route
+-66749	7.0	misc	Secret sea route
+-66826	7.0	misc	Rocky channel
+-66840	7.0	misc	Old road
+-66842	7.0	misc	Secret sea route
+-66847	7.0	misc	Old road
+-66900	7.0	misc	Secret pass
+-67079	7.0	misc	Secret pass
+-67155	7.0	misc	Secret route
+-67228	7.0	misc	Old road
+-67272	7.0	misc	Old road
+-67353	7.0	misc	Rocky channel
+-67356	7.0	misc	Secret pass
+-67389	7.0	misc	Secret sea route
+-67444	7.0	misc	Secret route
+-67450	7.0	misc	Old road
+-67620	7.0	misc	Secret pass
+-67869	7.0	misc	Secret pass
+-67879	7.0	misc	Secret sea route
+-67944	7.0	misc	Old road
+-68004	7.0	misc	Secret sea route
+-68018	7.0	misc	Secret pass
+-68084	7.0	misc	Secret route
+-68098	7.0	misc	Old road
+-68142	7.0	misc	Secret route
+-68187	7.0	misc	Secret route
+-68188	7.0	misc	Secret pass
+-68211	7.0	misc	Narrow channel
+-68289	7.0	misc	Old road
+-68426	7.0	misc	Secret sea route
+-68457	7.0	misc	Rocky channel
+-68558	7.0	misc	Secret pass
+-68617	7.0	misc	Narrow channel
+-68668	7.0	misc	Secret route
+-68695	7.0	misc	Old road
+-68728	7.0	misc	Secret pass
+-68738	7.0	misc	Secret route
+-68743	7.0	misc	Old road
+-68790	7.0	misc	Secret route
+-68821	7.0	misc	Narrow channel
+-68852	7.0	misc	Old road
+-68853	7.0	misc	Secret pass
+-68958	7.0	misc	Secret route
+-68979	7.0	misc	Old road
+-68995	7.0	misc	Secret route
+-69018	7.0	misc	Secret sea route
+-69069	7.0	misc	Secret route
+-69137	7.0	misc	Secret pass
+-69251	7.0	misc	Old road
+-69258	7.0	misc	Old road
+-69259	7.0	misc	Secret sea route
+-69329	7.0	misc	Old road
+-69342	7.0	misc	Secret pass
+-69353	7.0	misc	Secret sea route
+-69401	7.0	misc	Secret pass
+-69410	7.0	misc	Rocky channel
+-69491	7.0	misc	Secret route
+-69496	7.0	misc	Rocky channel
+-69556	7.0	misc	Secret route
+-69574	7.0	misc	Secret pass
+-69592	7.0	misc	Secret pass
+-69596	7.0	misc	Secret route
+-69666	7.0	misc	Old road
+-69710	7.0	misc	Old road
+-69829	7.0	misc	Old road
+-69944	7.0	misc	Secret pass
+-70056	7.0	misc	Old road
+-70075	7.0	misc	Secret pass
+-70089	7.0	misc	Narrow channel
+-70097	7.0	misc	Secret pass
+-70152	7.0	misc	Secret route
+-70181	7.0	misc	Secret route
+-70203	7.0	misc	Secret pass
+-70223	7.0	misc	Secret route
+-70301	7.0	misc	Old road
+-70468	7.0	misc	Secret route
+-70487	7.0	misc	Secret route
+-70552	7.0	misc	Secret pass
+-70585	7.0	misc	Secret pass
+-70623	7.0	misc	Old road
+-70638	7.0	misc	Secret route
+-70660	7.0	misc	Secret route
+-70751	7.0	misc	Secret route
+-70784	7.0	misc	Secret route
+-70789	7.0	misc	Secret pass
+-70834	7.0	misc	Secret sea route
+-70861	7.0	misc	Secret pass
+-70969	7.0	misc	Old road
+-70985	7.0	misc	Rocky channel
+-70998	7.0	misc	Old road
+-71032	7.0	misc	Old road
+-71059	7.0	misc	Secret route
+-71142	7.0	misc	Secret sea route
+-71165	7.0	misc	Old road
+-71248	7.0	misc	Old road
+-71255	7.0	misc	Secret pass
+-71289	7.0	misc	Secret route
+-71320	7.0	misc	Secret route
+-71326	7.0	misc	Old road
+-71364	7.0	misc	Secret pass
+-71445	7.0	misc	Secret sea route
+-71538	7.0	misc	Secret pass
+-71579	7.0	misc	Secret pass
+-71654	7.0	misc	Old road
+-71692	7.0	misc	Secret pass
+-71736	7.0	misc	Old road
+-71780	7.0	misc	Rocky channel
+-71926	7.0	misc	Old road
+-71937	7.0	misc	Secret pass
+-72019	7.0	misc	Old road
+-72111	7.0	misc	Rocky channel
+-72159	7.0	misc	Old road
+-72203	7.0	misc	Old road
+-72224	7.0	misc	Secret route
+-72238	7.0	misc	Secret pass
+-72348	7.0	misc	Secret sea route
+-72406	7.0	misc	Secret pass
+-72434	7.0	misc	Secret route
+-72491	7.0	misc	Secret route
+-72565	7.0	misc	Old road
+-72566	7.0	misc	Secret sea route
+-72583	7.0	misc	Secret pass
+-72641	7.0	misc	Secret route
+-72643	7.0	misc	Rocky channel
+-72709	7.0	misc	Old road
+-72751	7.0	misc	Secret route
+-72810	7.0	misc	Secret route
+-72853	7.0	misc	Secret pass
+-72916	7.0	misc	Secret pass
+-72969	7.0	misc	Secret route
+-73024	7.0	misc	Secret pass
+-73036	7.0	misc	Secret sea route
+-73100	7.0	misc	Old road
+-73160	7.0	misc	Secret pass
+-73185	7.0	misc	Secret route
+-73324	7.0	misc	Secret route
+-73359	7.0	misc	Old road
+-73396	7.0	misc	Secret pass
+-73399	7.0	misc	Secret route
+-73405	7.0	misc	Secret pass
+-73425	7.0	misc	Secret route
+-73432	7.0	misc	Secret pass
+-73483	7.0	misc	Secret sea route
+-73566	7.0	misc	Old road
+-73809	7.0	misc	Old road
+-73972	7.0	misc	Rocky channel
+-74006	7.0	misc	Secret pass
+-74040	7.0	misc	Secret route
+-74087	7.0	misc	Old road
+-74089	7.0	misc	Secret pass
+-74183	7.0	misc	Secret pass
+-74211	7.0	misc	Narrow channel
+-74212	7.0	misc	Narrow channel
+-74235	7.0	misc	Secret pass
+-74319	7.0	misc	Rocky channel
+-74323	7.0	misc	Old road
+-74333	7.0	misc	Secret pass
+-74603	7.0	misc	Old road
+-74636	7.0	misc	Old road
+-74648	7.0	misc	Secret route
+-74699	7.0	misc	Narrow channel
+-74716	7.0	misc	Secret route
+-74718	7.0	misc	Secret pass
+-74723	7.0	misc	Secret sea route
+-74762	7.0	misc	Secret route
+-74874	7.0	misc	Secret pass
+-74900	7.0	misc	Old road
+-74922	7.0	misc	Secret pass
+-74925	7.0	misc	Old road
+-74926	7.0	misc	Secret route
+-75022	7.0	misc	Secret route
+-75037	7.0	misc	Secret pass
+-75221	7.0	misc	Secret pass
+-75250	7.0	misc	Secret pass
+-75299	7.0	misc	Old road
+-75310	7.0	misc	Secret sea route
+-75365	7.0	misc	Old road
+-75458	7.0	misc	Secret pass
+-75518	7.0	misc	Old road
+-75546	7.0	misc	Secret sea route
+-75564	7.0	misc	Old road
+-75599	7.0	misc	Secret route
+-75629	7.0	misc	Secret route
+-75699	7.0	misc	Secret pass
+-75710	7.0	misc	Rocky channel
+-75755	7.0	misc	Secret pass
+-75849	7.0	misc	Old road
+-75913	7.0	misc	Rocky channel
+-75939	7.0	misc	Secret sea route
+-75943	7.0	misc	Secret route
+-75990	7.0	misc	Secret pass
+-76114	7.0	misc	Old road
+-76130	7.0	misc	Rocky channel
+-76229	7.0	misc	Old road
+-76261	7.0	misc	Secret pass
+-76266	7.0	misc	Secret sea route
+-76333	7.0	misc	Secret pass
+-76427	7.0	misc	Old road
+-76444	7.0	misc	Secret pass
+-76446	7.0	misc	Secret pass
+-76642	7.0	misc	Secret sea route
+-76712	7.0	misc	Secret pass
+-76717	7.0	misc	Old road
+-76749	7.0	misc	Secret route
+-76767	7.0	misc	Secret pass
+-76775	7.0	misc	Old road
+-76820	7.0	misc	Old road
+-76821	7.0	misc	Secret pass
+-76890	7.0	misc	Secret route
+-76956	7.0	misc	Rocky channel
+-77070	7.0	misc	Secret route
+-77075	7.0	misc	Secret route
+-77091	7.0	misc	Old road
+-77124	7.0	misc	Secret route
+-77134	7.0	misc	Secret route
+-77240	7.0	misc	Secret pass
+-77253	7.0	misc	Secret route
+-77338	7.0	misc	Secret route
+-77382	7.0	misc	Secret pass
+-77450	7.0	misc	Secret pass
+-77460	7.0	misc	Rocky channel
+-77592	7.0	misc	Narrow channel
+-77631	7.0	misc	Rocky channel
+-77649	7.0	misc	Secret route
+-77700	7.0	misc	Secret pass
+-77775	7.0	misc	Secret route
+-77799	7.0	misc	Secret pass
+-77847	7.0	misc	Rocky channel
+-77999	7.0	misc	Secret route
+-78101	7.0	misc	Secret pass
+-78121	7.0	misc	Old road
+-78149	7.0	misc	Old road
+-78215	7.0	misc	Secret pass
+-78227	7.0	misc	Rocky channel
+-78243	7.0	misc	Secret route
+-78257	7.0	misc	Secret route
+-78262	7.0	misc	Secret route
+-78268	7.0	misc	Secret pass
+-78304	7.0	misc	Secret pass
+-78338	7.0	misc	Old road
+-78414	7.0	misc	Secret route
+-78427	7.0	misc	Old road
+-78470	7.0	misc	Secret pass
+-78650	7.0	misc	Old road
+-78674	7.0	misc	Old road
+-78675	7.0	misc	Secret pass
+-78688	7.0	misc	Secret pass
+-78696	7.0	misc	Secret pass
+-78779	7.0	misc	Narrow channel
+-78781	7.0	misc	Rocky channel
+-78894	7.0	misc	Secret pass
+-78915	7.0	misc	Secret pass
+-78962	7.0	misc	Secret pass
+-78982	7.0	misc	Old road
 --- /dev/null
 +++ b/lib/orders/200
-@@ -0,0 +1,7 @@
+@@ -0,0 +1,9 @@
 +200:credit 57081 5
 +200:credit 4126 2 np
 +200:credit 57081
 +200:credit 4126
 +200:credit 4126
++200:credit
 +200:emote 4126
 +200:relore 57081
++200:relore
 --- /dev/null
 +++ b/lib/orders/300
 @@ -0,0 +1,3 @@

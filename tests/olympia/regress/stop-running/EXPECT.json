@@ -1,0 +1,100 @@
+{"turn": 2, "factions": [
+  {"id": 300, "name": "Quarriers",
+   "units": [
+     {"id": 4126, "name": "Quarrier One", "where": 13349, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 146}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 11, "name": "worker", "qty": 1}, {"id": 78, "name": "stone", "qty": 32}],
+      "skills": [{"id": 682, "name": "Stone quarrying"}]}],
+   "locations": [
+     {"id": 13349, "name": "", "kind": "loc", "subkind": "mountain", "depth": "province", "province": 13349,
+      "exits": [{"direction": "north", "destination": 13249, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "east", "destination": 13350, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "south", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13348, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 59916, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Quarrier One", "faction": 300}]}]},
+  {"id": 301, "name": "Fisherfolk",
+   "units": [
+     {"id": 8651, "name": "Fisher One", "where": 70901, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 142}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 19, "name": "sailor", "qty": 2}, {"id": 87, "name": "fish", "qty": 22}],
+      "skills": [{"id": 603, "name": "Fishing"}]}],
+   "locations": [
+     {"id": 70901, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13350,
+      "exits": [],
+      "here": [{"id": 8651, "name": "Fisher One", "faction": 301}]}]},
+  {"id": 302, "name": "Trainers",
+   "units": [
+     {"id": 8159, "name": "Trainer One", "where": 57081, "stacked_under": 0,
+      "items": [{"id": 10, "name": "peasant", "qty": 78}, {"id": 11, "name": "worker", "qty": 15}],
+      "skills": []}],
+   "locations": [
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 76570, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 70460, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 66282, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 77581, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 7012, "name": "Wrangler One", "faction": 303}, {"id": 8159, "name": "Trainer One", "faction": 302}]}]},
+  {"id": 303, "name": "Wranglers",
+   "units": [
+     {"id": 7012, "name": "Wrangler One", "where": 57081, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 150}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 51, "name": "wild horse", "qty": 10}, {"id": 52, "name": "riding horse", "qty": 10}],
+      "skills": [{"id": 650, "name": "Beastmastery"}, {"id": 656, "name": "Train wild horse to riding horse"}]}],
+   "locations": [
+     {"id": 57081, "name": "Greyfell", "kind": "loc", "subkind": "city", "depth": "subloc", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 76570, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 70460, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 66282, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 77581, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "out", "destination": 13451, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 7012, "name": "Wrangler One", "faction": 303}, {"id": 8159, "name": "Trainer One", "faction": 302}]}]},
+  {"id": 304, "name": "Menders",
+   "units": [
+     {"id": 6947, "name": "Mender One", "where": 76570, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 142}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 11, "name": "worker", "qty": 2}],
+      "skills": []}],
+   "locations": [
+     {"id": 76570, "name": "", "kind": "loc", "subkind": "tower", "depth": "", "province": 13451,
+      "exits": [{"direction": "out", "destination": 57081, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 6947, "name": "Mender One", "faction": 304}]}]},
+  {"id": 305, "name": "Wallers",
+   "units": [
+     {"id": 8731, "name": "Waller One", "where": 70460, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 146}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 11, "name": "worker", "qty": 1}],
+      "skills": []}],
+   "locations": [
+     {"id": 70460, "name": "", "kind": "loc", "subkind": "tower", "depth": "", "province": 13451,
+      "exits": [{"direction": "out", "destination": 57081, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8731, "name": "Waller One", "faction": 305}]}]},
+  {"id": 306, "name": "Patchers",
+   "units": [
+     {"id": 8761, "name": "Patcher One", "where": 66282, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 142}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 11, "name": "worker", "qty": 2}],
+      "skills": []}],
+   "locations": [
+     {"id": 66282, "name": "", "kind": "loc", "subkind": "tower", "depth": "", "province": 13451,
+      "exits": [{"direction": "out", "destination": 57081, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 8761, "name": "Patcher One", "faction": 306}]}]},
+  {"id": 307, "name": "Sailors",
+   "units": [
+     {"id": 2294, "name": "Sailor One", "where": 76129, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 168}, {"id": 19, "name": "sailor", "qty": 8}],
+      "skills": [{"id": 600, "name": "Shipcraft"}, {"id": 601, "name": "Sailing"}]}],
+   "locations": [
+     {"id": 76129, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13250,
+      "exits": [],
+      "here": [{"id": 2294, "name": "Sailor One", "faction": 307}]}]},
+  {"id": 308, "name": "Pilots",
+   "units": [
+     {"id": 3127, "name": "Pilot One", "where": 69968, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 168}, {"id": 19, "name": "sailor", "qty": 8}],
+      "skills": [{"id": 600, "name": "Shipcraft"}, {"id": 601, "name": "Sailing"}]}],
+   "locations": [
+     {"id": 69968, "name": "", "kind": "ship", "subkind": "roundship", "depth": "", "province": 13250,
+      "exits": [],
+      "here": [{"id": 3127, "name": "Pilot One", "faction": 308}]}]},
+  {"id": 309, "name": "Idlers",
+   "units": [
+     {"id": 4821, "name": "Idler One", "where": 13451, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 142}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 11, "name": "worker", "qty": 2}],
+      "skills": [{"id": 702, "name": "Harvest lumber"}]}],
+   "locations": [
+     {"id": 13451, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13451,
+      "exits": [{"direction": "north", "destination": 13351, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "east", "destination": 13452, "distance": 2, "road": 0, "impassable": 1, "hidden": 0}, {"direction": "south", "destination": 13551, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13450, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "in", "destination": 57081, "distance": 1, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4821, "name": "Idler One", "faction": 309}]}]},
+  {"id": 310, "name": "Loafers",
+   "units": [
+     {"id": 7571, "name": "Loafer One", "where": 77581, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 146}, {"id": 10, "name": "peasant", "qty": 25}, {"id": 11, "name": "worker", "qty": 1}],
+      "skills": []}],
+   "locations": [
+     {"id": 77581, "name": "", "kind": "loc", "subkind": "tower", "depth": "", "province": 13451,
+      "exits": [{"direction": "out", "destination": 57081, "distance": 0, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 7571, "name": "Loafer One", "faction": 310}]}]}]}

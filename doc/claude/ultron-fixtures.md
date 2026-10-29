@@ -70,7 +70,14 @@ neither of its `fail` cells is reachable; group 9 (items; #218) by
 `oly.potion`, `oly.orb`, `oly.ring`, `oly.palantir` and `oly.relic`
 bindings; and group 10 (the shared `v_use`/`v_use_item` checks and the
 `v_implicit` skills; #224) by `use-checks`. With it no use-backlog cell is
-`todo`.
+`todo`. `use-quick-cast` (#362) pins `use 997`–`999` (in `use_tbl`, but no
+skill box exists, so they fail as invalid) and the cast speedup a quick_cast
+potion gives.
+
+**STOP on running orders (#361).** `stop-running` interrupts collect, make,
+repair, sail and `use 601` orders an earlier turn left running. A STOP acts
+only on day 0, on such an order, so its `build-scenario.sh` runs a real turn
+between two Lua scripts and freezes the lib whole as `scenario.tgz`.
 
 The harness to work through it is in place
 ([doc/ultron-harness-architecture.md §7](../ultron-harness-architecture.md#7-first-cut-scope-proposed)):

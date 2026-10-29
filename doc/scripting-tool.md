@@ -681,6 +681,14 @@ before the turn. No GM verb sets the depth, so it is a path (B) binding like
 `castle_level`; it skips the gate crystal a finished build may leave.
 `use-crafts` sinks its mine to depth 4, the shallowest that yields mithril.
 
+**Since landed (#361):** `oly.damage(fort, n)` damages a finished building or
+ship by `n` points (1–99) through `add_structure_damage` with `can_destroy`
+FALSE, as an earlier turn's siege would, and returns its damage. It errors
+for anything not at `LOC_build` depth or an `n` outside 1–99. A building
+`oly.makeloc` creates is undamaged, and no GM verb damages one, so it is a
+path (B) binding like `castle_level`. `stop-running` damages two towers so
+that a STOP finds their `repair` part-way through the damage.
+
 **Since landed (#192):** `oly.kill(who, holder)` kills the noble `who` with
 the `kill` GM verb (`v_kill` → `kill_char`), run as `holder`, and hands its
 dead body to `holder`, as if `holder` had picked it up. `kill_char` turns the

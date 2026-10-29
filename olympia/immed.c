@@ -429,6 +429,12 @@ v_credit(struct command *c)
 	int pl;
 	extern int gold_times;
 
+	if (numargs(c) < 1)
+	{
+		wout(c->who, "Must specify a character or player.");
+		return FALSE;
+	}
+
 	if (amount)
 	{
 		if (kind(target) != T_char && kind(target) != T_player)
@@ -491,6 +497,12 @@ v_relore(struct command *c)
 {
 	int i;
 	int skill = c->a;
+
+	if (numargs(c) < 1)
+	{
+		wout(c->who, "Must specify a skill.");
+		return FALSE;
+	}
 
 	if (!valid_box(skill) || kind(skill) != T_skill)
 	{

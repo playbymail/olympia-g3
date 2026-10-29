@@ -1,0 +1,46 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Hasty Mages",
+   "units": [
+     {"id": 4126, "name": "Hasty One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 800, "name": "Magic"}, {"id": 804, "name": "View current aura level of others"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Hasty One", "faction": 300}, {"id": 6947, "name": "Checker One", "faction": 304}, {"id": 7012, "name": "Trancer One", "faction": 303}, {"id": 8159, "name": "Stacker One", "faction": 302}, {"id": 8651, "name": "Clamped One", "faction": 301}]}]},
+  {"id": 301, "name": "Clamped Mages",
+   "units": [
+     {"id": 8651, "name": "Clamped One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 800, "name": "Magic"}, {"id": 804, "name": "View current aura level of others"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Hasty One", "faction": 300}, {"id": 6947, "name": "Checker One", "faction": 304}, {"id": 7012, "name": "Trancer One", "faction": 303}, {"id": 8159, "name": "Stacker One", "faction": 302}, {"id": 8651, "name": "Clamped One", "faction": 301}]}]},
+  {"id": 302, "name": "Stacking Mages",
+   "units": [
+     {"id": 8159, "name": "Stacker One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 800, "name": "Magic"}, {"id": 804, "name": "View current aura level of others"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Hasty One", "faction": 300}, {"id": 6947, "name": "Checker One", "faction": 304}, {"id": 7012, "name": "Trancer One", "faction": 303}, {"id": 8159, "name": "Stacker One", "faction": 302}, {"id": 8651, "name": "Clamped One", "faction": 301}]}]},
+  {"id": 303, "name": "Trancers",
+   "units": [
+     {"id": 7012, "name": "Trancer One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 800, "name": "Magic"}, {"id": 804, "name": "View current aura level of others"}, {"id": 920, "name": "Advanced sorcery"}, {"id": 921, "name": "Trance"}]}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Hasty One", "faction": 300}, {"id": 6947, "name": "Checker One", "faction": 304}, {"id": 7012, "name": "Trancer One", "faction": 303}, {"id": 8159, "name": "Stacker One", "faction": 302}, {"id": 8651, "name": "Clamped One", "faction": 301}]}]},
+  {"id": 304, "name": "Checkers",
+   "units": [
+     {"id": 6947, "name": "Checker One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Hasty One", "faction": 300}, {"id": 6947, "name": "Checker One", "faction": 304}, {"id": 7012, "name": "Trancer One", "faction": 303}, {"id": 8159, "name": "Stacker One", "faction": 302}, {"id": 8651, "name": "Clamped One", "faction": 301}]}]}]}

@@ -161,6 +161,8 @@ No cell is `todo`. The `n/a` cells:
 - both cells of `add_ram` (997), `save_quick` (998) and `quick_cast` (999).
   These skills are in `use_tbl` but not in the world's `lib/skill`, so `use`
   rejects them as not a valid skill and counts them under `invalid`.
+  `use-quick-cast` (#362) pins that rejection, and the cast speedup a
+  quick_cast potion gives, which is the reachable half of these skills.
 
 To prove a cell, run the turn with `--use-coverage <path>` and have the fixture's
 `check.sh` assert it with `use_cells` from `tests/olympia/fixtures/coverage.sh`,

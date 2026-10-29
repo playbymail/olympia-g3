@@ -8,9 +8,13 @@
 --
 --   credit   gold to a city (not a character or player), NP to a noble
 --            (not a player), the Times' pay to a city (not a character),
---            and the Times' pay twice (already paid; the first is ok)
+--            and the Times' pay twice (already paid; the first is ok),
+--            and no target
 --   emote    no message
---   relore   a city, which is not a skill
+--   relore   a city, which is not a skill, and no skill
+--
+-- The bare credit and relore follow orders with a target, so the GM's parse
+-- vector still holds a stale pointer in the target's slot (#364).
 
 local oly = require "oly"
 
@@ -43,8 +47,10 @@ for _, o in ipairs{
 		"credit " .. GREYFELL,
 		"credit " .. herald,
 		"credit " .. herald,
+		"credit",
 		"emote " .. herald,
-		"relore " .. GREYFELL } do
+		"relore " .. GREYFELL,
+		"relore" } do
 	oly.order(GM, o)
 end
 
