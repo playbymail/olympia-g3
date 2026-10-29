@@ -1,0 +1,46 @@
+{"turn": 1, "factions": [
+  {"id": 300, "name": "Raiders",
+   "units": [
+     {"id": 4126, "name": "Raider One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Raider One", "faction": 300}, {"id": 6947, "name": "Striker One", "faction": 304}, {"id": 8159, "name": "Dabbler One", "faction": 302}, {"id": 8651, "name": "Fumbler One", "faction": 301}]}]},
+  {"id": 301, "name": "Fumblers",
+   "units": [
+     {"id": 8651, "name": "Fumbler One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Raider One", "faction": 300}, {"id": 6947, "name": "Striker One", "faction": 304}, {"id": 8159, "name": "Dabbler One", "faction": 302}, {"id": 8651, "name": "Fumbler One", "faction": 301}]}]},
+  {"id": 302, "name": "Dabblers",
+   "units": [
+     {"id": 8159, "name": "Dabbler One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Raider One", "faction": 300}, {"id": 6947, "name": "Striker One", "faction": 304}, {"id": 8159, "name": "Dabbler One", "faction": 302}, {"id": 8651, "name": "Fumbler One", "faction": 301}]}]},
+  {"id": 303, "name": "Foggers",
+   "units": [
+     {"id": 7012, "name": "Fogger One", "where": 13550, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": [{"id": 820, "name": "Weather magic"}, {"id": 821, "name": "Fierce wind"}, {"id": 822, "name": "Bind storm to ship"}, {"id": 823, "name": "Scribe weather symbols"}, {"id": 824, "name": "Summon wind"}, {"id": 826, "name": "Summon fog"}]}],
+   "locations": [
+     {"id": 13550, "name": "", "kind": "loc", "subkind": "forest", "depth": "province", "province": 13550,
+      "exits": [{"direction": "north", "destination": 13450, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13551, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13650, "distance": 7, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13549, "distance": 14, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 7012, "name": "Fogger One", "faction": 303}]}]},
+  {"id": 304, "name": "Strikers",
+   "units": [
+     {"id": 6947, "name": "Striker One", "where": 13450, "stacked_under": 0,
+      "items": [{"id": 1, "name": "gold", "qty": 175}, {"id": 10, "name": "peasant", "qty": 25}],
+      "skills": []}],
+   "locations": [
+     {"id": 13450, "name": "", "kind": "loc", "subkind": "plain", "depth": "province", "province": 13450,
+      "exits": [{"direction": "north", "destination": 13350, "distance": 2, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "east", "destination": 13451, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "south", "destination": 13550, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}, {"direction": "west", "destination": 13449, "distance": 8, "road": 0, "impassable": 0, "hidden": 0}],
+      "here": [{"id": 4126, "name": "Raider One", "faction": 300}, {"id": 6947, "name": "Striker One", "faction": 304}, {"id": 8159, "name": "Dabbler One", "faction": 302}, {"id": 8651, "name": "Fumbler One", "faction": 301}]}]}]}

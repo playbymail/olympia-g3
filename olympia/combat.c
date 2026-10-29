@@ -2732,6 +2732,12 @@ v_attack(struct command *c)
 	int flag = c->b;
 	int seize_slot;
 
+	if (numargs(c) < 1)
+	{
+		wout(c->who, "Must specify what to attack.");
+		return FALSE;
+	}
+
 	if (in_safe_now(c->who))
 	{
 		wout(c->who, "Combat is not permitted in safe havens.");

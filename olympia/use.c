@@ -532,6 +532,13 @@ v_use(struct command *c)
 
 	c->use_skill = sk;
 
+	if (numargs(c) < 1)
+	{
+		wout(c->who, "Must specify what to use.");
+		use_coverage_skill(0, UCOV_CHECKS);
+		return FALSE;
+	}
+
 	if (!valid_box(sk))
 	{
 		wout(c->who, "%s is not a valid skill to use.", c->parse[1]);

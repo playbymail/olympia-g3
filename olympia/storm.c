@@ -612,7 +612,7 @@ d_summon_fog(struct command *c)
 
 	reset_cast_where(c->who);
 
-	if (name && *name)
+	if (numargs(c) >= 2 && name && *name)
 		set_name(new, name);
 
 	new_storm(new, sub_fog, aura*2, where);

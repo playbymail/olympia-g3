@@ -73,6 +73,12 @@ int
 v_be(struct command *c)
 {
 
+	if (numargs(c) < 1)
+	{
+		out(c->who, "Must specify a box.");
+		return FALSE;
+	}
+
 	if (valid_box(c->a))
 	{
 		immediate = c->a;
@@ -116,6 +122,12 @@ int
 v_add_item(struct command *c)
 {
 
+	if (numargs(c) < 1)
+	{
+		wout(c->who, "Must specify an item.");
+		return FALSE;
+	}
+
 	if (kind(c->a) == T_item)
 	{
 		if (kind(c->who) != T_char)
@@ -157,6 +169,12 @@ v_dump(struct command *c)
 int
 v_poof(struct command *c)
 {
+
+	if (numargs(c) < 1)
+	{
+		wout(c->who, "Must specify a location.");
+		return FALSE;
+	}
 
 	if (!is_loc_or_ship(c->a))
 	{
@@ -200,6 +218,12 @@ v_makeloc(struct command *c)
 	int n;
 	int sk;
 	int kind;
+
+	if (numargs(c) < 1)
+	{
+		wout(c->who, "Must specify a subkind.");
+		return FALSE;
+	}
 
 	sk = lookup(subkind_s, c->parse[1]);
 
@@ -247,6 +271,12 @@ v_invent(struct command *c)
 int
 v_know(struct command *c)
 {
+
+	if (numargs(c) < 1)
+	{
+		wout(c->who, "Must specify a skill.");
+		return FALSE;
+	}
 
 	if (kind(c->a) != T_skill)
 	{

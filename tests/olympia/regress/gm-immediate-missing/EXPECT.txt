@@ -1,0 +1,11 @@
+200:0::0:0:Must specify a box.
+200:0::0:0:'0' not a valid box.
+200:0::0:0:Must specify a box.
+200:0::0:0:Warning: Gamemaster~[200] not a character
+200:0::0:0:Must specify an item.
+200:0::0:0:1 is not a location.
+200:0::0:0:Must specify a location.
+200:0::0:0:1 is not a skill.
+200:0::0:0:Must specify a skill.
+200:0::0:0:Unknown subkind.
+200:0::0:0:Must specify a subkind.
