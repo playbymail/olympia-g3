@@ -916,7 +916,7 @@ summary_trunc_name(int who)
 	if (t)
 		*t = '\0';
 
-	while ((t = prev_word(s, t)) && *t == ' ' && stupid_word(t+1))
+	while (t && (t = prev_word(s, t)) && *t == ' ' && stupid_word(t+1))
 		*t = '\0';
 
 	s[TRUNC_NAME] = '\0';		/* catches a case */

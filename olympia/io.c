@@ -706,15 +706,28 @@ trade_list_scan(char *s, trades_list *l, int box_num)
 
 		new->who = box_num;
 
-		if (valid_box(new->item))
-			trades_append(l, new);
-		else
+/*
+ *  BUY and SELL refuse a positive quantity with no price, and the
+ *  traders divide by the price.  Drop such an entry here.
+ */
+
+		if (!valid_box(new->item))
 		{
 			fprintf(stderr, "trade_list_scan(%d): bad item %d\n",
 					box_num, new->item);
 
 			my_free(new);
 		}
+		else if (new->qty > 0 && new->cost < 1)
+		{
+			fprintf(stderr, "trade_list_scan(%d): item %d qty %d "
+					"has no price\n",
+					box_num, new->item, new->qty);
+
+			my_free(new);
+		}
+		else
+			trades_append(l, new);
 
 		if (*s && s[strlen(s)-1] == '\\')	/* another entry follows */
 		{
