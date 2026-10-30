@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <fcntl.h>
 
 /* BUGFIX (modernization): use varargs and forward declarations */

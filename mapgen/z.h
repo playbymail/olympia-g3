@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <fcntl.h>
 
 #include "../lib/checked_alloc.h"	/* shared my_malloc/my_realloc/my_free seam */
