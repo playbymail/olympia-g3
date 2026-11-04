@@ -1,0 +1,1738 @@
+2689:0::0:1:> wait time 0
+2689:0::0:1:Wait finished: zero days have passed.
+3051:0::0:1:> wait time 0
+3051:0::0:1:Wait finished: zero days have passed.
+3512:0::0:1:> wait time 0
+3512:0::0:1:Wait finished: zero days have passed.
+3618:0::0:1:> wait time 0
+3618:0::0:1:Wait finished: zero days have passed.
+3947:0::0:1:> wait time 0
+3947:0::0:1:Wait finished: zero days have passed.
+3998:0::0:1:> wait time 0
+3998:0::0:1:Wait finished: zero days have passed.
+4296:0::0:1:> wait time 0
+4296:0::0:1:Wait finished: zero days have passed.
+4798:0::0:1:> wait time 0
+4798:0::0:1:Wait finished: zero days have passed.
+5608:0::0:1:> wait time 0
+5608:0::0:1:Wait finished: zero days have passed.
+6607:0::0:1:> wait time 0
+6607:0::0:1:Wait finished: zero days have passed.
+6926:0::0:1:> wait time 0
+6926:0::0:1:Wait finished: zero days have passed.
+7558:0::0:1:> wait time 0
+7558:0::0:1:Wait finished: zero days have passed.
+8308:0::0:1:> wait time 0
+8308:0::0:1:Wait finished: zero days have passed.
+8510:0::0:1:> wait time 0
+8510:0::0:1:Wait finished: zero days have passed.
+8520:0::0:1:> wait time 0
+8520:0::0:1:Wait finished: zero days have passed.
+8754:0::0:1:> wait time 0
+8754:0::0:1:Wait finished: zero days have passed.
+8801:0::0:1:> wait time 0
+8801:0::0:1:Wait finished: zero days have passed.
+81563:0::0:1:> wait time 0
+81563:0::0:1:Wait finished: zero days have passed.
+83559:0::0:1:> wait time 0
+83559:0::0:1:Wait finished: zero days have passed.
+85149:0::0:1:> wait time 0
+85149:0::0:1:Wait finished: zero days have passed.
+97167:0::0:1:> wait time 0
+97167:0::0:1:Wait finished: zero days have passed.
+102086:0::0:1:> wait time 0
+102086:0::0:1:Wait finished: zero days have passed.
+103114:0::0:1:> wait time 0
+103114:0::0:1:Wait finished: zero days have passed.
+128712:0::0:1:> wait time 0
+128712:0::0:1:Wait finished: zero days have passed.
+131385:0::0:1:> wait time 0
+131385:0::0:1:Wait finished: zero days have passed.
+2689:0::0:1:> move north
+2689:0::0:1:One noble, 225 men: travel will take an extra 11 days.
+2689:0::0:1:Travel to Hades~[mp67] will take 18 days.
+29267:0::0:1:Greater Demon~[2689], with 225~spirits, went north.
+3051:0::0:1:> move south
+3051:0::0:1:Travel to Hades~[kd52] will take seven days.
+26252:0::0:1:Ghostly presence~[3051] went south.
+3512:0::0:1:> move south
+3512:0::0:1:Travel to Hades~[mx67] will take seven days.
+29767:0::0:1:Ghostly presence~[3512] went south.
+3618:0::0:1:> move east
+3618:0::0:1:Travel to Hades~[mm65] will take seven days.
+3947:0::0:1:> move east
+3947:0::0:1:One noble, 128 men: travel will take an extra 6 days.
+3947:0::0:1:Travel to Hades~[nf21] will take 13 days.
+3998:0::0:1:> move west
+3998:0::0:1:One noble, 74 men: travel will take an extra 3 days.
+3998:0::0:1:Travel to Hades~[nm19] will take ten days.
+4296:0::0:1:> move north
+4296:0::0:1:Travel to Hades~[ma00] will take seven days.
+28100:0::0:1:Ghostly presence~[4296] went north.
+4798:0::0:1:> move west
+4798:0::0:1:One noble, 117 men: travel will take an extra 5 days.
+4798:0::0:1:Travel to Hades~[km37] will take 12 days.
+26938:0::0:1:Lesser Demon~[4798], with 117~spirits, went west.
+5608:0::0:1:> move south
+5608:0::0:1:One noble, 130 men: travel will take an extra 6 days.
+5608:0::0:1:Travel to Hades~[mh22] will take 13 days.
+28522:0::0:1:Lesser Demon~[5608], with 130~spirits, went south.
+6607:0::0:1:> move west
+6607:0::0:1:One noble, 221 men: travel will take an extra 11 days.
+6607:0::0:1:Travel to Hades~[mq61] will take 18 days.
+6926:0::0:1:> move south
+6926:0::0:1:Travel to Hades~[mp51] will take seven days.
+29051:0::0:1:Ghostly presence~[6926] went south.
+7558:0::0:1:> move west
+7558:0::0:1:Travel to Hades~[mp09] will take seven days.
+8308:0::0:1:> move south
+8308:0::0:1:Travel to Hades~[kp41] will take seven days.
+27041:0::0:1:Ghostly presence~[8308] went south.
+8510:0::0:1:> move east
+8510:0::0:1:One noble, 228 men: travel will take an extra 11 days.
+8510:0::0:1:Travel to Hades~[nd24] will take 18 days.
+30323:0::0:1:Greater Demon~[8510], with 228~spirits, went east.
+8520:0::0:1:> move east
+8520:0::0:1:One noble, 145 men: travel will take an extra 7 days.
+8520:0::0:1:Travel to Hades~[mn08] will take 14 days.
+29007:0::0:1:Lesser Demon~[8520], with 145~spirits, went east.
+8754:0::0:1:> move west
+8754:0::0:1:One noble, 162 men: travel will take an extra 8 days.
+8754:0::0:1:Travel to Hades~[pn08] will take 15 days.
+33009:0::0:1:Greater Demon~[8754], with 162~spirits, went west.
+8801:0::0:1:> move west
+8801:0::0:1:One noble, 103 men: travel will take an extra 5 days.
+8801:0::0:1:Travel to Hades~[kf60] will take 12 days.
+81563:0::0:1:> move north
+81563:0::0:1:One noble, 71 men: travel will take an extra 3 days.
+81563:0::0:1:Travel to Hades~[pg42] will take ten days.
+32642:0::0:1:Tortured spirits~[81563], spirits, number:~72, went north.
+83559:0::0:1:> move south
+83559:0::0:1:One noble, 50 men: travel will take an extra 2 days.
+83559:0::0:1:Travel to Hades~[kk70] will take nine days.
+85149:0::0:1:> move west
+85149:0::0:1:One noble, 60 men: travel will take an extra 3 days.
+85149:0::0:1:Travel to Hades~[ph62] will take ten days.
+32663:0::0:1:Tortured spirits~[85149], spirits, number:~61, went west.
+97167:0::0:1:> move west
+97167:0::0:1:One noble, 55 men: travel will take an extra 2 days.
+97167:0::0:1:Travel to Hades~[mh47] will take nine days.
+102086:0::0:1:> move west
+102086:0::0:1:One noble, 48 men: travel will take an extra 2 days.
+102086:0::0:1:Travel to Hades~[nz30] will take nine days.
+31931:0::0:1:Tortured spirits~[102086], spirits, number:~49, went west.
+103114:0::0:1:> move north
+103114:0::0:1:One noble, 68 men: travel will take an extra 3 days.
+103114:0::0:1:Travel to Hades~[km28] will take ten days.
+128712:0::0:1:> move west
+128712:0::0:1:One noble, 35 men: travel will take an extra day.
+128712:0::0:1:Travel to Hades~[mz54] will take eight days.
+131385:0::0:1:> move south
+131385:0::0:1:One noble, 73 men: travel will take an extra 3 days.
+131385:0::0:1:Travel to Hades~[pp40] will take ten days.
+3051:0::0:7:Arrival at Hades~[kd52].
+26352:0::0:7:Ghostly presence~[3051] arrived.
+3512:0::0:7:Arrival at Hades~[mx67].
+29867:0::0:7:Ghostly presence~[3512] arrived from the north.
+3618:0::0:7:Arrival at Hades~[mm65].
+28965:0::0:7:Ghostly presence~[3618] arrived.
+4296:0::0:7:Arrival at Hades~[ma00].
+28000:0::0:7:Ghostly presence~[4296] arrived.
+6926:0::0:7:Arrival at Hades~[mp51].
+29151:0::0:7:Ghostly presence~[6926] arrived from the north.
+7558:0::0:7:Arrival at Hades~[mp09].
+29109:0::0:7:Ghostly presence~[7558] arrived from the east.
+8308:0::0:7:Arrival at Hades~[kp41].
+27141:0::0:7:Ghostly presence~[8308] arrived from the north.
+128712:0::0:8:Arrival at Hades~[mz54].
+29954:0::0:8:Tortured spirits~[128712], spirits, number:~36, arrived from the east.
+83559:0::0:9:Arrival at Hades~[kk70].
+26870:0::0:9:Tortured spirits~[83559], spirits, number:~51, arrived from the north.
+97167:0::0:9:Arrival at Hades~[mh47].
+28647:0::0:9:Tortured spirits~[97167], spirits, number:~56, arrived from the east.
+102086:0::0:9:Arrival at Hades~[nz30].
+31930:0::0:9:Tortured spirits~[102086], spirits, number:~49, arrived.
+3998:0::0:10:Arrival at Hades~[nm19].
+30919:0::0:10:Lesser Demon~[3998], with 74~spirits, arrived.
+81563:0::0:10:Arrival at Hades~[pg42].
+32542:0::0:10:Tortured spirits~[81563], spirits, number:~72, arrived.
+85149:0::0:10:Arrival at Hades~[ph62].
+32662:0::0:10:Tortured spirits~[85149], spirits, number:~61, arrived from the east.
+103114:0::0:10:Arrival at Hades~[km28].
+26928:0::0:10:Tortured spirits~[103114], spirits, number:~69, arrived.
+131385:0::0:10:Arrival at Hades~[pp40].
+33140:0::0:10:Tortured spirits~[131385], spirits, number:~74, arrived.
+4798:0::0:12:Arrival at Hades~[km37].
+26937:0::0:12:Lesser Demon~[4798], with 117~spirits, arrived from the east.
+8801:0::0:12:Arrival at Hades~[kf60].
+26460:0::0:12:Lesser Demon~[8801], with 103~spirits, arrived from the east.
+3947:0::0:13:Arrival at Hades~[nf21].
+30421:0::0:13:Lesser Demon~[3947], with 128~spirits, arrived from the west.
+5608:0::0:13:Arrival at Hades~[mh22].
+28622:0::0:13:Lesser Demon~[5608], with 130~spirits, arrived.
+8520:0::0:14:Arrival at Hades~[mn08].
+29008:0::0:14:Lesser Demon~[8520], with 145~spirits, arrived from the west.
+8754:0::0:15:Arrival at Hades~[pn08].
+33008:0::0:15:Greater Demon~[8754], with 162~spirits, arrived.
+2689:0::0:18:Arrival at Hades~[mp67].
+29167:0::0:18:Greater Demon~[2689], with 225~spirits, arrived.
+6607:0::0:18:Arrival at Hades~[mq61].
+29261:0::0:18:Greater Demon~[6607], with 221~spirits, arrived.
+8510:0::0:18:Arrival at Hades~[nd24].
+30324:0::0:18:Greater Demon~[8510], with 228~spirits, arrived from the west.
+26252:0::0::
+26252:0::0::Routes leaving Hades: 
+26252:0::3::North, underground, to Hades~[kb52], 7~days
+26252:0::3::East, underground, to Hades~[kc53], 7~days
+26252:0::3::South, underground, to Hades~[kd52], 7~days
+26252:0::3::West, underground, to Hades~[kc51], 7~days
+26252:0::0::
+26252:0::0::Inner locations:
+26252:0::3::Graveyard~[f833], graveyard, 1 day
+26352:0::0::
+26352:0::0::Routes leaving Hades: 
+26352:0::3::North, underground, to Hades~[kc52], hidden, 7~days
+26352:0::3::East, underground, to Hades~[kd53], 7~days
+26352:0::3::South, underground, to Hades~[kf52], 7~days
+26352:0::3::West, underground, to Hades~[kd51], 7~days
+26352:0::0::
+26352:0::0::Inner locations:
+26352:0::3::Graveyard~[f187], graveyard, hidden, 1 day
+26352:0::0::
+26352:0::0::Seen here:
+26352:0::0/3:: * Ghostly presence~[3051]
+26460:0::0::
+26460:0::0::Routes leaving Hades: 
+26460:0::3::North, underground, to Hades~[kd60], hidden, 7~days
+26460:0::3::East, underground, to Hades~[kf61], 7~days
+26460:0::3::South, underground, to Hades~[kg60], hidden, 7~days
+26460:0::3::West, underground, to Hades~[kf59], hidden, 7~days
+26460:0::0::
+26460:0::0::Seen here:
+26460:0::0/3:: * Lesser Demon~[8801], with 103~spirits
+26461:0::0::
+26461:0::0::Routes leaving Hades: 
+26461:0::3::North, underground, to Hades~[kd61], 7~days
+26461:0::3::East, underground, to Hades~[kf62], hidden, 7~days
+26461:0::3::South, underground, to Hades~[kg61], 7~days
+26461:0::3::West, underground, to Hades~[kf60], hidden, 7~days
+26770:0::0::
+26770:0::0::Routes leaving Hades: 
+26770:0::3::North, underground, to Hades~[kh70], hidden, 7~days
+26770:0::3::East, underground, to Hades~[kj71], hidden, 7~days
+26770:0::3::South, underground, to Hades~[kk70], hidden, 7~days
+26770:0::3::West, underground, to Hades~[kj69], hidden, 7~days
+26870:0::0::
+26870:0::0::Routes leaving Hades: 
+26870:0::3::North, underground, to Hades~[kj70], 7~days
+26870:0::3::East, underground, to Hades~[kk71], hidden, 7~days
+26870:0::3::South, underground, to Hades~[km70], 7~days
+26870:0::3::West, underground, to Hades~[kk69], hidden, 7~days
+26870:0::0::
+26870:0::0::Seen here:
+26870:0::0/3:: * Tortured spirits~[83559], spirits, number:~51
+26928:0::0::
+26928:0::0::Routes leaving Hades: 
+26928:0::3::North, underground, to Hades~[kk28], hidden, 7~days
+26928:0::3::East, underground, to Hades~[km29], 7~days
+26928:0::3::South, underground, to Hades~[kn28], hidden, 7~days
+26928:0::3::West, underground, to Hades~[km27], hidden, 7~days
+26928:0::0::
+26928:0::0::Seen here:
+26928:0::0/3:: * Tortured spirits~[103114], spirits, number:~69
+26937:0::0::
+26937:0::0::Routes leaving Hades: 
+26937:0::3::North, underground, to Hades~[kk37], hidden, 7~days
+26937:0::3::East, underground, to Hades~[km38], 7~days
+26937:0::3::South, underground, to Hades~[kn37], 7~days
+26937:0::3::West, underground, to Hades~[km36], hidden, 7~days
+26937:0::0::
+26937:0::0::Seen here:
+26937:0::0/3:: * Lesser Demon~[4798], with 117~spirits
+26938:0::0::
+26938:0::0::Routes leaving Hades: 
+26938:0::3::North, underground, to Hades~[kk38], 7~days
+26938:0::3::East, underground, to Hades~[km39], 7~days
+26938:0::3::South, underground, to Hades~[kn38], hidden, 7~days
+26938:0::3::West, underground, to Hades~[km37], 7~days
+27028:0::0::
+27028:0::0::Routes leaving Hades: 
+27028:0::3::North, underground, to Hades~[km28], hidden, 7~days
+27028:0::3::East, underground, to Hades~[kn29], 7~days
+27028:0::3::South, underground, to Hades~[kp28], 7~days
+27028:0::3::West, underground, to Hades~[kn27], 7~days
+27041:0::0::
+27041:0::0::Routes leaving Hades: 
+27041:0::3::North, underground, to Hades~[km41], hidden, 7~days
+27041:0::3::East, underground, to Hades~[kn42], 7~days
+27041:0::3::South, underground, to Hades~[kp41], 7~days
+27041:0::3::West, underground, to Hades~[kn40], hidden, 7~days
+27141:0::0::
+27141:0::0::Routes leaving Hades: 
+27141:0::3::North, underground, to Hades~[kn41], 7~days
+27141:0::3::East, underground, to Hades~[kp42], 7~days
+27141:0::3::South, underground, to Hades~[kq41], 7~days
+27141:0::3::West, underground, to Hades~[kp40], 7~days
+27141:0::0::
+27141:0::0::Seen here:
+27141:0::0/3:: * Ghostly presence~[8308]
+28000:0::0::
+28000:0::0::Routes leaving Hades: 
+28000:0::3::North, underground, to Hades~[kz00], hidden, 7~days
+28000:0::3::East, underground, to Hades~[ma01], 7~days
+28000:0::3::South, underground, to Hades~[mb00], hidden, 7~days
+28000:0::0::
+28000:0::0::Seen here:
+28000:0::0/3:: * Ghostly presence~[4296]
+28100:0::0::
+28100:0::0::Routes leaving Hades: 
+28100:0::3::North, underground, to Hades~[ma00], 7~days
+28100:0::3::East, underground, to Hades~[mb01], 7~days
+28100:0::3::South, underground, to Hades~[mc00], 7~days
+28522:0::0::
+28522:0::0::Routes leaving Hades: 
+28522:0::3::North, underground, to Hades~[mf22], 7~days
+28522:0::3::East, underground, to Hades~[mg23], 7~days
+28522:0::3::South, underground, to Hades~[mh22], 7~days
+28522:0::3::West, underground, to Hades~[mg21], hidden, 7~days
+28622:0::0::
+28622:0::0::Routes leaving Hades: 
+28622:0::3::North, underground, to Hades~[mg22], hidden, 7~days
+28622:0::3::East, underground, to Hades~[mh23], 7~days
+28622:0::3::South, underground, to Hades~[mj22], hidden, 7~days
+28622:0::3::West, underground, to Hades~[mh21], 7~days
+28622:0::0::
+28622:0::0::Seen here:
+28622:0::0/3:: * Lesser Demon~[5608], with 130~spirits
+28647:0::0::
+28647:0::0::Routes leaving Hades: 
+28647:0::3::North, underground, to Hades~[mg47], hidden, 7~days
+28647:0::3::East, underground, to Hades~[mh48], 7~days
+28647:0::3::South, underground, to Hades~[mj47], 7~days
+28647:0::3::West, underground, to Hades~[mh46], 7~days
+28647:0::0::
+28647:0::0::Inner locations:
+28647:0::3::Graveyard~[a916], graveyard, 1 day
+28647:0::0::
+28647:0::0::Seen here:
+28647:0::0/3:: * Tortured spirits~[97167], spirits, number:~56
+28648:0::0::
+28648:0::0::Routes leaving Hades: 
+28648:0::3::North, underground, to Hades~[mg48], 7~days
+28648:0::3::East, underground, to Hades~[mh49], hidden, 7~days
+28648:0::3::South, underground, to Hades~[mj48], hidden, 7~days
+28648:0::3::West, underground, to Hades~[mh47], hidden, 7~days
+28648:0::0::
+28648:0::0::Inner locations:
+28648:0::3::Graveyard~[q704], graveyard, hidden, 1 day
+28964:0::0::
+28964:0::0::Routes leaving Hades: 
+28964:0::3::North, underground, to Hades~[mk64], hidden, 7~days
+28964:0::3::East, underground, to Hades~[mm65], hidden, 7~days
+28964:0::3::South, underground, to Hades~[mn64], 7~days
+28964:0::3::West, underground, to Hades~[mm63], hidden, 7~days
+28965:0::0::
+28965:0::0::Routes leaving Hades: 
+28965:0::3::North, underground, to Hades~[mk65], 7~days
+28965:0::3::East, underground, to Hades~[mm66], 7~days
+28965:0::3::South, underground, to Hades~[mn65], hidden, 7~days
+28965:0::3::West, underground, to Hades~[mm64], hidden, 7~days
+28965:0::0::
+28965:0::0::Seen here:
+28965:0::0/3:: * Ghostly presence~[3618]
+29007:0::0::
+29007:0::0::Routes leaving Hades: 
+29007:0::3::North, underground, to Hades~[mm07], hidden, 7~days
+29007:0::3::East, underground, to Hades~[mn08], 7~days
+29007:0::3::South, underground, to Hades~[mp07], hidden, 7~days
+29007:0::3::West, underground, to Hades~[mn06], hidden, 7~days
+29008:0::0::
+29008:0::0::Routes leaving Hades: 
+29008:0::3::North, underground, to Hades~[mm08], hidden, 7~days
+29008:0::3::East, underground, to Hades~[mn09], 7~days
+29008:0::3::South, underground, to Hades~[mp08], hidden, 7~days
+29008:0::3::West, underground, to Hades~[mn07], 7~days
+29008:0::0::
+29008:0::0::Seen here:
+29008:0::0/3:: * Lesser Demon~[8520], with 145~spirits
+29051:0::0::
+29051:0::0::Routes leaving Hades: 
+29051:0::3::North, underground, to Hades~[mm51], 7~days
+29051:0::3::East, underground, to Hades~[mn52], hidden, 7~days
+29051:0::3::South, underground, to Hades~[mp51], 7~days
+29051:0::3::West, underground, to Hades~[mn50], 7~days
+29109:0::0::
+29109:0::0::Routes leaving Hades: 
+29109:0::3::North, underground, to Hades~[mn09], 7~days
+29109:0::3::East, underground, to Hades~[mp10], 7~days
+29109:0::3::South, underground, to Hades~[mq09], hidden, 7~days
+29109:0::3::West, underground, to Hades~[mp08], hidden, 7~days
+29109:0::0::
+29109:0::0::Seen here:
+29109:0::0/3:: * Ghostly presence~[7558]
+29110:0::0::
+29110:0::0::Routes leaving Hades: 
+29110:0::3::North, underground, to Hades~[mn10], 7~days
+29110:0::3::East, underground, to Hades~[mp11], 7~days
+29110:0::3::South, underground, to Hades~[mq10], 7~days
+29110:0::3::West, underground, to Hades~[mp09], hidden, 7~days
+29151:0::0::
+29151:0::0::Routes leaving Hades: 
+29151:0::3::North, underground, to Hades~[mn51], 7~days
+29151:0::3::East, underground, to Hades~[mp52], hidden, 7~days
+29151:0::3::South, underground, to Hades~[mq51], 7~days
+29151:0::3::West, underground, to Hades~[mp50], 7~days
+29151:0::0::
+29151:0::0::Seen here:
+29151:0::0/3:: * Ghostly presence~[6926]
+29167:0::0::
+29167:0::0::Routes leaving Hades: 
+29167:0::3::North, underground, to Hades~[mn67], hidden, 7~days
+29167:0::3::East, underground, to Hades~[mp68], 7~days
+29167:0::3::South, underground, to Hades~[mq67], hidden, 7~days
+29167:0::3::West, underground, to Hades~[mp66], 7~days
+29167:0::0::
+29167:0::0::Seen here:
+29167:0::0/3:: * Greater Demon~[2689], with 225~spirits
+29261:0::0::
+29261:0::0::Routes leaving Hades: 
+29261:0::3::North, underground, to Hades~[mp61], hidden, 7~days
+29261:0::3::East, underground, to Hades~[mq62], hidden, 7~days
+29261:0::3::South, underground, to Hades~[mr61], 7~days
+29261:0::3::West, underground, to Hades~[mq60], hidden, 7~days
+29261:0::0::
+29261:0::0::Seen here:
+29261:0::0/3:: * Greater Demon~[6607], with 221~spirits
+29262:0::0::
+29262:0::0::Routes leaving Hades: 
+29262:0::3::North, underground, to Hades~[mp62], 7~days
+29262:0::3::East, underground, to Hades~[mq63], hidden, 7~days
+29262:0::3::South, underground, to Hades~[mr62], hidden, 7~days
+29262:0::3::West, underground, to Hades~[mq61], hidden, 7~days
+29267:0::0::
+29267:0::0::Routes leaving Hades: 
+29267:0::3::North, underground, to Hades~[mp67], 7~days
+29267:0::3::East, underground, to Hades~[mq68], 7~days
+29267:0::3::South, underground, to Hades~[mr67], hidden, 7~days
+29267:0::3::West, underground, to Hades~[mq66], 7~days
+29767:0::0::
+29767:0::0::Routes leaving Hades: 
+29767:0::3::North, underground, to Hades~[mv67], hidden, 7~days
+29767:0::3::East, underground, to Hades~[mw68], 7~days
+29767:0::3::South, underground, to Hades~[mx67], 7~days
+29767:0::3::West, underground, to Hades~[mw66], 7~days
+29867:0::0::
+29867:0::0::Routes leaving Hades: 
+29867:0::3::North, underground, to Hades~[mw67], 7~days
+29867:0::3::East, underground, to Hades~[mx68], 7~days
+29867:0::3::South, underground, to Hades~[mz67], 7~days
+29867:0::3::West, underground, to Hades~[mx66], hidden, 7~days
+29867:0::0::
+29867:0::0::Inner locations:
+29867:0::3::Graveyard~[s845], graveyard, hidden, 1 day
+29867:0::0::
+29867:0::0::Seen here:
+29867:0::0/3:: * Ghostly presence~[3512]
+29954:0::0::
+29954:0::0::Routes leaving Hades: 
+29954:0::3::North, underground, to Hades~[mx54], hidden, 7~days
+29954:0::3::East, underground, to Hades~[mz55], 7~days
+29954:0::3::South, underground, to Hades~[na54], hidden, 7~days
+29954:0::3::West, underground, to Hades~[mz53], 7~days
+29954:0::0::
+29954:0::0::Seen here:
+29954:0::0/3:: * Tortured spirits~[128712], spirits, number:~36
+29955:0::0::
+29955:0::0::Routes leaving Hades: 
+29955:0::3::North, underground, to Hades~[mx55], 7~days
+29955:0::3::East, underground, to Hades~[mz56], hidden, 7~days
+29955:0::3::South, underground, to Hades~[na55], 7~days
+29955:0::3::West, underground, to Hades~[mz54], hidden, 7~days
+30323:0::0::
+30323:0::0::Routes leaving Hades: 
+30323:0::3::North, underground, to Hades~[nc23], 7~days
+30323:0::3::East, underground, to Hades~[nd24], 7~days
+30323:0::3::South, underground, to Hades~[nf23], hidden, 7~days
+30323:0::3::West, underground, to Hades~[nd22], hidden, 7~days
+30324:0::0::
+30324:0::0::Routes leaving Hades: 
+30324:0::3::North, underground, to Hades~[nc24], 7~days
+30324:0::3::East, underground, to Hades~[nd25], 7~days
+30324:0::3::South, underground, to Hades~[nf24], hidden, 7~days
+30324:0::3::West, underground, to Hades~[nd23], 7~days
+30324:0::0::
+30324:0::0::Seen here:
+30324:0::0/3:: * Greater Demon~[8510], with 228~spirits
+30420:0::0::
+30420:0::0::Routes leaving Hades: 
+30420:0::3::North, underground, to Hades~[nd20], hidden, 7~days
+30420:0::3::East, underground, to Hades~[nf21], hidden, 7~days
+30420:0::3::South, underground, to Hades~[ng20], 7~days
+30420:0::3::West, underground, to Hades~[nf19], hidden, 7~days
+30421:0::0::
+30421:0::0::Routes leaving Hades: 
+30421:0::3::North, underground, to Hades~[nd21], hidden, 7~days
+30421:0::3::East, underground, to Hades~[nf22], hidden, 7~days
+30421:0::3::South, underground, to Hades~[ng21], hidden, 7~days
+30421:0::3::West, underground, to Hades~[nf20], 7~days
+30421:0::0::
+30421:0::0::Seen here:
+30421:0::0/3:: * Lesser Demon~[3947], with 128~spirits
+30919:0::0::
+30919:0::0::Routes leaving Hades: 
+30919:0::3::North, underground, to Hades~[nk19], 7~days
+30919:0::3::East, underground, to Hades~[nm20], hidden, 7~days
+30919:0::3::South, underground, to Hades~[nn19], hidden, 7~days
+30919:0::3::West, underground, to Hades~[nm18], 7~days
+30919:0::0::
+30919:0::0::Seen here:
+30919:0::0/3:: * Lesser Demon~[3998], with 74~spirits
+30920:0::0::
+30920:0::0::Routes leaving Hades: 
+30920:0::3::North, underground, to Hades~[nk20], 7~days
+30920:0::3::East, underground, to Hades~[nm21], hidden, 7~days
+30920:0::3::South, underground, to Hades~[nn20], hidden, 7~days
+30920:0::3::West, underground, to Hades~[nm19], hidden, 7~days
+30920:0::0::
+30920:0::0::Inner locations:
+30920:0::3::Graveyard~[n234], graveyard, hidden, 1 day
+31930:0::0::
+31930:0::0::Routes leaving Hades: 
+31930:0::3::North, underground, to Hades~[nx30], hidden, 7~days
+31930:0::3::East, underground, to Hades~[nz31], hidden, 7~days
+31930:0::3::South, underground, to Hades~[pa30], hidden, 7~days
+31930:0::3::West, underground, to Hades~[nz29], 7~days
+31930:0::0::
+31930:0::0::Seen here:
+31930:0::0/3:: * Tortured spirits~[102086], spirits, number:~49
+31931:0::0::
+31931:0::0::Routes leaving Hades: 
+31931:0::3::North, underground, to Hades~[nx31], 7~days
+31931:0::3::East, underground, to Hades~[nz32], 7~days
+31931:0::3::South, underground, to Hades~[pa31], hidden, 7~days
+31931:0::3::West, underground, to Hades~[nz30], 7~days
+31931:0::0::
+31931:0::0::Inner locations:
+31931:0::3::Graveyard~[w942], graveyard, hidden, 1 day
+32542:0::0::
+32542:0::0::Routes leaving Hades: 
+32542:0::3::North, underground, to Hades~[pf42], hidden, 7~days
+32542:0::3::East, underground, to Hades~[pg43], 7~days
+32542:0::3::South, underground, to Hades~[ph42], hidden, 7~days
+32542:0::3::West, underground, to Hades~[pg41], hidden, 7~days
+32542:0::0::
+32542:0::0::Seen here:
+32542:0::0/3:: * Tortured spirits~[81563], spirits, number:~72
+32642:0::0::
+32642:0::0::Routes leaving Hades: 
+32642:0::3::North, underground, to Hades~[pg42], 7~days
+32642:0::3::East, underground, to Hades~[ph43], 7~days
+32642:0::3::South, underground, to Hades~[pj42], hidden, 7~days
+32642:0::3::West, underground, to Hades~[ph41], 7~days
+32662:0::0::
+32662:0::0::Routes leaving Hades: 
+32662:0::3::North, underground, to Hades~[pg62], 7~days
+32662:0::3::East, underground, to Hades~[ph63], 7~days
+32662:0::3::South, underground, to Hades~[pj62], 7~days
+32662:0::3::West, underground, to Hades~[ph61], 7~days
+32662:0::0::
+32662:0::0::Seen here:
+32662:0::0/3:: * Tortured spirits~[85149], spirits, number:~61
+32663:0::0::
+32663:0::0::Routes leaving Hades: 
+32663:0::3::North, underground, to Hades~[pg63], hidden, 7~days
+32663:0::3::East, underground, to Hades~[ph64], 7~days
+32663:0::3::South, underground, to Hades~[pj63], hidden, 7~days
+32663:0::3::West, underground, to Hades~[ph62], 7~days
+33008:0::0::
+33008:0::0::Routes leaving Hades: 
+33008:0::3::North, underground, to Hades~[pm08], 7~days
+33008:0::3::East, underground, to Hades~[pn09], hidden, 7~days
+33008:0::3::South, underground, to Hades~[pp08], hidden, 7~days
+33008:0::3::West, underground, to Hades~[pn07], hidden, 7~days
+33008:0::0::
+33008:0::0::Seen here:
+33008:0::0/3:: * Greater Demon~[8754], with 162~spirits
+33009:0::0::
+33009:0::0::Routes leaving Hades: 
+33009:0::3::North, underground, to Hades~[pm09], 7~days
+33009:0::3::East, underground, to Hades~[pn10], hidden, 7~days
+33009:0::3::South, underground, to Hades~[pp09], 7~days
+33009:0::3::West, underground, to Hades~[pn08], 7~days
+33009:0::0::
+33009:0::0::Inner locations:
+33009:0::3::Cairn Hills~[m856], graveyard, 1 day
+33040:0::0::
+33040:0::0::Routes leaving Hades: 
+33040:0::3::North, underground, to Hades~[pm40], hidden, 7~days
+33040:0::3::East, underground, to Hades~[pn41], 7~days
+33040:0::3::South, underground, to Hades~[pp40], hidden, 7~days
+33040:0::3::West, underground, to Hades~[pn39], 7~days
+33140:0::0::
+33140:0::0::Routes leaving Hades: 
+33140:0::3::North, underground, to Hades~[pn40], hidden, 7~days
+33140:0::3::East, underground, to Hades~[pp41], hidden, 7~days
+33140:0::3::West, underground, to Hades~[pp39], 7~days
+33140:0::0::
+33140:0::0::Inner locations:
+33140:0::3::Graveyard~[g058], graveyard, 1 day
+33140:0::0::
+33140:0::0::Seen here:
+33140:0::0/3:: * Tortured spirits~[131385], spirits, number:~74
+5:0::0::
+5:0::0::begin 205 "noyoudont"  # King of Hades
+5:0::0::
+5:0::0::unit 205  # King of Hades
+5:0::0::
+5:0::0::unit 3051  # Ghostly presence in Hades~[kd52]
+5:0::0::
+5:0::0::unit 8801  # Lesser Demon in Hades~[kf60]
+5:0::0::
+5:0::0::unit 83559  # Tortured spirits in Hades~[kk70]
+5:0::0::
+5:0::0::unit 103114  # Tortured spirits in Hades~[km28]
+5:0::0::
+5:0::0::unit 4798  # Lesser Demon in Hades~[km37]
+5:0::0::
+5:0::0::unit 8308  # Ghostly presence in Hades~[kp41]
+5:0::0::
+5:0::0::unit 4296  # Ghostly presence in Hades~[ma00]
+5:0::0::
+5:0::0::unit 5608  # Lesser Demon in Hades~[mh22]
+5:0::0::
+5:0::0::unit 97167  # Tortured spirits in Hades~[mh47]
+5:0::0::
+5:0::0::unit 3618  # Ghostly presence in Hades~[mm65]
+5:0::0::
+5:0::0::unit 8520  # Lesser Demon in Hades~[mn08]
+5:0::0::
+5:0::0::unit 7558  # Ghostly presence in Hades~[mp09]
+5:0::0::
+5:0::0::unit 6926  # Ghostly presence in Hades~[mp51]
+5:0::0::
+5:0::0::unit 2689  # Greater Demon in Hades~[mp67]
+5:0::0::
+5:0::0::unit 6607  # Greater Demon in Hades~[mq61]
+5:0::0::
+5:0::0::unit 3512  # Ghostly presence in Hades~[mx67]
+5:0::0::
+5:0::0::unit 128712  # Tortured spirits in Hades~[mz54]
+5:0::0::
+5:0::0::unit 8510  # Greater Demon in Hades~[nd24]
+5:0::0::
+5:0::0::unit 3947  # Lesser Demon in Hades~[nf21]
+5:0::0::
+5:0::0::unit 3998  # Lesser Demon in Hades~[nm19]
+5:0::0::
+5:0::0::unit 102086  # Tortured spirits in Hades~[nz30]
+5:0::0::
+5:0::0::unit 81563  # Tortured spirits in Hades~[pg42]
+5:0::0::
+5:0::0::unit 85149  # Tortured spirits in Hades~[ph62]
+5:0::0::
+5:0::0::unit 8754  # Greater Demon in Hades~[pn08]
+5:0::0::
+5:0::0::unit 131385  # Tortured spirits in Hades~[pp40]
+5:0::0::
+5:0::0::end
+2689:0::3::
+2689:0::3/16::Location:       Hades~[mp67], in Hades
+2689:0::3::Loyalty:        Npc-0
+2689:0::3::Health:         100%
+2689:0::3::Combat:         attack 500, defense 500, missile 0
+2689:0::3::                behind 0  (front line in combat)
+2689:0::3::Break point:    0% (fight to the death)
+2689:0::3::
+2689:0::3::Skills known:
+2689:0::6::none
+2689:0::3::
+2689:0::3::Inventory:
+2689:0::3::{<b>}      qty  name                              weight{</b>}
+2689:0::3::      ---  ----                              ------
+2689:0::3::      225  spirits~[26]                      22,500  cap 22,500 (50,50,0)
+2689:0::3::                                             ======
+2689:0::3::                                             22,500
+2689:0::3::
+2689:0::3/11::Capacity:  0/22,600 land (0%)
+2689:0::3::
+3051:0::3::
+3051:0::3/16::Location:       Hades~[kd52], in Hades
+3051:0::3::Loyalty:        Npc-0
+3051:0::3::Health:         100%
+3051:0::3::Combat:         attack 100, defense 100, missile 0
+3051:0::3::                behind 0  (front line in combat)
+3051:0::3::Break point:    0% (fight to the death)
+3051:0::3::
+3051:0::3::Skills known:
+3051:0::6::none
+3051:0::3::
+3051:0::3::Ghostly presence~[3051] has no possessions.
+3051:0::3::
+3051:0::3/11::Capacity:  0/100 land (0%)
+3051:0::3::
+3512:0::3::
+3512:0::3/16::Location:       Hades~[mx67], in Hades
+3512:0::3::Loyalty:        Npc-0
+3512:0::3::Health:         100%
+3512:0::3::Combat:         attack 100, defense 100, missile 0
+3512:0::3::                behind 0  (front line in combat)
+3512:0::3::Break point:    0% (fight to the death)
+3512:0::3::
+3512:0::3::Skills known:
+3512:0::6::none
+3512:0::3::
+3512:0::3::Ghostly presence~[3512] has no possessions.
+3512:0::3::
+3512:0::3/11::Capacity:  0/100 land (0%)
+3512:0::3::
+3618:0::3::
+3618:0::3/16::Location:       Hades~[mm65], in Hades
+3618:0::3::Loyalty:        Npc-0
+3618:0::3::Health:         100%
+3618:0::3::Combat:         attack 100, defense 100, missile 0
+3618:0::3::                behind 0  (front line in combat)
+3618:0::3::Break point:    0% (fight to the death)
+3618:0::3::
+3618:0::3::Skills known:
+3618:0::6::none
+3618:0::3::
+3618:0::3::Ghostly presence~[3618] has no possessions.
+3618:0::3::
+3618:0::3/11::Capacity:  0/100 land (0%)
+3618:0::3::
+3947:0::3::
+3947:0::3/16::Location:       Hades~[nf21], in Hades
+3947:0::3::Loyalty:        Npc-0
+3947:0::3::Health:         100%
+3947:0::3::Combat:         attack 250, defense 250, missile 0
+3947:0::3::                behind 0  (front line in combat)
+3947:0::3::Break point:    0% (fight to the death)
+3947:0::3::
+3947:0::3::Skills known:
+3947:0::6::none
+3947:0::3::
+3947:0::3::Inventory:
+3947:0::3::{<b>}      qty  name                              weight{</b>}
+3947:0::3::      ---  ----                              ------
+3947:0::3::      128  spirits~[26]                      12,800  cap 12,800 (50,50,0)
+3947:0::3::                                             ======
+3947:0::3::                                             12,800
+3947:0::3::
+3947:0::3/11::Capacity:  0/12,900 land (0%)
+3947:0::3::
+3998:0::3::
+3998:0::3/16::Location:       Hades~[nm19], in Hades
+3998:0::3::Loyalty:        Npc-0
+3998:0::3::Health:         100%
+3998:0::3::Combat:         attack 250, defense 250, missile 0
+3998:0::3::                behind 0  (front line in combat)
+3998:0::3::Break point:    0% (fight to the death)
+3998:0::3::
+3998:0::3::Skills known:
+3998:0::6::none
+3998:0::3::
+3998:0::3::Inventory:
+3998:0::3::{<b>}      qty  name                              weight{</b>}
+3998:0::3::      ---  ----                              ------
+3998:0::3::       74  spirits~[26]                       7,400  cap 7,400 (50,50,0)
+3998:0::3::                                             ======
+3998:0::3::                                              7,400
+3998:0::3::
+3998:0::3/11::Capacity:  0/7,500 land (0%)
+3998:0::3::
+4296:0::3::
+4296:0::3/16::Location:       Hades~[ma00], in Hades
+4296:0::3::Loyalty:        Npc-0
+4296:0::3::Health:         100%
+4296:0::3::Combat:         attack 100, defense 100, missile 0
+4296:0::3::                behind 0  (front line in combat)
+4296:0::3::Break point:    0% (fight to the death)
+4296:0::3::
+4296:0::3::Skills known:
+4296:0::6::none
+4296:0::3::
+4296:0::3::Ghostly presence~[4296] has no possessions.
+4296:0::3::
+4296:0::3/11::Capacity:  0/100 land (0%)
+4296:0::3::
+4798:0::3::
+4798:0::3/16::Location:       Hades~[km37], in Hades
+4798:0::3::Loyalty:        Npc-0
+4798:0::3::Health:         100%
+4798:0::3::Combat:         attack 250, defense 250, missile 0
+4798:0::3::                behind 0  (front line in combat)
+4798:0::3::Break point:    0% (fight to the death)
+4798:0::3::
+4798:0::3::Skills known:
+4798:0::6::none
+4798:0::3::
+4798:0::3::Inventory:
+4798:0::3::{<b>}      qty  name                              weight{</b>}
+4798:0::3::      ---  ----                              ------
+4798:0::3::      117  spirits~[26]                      11,700  cap 11,700 (50,50,0)
+4798:0::3::                                             ======
+4798:0::3::                                             11,700
+4798:0::3::
+4798:0::3/11::Capacity:  0/11,800 land (0%)
+4798:0::3::
+5608:0::3::
+5608:0::3/16::Location:       Hades~[mh22], in Hades
+5608:0::3::Loyalty:        Npc-0
+5608:0::3::Health:         100%
+5608:0::3::Combat:         attack 250, defense 250, missile 0
+5608:0::3::                behind 0  (front line in combat)
+5608:0::3::Break point:    0% (fight to the death)
+5608:0::3::
+5608:0::3::Skills known:
+5608:0::6::none
+5608:0::3::
+5608:0::3::Inventory:
+5608:0::3::{<b>}      qty  name                              weight{</b>}
+5608:0::3::      ---  ----                              ------
+5608:0::3::      130  spirits~[26]                      13,000  cap 13,000 (50,50,0)
+5608:0::3::                                             ======
+5608:0::3::                                             13,000
+5608:0::3::
+5608:0::3/11::Capacity:  0/13,100 land (0%)
+5608:0::3::
+6607:0::3::
+6607:0::3/16::Location:       Hades~[mq61], in Hades
+6607:0::3::Loyalty:        Npc-0
+6607:0::3::Health:         100%
+6607:0::3::Combat:         attack 500, defense 500, missile 0
+6607:0::3::                behind 0  (front line in combat)
+6607:0::3::Break point:    0% (fight to the death)
+6607:0::3::
+6607:0::3::Skills known:
+6607:0::6::none
+6607:0::3::
+6607:0::3::Inventory:
+6607:0::3::{<b>}      qty  name                              weight{</b>}
+6607:0::3::      ---  ----                              ------
+6607:0::3::      221  spirits~[26]                      22,100  cap 22,100 (50,50,0)
+6607:0::3::                                             ======
+6607:0::3::                                             22,100
+6607:0::3::
+6607:0::3/11::Capacity:  0/22,200 land (0%)
+6607:0::3::
+6926:0::3::
+6926:0::3/16::Location:       Hades~[mp51], in Hades
+6926:0::3::Loyalty:        Npc-0
+6926:0::3::Health:         100%
+6926:0::3::Combat:         attack 100, defense 100, missile 0
+6926:0::3::                behind 0  (front line in combat)
+6926:0::3::Break point:    0% (fight to the death)
+6926:0::3::
+6926:0::3::Skills known:
+6926:0::6::none
+6926:0::3::
+6926:0::3::Ghostly presence~[6926] has no possessions.
+6926:0::3::
+6926:0::3/11::Capacity:  0/100 land (0%)
+6926:0::3::
+7558:0::3::
+7558:0::3/16::Location:       Hades~[mp09], in Hades
+7558:0::3::Loyalty:        Npc-0
+7558:0::3::Health:         100%
+7558:0::3::Combat:         attack 100, defense 100, missile 0
+7558:0::3::                behind 0  (front line in combat)
+7558:0::3::Break point:    0% (fight to the death)
+7558:0::3::
+7558:0::3::Skills known:
+7558:0::6::none
+7558:0::3::
+7558:0::3::Ghostly presence~[7558] has no possessions.
+7558:0::3::
+7558:0::3/11::Capacity:  0/100 land (0%)
+7558:0::3::
+8308:0::3::
+8308:0::3/16::Location:       Hades~[kp41], in Hades
+8308:0::3::Loyalty:        Npc-0
+8308:0::3::Health:         100%
+8308:0::3::Combat:         attack 100, defense 100, missile 0
+8308:0::3::                behind 0  (front line in combat)
+8308:0::3::Break point:    0% (fight to the death)
+8308:0::3::
+8308:0::3::Skills known:
+8308:0::6::none
+8308:0::3::
+8308:0::3::Ghostly presence~[8308] has no possessions.
+8308:0::3::
+8308:0::3/11::Capacity:  0/100 land (0%)
+8308:0::3::
+8510:0::3::
+8510:0::3/16::Location:       Hades~[nd24], in Hades
+8510:0::3::Loyalty:        Npc-0
+8510:0::3::Health:         100%
+8510:0::3::Combat:         attack 500, defense 500, missile 0
+8510:0::3::                behind 0  (front line in combat)
+8510:0::3::Break point:    0% (fight to the death)
+8510:0::3::
+8510:0::3::Skills known:
+8510:0::6::none
+8510:0::3::
+8510:0::3::Inventory:
+8510:0::3::{<b>}      qty  name                              weight{</b>}
+8510:0::3::      ---  ----                              ------
+8510:0::3::      228  spirits~[26]                      22,800  cap 22,800 (50,50,0)
+8510:0::3::                                             ======
+8510:0::3::                                             22,800
+8510:0::3::
+8510:0::3/11::Capacity:  0/22,900 land (0%)
+8510:0::3::
+8520:0::3::
+8520:0::3/16::Location:       Hades~[mn08], in Hades
+8520:0::3::Loyalty:        Npc-0
+8520:0::3::Health:         100%
+8520:0::3::Combat:         attack 250, defense 250, missile 0
+8520:0::3::                behind 0  (front line in combat)
+8520:0::3::Break point:    0% (fight to the death)
+8520:0::3::
+8520:0::3::Skills known:
+8520:0::6::none
+8520:0::3::
+8520:0::3::Inventory:
+8520:0::3::{<b>}      qty  name                              weight{</b>}
+8520:0::3::      ---  ----                              ------
+8520:0::3::      145  spirits~[26]                      14,500  cap 14,500 (50,50,0)
+8520:0::3::                                             ======
+8520:0::3::                                             14,500
+8520:0::3::
+8520:0::3/11::Capacity:  0/14,600 land (0%)
+8520:0::3::
+8754:0::3::
+8754:0::3/16::Location:       Hades~[pn08], in Hades
+8754:0::3::Loyalty:        Npc-0
+8754:0::3::Health:         100%
+8754:0::3::Combat:         attack 500, defense 500, missile 0
+8754:0::3::                behind 0  (front line in combat)
+8754:0::3::Break point:    0% (fight to the death)
+8754:0::3::
+8754:0::3::Skills known:
+8754:0::6::none
+8754:0::3::
+8754:0::3::Inventory:
+8754:0::3::{<b>}      qty  name                              weight{</b>}
+8754:0::3::      ---  ----                              ------
+8754:0::3::      162  spirits~[26]                      16,200  cap 16,200 (50,50,0)
+8754:0::3::                                             ======
+8754:0::3::                                             16,200
+8754:0::3::
+8754:0::3/11::Capacity:  0/16,300 land (0%)
+8754:0::3::
+8801:0::3::
+8801:0::3/16::Location:       Hades~[kf60], in Hades
+8801:0::3::Loyalty:        Npc-0
+8801:0::3::Health:         100%
+8801:0::3::Combat:         attack 250, defense 250, missile 0
+8801:0::3::                behind 0  (front line in combat)
+8801:0::3::Break point:    0% (fight to the death)
+8801:0::3::
+8801:0::3::Skills known:
+8801:0::6::none
+8801:0::3::
+8801:0::3::Inventory:
+8801:0::3::{<b>}      qty  name                              weight{</b>}
+8801:0::3::      ---  ----                              ------
+8801:0::3::      103  spirits~[26]                      10,300  cap 10,300 (50,50,0)
+8801:0::3::                                             ======
+8801:0::3::                                             10,300
+8801:0::3::
+8801:0::3/11::Capacity:  0/10,400 land (0%)
+8801:0::3::
+81563:0::3::
+81563:0::3/16::Location:       Hades~[pg42], in Hades
+81563:0::3::Loyalty:        Npc-0
+81563:0::3::Health:         100%
+81563:0::3::Combat:         attack 50, defense 50, missile 0
+81563:0::3::                behind 0  (front line in combat)
+81563:0::3::Break point:    0% (fight to the death)
+81563:0::3::
+81563:0::3::Skills known:
+81563:0::6::none
+81563:0::3::
+81563:0::3::Inventory:
+81563:0::3::{<b>}      qty  name                              weight{</b>}
+81563:0::3::      ---  ----                              ------
+81563:0::3::       71  spirits~[26]                       7,100  cap 7,100 (50,50,0)
+81563:0::3::                                             ======
+81563:0::3::                                              7,100
+81563:0::3::
+81563:0::3/11::Capacity:  0/7,200 land (0%)
+81563:0::3::
+83559:0::3::
+83559:0::3/16::Location:       Hades~[kk70], in Hades
+83559:0::3::Loyalty:        Npc-0
+83559:0::3::Health:         100%
+83559:0::3::Combat:         attack 50, defense 50, missile 0
+83559:0::3::                behind 0  (front line in combat)
+83559:0::3::Break point:    0% (fight to the death)
+83559:0::3::
+83559:0::3::Skills known:
+83559:0::6::none
+83559:0::3::
+83559:0::3::Inventory:
+83559:0::3::{<b>}      qty  name                              weight{</b>}
+83559:0::3::      ---  ----                              ------
+83559:0::3::       50  spirits~[26]                       5,000  cap 5,000 (50,50,0)
+83559:0::3::                                             ======
+83559:0::3::                                              5,000
+83559:0::3::
+83559:0::3/11::Capacity:  0/5,100 land (0%)
+83559:0::3::
+85149:0::3::
+85149:0::3/16::Location:       Hades~[ph62], in Hades
+85149:0::3::Loyalty:        Npc-0
+85149:0::3::Health:         100%
+85149:0::3::Combat:         attack 50, defense 50, missile 0
+85149:0::3::                behind 0  (front line in combat)
+85149:0::3::Break point:    0% (fight to the death)
+85149:0::3::
+85149:0::3::Skills known:
+85149:0::6::none
+85149:0::3::
+85149:0::3::Inventory:
+85149:0::3::{<b>}      qty  name                              weight{</b>}
+85149:0::3::      ---  ----                              ------
+85149:0::3::       60  spirits~[26]                       6,000  cap 6,000 (50,50,0)
+85149:0::3::                                             ======
+85149:0::3::                                              6,000
+85149:0::3::
+85149:0::3/11::Capacity:  0/6,100 land (0%)
+85149:0::3::
+97167:0::3::
+97167:0::3/16::Location:       Hades~[mh47], in Hades
+97167:0::3::Loyalty:        Npc-0
+97167:0::3::Health:         100%
+97167:0::3::Combat:         attack 50, defense 50, missile 0
+97167:0::3::                behind 0  (front line in combat)
+97167:0::3::Break point:    0% (fight to the death)
+97167:0::3::
+97167:0::3::Skills known:
+97167:0::6::none
+97167:0::3::
+97167:0::3::Inventory:
+97167:0::3::{<b>}      qty  name                              weight{</b>}
+97167:0::3::      ---  ----                              ------
+97167:0::3::       55  spirits~[26]                       5,500  cap 5,500 (50,50,0)
+97167:0::3::                                             ======
+97167:0::3::                                              5,500
+97167:0::3::
+97167:0::3/11::Capacity:  0/5,600 land (0%)
+97167:0::3::
+102086:0::3::
+102086:0::3/16::Location:       Hades~[nz30], in Hades
+102086:0::3::Loyalty:        Npc-0
+102086:0::3::Health:         100%
+102086:0::3::Combat:         attack 50, defense 50, missile 0
+102086:0::3::                behind 0  (front line in combat)
+102086:0::3::Break point:    0% (fight to the death)
+102086:0::3::
+102086:0::3::Skills known:
+102086:0::6::none
+102086:0::3::
+102086:0::3::Inventory:
+102086:0::3::{<b>}      qty  name                              weight{</b>}
+102086:0::3::      ---  ----                              ------
+102086:0::3::       48  spirits~[26]                       4,800  cap 4,800 (50,50,0)
+102086:0::3::                                             ======
+102086:0::3::                                              4,800
+102086:0::3::
+102086:0::3/11::Capacity:  0/4,900 land (0%)
+102086:0::3::
+103114:0::3::
+103114:0::3/16::Location:       Hades~[km28], in Hades
+103114:0::3::Loyalty:        Npc-0
+103114:0::3::Health:         100%
+103114:0::3::Combat:         attack 50, defense 50, missile 0
+103114:0::3::                behind 0  (front line in combat)
+103114:0::3::Break point:    0% (fight to the death)
+103114:0::3::
+103114:0::3::Skills known:
+103114:0::6::none
+103114:0::3::
+103114:0::3::Inventory:
+103114:0::3::{<b>}      qty  name                              weight{</b>}
+103114:0::3::      ---  ----                              ------
+103114:0::3::       68  spirits~[26]                       6,800  cap 6,800 (50,50,0)
+103114:0::3::                                             ======
+103114:0::3::                                              6,800
+103114:0::3::
+103114:0::3/11::Capacity:  0/6,900 land (0%)
+103114:0::3::
+128712:0::3::
+128712:0::3/16::Location:       Hades~[mz54], in Hades
+128712:0::3::Loyalty:        Npc-0
+128712:0::3::Health:         100%
+128712:0::3::Combat:         attack 50, defense 50, missile 0
+128712:0::3::                behind 0  (front line in combat)
+128712:0::3::Break point:    0% (fight to the death)
+128712:0::3::
+128712:0::3::Skills known:
+128712:0::6::none
+128712:0::3::
+128712:0::3::Inventory:
+128712:0::3::{<b>}      qty  name                              weight{</b>}
+128712:0::3::      ---  ----                              ------
+128712:0::3::       35  spirits~[26]                       3,500  cap 3,500 (50,50,0)
+128712:0::3::                                             ======
+128712:0::3::                                              3,500
+128712:0::3::
+128712:0::3/11::Capacity:  0/3,600 land (0%)
+128712:0::3::
+131385:0::3::
+131385:0::3/16::Location:       Hades~[pp40], in Hades
+131385:0::3::Loyalty:        Npc-0
+131385:0::3::Health:         100%
+131385:0::3::Combat:         attack 50, defense 50, missile 0
+131385:0::3::                behind 0  (front line in combat)
+131385:0::3::Break point:    0% (fight to the death)
+131385:0::3::
+131385:0::3::Skills known:
+131385:0::6::none
+131385:0::3::
+131385:0::3::Inventory:
+131385:0::3::{<b>}      qty  name                              weight{</b>}
+131385:0::3::      ---  ----                              ------
+131385:0::3::       73  spirits~[26]                       7,300  cap 7,300 (50,50,0)
+131385:0::3::                                             ======
+131385:0::3::                                              7,300
+131385:0::3::
+131385:0::3/11::Capacity:  0/7,400 land (0%)
+131385:0::3::
+0:2::0::<pre>
+0:2::0::<center>
+0:2::0::<img src="../head.gif" align=middle width=100 height=100 alt="">
+0:2::0::<h1>
+0:0::0::Olympia G3 turn 1
+0:0::0::Report for King of Hades~[205].
+0:2::0::</h1>
+0:0::0::{<i>}Season "Fierce winds", month 1, in the year 1.{</i>}
+0:2::0::</center>
+0:0::0::
+0:0::0::Noble points:  0     (0 gained, 0 spent)
+0:0::0::
+0:0::0::The next five nobles formed will be:  3519 8246 3324 5384 7023
+0:0::0::
+0:0::0::
+0:0::0::{<b>}unit   where  loyal heal B CA gold peas work sail figh under  name{</b>}
+0:0::0::----   -----  ----- ---- - -- ---- ---- ---- ---- ---- -----  ----
+0:0::0::3051   kd52   n0    100  0                                    Ghostly
+0:0::0::8801   kf60   n0    100  0                         103        Lesser Demon
+0:0::0::83559  kk70   n0    100  0                          50        Tortured
+0:0::0::103114 km28   n0    100  0                          68        Tortured
+0:0::0::4798   km37   n0    100  0                         117        Lesser Demon
+0:0::0::8308   kp41   n0    100  0                                    Ghostly
+0:0::0::4296   ma00   n0    100  0                                    Ghostly
+0:0::0::5608   mh22   n0    100  0                         130        Lesser Demon
+0:0::0::97167  mh47   n0    100  0                          55        Tortured
+0:0::0::3618   mm65   n0    100  0                                    Ghostly
+0:0::0::8520   mn08   n0    100  0                         145        Lesser Demon
+0:0::0::7558   mp09   n0    100  0                                    Ghostly
+0:0::0::6926   mp51   n0    100  0                                    Ghostly
+0:0::0::2689   mp67   n0    100  0                         225        Greater Demon
+0:0::0::6607   mq61   n0    100  0                         221        Greater Demon
+0:0::0::3512   mx67   n0    100  0                                    Ghostly
+0:0::0::128712 mz54   n0    100  0                          35        Tortured
+0:0::0::8510   nd24   n0    100  0                         228        Greater Demon
+0:0::0::3947   nf21   n0    100  0                         128        Lesser Demon
+0:0::0::3998   nm19   n0    100  0                          74        Lesser Demon
+0:0::0::102086 nz30   n0    100  0                          48        Tortured
+0:0::0::81563  pg42   n0    100  0                          71        Tortured
+0:0::0::85149  ph62   n0    100  0                          60        Tortured
+0:0::0::8754   pn08   n0    100  0                         162        Greater Demon
+0:0::0::131385 pp40   n0    100  0                          73        Tortured
+0:0::0::                              ==== ==== ==== ==== ====
+0:0::0::                                                  1993
+0:0::0::
+0:0::0::{<b>}Location                           Stack{</b>}
+0:0::0::--------                           -----
+0:0::0::Hades
+0:0::0::  Hades~[kd52]                     Ghostly presence~[3051]
+0:0::0::  Hades~[kf60]                     Lesser Demon~[8801]
+0:0::0::  Hades~[kk70]                     Tortured spirits~[83559]
+0:0::0::  Hades~[km28]                     Tortured spirits~[103114]
+0:0::0::  Hades~[km37]                     Lesser Demon~[4798]
+0:0::0::  Hades~[kp41]                     Ghostly presence~[8308]
+0:0::0::  Hades~[ma00]                     Ghostly presence~[4296]
+0:0::0::  Hades~[mh22]                     Lesser Demon~[5608]
+0:0::0::  Hades~[mh47]                     Tortured spirits~[97167]
+0:0::0::  Hades~[mm65]                     Ghostly presence~[3618]
+0:0::0::  Hades~[mn08]                     Lesser Demon~[8520]
+0:0::0::  Hades~[mp09]                     Ghostly presence~[7558]
+0:0::0::  Hades~[mp51]                     Ghostly presence~[6926]
+0:0::0::  Hades~[mp67]                     Greater Demon~[2689]
+0:0::0::  Hades~[mq61]                     Greater Demon~[6607]
+0:0::0::  Hades~[mx67]                     Ghostly presence~[3512]
+0:0::0::  Hades~[mz54]                     Tortured spirits~[128712]
+0:0::0::  Hades~[nd24]                     Greater Demon~[8510]
+0:0::0::  Hades~[nf21]                     Lesser Demon~[3947]
+0:0::0::  Hades~[nm19]                     Lesser Demon~[3998]
+0:0::0::  Hades~[nz30]                     Tortured spirits~[102086]
+0:0::0::  Hades~[pg42]                     Tortured spirits~[81563]
+0:0::0::  Hades~[ph62]                     Tortured spirits~[85149]
+0:0::0::  Hades~[pn08]                     Greater Demon~[8754]
+0:0::0::  Hades~[pp40]                     Tortured spirits~[131385]
+0:0::0::
+0:0::0::{<b>} stack    total wt         walk            ride            fly    {</b>}
+0:0::0:: -----    --------     -----------     -----------     -----------
+0:0::0::  3051         100        100   0%                                
+0:0::0::  8801      10,400     10,400   0%                                
+0:0::0:: 83559       5,100      5,100   0%                                
+0:0::0::103114       6,900      6,900   0%                                
+0:0::0::  4798      11,800     11,800   0%                                
+0:0::0::  8308         100        100   0%                                
+0:0::0::  4296         100        100   0%                                
+0:0::0::  5608      13,100     13,100   0%                                
+0:0::0:: 97167       5,600      5,600   0%                                
+0:0::0::  3618         100        100   0%                                
+0:0::0::  8520      14,600     14,600   0%                                
+0:0::0::  7558         100        100   0%                                
+0:0::0::  6926         100        100   0%                                
+0:0::0::  2689      22,600     22,600   0%                                
+0:0::0::  6607      22,200     22,200   0%                                
+0:0::0::  3512         100        100   0%                                
+0:0::0::128712       3,600      3,600   0%                                
+0:0::0::  8510      22,900     22,900   0%                                
+0:0::0::  3947      12,900     12,900   0%                                
+0:0::0::  3998       7,500      7,500   0%                                
+0:0::0::102086       4,900      4,900   0%                                
+0:0::0:: 81563       7,200      7,200   0%                                
+0:0::0:: 85149       6,100      6,100   0%                                
+0:0::0::  8754      16,300     16,300   0%                                
+0:0::0::131385       7,400      7,400   0%                                
+0:0::0::
+1:0::0::#include 0
+1:0::0::
+1:0::0::
+1:2::0::
+1:2::0::<name="Ghostly presence~[3051]"><font size=+1><b>Ghostly presence~[3051]</b></font>
+1:2::0::<hr>
+1:1::0::Ghostly presence~[3051]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 3051
+1:0::0::
+1:2::0::
+1:2::0::<name="Lesser Demon~[8801]"><font size=+1><b>Lesser Demon~[8801]</b></font>
+1:2::0::<hr>
+1:1::0::Lesser Demon~[8801]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 8801
+1:0::0::
+1:2::0::
+1:2::0::<name="Tortured spirits~[83559]"><font size=+1><b>Tortured spirits~[83559]</b></font>
+1:2::0::<hr>
+1:1::0::Tortured spirits~[83559]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 83559
+1:0::0::
+1:2::0::
+1:2::0::<name="Tortured spirits~[103114]"><font size=+1><b>Tortured spirits~[103114]</b></font>
+1:2::0::<hr>
+1:1::0::Tortured spirits~[103114]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 103114
+1:0::0::
+1:2::0::
+1:2::0::<name="Lesser Demon~[4798]"><font size=+1><b>Lesser Demon~[4798]</b></font>
+1:2::0::<hr>
+1:1::0::Lesser Demon~[4798]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 4798
+1:0::0::
+1:2::0::
+1:2::0::<name="Ghostly presence~[8308]"><font size=+1><b>Ghostly presence~[8308]</b></font>
+1:2::0::<hr>
+1:1::0::Ghostly presence~[8308]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 8308
+1:0::0::
+1:2::0::
+1:2::0::<name="Ghostly presence~[4296]"><font size=+1><b>Ghostly presence~[4296]</b></font>
+1:2::0::<hr>
+1:1::0::Ghostly presence~[4296]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 4296
+1:0::0::
+1:2::0::
+1:2::0::<name="Lesser Demon~[5608]"><font size=+1><b>Lesser Demon~[5608]</b></font>
+1:2::0::<hr>
+1:1::0::Lesser Demon~[5608]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 5608
+1:0::0::
+1:2::0::
+1:2::0::<name="Tortured spirits~[97167]"><font size=+1><b>Tortured spirits~[97167]</b></font>
+1:2::0::<hr>
+1:1::0::Tortured spirits~[97167]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 97167
+1:0::0::
+1:2::0::
+1:2::0::<name="Ghostly presence~[3618]"><font size=+1><b>Ghostly presence~[3618]</b></font>
+1:2::0::<hr>
+1:1::0::Ghostly presence~[3618]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 3618
+1:0::0::
+1:2::0::
+1:2::0::<name="Lesser Demon~[8520]"><font size=+1><b>Lesser Demon~[8520]</b></font>
+1:2::0::<hr>
+1:1::0::Lesser Demon~[8520]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 8520
+1:0::0::
+1:2::0::
+1:2::0::<name="Ghostly presence~[7558]"><font size=+1><b>Ghostly presence~[7558]</b></font>
+1:2::0::<hr>
+1:1::0::Ghostly presence~[7558]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 7558
+1:0::0::
+1:2::0::
+1:2::0::<name="Ghostly presence~[6926]"><font size=+1><b>Ghostly presence~[6926]</b></font>
+1:2::0::<hr>
+1:1::0::Ghostly presence~[6926]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 6926
+1:0::0::
+1:2::0::
+1:2::0::<name="Greater Demon~[2689]"><font size=+1><b>Greater Demon~[2689]</b></font>
+1:2::0::<hr>
+1:1::0::Greater Demon~[2689]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 2689
+1:0::0::
+1:2::0::
+1:2::0::<name="Greater Demon~[6607]"><font size=+1><b>Greater Demon~[6607]</b></font>
+1:2::0::<hr>
+1:1::0::Greater Demon~[6607]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 6607
+1:0::0::
+1:2::0::
+1:2::0::<name="Ghostly presence~[3512]"><font size=+1><b>Ghostly presence~[3512]</b></font>
+1:2::0::<hr>
+1:1::0::Ghostly presence~[3512]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 3512
+1:0::0::
+1:2::0::
+1:2::0::<name="Tortured spirits~[128712]"><font size=+1><b>Tortured spirits~[128712]</b></font>
+1:2::0::<hr>
+1:1::0::Tortured spirits~[128712]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 128712
+1:0::0::
+1:2::0::
+1:2::0::<name="Greater Demon~[8510]"><font size=+1><b>Greater Demon~[8510]</b></font>
+1:2::0::<hr>
+1:1::0::Greater Demon~[8510]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 8510
+1:0::0::
+1:2::0::
+1:2::0::<name="Lesser Demon~[3947]"><font size=+1><b>Lesser Demon~[3947]</b></font>
+1:2::0::<hr>
+1:1::0::Lesser Demon~[3947]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 3947
+1:0::0::
+1:2::0::
+1:2::0::<name="Lesser Demon~[3998]"><font size=+1><b>Lesser Demon~[3998]</b></font>
+1:2::0::<hr>
+1:1::0::Lesser Demon~[3998]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 3998
+1:0::0::
+1:2::0::
+1:2::0::<name="Tortured spirits~[102086]"><font size=+1><b>Tortured spirits~[102086]</b></font>
+1:2::0::<hr>
+1:1::0::Tortured spirits~[102086]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 102086
+1:0::0::
+1:2::0::
+1:2::0::<name="Tortured spirits~[81563]"><font size=+1><b>Tortured spirits~[81563]</b></font>
+1:2::0::<hr>
+1:1::0::Tortured spirits~[81563]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 81563
+1:0::0::
+1:2::0::
+1:2::0::<name="Tortured spirits~[85149]"><font size=+1><b>Tortured spirits~[85149]</b></font>
+1:2::0::<hr>
+1:1::0::Tortured spirits~[85149]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 85149
+1:0::0::
+1:2::0::
+1:2::0::<name="Greater Demon~[8754]"><font size=+1><b>Greater Demon~[8754]</b></font>
+1:2::0::<hr>
+1:1::0::Greater Demon~[8754]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 8754
+1:0::0::
+1:2::0::
+1:2::0::<name="Tortured spirits~[131385]"><font size=+1><b>Tortured spirits~[131385]</b></font>
+1:2::0::<hr>
+1:1::0::Tortured spirits~[131385]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 131385
+1:2::0::
+1:2::0::<name="Hades~[kc52]"><font size=+1><b>Hades~[kc52]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[kc52], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 26252
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[kd52]"><font size=+1><b>Hades~[kd52]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[kd52], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 26352
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[kf60]"><font size=+1><b>Hades~[kf60]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[kf60], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 26460
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[kf61]"><font size=+1><b>Hades~[kf61]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[kf61], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 26461
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[kj70]"><font size=+1><b>Hades~[kj70]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[kj70], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 26770
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[kk70]"><font size=+1><b>Hades~[kk70]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[kk70], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 26870
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[km28]"><font size=+1><b>Hades~[km28]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[km28], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 26928
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[km37]"><font size=+1><b>Hades~[km37]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[km37], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 26937
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[km38]"><font size=+1><b>Hades~[km38]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[km38], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 26938
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[kn28]"><font size=+1><b>Hades~[kn28]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[kn28], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 27028
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[kn41]"><font size=+1><b>Hades~[kn41]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[kn41], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 27041
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[kp41]"><font size=+1><b>Hades~[kp41]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[kp41], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 27141
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[ma00]"><font size=+1><b>Hades~[ma00]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[ma00], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 28000
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mb00]"><font size=+1><b>Hades~[mb00]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[mb00], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 28100
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mg22]"><font size=+1><b>Hades~[mg22]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[mg22], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 28522
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mh22]"><font size=+1><b>Hades~[mh22]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[mh22], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 28622
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mh47]"><font size=+1><b>Hades~[mh47]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[mh47], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 28647
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mh48]"><font size=+1><b>Hades~[mh48]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[mh48], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 28648
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mm64]"><font size=+1><b>Hades~[mm64]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[mm64], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 28964
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mm65]"><font size=+1><b>Hades~[mm65]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[mm65], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 28965
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mn07]"><font size=+1><b>Hades~[mn07]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[mn07], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 29007
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mn08]"><font size=+1><b>Hades~[mn08]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[mn08], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 29008
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mn51]"><font size=+1><b>Hades~[mn51]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[mn51], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 29051
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mp09]"><font size=+1><b>Hades~[mp09]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[mp09], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 29109
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mp10]"><font size=+1><b>Hades~[mp10]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[mp10], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 29110
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mp51]"><font size=+1><b>Hades~[mp51]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[mp51], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 29151
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mp67]"><font size=+1><b>Hades~[mp67]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[mp67], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 29167
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mq61]"><font size=+1><b>Hades~[mq61]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[mq61], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 29261
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mq62]"><font size=+1><b>Hades~[mq62]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[mq62], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 29262
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mq67]"><font size=+1><b>Hades~[mq67]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[mq67], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 29267
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mw67]"><font size=+1><b>Hades~[mw67]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[mw67], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 29767
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mx67]"><font size=+1><b>Hades~[mx67]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[mx67], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 29867
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mz54]"><font size=+1><b>Hades~[mz54]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[mz54], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 29954
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[mz55]"><font size=+1><b>Hades~[mz55]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[mz55], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 29955
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[nd23]"><font size=+1><b>Hades~[nd23]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[nd23], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 30323
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[nd24]"><font size=+1><b>Hades~[nd24]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[nd24], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 30324
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[nf20]"><font size=+1><b>Hades~[nf20]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[nf20], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 30420
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[nf21]"><font size=+1><b>Hades~[nf21]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[nf21], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 30421
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[nm19]"><font size=+1><b>Hades~[nm19]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[nm19], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 30919
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[nm20]"><font size=+1><b>Hades~[nm20]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[nm20], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 30920
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[nz30]"><font size=+1><b>Hades~[nz30]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[nz30], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 31930
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[nz31]"><font size=+1><b>Hades~[nz31]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[nz31], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 31931
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[pg42]"><font size=+1><b>Hades~[pg42]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[pg42], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 32542
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[ph42]"><font size=+1><b>Hades~[ph42]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[ph42], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 32642
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[ph62]"><font size=+1><b>Hades~[ph62]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[ph62], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 32662
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[ph63]"><font size=+1><b>Hades~[ph63]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[ph63], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 32663
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[pn08]"><font size=+1><b>Hades~[pn08]</b>, underground, in Hades</font>
+1:2::0::<hr>
+1:1::0::Hades~[pn08], underground, in Hades
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 33008
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[pn09]"><font size=+1><b>Hades~[pn09]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[pn09], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 33009
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[pn40]"><font size=+1><b>Hades~[pn40]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[pn40], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 33040
+1:0::0::
+1:2::0::
+1:2::0::<name="Hades~[pp40]"><font size=+1><b>Hades~[pp40]</b>, underground, in Hades, hidden</font>
+1:2::0::<hr>
+1:1::0::Hades~[pp40], underground, in Hades, hidden
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 33140
+1:0::0::
+1:2::0::
+1:2::0::<name="Order template"><font size=+1><b>Order template</b></font>
+1:2::0::<hr>
+1:1::0::Order template
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 5
+1:0::0::

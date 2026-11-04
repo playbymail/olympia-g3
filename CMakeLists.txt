@@ -281,6 +281,23 @@ olympia_compile_flags(genesis-g3)
 olympia_enable_sanitizers(genesis-g3)
 
 # ------------------------------------------------------------------------------
+# g2rep -- the report formatter the engine shells out to (issue #368)
+# ------------------------------------------------------------------------------
+# Downstream of the engine: send_rep() (-M), eat() and setup_html_dir() run
+# `g2rep` from PATH to turn the who:html:unit:indent:day:text report markup
+# into text (or HTML with -h). The binary is named g2rep, without the -g3
+# suffix, because that is the name the engine calls. One self-contained source
+# file: no engine headers, no RNG, so it touches neither golden gate.
+# tests/g2rep pins its output against the original rep.c.
+add_executable(g2rep)
+target_sources(g2rep PRIVATE tools/g2rep/g2rep.c)
+target_compile_features(g2rep PRIVATE c_std_11)
+olympia_compile_flags(g2rep)
+
+# Optional ASan/UBSan via the asan-ubsan preset (OLYMPIA_SANITIZE=ON).
+olympia_enable_sanitizers(g2rep)
+
+# ------------------------------------------------------------------------------
 # G3 mapgen
 # ------------------------------------------------------------------------------
 add_executable(mapgen-g3)

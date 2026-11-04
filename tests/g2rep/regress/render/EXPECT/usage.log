@@ -1,0 +1,9 @@
+== g2rep 
+usage: g2rep [-h] report-file
+exit 1
+== g2rep a b
+usage: g2rep [-h] report-file
+exit 1
+== g2rep no-such-file
+can't read no-such-file: No such file or directory
+exit 1
