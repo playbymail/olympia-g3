@@ -1,0 +1,50 @@
+From: skrenta@pbm.com (Rich skrenta)
+Reply-To: skrenta@pbm.com (Rich skrenta)
+To: alice@example.com
+Subject: Acknowledge
+X-Loop: skrenta@pbm.com (Rich skrenta)
+
+     - Olympia order scanner -
+
+Hello, Skill list [202]
+
+2 queued, 4 errors.
+
+Errors
+------------------------------------------------------------------------
+line 4: Line length exceeds 60 characters: Hello there, this is a long
+message line that should wrap when the report formatter renders it, because
+it is longer than seventy-six columns.
+line 4: Post will be rejected.: Hello there, this is a long message line
+that should wrap when the report formatter renders it, because it is longer
+than seventy-six columns.
+line 5: Bad WAIT: Unknown condition '3'.: wait 3
+line 6: unrecognized command: bogus command here
+
+Current order queues
+------------------------------------------------------------------------
+
+begin 202 "crusty7"  # Skill list
+
+unit 202  # Skill list
+   message 1 202
+   Hello there, this is a long message line that should wrap when the report
+   formatter renders it, because it is longer than seventy-six columns.
+   wait 3
+
+end
+
+Original message
+------------------------------------------------------------------------
+From alice@example.com Wed Nov  4 07:36:00 2026
+From: Alice <alice@example.com>
+
+begin 202 "crusty7"
+unit 202
+message 1 202
+Hello there, this is a long message line that should wrap when the report
+formatter renders it, because it is longer than seventy-six columns.
+wait 3
+bogus command here
+end
+

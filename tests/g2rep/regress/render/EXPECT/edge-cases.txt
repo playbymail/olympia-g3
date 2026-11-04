@@ -1,0 +1,9 @@
+ 5: ab12:   A unit-prefixed day line that is long enough to need wrapping
+ 5: ab12:   across several output lines. Really it is. Yes! Ok? Fine: done.
+    Hanging indent line that keeps going and going and going so that the
+          second line uses the second indent value.
+12: "Quoted" words and a single " quote and a tilde joined phrase.
+Averyveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylongwordwithoutspaces then more
+   
+trailing text side and  done
+text only line

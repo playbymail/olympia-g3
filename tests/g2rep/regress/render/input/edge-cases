@@ -1,0 +1,12 @@
+1:0::0::#include 30
+1:0::0::#include 31
+1:0::0::trailing {html side|text side} and {only-html} done
+1:2::0::<b>html only line</b>
+1:1::0::text only line
+1:0::0::#include 99
+30:0:ab12:2:5:A unit-prefixed day line that is long enough to need wrapping across several output lines. Really it is. Yes! Ok? Fine: done.
+30:0::4/6::Hanging indent line that keeps going and going and going so that the second line uses the second indent value.
+30:0::0:12:"Quoted" words and a single " quote and a~tilde~joined phrase.
+31:0::0::Averyveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryveryverylongwordwithoutspaces then more
+31:0::3::
+31:2::0::<a href="x">{<i>}link{</i>}</a>

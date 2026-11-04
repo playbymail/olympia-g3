@@ -1,0 +1,157 @@
+4126:0::0:1:> behind 1
+4126:0::0:1:Behind flag set to 1.
+4126:0::0:1:> attack 8651
+10113:0::0:1:Raider One~[4126] attacks Victim One~[8651]!
+10113:0::3:1:
+10113:0::3:1:Raider One~[4126], behind~1, with 25~peasants, 50~soldiers
+10113:0::3:1:
+10113:0::3:1:Victim One~[8651], with 25~peasants
+4126:0::0:1:Attack Victim One~[8651].
+10113:0::0:1:
+10113:0::0:1:Raider One~[4126] is victorious!
+4126:0::0:1:We won!
+10113:0::0:1:
+10113:0::3:1:Raider One lost six~soldiers.
+4126:0::0:1:Raider One~[4126] lost six~soldiers.
+10113:0::0:1:
+10113:0::3:1:Victim One lost 25~peasants.
+10113:0::3:1:Victim One~[8651] was wounded.
+10113:0::0:1:
+10113:0::0:9:Tower~[k765] collapses!
+4126:0::0:30:Paid maintenance of 113~gold.
+10113:0::0::
+10113:0::0::Routes leaving Plain: 
+10113:0::3::North, to Ocean~[aa13], Great Sea, 2~days
+10113:0::3::East, to Mountain~[ab14], 10~days
+10113:0::3::South, to Plain~[ac13], 7~days
+10113:0::3::West, to Forest~[ab12], 8~days
+10113:0::0::
+10113:0::0::Inner locations:
+10113:0::3::Pasture~[d791], pasture, 1 day
+10113:0::0::
+10113:0::0::Seen here:
+10113:0::0/3:: * Raider One~[4126], with 25~peasants, 44~soldiers
+10113:0::0/3::   Captor One~[7012], with 50~peasants
+10113:0::0/3::   Victim One~[8651]
+10113:0::0/3::   Razer One~[6947], with 25~peasants
+5:0::0::
+5:0::0::begin 300 "OYCpEMJQ"  # Raiders
+5:0::0::
+5:0::0::unit 300  # Raiders
+5:0::0::
+5:0::0::unit 4126  # Raider One in Plain~[ab13]
+5:0::0::
+5:0::0::end
+300:0::0::
+300:0::0::Unclaimed items:
+300:0::0::
+300:0::0::      qty  name                              weight
+300:0::0::      ---  ----                              ------
+300:0::0::    5,025  gold~[1]                               0  
+300:0::0::        5  riding horses~[52]                 5,000  ride 750
+300:0::0::       50  wood~[77]                          1,500  
+300:0::0::      100  stone~[78]                        10,000  
+4126:0::3::
+4126:0::3/16::Location:       Plain~[ab13], in Idar
+4126:0::3::Loyalty:        Oath-2
+4126:0::3::Health:         100%
+4126:0::3::Combat:         attack 80, defense 80, missile 0
+4126:0::3::                behind 1  (stay behind in combat)
+4126:0::3::Break point:    50%
+4126:0::3::
+4126:0::3::Skills known:
+4126:0::6::none
+4126:0::3::
+4126:0::3::Inventory:
+4126:0::3::{<b>}      qty  name                              weight{</b>}
+4126:0::3::      ---  ----                              ------
+4126:0::3::       87  gold~[1]                               0  
+4126:0::3::       25  peasants~[10]                      2,500  cap 2,500 (1,1,0)
+4126:0::3::       44  soldiers~[12]                      4,400  cap 4,400 (5,5,0)
+4126:0::3::                                             ======
+4126:0::3::                                              6,900
+4126:0::3::
+4126:0::3/11::Capacity:  0/7,000 land (0%)
+4126:0::3::
+0:2::0::<pre>
+0:2::0::<center>
+0:2::0::<img src="../head.gif" align=middle width=100 height=100 alt="">
+0:2::0::<h1>
+0:0::0::Olympia G3 turn 1
+0:0::0::Report for Raiders~[300].
+0:2::0::</h1>
+0:0::0::{<i>}Season "Fierce winds", month 1, in the year 1.{</i>}
+0:2::0::</center>
+0:0::0::
+0:2::0::<hr><center><font size=+1>
+0:2::0::<a href="http://oly.v-labs.be/g3/node/11">Rules</a>   <a href="http://oly.v-labs.be/g3/node/409"><i>The Olympia Times</i></a>
+0:2::0::</font></center>
+0:0::0::
+0:0::3::
+0:0::3::Game totals:
+0:0::6::Players:                  5
+0:0::6::Controlled units:         4
+0:0::6::Other units:            464
+0:0::3::
+0:0::3::{<b>}Faction [300]                          rank   {</b>}
+0:0::3::-------------                          ----   
+0:0::3/41::Characters:                         1  1st    
+0:0::3/41::Men:                               69  1st    
+0:0::3/41::Gold:                              87  4th    
+0:0::3/41::Land controlled:                    0  1st    
+0:0::3/41::Skills known:                    0/74  1st    
+0:0::3/41::Spells known:                    0/79  1st    
+0:0::3/41::Provinces visited:           1/25,895  1st    
+0:0::3::
+0:0::3::
+0:0::0::Noble points:  18     (0 gained, 0 spent)
+0:0::0::The next NP will be received at the end of turn 8.
+0:0::0::
+0:0::0::The next five nobles formed will be:  1375 3743 8127 8535 2769
+0:0::0::
+0:0::0::198 fast study days are left.
+0:0::0::
+0:0::0::
+0:0::0::{<b>}unit   where  loyal heal B CA gold peas work sail figh under  name{</b>}
+0:0::0::----   -----  ----- ---- - -- ---- ---- ---- ---- ---- -----  ----
+0:0::0::4126   ab13   o2    100  1      87   25             44        Raider One
+0:0::0::
+0:0::0::{<b>}Location                           Stack{</b>}
+0:0::0::--------                           -----
+0:0::0::Idar
+0:0::0::  Plain~[ab13]                     Raider One~[4126]
+0:0::0::
+0:0::0::{<b>} stack    total wt         walk            ride            fly    {</b>}
+0:0::0:: -----    --------     -----------     -----------     -----------
+0:0::0::  4126       7,000      7,000   0%                                
+0:0::0::
+1:0::0::#include 0
+1:0::0::
+1:2::0::
+1:2::0::<name="Raiders~[300]"><font size=+1><b>Raiders~[300]</b></font>
+1:2::0::<hr>
+1:1::0::Raiders~[300]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 300
+1:0::0::
+1:0::0::
+1:2::0::
+1:2::0::<name="Raider One~[4126]"><font size=+1><b>Raider One~[4126]</b></font>
+1:2::0::<hr>
+1:1::0::Raider One~[4126]
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 4126
+1:2::0::
+1:2::0::<name="Plain~[ab13]"><font size=+1><b>Plain~[ab13]</b>, plain, in Idar, wilderness</font>
+1:2::0::<hr>
+1:1::0::Plain~[ab13], plain, in Idar, wilderness
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 10113
+1:0::0::
+1:2::0::
+1:2::0::<name="Order template"><font size=+1><b>Order template</b></font>
+1:2::0::<hr>
+1:1::0::Order template
+1:1::0::------------------------------------------------------------------------
+1:0::0::#include 5
+1:0::0::
